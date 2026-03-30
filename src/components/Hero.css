@@ -3,10 +3,10 @@
 ============================================================ */
 
 .hero {
-  overflow: hidden;
+  overflow: visible;
 }
 
-/* ── Header (text block) ── */
+/* ── Header bordered section ── */
 
 .hero__header {
   padding-top: calc(var(--height--navbar) + 4rem);
@@ -18,18 +18,16 @@
   align-items: center;
   text-align: center;
   gap: 1.5rem;
-  padding: 4rem 2rem;
-  border-top: none;
+  padding: 0 2rem 4rem;
 }
 
-/* No sparkle icons on the header border */
-.hero__header-inner::before,
-.hero__header-inner::after {
-  display: none;
-}
-
-.hero__label {
-  color: var(--color--text-brand);
+.hero__badge {
+  display: inline-block;
+  padding: 0.5em 1em;
+  background: var(--color--accent-purple-bg);
+  border: 1px solid var(--color--accent-purple-border);
+  border-radius: var(--radius--full);
+  color: var(--color--accent-purple-text);
 }
 
 .hero__title {
@@ -44,9 +42,7 @@
   margin-top: 0.5rem;
 }
 
-/* ── Visual (bordered area) ── */
-
-.hero__visual-wrap {}
+/* ── Visual bordered section ── */
 
 .hero__visual {
   position: relative;
@@ -54,7 +50,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3rem;
+  padding-top: 3rem;
+  padding-bottom: 6rem;
 }
 
 /* Placeholder — soft branded tint */
@@ -140,16 +137,16 @@
 @media (max-width: 768px) {
   .hero__header {
     padding-top: calc(var(--height--navbar) + 2.5rem);
-    padding-bottom: 2.5rem;
   }
 
-  .hero__visual-wrap {
-    padding-bottom: 4rem;
+  .hero__header-inner {
+    padding: 0 1rem 2.5rem;
   }
 
   .hero__visual {
     min-height: 20rem;
-    padding: 2rem 1rem;
+    padding-top: 2rem;
+    padding-bottom: 4rem;
   }
 
   .hero__placeholder {

@@ -1,0 +1,179 @@
+/* ============================================================
+   USP SLIDER — Structural styles only.
+   Typography handled by utility classes.
+============================================================ */
+
+/* ── Section ── */
+
+.usp-slider-section {
+  padding-top: var(--space--section);
+  padding-bottom: var(--space--section);
+}
+
+.usp-slider__header {
+  padding-bottom: 3rem;
+}
+
+/* ── Slider setup variables ── */
+
+[data-gsap-slider-init] {
+  --slider-status: on;
+  --slider-spv: 2.5;
+  --slider-gap: 1.5em;
+}
+
+@media screen and (max-width: 991px) {
+  [data-gsap-slider-init] {
+    --slider-spv: 2;
+    --slider-gap: 1.25em;
+  }
+}
+
+@media screen and (max-width: 767px) {
+  [data-gsap-slider-init] {
+    --slider-spv: 1.15;
+    --slider-gap: 1em;
+  }
+}
+
+/* ── Slider structure ── */
+
+.gsap-slider {
+  gap: 2.5rem;
+  flex-flow: column;
+  align-items: flex-start;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+}
+
+.gsap-slider__collection {
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--space--container-padding);
+  padding-right: var(--space--container-padding);
+}
+
+.gsap-slider__list {
+  -webkit-user-select: none;
+  user-select: none;
+  will-change: transform;
+  touch-action: pan-y;
+  backface-visibility: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.gsap-slider__item {
+  width: calc(((100% - 1px) - (var(--slider-spv) - 1) * var(--slider-gap)) / var(--slider-spv));
+  margin-right: var(--slider-gap);
+  flex: none;
+  display: flex;
+}
+
+[data-gsap-slider-item]:last-child {
+  margin-right: 0;
+}
+
+/* ── USP Card ── */
+
+.usp-card {
+  flex: 1;
+  background-color: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+}
+
+.usp-card__image {
+  transition: background 0.5s ease, border-color 0.5s ease;
+}
+
+.usp-card .color--primary,
+.usp-card .color--secondary {
+  transition: color 0.5s ease;
+}
+
+.usp-card__image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--color--accent-purple-bg);
+  border-bottom: 1px solid var(--color--border-subtle);
+}
+
+.usp-card__content {
+  padding: 1.5rem;
+}
+
+/* ── Active / inactive states ── */
+
+[data-gsap-slider-item-status="active"] .usp-card {
+  background-color: var(--swatch--purple-500);
+  border-color: var(--swatch--purple-600);
+  color: var(--swatch--neutral-0);
+}
+
+[data-gsap-slider-item-status="active"] .usp-card .color--primary {
+  color: var(--swatch--neutral-0);
+}
+
+[data-gsap-slider-item-status="active"] .usp-card .color--secondary {
+  color: var(--swatch--neutral-0-o70);
+}
+
+[data-gsap-slider-item-status="active"] .usp-card__image {
+  background: var(--swatch--purple-600);
+  border-bottom-color: var(--swatch--purple-700);
+}
+
+/* ── Controls ── */
+
+.gsap-slider__controls {
+  padding-left: var(--space--container-padding);
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
+}
+
+.gsap-slider__control {
+  color: var(--color--text-primary);
+  background-color: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  padding: 0.625em 1.25em;
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition--default);
+}
+
+.gsap-slider__control:hover {
+  background-color: var(--color--surface-sunken);
+}
+
+[data-gsap-slider-status="not-active"] [data-gsap-slider-controls] {
+  display: none;
+}
+
+[data-gsap-slider-control-status="not-active"] {
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* ── Responsive section spacing ── */
+
+@media (max-width: 768px) {
+  .usp-slider-section {
+    padding-top: var(--space--section-mobile);
+    padding-bottom: var(--space--section-mobile);
+  }
+}

@@ -1,0 +1,133 @@
+/* ============================================================
+   HOW IT WORKS — Sticky tab section
+   Structural / layout only. Typography via utility classes.
+============================================================ */
+
+/* ── Header ── */
+
+.how-it-works__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ── Sticky tab group ── */
+
+.sticky-tab-group {
+  overflow: clip;
+}
+
+.sticky-tab-group__nav-bg {
+  z-index: 2;
+  height: var(--height--navbar);
+  background-color: var(--color--page-bg);
+  border-bottom: 1px solid var(--color--border-subtle);
+  width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+}
+
+/* ── Individual tab ── */
+
+.sticky-tab {
+  background-color: var(--color--page-bg);
+  position: relative;
+  overflow: clip;
+}
+
+.sticky-tab__sticky {
+  z-index: 1;
+  top: calc(var(--height--navbar) - 1px);
+  flex-flow: column;
+  margin-top: -1px;
+  display: flex;
+  position: sticky;
+  box-shadow: 0 0.25em 0.5em 0 var(--swatch--neutral-900-o10);
+}
+
+.sticky-tab__inner {
+  background-color: var(--color--page-bg);
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5em;
+  padding-bottom: 1.5em;
+}
+
+.sticky-tab__content {
+  justify-content: space-between;
+  align-items: center;
+  display: flex;
+}
+
+/* ── Tab body (text + image layout) ── */
+
+.sticky-tab__body {
+  padding: 3rem 0;
+  border-top: none;
+}
+
+.sticky-tab__body::before,
+.sticky-tab__body::after {
+  display: none;
+}
+
+.sticky-tab__body-inner {
+  display: flex;
+  align-items: stretch;
+  gap: 3rem;
+  min-height: 28rem;
+  padding: 3rem;
+}
+
+/* Text column */
+.sticky-tab__text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+/* Image column */
+.sticky-tab__image {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.sticky-tab__image-placeholder {
+  width: 100%;
+  height: 100%;
+  min-height: 20rem;
+  background: var(--color--accent-purple-bg);
+  border: 1px solid var(--color--accent-purple-border);
+  border-radius: var(--radius--md);
+}
+
+/* Per-theme placeholder tints */
+[data-theme="brand-blue"] .sticky-tab__image-placeholder {
+  background: var(--color--accent-blue-bg);
+  border-color: var(--color--accent-blue-border);
+}
+
+[data-theme="brand-green"] .sticky-tab__image-placeholder {
+  background: var(--color--accent-green-bg);
+  border-color: var(--color--accent-green-border);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .sticky-tab__body-inner {
+    flex-direction: column;
+    padding: 2rem 1.5rem;
+    min-height: auto;
+    gap: 2rem;
+  }
+
+  .sticky-tab__image-placeholder {
+    min-height: 14rem;
+  }
+}

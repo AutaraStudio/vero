@@ -334,11 +334,11 @@
   --shadow--nav-scrolled: 0 4px 24px var(--swatch--neutral-900-o10);
 
   /* Radius */
-  --radius--sm:   0.375rem;
-  --radius--md:   0.625rem;
-  --radius--lg:   1rem;
-  --radius--xl:   1.5rem;
-  --radius--full: 9999px;
+  --radius--sm:   0.25rem;
+  --radius--md:   0.25rem;
+  --radius--lg:   0.25rem;
+  --radius--xl:   0.25rem;
+  --radius--full: 0.25rem;
 
   /* Transitions */
   --transition--default: all 0.2s ease;
