@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import SmoothScroll from '@/components/SmoothScroll';
-import Footer from '@/components/Footer';
 
 export const metadata: Metadata = {
   title: 'Vero Assess',
@@ -14,7 +13,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <SmoothScroll>
           {children}
-          <Footer />
         </SmoothScroll>
       </body>
     </html>
