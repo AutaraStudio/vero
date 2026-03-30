@@ -1,0 +1,148 @@
+/* ============================================================
+   FOOTER
+   Uses brand-purple-deep theme via data-theme on the footer element.
+   All colours reference theme tokens.
+============================================================ */
+
+.footer {
+  background-color: var(--color--page-bg);
+  color: var(--color--text-primary);
+}
+
+/* ── Logo — force white ── */
+
+.footer__logo-img {
+  filter: brightness(0) invert(1);
+}
+
+/* ── CTA banner ── */
+
+.footer__cta-banner {
+  padding-top: var(--space--section);
+  padding-bottom: var(--space--section);
+  border-top: 1px solid var(--color--border-default);
+}
+
+.footer__cta-inner {
+  padding: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: 6rem;
+  border-top: none;
+}
+
+/* Hide sparkle icons */
+.footer__cta-inner::before,
+.footer__cta-inner::after {
+  display: none;
+}
+
+.footer__cta-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 4rem;
+}
+
+.footer__cta-text {
+  flex: 1;
+  max-width: 24rem;
+}
+
+.footer__cta-action {
+  flex-shrink: 0;
+  max-width: 22rem;
+}
+
+.footer__cta-btn {
+  padding-top: 1.5rem;
+}
+
+/* ── Link columns ── */
+
+.footer__links {
+  padding-top: 2.5rem;
+  padding-bottom: 2.5rem;
+  border-top: 1px solid var(--color--border-default);
+}
+
+.footer__links-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+}
+
+.footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.footer__col-title {
+  padding-bottom: 0.25rem;
+}
+
+.footer__col-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.footer__link {
+  text-decoration: none;
+  transition: var(--transition--default);
+  display: inline-block;
+  padding: 0.125rem 0;
+}
+
+.footer__link:hover {
+  color: var(--color--text-primary);
+  opacity: 1;
+}
+
+/* ── Bottom bar ── */
+
+.footer__bottom {
+  padding-top: 1.25rem;
+  padding-bottom: 1.25rem;
+  border-top: 1px solid var(--color--border-default);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+  .footer__links-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .footer__cta-banner {
+    padding-top: var(--space--section-mobile);
+    padding-bottom: var(--space--section-mobile);
+  }
+
+  .footer__cta-inner {
+    padding: 2rem 1.5rem;
+    gap: 3rem;
+  }
+
+  .footer__cta-content {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2rem;
+  }
+
+  .footer__links-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 479px) {
+  .footer__links-grid {
+    grid-template-columns: 1fr;
+  }
+}

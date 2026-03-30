@@ -8,6 +8,7 @@
 .usp-slider-section {
   padding-top: var(--space--section);
   padding-bottom: var(--space--section);
+  border-bottom: 1px solid var(--color--border-default);
 }
 
 .usp-slider__header {

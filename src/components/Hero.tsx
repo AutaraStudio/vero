@@ -22,21 +22,21 @@ export default function Hero() {
         {/* ── Upper: centred text block ── */}
         <div className="bordered-section hero__header">
           <div className="hero__header-inner">
-            <span ref={badgeRef as React.RefObject<HTMLSpanElement>} className="hero__badge text-label--sm">Vero Assess</span>
+            <span ref={badgeRef as React.RefObject<HTMLSpanElement>} data-animate="" className="section-label">Vero Assess</span>
 
-            <h1 ref={titleRef as React.RefObject<HTMLHeadingElement>} className="hero__title text-h1 text-balance">
+            <h1 ref={titleRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="hero__title text-h1 text-balance">
               Identify authentic talent.
               <br />
               Make strategic hiring decisions.
             </h1>
 
-            <p ref={introRef as React.RefObject<HTMLParagraphElement>} className="hero__intro text-body--lg leading--snug text-centre max-ch-55 mx-auto">
+            <p ref={introRef as React.RefObject<HTMLParagraphElement>} data-animate="" className="hero__intro text-body--lg leading--snug text-centre max-ch-55 mx-auto">
               Evaluate applicants in depth and at speed. Vero Assess reduces
               workloads, enhances recruitment and delivers the talent your
               organisation needs.
             </p>
 
-            <div ref={ctaRef as React.RefObject<HTMLDivElement>} className="hero__cta">
+            <div ref={ctaRef as React.RefObject<HTMLDivElement>} data-animate="" className="hero__cta">
               <Button variant="cta" size="lg" href="/get-started">
                 Get started
               </Button>
@@ -47,19 +47,39 @@ export default function Hero() {
         {/* ── Lower: visual area ── */}
         <div ref={visualRef as React.RefObject<HTMLDivElement>} className="bordered-section hero__visual">
           {/* Floating tags */}
-          <div className="hero__tag hero__tag--danger" aria-hidden="true">
+          <div className="hero__tag hero__tag--success hero__tag--pos-1 hero__tag--float-1" aria-hidden="true">
+            <span className="hero__tag-icon hero__tag-icon--check" />
+            <span className="hero__tag-text text-label--sm">3 assessments completed</span>
+          </div>
+
+          <div className="hero__tag hero__tag--danger hero__tag--pos-2 hero__tag--float-2" aria-hidden="true">
             <span className="hero__tag-icon hero__tag-icon--x" />
-            <span className="hero__tag-text text-label--sm">OFAC hits found</span>
+            <span className="hero__tag-text text-label--sm">Low cultural fit</span>
           </div>
 
-          <div className="hero__tag hero__tag--success hero__tag--left" aria-hidden="true">
+          <div className="hero__tag hero__tag--success hero__tag--pos-3 hero__tag--float-3" aria-hidden="true">
             <span className="hero__tag-icon hero__tag-icon--check" />
-            <span className="hero__tag-text text-label--sm">Enhanced background check</span>
+            <span className="hero__tag-text text-label--sm">92% best-fit score</span>
           </div>
 
-          <div className="hero__tag hero__tag--success hero__tag--right" aria-hidden="true">
+          <div className="hero__tag hero__tag--info hero__tag--pos-4 hero__tag--float-4" aria-hidden="true">
+            <span className="hero__tag-icon hero__tag-icon--info" />
+            <span className="hero__tag-text text-label--sm">248 candidates assessed</span>
+          </div>
+
+          <div className="hero__tag hero__tag--success hero__tag--pos-5 hero__tag--float-1" aria-hidden="true">
             <span className="hero__tag-icon hero__tag-icon--check" />
-            <span className="hero__tag-text text-label--sm">2 assessments completed</span>
+            <span className="hero__tag-text text-label--sm">Interview framework ready</span>
+          </div>
+
+          <div className="hero__tag hero__tag--warning hero__tag--pos-6 hero__tag--float-3" aria-hidden="true">
+            <span className="hero__tag-icon hero__tag-icon--warning" />
+            <span className="hero__tag-text text-label--sm">Review recommended</span>
+          </div>
+
+          <div className="hero__tag hero__tag--success hero__tag--pos-7 hero__tag--float-2" aria-hidden="true">
+            <span className="hero__tag-icon hero__tag-icon--check" />
+            <span className="hero__tag-text text-label--sm">Live in 48 hours</span>
           </div>
 
           {/* Placeholder image area */}

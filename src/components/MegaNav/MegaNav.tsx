@@ -203,9 +203,9 @@ export default function MegaNav() {
                     <div className="mega-nav__card-visual-placeholder" />
                   </div>
                   <div className="mega-nav__card-content stack--sm">
-                    <div className="mega-nav__card-text stack--xs">
-                      <span className="text-body--sm font--medium color--primary">Live in 48 hours</span>
-                      <span className="text-body--xs color--tertiary">Get your assessments running fast</span>
+                    <div className="mega-nav__card-text">
+                      <p className="text-body--sm font--medium color--primary">Live in 48 hours</p>
+                      <p className="text-body--xs color--tertiary">Get your assessments running fast</p>
                     </div>
                     <Button variant="primary" size="sm" href="/get-started">
                       Get started

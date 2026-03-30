@@ -4,7 +4,9 @@
 
 .hero {
   overflow: visible;
+  border-bottom: 1px solid var(--color--border-default);
 }
+
 
 /* ── Header bordered section ── */
 
@@ -19,15 +21,6 @@
   text-align: center;
   gap: 1.5rem;
   padding: 0 2rem 4rem;
-}
-
-.hero__badge {
-  display: inline-block;
-  padding: 0.5em 1em;
-  background: var(--color--accent-purple-bg);
-  border: 1px solid var(--color--accent-purple-border);
-  border-radius: var(--radius--full);
-  color: var(--color--accent-purple-text);
 }
 
 .hero__title {
@@ -80,11 +73,45 @@
   z-index: 2;
 }
 
-.hero__tag--danger  { top: 12%; left: 18%; }
-.hero__tag--left    { top: 45%; left: 5%; }
-.hero__tag--right   { top: 40%; right: 5%; }
+/* Tag positions — scattered around the placeholder */
+.hero__tag--pos-1 { top: 8%;  left: 22%; }
+.hero__tag--pos-2 { top: 18%; right: 8%; }
+.hero__tag--pos-3 { top: 42%; left: 2%; }
+.hero__tag--pos-4 { top: 55%; right: 3%; }
+.hero__tag--pos-5 { bottom: 22%; left: 8%; }
+.hero__tag--pos-6 { bottom: 12%; right: 15%; }
+.hero__tag--pos-7 { top: 32%; left: 12%; }
 
-/* Tag icons */
+/* ── Floating animations ── */
+
+@keyframes hero-float-1 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-8px); }
+}
+
+@keyframes hero-float-2 {
+  0%, 100% { transform: translateY(0) translateX(0); }
+  33%      { transform: translateY(-6px) translateX(3px); }
+  66%      { transform: translateY(4px) translateX(-2px); }
+}
+
+@keyframes hero-float-3 {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(6px); }
+}
+
+@keyframes hero-float-4 {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  50%      { transform: translateX(-5px) translateY(-4px); }
+}
+
+.hero__tag--float-1 { animation: hero-float-1 4s ease-in-out infinite; }
+.hero__tag--float-2 { animation: hero-float-2 5s ease-in-out infinite; }
+.hero__tag--float-3 { animation: hero-float-3 3.5s ease-in-out infinite; }
+.hero__tag--float-4 { animation: hero-float-4 4.5s ease-in-out infinite; }
+
+/* ── Tag icons ── */
+
 .hero__tag-icon {
   width: 1rem;
   height: 1rem;
@@ -95,6 +122,22 @@
   flex-shrink: 0;
 }
 
+/* Check — green */
+.hero__tag-icon--check {
+  background: var(--swatch--green-500);
+}
+
+.hero__tag-icon--check::after {
+  content: "";
+  position: absolute;
+  width: 0.35rem;
+  height: 0.55rem;
+  border-right: 1.5px solid var(--swatch--neutral-0);
+  border-bottom: 1.5px solid var(--swatch--neutral-0);
+  transform: rotate(45deg) translate(-0.5px, -0.5px);
+}
+
+/* X — orange/red */
 .hero__tag-icon--x {
   background: var(--swatch--orange-500);
 }
@@ -112,18 +155,31 @@
 .hero__tag-icon--x::before { transform: rotate(45deg); }
 .hero__tag-icon--x::after  { transform: rotate(-45deg); }
 
-.hero__tag-icon--check {
+/* Info — blue */
+.hero__tag-icon--info {
   background: var(--swatch--blue-500);
 }
 
-.hero__tag-icon--check::after {
-  content: "";
-  position: absolute;
-  width: 0.35rem;
-  height: 0.55rem;
-  border-right: 1.5px solid var(--swatch--neutral-0);
-  border-bottom: 1.5px solid var(--swatch--neutral-0);
-  transform: rotate(45deg) translate(-0.5px, -0.5px);
+.hero__tag-icon--info::after {
+  content: "i";
+  font-size: 0.625rem;
+  font-weight: 700;
+  font-style: italic;
+  color: var(--swatch--neutral-0);
+  line-height: 1;
+}
+
+/* Warning — yellow */
+.hero__tag-icon--warning {
+  background: var(--swatch--yellow-500);
+}
+
+.hero__tag-icon--warning::after {
+  content: "!";
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: var(--swatch--neutral-900);
+  line-height: 1;
 }
 
 .hero__tag-text {
@@ -154,11 +210,19 @@
   }
 
   .hero__tag {
-    padding: 0.5rem 0.75rem;
+    padding: 0.375rem 0.625rem;
     font-size: var(--font--label-sm);
   }
 
-  .hero__tag--danger { top: 8%; left: 5%; }
-  .hero__tag--left   { top: 40%; left: 0; }
-  .hero__tag--right  { top: 35%; right: 0; }
+  /* Hide some tags on mobile to avoid overcrowding */
+  .hero__tag--pos-4,
+  .hero__tag--pos-6,
+  .hero__tag--pos-7 {
+    display: none;
+  }
+
+  .hero__tag--pos-1 { top: 5%;  left: 5%; }
+  .hero__tag--pos-2 { top: 15%; right: 2%; }
+  .hero__tag--pos-3 { top: 45%; left: 0; }
+  .hero__tag--pos-5 { bottom: 15%; right: 2%; }
 }

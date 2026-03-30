@@ -651,3 +651,8 @@ img, video {
   display: block;
 }
 
+/* Prevent FOUC on animated elements before GSAP initialises */
+[data-animate] {
+  visibility: hidden;
+}
+

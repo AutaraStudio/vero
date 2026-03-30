@@ -37,7 +37,7 @@ export function useFadeUp(options: UseFadeUpOptions = {}) {
       ? container.querySelectorAll(selector)
       : [container];
 
-    gsap.set(targets, { opacity: 0, y });
+    gsap.set(targets, { opacity: 0, y, visibility: 'visible' });
 
     const animProps: gsap.TweenVars = {
       opacity: 1,

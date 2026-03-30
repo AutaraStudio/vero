@@ -50,7 +50,8 @@ export function useTextReveal(options: UseTextRevealOptions = {}) {
 
     const stagger = staggerMap[splitType];
 
-    // Set initial state
+    // Set initial state — visibility: visible clears the CSS [data-animate] hide
+    gsap.set(el, { visibility: 'visible' });
     gsap.set(elements, {
       opacity: 0,
       y: 12,
