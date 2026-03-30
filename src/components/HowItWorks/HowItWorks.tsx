@@ -1,6 +1,8 @@
 'use client';
 
 import Button from '@/components/ui/Button';
+import { useTextReveal } from '@/hooks/useTextReveal';
+import { useFadeUp } from '@/hooks/useFadeUp';
 import './HowItWorks.css';
 
 const steps = [
@@ -31,14 +33,19 @@ const steps = [
 ];
 
 export default function HowItWorks() {
+  // Scroll-triggered animations for header
+  const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
+  const headingRef = useTextReveal({ delay: 0.1 });
+  const introRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 16 });
+
   return (
     <section className="how-it-works section">
       {/* Section header */}
       <div className="container">
         <div className="how-it-works__header bordered-section stack--md pad--inset-lg">
-          <span className="section-label">How it works</span>
-          <h2 className="section-heading">Getting started is straightforward</h2>
-          <p className="section-intro text-body--lg leading--snug">
+          <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">How it works</span>
+          <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} className="section-heading">Getting started is straightforward</h2>
+          <p ref={introRef as React.RefObject<HTMLParagraphElement>} className="section-intro text-body--lg leading--snug">
             Getting started with Vero Assess is straightforward. Here&rsquo;s what to expect.
           </p>
         </div>

@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import { useTextReveal } from '@/hooks/useTextReveal';
+import { useFadeUp } from '@/hooks/useFadeUp';
 import { initGSAPSlider } from './sliderAnimations';
 import './USPSlider.css';
 
@@ -38,6 +40,11 @@ const usps = [
 export default function USPSlider() {
   const rootRef = useRef<HTMLDivElement>(null);
 
+  // Scroll-triggered animations for header
+  const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
+  const headingRef = useTextReveal({ delay: 0.1 });
+  const introRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 16 });
+
   useEffect(() => {
     const el = rootRef.current;
     if (!el) return;
@@ -50,9 +57,9 @@ export default function USPSlider() {
       {/* Section header */}
       <div className="container">
         <div className="usp-slider__header stack--md">
-          <span className="section-label">Why Vero Assess</span>
-          <h2 className="section-heading">Better experiences. Better hires.</h2>
-          <p className="section-intro text-body--lg leading--snug">
+          <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">Why Vero Assess</span>
+          <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} className="section-heading">Better experiences. Better hires.</h2>
+          <p ref={introRef as React.RefObject<HTMLParagraphElement>} className="section-intro text-body--lg leading--snug">
             Vero Assess puts a safe, accessible and scientifically-backed
             solution at the heart of your recruitment campaign.
           </p>
