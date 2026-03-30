@@ -22,12 +22,14 @@
     "styled-components": "^6.3.12"
   },
   "devDependencies": {
+    "@sanity/client": "^7.20.0",
     "@tailwindcss/postcss": "^4",
     "@types/gsap": "^1.20.2",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "babel-plugin-react-compiler": "1.0.0",
+    "dotenv": "^17.3.1",
     "eslint": "^9",
     "eslint-config-next": "16.2.1",
     "tailwindcss": "^4",
