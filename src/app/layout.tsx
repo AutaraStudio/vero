@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import './utilities.css';
 import SmoothScroll from '@/components/SmoothScroll';
 
 export const metadata: Metadata = {
