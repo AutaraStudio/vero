@@ -1,26 +1,708 @@
-@import "tailwindcss";
+/* ============================================================
+   FONTS
+============================================================ */
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Light-Italic.ttf') format('truetype');
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Italic.ttf') format('truetype');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-SemiBold-Italic.ttf') format('truetype');
+  font-weight: 600;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Bold-Italic.ttf') format('truetype');
+  font-weight: 700;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-ExtraBold-Italic.ttf') format('truetype');
+  font-weight: 800;
+  font-style: italic;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Aptos';
+  src: url('/fonts/Aptos-Black.ttf') format('truetype');
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* ============================================================
+   TAILWIND
+============================================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================
+   RAW COLOUR SWATCHES
+============================================================ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+
+  /* Neutral */
+  --swatch--neutral-0: #fff;
+  --swatch--neutral-100: #efefef;
+  --swatch--neutral-200: color-mix(in srgb, var(--swatch--neutral-900), white 85%);
+  --swatch--neutral-300: color-mix(in srgb, var(--swatch--neutral-900), white 75%);
+  --swatch--neutral-400: color-mix(in srgb, var(--swatch--neutral-900), white 60%);
+  --swatch--neutral-500: color-mix(in srgb, var(--swatch--neutral-900), white 45%);
+  --swatch--neutral-600: color-mix(in srgb, var(--swatch--neutral-900), white 30%);
+  --swatch--neutral-700: color-mix(in srgb, var(--swatch--neutral-900), white 15%);
+  --swatch--neutral-800: #2a3347;
+  --swatch--neutral-900: #1d2331;
+  --swatch--neutral-0-o10: color-mix(in srgb, var(--swatch--neutral-0) 10%, transparent);
+  --swatch--neutral-0-o15: color-mix(in srgb, var(--swatch--neutral-0) 15%, transparent);
+  --swatch--neutral-0-o20: color-mix(in srgb, var(--swatch--neutral-0) 20%, transparent);
+  --swatch--neutral-0-o30: color-mix(in srgb, var(--swatch--neutral-0) 30%, transparent);
+  --swatch--neutral-0-o50: color-mix(in srgb, var(--swatch--neutral-0) 50%, transparent);
+  --swatch--neutral-0-o70: color-mix(in srgb, var(--swatch--neutral-0) 70%, transparent);
+  --swatch--neutral-0-o80: color-mix(in srgb, var(--swatch--neutral-0) 80%, transparent);
+  --swatch--neutral-900-o10: color-mix(in srgb, var(--swatch--neutral-900) 10%, transparent);
+  --swatch--neutral-900-o15: color-mix(in srgb, var(--swatch--neutral-900) 15%, transparent);
+  --swatch--neutral-900-o20: color-mix(in srgb, var(--swatch--neutral-900) 20%, transparent);
+  --swatch--neutral-900-o30: color-mix(in srgb, var(--swatch--neutral-900) 30%, transparent);
+  --swatch--neutral-900-o50: color-mix(in srgb, var(--swatch--neutral-900) 50%, transparent);
+  --swatch--neutral-900-o70: color-mix(in srgb, var(--swatch--neutral-900) 70%, transparent);
+
+  /* Purple */
+  --swatch--purple-50: #f5f0ff;
+  --swatch--purple-100: color-mix(in srgb, var(--swatch--purple-500), white 80%);
+  --swatch--purple-200: color-mix(in srgb, var(--swatch--purple-500), white 65%);
+  --swatch--purple-300: color-mix(in srgb, var(--swatch--purple-500), white 50%);
+  --swatch--purple-400: color-mix(in srgb, var(--swatch--purple-500), white 30%);
+  --swatch--purple-500: #472d6a;
+  --swatch--purple-600: #3a2257;
+  --swatch--purple-700: color-mix(in srgb, var(--swatch--purple-500), black 30%);
+  --swatch--purple-800: color-mix(in srgb, var(--swatch--purple-500), black 55%);
+  --swatch--purple-900: color-mix(in srgb, var(--swatch--purple-500), black 75%);
+  --swatch--purple-o10: color-mix(in srgb, var(--swatch--purple-500) 10%, transparent);
+  --swatch--purple-o15: color-mix(in srgb, var(--swatch--purple-500) 15%, transparent);
+  --swatch--purple-o20: color-mix(in srgb, var(--swatch--purple-500) 20%, transparent);
+  --swatch--purple-o30: color-mix(in srgb, var(--swatch--purple-500) 30%, transparent);
+  --swatch--purple-o50: color-mix(in srgb, var(--swatch--purple-500) 50%, transparent);
+  --swatch--purple-text: var(--swatch--neutral-900);
+
+  /* Orange */
+  --swatch--orange-50: #fff5ec;
+  --swatch--orange-100: color-mix(in srgb, var(--swatch--orange-500), white 80%);
+  --swatch--orange-200: color-mix(in srgb, var(--swatch--orange-500), white 65%);
+  --swatch--orange-300: color-mix(in srgb, var(--swatch--orange-500), white 50%);
+  --swatch--orange-400: color-mix(in srgb, var(--swatch--orange-500), white 30%);
+  --swatch--orange-500: #f15f23;
+  --swatch--orange-600: color-mix(in srgb, var(--swatch--orange-500), black 15%);
+  --swatch--orange-700: color-mix(in srgb, var(--swatch--orange-500), black 30%);
+  --swatch--orange-800: color-mix(in srgb, var(--swatch--orange-500), black 50%);
+  --swatch--orange-900: color-mix(in srgb, var(--swatch--orange-500), black 70%);
+  --swatch--orange-o10: color-mix(in srgb, var(--swatch--orange-500) 10%, transparent);
+  --swatch--orange-o15: color-mix(in srgb, var(--swatch--orange-500) 15%, transparent);
+  --swatch--orange-o20: color-mix(in srgb, var(--swatch--orange-500) 20%, transparent);
+  --swatch--orange-o30: color-mix(in srgb, var(--swatch--orange-500) 30%, transparent);
+  --swatch--orange-o50: color-mix(in srgb, var(--swatch--orange-500) 50%, transparent);
+
+  /* Yellow */
+  --swatch--yellow-50: #fffbec;
+  --swatch--yellow-100: color-mix(in srgb, var(--swatch--yellow-500), white 80%);
+  --swatch--yellow-200: color-mix(in srgb, var(--swatch--yellow-500), white 65%);
+  --swatch--yellow-300: color-mix(in srgb, var(--swatch--yellow-500), white 50%);
+  --swatch--yellow-400: color-mix(in srgb, var(--swatch--yellow-500), white 30%);
+  --swatch--yellow-500: #fec601;
+  --swatch--yellow-600: #e5b200;
+  --swatch--yellow-700: color-mix(in srgb, var(--swatch--yellow-500), black 30%);
+  --swatch--yellow-800: color-mix(in srgb, var(--swatch--yellow-500), black 50%);
+  --swatch--yellow-900: color-mix(in srgb, var(--swatch--yellow-500), black 70%);
+  --swatch--yellow-o10: color-mix(in srgb, var(--swatch--yellow-500) 10%, transparent);
+  --swatch--yellow-o15: color-mix(in srgb, var(--swatch--yellow-500) 15%, transparent);
+  --swatch--yellow-o20: color-mix(in srgb, var(--swatch--yellow-500) 20%, transparent);
+  --swatch--yellow-o30: color-mix(in srgb, var(--swatch--yellow-500) 30%, transparent);
+  --swatch--yellow-o50: color-mix(in srgb, var(--swatch--yellow-500) 50%, transparent);
+
+  /* Green */
+  --swatch--green-50: #edfff3;
+  --swatch--green-100: color-mix(in srgb, var(--swatch--green-500), white 80%);
+  --swatch--green-200: color-mix(in srgb, var(--swatch--green-500), white 65%);
+  --swatch--green-300: color-mix(in srgb, var(--swatch--green-500), white 50%);
+  --swatch--green-400: color-mix(in srgb, var(--swatch--green-500), white 30%);
+  --swatch--green-500: #6fd08b;
+  --swatch--green-600: color-mix(in srgb, var(--swatch--green-500), black 15%);
+  --swatch--green-700: color-mix(in srgb, var(--swatch--green-500), black 30%);
+  --swatch--green-800: color-mix(in srgb, var(--swatch--green-500), black 50%);
+  --swatch--green-900: color-mix(in srgb, var(--swatch--green-500), black 70%);
+  --swatch--green-o10: color-mix(in srgb, var(--swatch--green-500) 10%, transparent);
+  --swatch--green-o15: color-mix(in srgb, var(--swatch--green-500) 15%, transparent);
+  --swatch--green-o20: color-mix(in srgb, var(--swatch--green-500) 20%, transparent);
+  --swatch--green-o30: color-mix(in srgb, var(--swatch--green-500) 30%, transparent);
+  --swatch--green-o50: color-mix(in srgb, var(--swatch--green-500) 50%, transparent);
+
+  /* Blue */
+  --swatch--blue-50: #edf8ff;
+  --swatch--blue-100: color-mix(in srgb, var(--swatch--blue-500), white 80%);
+  --swatch--blue-200: color-mix(in srgb, var(--swatch--blue-500), white 65%);
+  --swatch--blue-300: color-mix(in srgb, var(--swatch--blue-500), white 50%);
+  --swatch--blue-400: color-mix(in srgb, var(--swatch--blue-500), white 30%);
+  --swatch--blue-500: #21a4f4;
+  --swatch--blue-600: color-mix(in srgb, var(--swatch--blue-500), black 15%);
+  --swatch--blue-700: color-mix(in srgb, var(--swatch--blue-500), black 30%);
+  --swatch--blue-800: color-mix(in srgb, var(--swatch--blue-500), black 50%);
+  --swatch--blue-900: color-mix(in srgb, var(--swatch--blue-500), black 70%);
+  --swatch--blue-o10: color-mix(in srgb, var(--swatch--blue-500) 10%, transparent);
+  --swatch--blue-o15: color-mix(in srgb, var(--swatch--blue-500) 15%, transparent);
+  --swatch--blue-o20: color-mix(in srgb, var(--swatch--blue-500) 20%, transparent);
+  --swatch--blue-o30: color-mix(in srgb, var(--swatch--blue-500) 30%, transparent);
+  --swatch--blue-o50: color-mix(in srgb, var(--swatch--blue-500) 50%, transparent);
+
+/* ============================================================
+   SEMANTIC TOKENS — LIGHT THEME (default)
+============================================================ */
+
+  /* Page backgrounds */
+  --color--page-bg: var(--swatch--neutral-0);
+  --color--page-bg-subtle: var(--swatch--neutral-100);
+  --color--page-bg-inverse: var(--swatch--neutral-900);
+  --color--page-bg-inverse-subtle: var(--swatch--neutral-800);
+
+  /* Text */
+  --color--text-primary: var(--swatch--neutral-900);
+  --color--text-secondary: var(--swatch--neutral-600);
+  --color--text-tertiary: var(--swatch--neutral-400);
+  --color--text-inverse: var(--swatch--neutral-0);
+  --color--text-inverse-secondary: var(--swatch--neutral-0-o70);
+  --color--text-brand: var(--swatch--purple-500);
+  --color--text-accent-green: var(--swatch--green-700);
+  --color--text-accent-orange: var(--swatch--orange-600);
+  --color--text-accent-blue: var(--swatch--blue-700);
+  --color--text-accent-yellow: var(--swatch--yellow-700);
+
+  /* Borders */
+  --color--border-default: var(--swatch--neutral-200);
+  --color--border-subtle: var(--swatch--neutral-100);
+  --color--border-strong: var(--swatch--neutral-300);
+  --color--border-inverse: var(--swatch--neutral-800);
+  --color--border-brand: var(--swatch--purple-500);
+  --color--border-brand-subtle: var(--swatch--purple-o20);
+
+  /* Surfaces */
+  --color--surface-default: var(--swatch--neutral-0);
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: var(--swatch--neutral-100);
+  --color--surface-overlay: var(--swatch--neutral-900-o70);
+  --color--surface-inverse: var(--swatch--neutral-800);
+  --color--surface-brand: var(--swatch--purple-500);
+  --color--surface-brand-subtle: var(--swatch--purple-o10);
+
+  /* Interactive */
+  --color--interactive-primary: var(--swatch--purple-500);
+  --color--interactive-primary-hover: var(--swatch--purple-600);
+  --color--interactive-primary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary: transparent;
+  --color--interactive-secondary-border: var(--swatch--purple-500);
+  --color--interactive-secondary-text: var(--swatch--purple-500);
+  --color--interactive-secondary-hover-bg: var(--swatch--purple-o10);
+  --color--interactive-cta: var(--swatch--yellow-500);
+  --color--interactive-cta-hover: var(--swatch--yellow-600);
+  --color--interactive-cta-text: var(--swatch--neutral-900);
+
+  /* Accent surfaces */
+  --color--accent-green-bg: var(--swatch--green-o10);
+  --color--accent-green-text: var(--swatch--green-700);
+  --color--accent-green-border: var(--swatch--green-o30);
+  --color--accent-orange-bg: var(--swatch--orange-o10);
+  --color--accent-orange-text: var(--swatch--orange-600);
+  --color--accent-orange-border: var(--swatch--orange-o30);
+  --color--accent-blue-bg: var(--swatch--blue-o10);
+  --color--accent-blue-text: var(--swatch--blue-700);
+  --color--accent-blue-border: var(--swatch--blue-o30);
+  --color--accent-yellow-bg: var(--swatch--yellow-o10);
+  --color--accent-yellow-text: var(--swatch--yellow-700);
+  --color--accent-yellow-border: var(--swatch--yellow-o30);
+  --color--accent-purple-bg: var(--swatch--purple-o10);
+  --color--accent-purple-text: var(--swatch--purple-500);
+  --color--accent-purple-border: var(--swatch--purple-o30);
+
+  /* Shadows */
+  --shadow--card: 0 2px 24px var(--swatch--neutral-900-o10);
+  --shadow--card-hover: 0 8px 40px var(--swatch--neutral-900-o20);
+  --shadow--nav: 0 1px 0 var(--swatch--neutral-200);
+  --shadow--nav-scrolled: 0 4px 24px var(--swatch--neutral-900-o10);
+
+  /* Radius */
+  --radius--sm: 6px;
+  --radius--md: 10px;
+  --radius--lg: 16px;
+  --radius--xl: 24px;
+  --radius--full: 9999px;
+
+  /* Spacing */
+  --space--section: 96px;
+  --space--section-mobile: 64px;
+  --space--card: 32px;
+  --space--card-mobile: 24px;
+  --space--container-max: 1200px;
+  --space--container-padding: 24px;
+
+  /* Transitions */
+  --transition--default: all 0.2s ease;
+  --transition--slow: all 0.4s ease;
+  --transition--spring: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Typography scale */
+  --font--display: clamp(48px, 6vw, 80px);
+  --font--h1: clamp(36px, 4.5vw, 60px);
+  --font--h2: clamp(28px, 3.5vw, 44px);
+  --font--h3: clamp(20px, 2.5vw, 28px);
+  --font--h4: clamp(16px, 2vw, 20px);
+  --font--body-lg: 18px;
+  --font--body: 16px;
+  --font--body-sm: 14px;
+  --font--label: 12px;
+  --font--label-ls: 0.08em;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* ============================================================
+   THEME: DARK
+============================================================ */
+
+[data-theme="dark"] {
+  --color--page-bg: var(--swatch--neutral-900);
+  --color--page-bg-subtle: var(--swatch--neutral-800);
+  --color--page-bg-inverse: var(--swatch--neutral-0);
+  --color--page-bg-inverse-subtle: var(--swatch--neutral-100);
+  --color--text-primary: var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary: var(--swatch--neutral-0-o50);
+  --color--text-inverse: var(--swatch--neutral-900);
+  --color--text-brand: var(--swatch--purple-300);
+  --color--border-default: var(--swatch--neutral-800);
+  --color--border-subtle: var(--swatch--neutral-0-o10);
+  --color--border-strong: var(--swatch--neutral-700);
+  --color--surface-default: var(--swatch--neutral-800);
+  --color--surface-raised: color-mix(in srgb, var(--swatch--neutral-0) 6%, var(--swatch--neutral-800));
+  --color--surface-sunken: var(--swatch--neutral-900);
+  --color--surface-brand: var(--swatch--purple-400);
+  --color--interactive-secondary-border: var(--swatch--neutral-0);
+  --color--interactive-secondary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o10);
+  --shadow--card: 0 2px 24px rgba(0, 0, 0, 0.3);
+  --shadow--card-hover: 0 8px 40px rgba(0, 0, 0, 0.5);
+  --shadow--nav: 0 1px 0 var(--swatch--neutral-800);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* ============================================================
+   THEME: BRAND PURPLE (soft tint — for subtle brand sections)
+============================================================ */
+
+[data-theme="brand-purple"] {
+  --color--page-bg: color-mix(in srgb, var(--swatch--purple-500) 8%, var(--swatch--neutral-0));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--purple-500) 4%, var(--swatch--neutral-0));
+  --color--text-primary: var(--swatch--purple-800);
+  --color--text-secondary: var(--swatch--purple-700);
+  --color--text-tertiary: var(--swatch--purple-400);
+  --color--text-brand: var(--swatch--purple-500);
+  --color--border-default: var(--swatch--purple-o20);
+  --color--border-subtle: var(--swatch--purple-o10);
+  --color--border-strong: var(--swatch--purple-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--purple-500) 5%, var(--swatch--neutral-0));
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--purple-500) 12%, var(--swatch--neutral-0));
+  --color--interactive-primary: var(--swatch--purple-500);
+  --color--interactive-primary-hover: var(--swatch--purple-600);
+  --color--interactive-primary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-border: var(--swatch--purple-500);
+  --color--interactive-secondary-text: var(--swatch--purple-500);
+  --color--interactive-secondary-hover-bg: var(--swatch--purple-o10);
+  --shadow--card: 0 2px 24px var(--swatch--purple-o15);
+  --shadow--card-hover: 0 8px 40px var(--swatch--purple-o30);
+}
+
+/* ============================================================
+   THEME: BRAND PURPLE DEEP (rich full purple — hero moments)
+============================================================ */
+
+[data-theme="brand-purple-deep"] {
+  --color--page-bg: var(--swatch--purple-500);
+  --color--page-bg-subtle: var(--swatch--purple-600);
+  --color--text-primary: var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary: var(--swatch--neutral-0-o50);
+  --color--text-brand: var(--swatch--yellow-500);
+  --color--border-default: var(--swatch--neutral-0-o15);
+  --color--border-subtle: var(--swatch--neutral-0-o10);
+  --color--border-strong: var(--swatch--neutral-0-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--neutral-0) 10%, var(--swatch--purple-500));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--neutral-0) 16%, var(--swatch--purple-500));
+  --color--surface-sunken: var(--swatch--purple-600);
+  --color--interactive-primary: var(--swatch--yellow-500);
+  --color--interactive-primary-hover: var(--swatch--yellow-600);
+  --color--interactive-primary-text: var(--swatch--neutral-900);
+  --color--interactive-secondary-border: var(--swatch--neutral-0-o50);
+  --color--interactive-secondary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o15);
+  --shadow--card: 0 2px 24px rgba(0, 0, 0, 0.25);
+  --shadow--card-hover: 0 8px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* ============================================================
+   THEME: BRAND BLUE (soft tint)
+============================================================ */
+
+[data-theme="brand-blue"] {
+  --color--page-bg: color-mix(in srgb, var(--swatch--blue-500) 8%, var(--swatch--neutral-0));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--blue-500) 4%, var(--swatch--neutral-0));
+  --color--text-primary: color-mix(in srgb, var(--swatch--blue-500) 80%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--blue-500) 50%, var(--swatch--neutral-600));
+  --color--text-tertiary: var(--swatch--blue-400);
+  --color--text-brand: var(--swatch--blue-600);
+  --color--border-default: var(--swatch--blue-o20);
+  --color--border-subtle: var(--swatch--blue-o10);
+  --color--border-strong: var(--swatch--blue-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--blue-500) 5%, var(--swatch--neutral-0));
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--blue-500) 12%, var(--swatch--neutral-0));
+  --color--interactive-primary: var(--swatch--blue-500);
+  --color--interactive-primary-hover: var(--swatch--blue-600);
+  --color--interactive-primary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-border: var(--swatch--blue-500);
+  --color--interactive-secondary-text: var(--swatch--blue-600);
+  --color--interactive-secondary-hover-bg: var(--swatch--blue-o10);
+  --shadow--card: 0 2px 24px var(--swatch--blue-o15);
+  --shadow--card-hover: 0 8px 40px var(--swatch--blue-o30);
+}
+
+/* ============================================================
+   THEME: BRAND GREEN (soft tint)
+============================================================ */
+
+[data-theme="brand-green"] {
+  --color--page-bg: color-mix(in srgb, var(--swatch--green-500) 8%, var(--swatch--neutral-0));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--green-500) 4%, var(--swatch--neutral-0));
+  --color--text-primary: color-mix(in srgb, var(--swatch--green-500) 60%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--green-500) 40%, var(--swatch--neutral-600));
+  --color--text-tertiary: var(--swatch--green-600);
+  --color--text-brand: var(--swatch--green-700);
+  --color--border-default: var(--swatch--green-o20);
+  --color--border-subtle: var(--swatch--green-o10);
+  --color--border-strong: var(--swatch--green-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--green-500) 5%, var(--swatch--neutral-0));
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--green-500) 12%, var(--swatch--neutral-0));
+  --color--interactive-primary: var(--swatch--green-600);
+  --color--interactive-primary-hover: var(--swatch--green-700);
+  --color--interactive-primary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-border: var(--swatch--green-600);
+  --color--interactive-secondary-text: var(--swatch--green-700);
+  --color--interactive-secondary-hover-bg: var(--swatch--green-o10);
+  --shadow--card: 0 2px 24px var(--swatch--green-o15);
+  --shadow--card-hover: 0 8px 40px var(--swatch--green-o30);
+}
+
+/* ============================================================
+   THEME: BRAND ORANGE (soft tint)
+============================================================ */
+
+[data-theme="brand-orange"] {
+  --color--page-bg: color-mix(in srgb, var(--swatch--orange-500) 7%, var(--swatch--neutral-0));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--orange-500) 4%, var(--swatch--neutral-0));
+  --color--text-primary: color-mix(in srgb, var(--swatch--orange-500) 70%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--orange-500) 40%, var(--swatch--neutral-600));
+  --color--text-tertiary: var(--swatch--orange-400);
+  --color--text-brand: var(--swatch--orange-600);
+  --color--border-default: var(--swatch--orange-o20);
+  --color--border-subtle: var(--swatch--orange-o10);
+  --color--border-strong: var(--swatch--orange-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--orange-500) 5%, var(--swatch--neutral-0));
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--orange-500) 10%, var(--swatch--neutral-0));
+  --color--interactive-primary: var(--swatch--orange-500);
+  --color--interactive-primary-hover: var(--swatch--orange-600);
+  --color--interactive-primary-text: var(--swatch--neutral-0);
+  --color--interactive-secondary-border: var(--swatch--orange-500);
+  --color--interactive-secondary-text: var(--swatch--orange-600);
+  --color--interactive-secondary-hover-bg: var(--swatch--orange-o10);
+  --shadow--card: 0 2px 24px var(--swatch--orange-o15);
+  --shadow--card-hover: 0 8px 40px var(--swatch--orange-o30);
+}
+
+/* ============================================================
+   THEME: BRAND YELLOW (soft tint)
+============================================================ */
+
+[data-theme="brand-yellow"] {
+  --color--page-bg: color-mix(in srgb, var(--swatch--yellow-500) 10%, var(--swatch--neutral-0));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--yellow-500) 5%, var(--swatch--neutral-0));
+  --color--text-primary: color-mix(in srgb, var(--swatch--yellow-500) 15%, var(--swatch--neutral-900));
+  --color--text-secondary: var(--swatch--neutral-600);
+  --color--text-tertiary: var(--swatch--neutral-400);
+  --color--text-brand: var(--swatch--yellow-700);
+  --color--border-default: var(--swatch--yellow-o30);
+  --color--border-subtle: var(--swatch--yellow-o15);
+  --color--border-strong: var(--swatch--yellow-o50);
+  --color--surface-default: color-mix(in srgb, var(--swatch--yellow-500) 6%, var(--swatch--neutral-0));
+  --color--surface-raised: var(--swatch--neutral-0);
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--yellow-500) 14%, var(--swatch--neutral-0));
+  --color--interactive-primary: var(--swatch--yellow-600);
+  --color--interactive-primary-hover: var(--swatch--yellow-700);
+  --color--interactive-primary-text: var(--swatch--neutral-900);
+  --color--interactive-secondary-border: var(--swatch--yellow-600);
+  --color--interactive-secondary-text: var(--swatch--yellow-700);
+  --color--interactive-secondary-hover-bg: var(--swatch--yellow-o10);
+  --shadow--card: 0 2px 24px var(--swatch--yellow-o20);
+  --shadow--card-hover: 0 8px 40px var(--swatch--yellow-o30);
+}
+
+/* ============================================================
+   BASE STYLES
+============================================================ */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'Aptos', sans-serif;
+  font-weight: 400;
+  background-color: var(--color--page-bg);
+  color: var(--color--text-primary);
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Aptos', sans-serif;
+  font-weight: 800;
+  line-height: 1.15;
+  color: var(--color--text-primary);
+}
+
+p {
+  color: var(--color--text-secondary);
+  line-height: 1.7;
+}
+
+a {
+  color: var(--color--text-brand);
+  text-decoration: none;
+  transition: var(--transition--default);
+}
+
+img, video {
+  max-width: 100%;
+  display: block;
+}
+
+/* ============================================================
+   UTILITY CLASSES
+============================================================ */
+
+.container {
+  max-width: var(--space--container-max);
+  margin: 0 auto;
+  padding: 0 var(--space--container-padding);
+  width: 100%;
+}
+
+.section {
+  padding: var(--space--section) 0;
+  background-color: var(--color--page-bg);
+  color: var(--color--text-primary);
+}
+
+@media (max-width: 768px) {
+  .section {
+    padding: var(--space--section-mobile) 0;
+  }
+}
+
+.section-label {
+  display: inline-block;
+  font-size: var(--font--label);
+  font-weight: 600;
+  letter-spacing: var(--font--label-ls);
+  text-transform: uppercase;
+  color: var(--color--text-brand);
+  margin-bottom: 12px;
+}
+
+.section-heading {
+  font-size: var(--font--h2);
+  font-weight: 800;
+  color: var(--color--text-primary);
+  margin-bottom: 16px;
+  line-height: 1.15;
+}
+
+.section-intro {
+  font-size: var(--font--body-lg);
+  font-weight: 300;
+  color: var(--color--text-secondary);
+  max-width: 600px;
+  line-height: 1.7;
+}
+
+.card {
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  padding: var(--space--card);
+  box-shadow: var(--shadow--card);
+  transition: var(--transition--slow);
+}
+
+.card:hover {
+  box-shadow: var(--shadow--card-hover);
+  transform: translateY(-2px);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: 'Aptos', sans-serif;
+  font-size: var(--font--body);
+  font-weight: 600;
+  padding: 12px 28px;
+  border-radius: var(--radius--full);
+  border: none;
+  cursor: pointer;
+  transition: var(--transition--spring);
+  text-decoration: none;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.btn--primary {
+  background: var(--color--interactive-primary);
+  color: var(--color--interactive-primary-text);
+}
+
+.btn--primary:hover {
+  background: var(--color--interactive-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--swatch--neutral-900-o20);
+}
+
+.btn--secondary {
+  background: var(--color--interactive-secondary);
+  color: var(--color--interactive-secondary-text);
+  border: 1.5px solid var(--color--interactive-secondary-border);
+}
+
+.btn--secondary:hover {
+  background: var(--color--interactive-secondary-hover-bg);
+  transform: translateY(-1px);
+}
+
+.btn--cta {
+  background: var(--color--interactive-cta);
+  color: var(--color--interactive-cta-text);
+  font-weight: 700;
+}
+
+.btn--cta:hover {
+  background: var(--color--interactive-cta-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--swatch--yellow-o30);
+}
+
+.btn--lg {
+  font-size: var(--font--body-lg);
+  padding: 16px 36px;
+}
+
+.btn--sm {
+  font-size: var(--font--body-sm);
+  padding: 8px 20px;
+}
+
+/* ============================================================
+   SPLIT TEXT — prevent layout shift during animation
+============================================================ */
+
+.split-line,
+.split-word,
+.split-char {
+  display: inline-block;
+  will-change: transform, opacity, filter;
+}
+
+.split-line {
+  display: block;
+}
+
+/* Prevent overflow clipping on animated text */
+[data-split-text] {
+  overflow: visible;
 }
