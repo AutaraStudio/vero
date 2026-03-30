@@ -374,7 +374,7 @@
 /* ── 1. CONTAINERS ─────────────────────────────────────────── */
 
 .container {
-  max-width: var(--size-container);
+  max-width: 72rem;
   margin: 0 auto;
   padding: 0 var(--space--container-padding);
   width: 100%;
