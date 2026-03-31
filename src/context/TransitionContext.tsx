@@ -18,10 +18,14 @@ export function TransitionProvider({ children }: { children: React.ReactNode }) 
   const [pendingHref, setPendingHref] = useState<string | null>(null);
 
   const triggerLeave = useCallback((href: string, title: string) => {
-    setIsTransitioning(true);
-    setNextTitle(title);
+    if (isTransitioning) return;
+    document.dispatchEvent(new CustomEvent('nav:close'));
     setPendingHref(href);
-  }, []);
+    setNextTitle(title);
+    setTimeout(() => {
+      setIsTransitioning(true);
+    }, 250);
+  }, [isTransitioning]);
 
   const onLeaveComplete = useCallback(() => {
     setIsTransitioning(false);

@@ -11,19 +11,23 @@ export default function PageTransition() {
   const pathname = usePathname();
   const router = useRouter();
 
+  const wrapRef = useRef<HTMLDivElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const panelTopRef = useRef<HTMLDivElement>(null);
   const panelBottomRef = useRef<HTMLDivElement>(null);
-  const titleRef = useRef<HTMLDivElement>(null);
+  const titleWrapRef = useRef<HTMLDivElement>(null);
   const titleInnerRef = useRef<HTMLSpanElement>(null);
 
   const reducedMotionRef = useRef(false);
   const wasTransitioningRef = useRef(false);
   const pendingHrefRef = useRef<string | null>(null);
 
+  // Mount — register ease, check reduced motion, set initial GSAP states
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     CustomEase.create('osmo', '0.625, 0.05, 0, 1');
+    if (panelTopRef.current) gsap.set(panelTopRef.current, { scaleY: 0 });
+    if (panelBottomRef.current) gsap.set(panelBottomRef.current, { scaleY: 1, height: '20vw' });
   }, []);
 
   useEffect(() => {
@@ -47,10 +51,11 @@ export default function PageTransition() {
     const panel = panelRef.current;
     const panelTop = panelTopRef.current;
     const panelBottom = panelBottomRef.current;
-    const titleWrapper = titleRef.current;
+    const titleWrap = titleWrapRef.current;
     const titleInner = titleInnerRef.current;
+    const mainEl = document.querySelector('main');
 
-    if (!panel || !panelTop || !panelBottom || !titleWrapper || !titleInner) return;
+    if (!panel || !panelTop || !panelBottom || !titleWrap || !titleInner) return;
 
     titleInner.textContent = nextTitle;
 
@@ -62,14 +67,19 @@ export default function PageTransition() {
       },
     });
 
-    tl.set(panel, { autoAlpha: 1, yPercent: 0 });
-    tl.set(panelTop, { scaleY: 0, height: '15vw' });
-    tl.set(panelBottom, { scaleY: 1, height: '20vw' });
-    tl.set(titleInner, { yPercent: 105 });
-    tl.fromTo(panel, { yPercent: 0 }, { yPercent: -100, duration: 1, ease: 'osmo', overwrite: 'auto' });
-    tl.fromTo(panelTop, { scaleY: 0 }, { scaleY: 1, duration: 1, overwrite: 'auto' }, '<');
-    tl.to(titleWrapper, { opacity: 1, duration: 0 }, '<+=0.3');
-    tl.fromTo(titleInner, { yPercent: 105 }, { yPercent: 0, duration: 0.8, ease: 'expo.out', overwrite: 'auto' }, '<');
+    tl.set(panel, { autoAlpha: 1, yPercent: 0 }, 0);
+    tl.set(panelTop, { scaleY: 0, height: '15vw' }, 0);
+    tl.set(panelBottom, { scaleY: 1, height: '20vw' }, 0);
+    tl.set(titleWrap, { opacity: 0 }, 0);
+    tl.set(titleInner, { yPercent: 105 }, 0);
+
+    tl.fromTo(panel, { yPercent: 0 }, { yPercent: -100, duration: 1, ease: 'osmo' }, 0);
+    tl.fromTo(panelTop, { scaleY: 0 }, { scaleY: 1, duration: 1, ease: 'osmo' }, '<');
+    if (mainEl) {
+      tl.fromTo(mainEl, { y: 0 }, { y: '-15dvh', duration: 1, ease: 'osmo', clearProps: 'y' }, 0);
+    }
+    tl.to(titleWrap, { opacity: 1, duration: 0.01 }, '<+=0.3');
+    tl.fromTo(titleInner, { yPercent: 105 }, { yPercent: 0, duration: 0.8, ease: 'expo.out' }, '<');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isTransitioning]);
 
@@ -83,20 +93,35 @@ export default function PageTransition() {
     const panel = panelRef.current;
     const panelBottom = panelBottomRef.current;
     const titleInner = titleInnerRef.current;
+    const mainEl = document.querySelector('main');
 
     if (!panel || !panelBottom || !titleInner) return;
 
     const tl = gsap.timeline();
 
-    tl.fromTo(panel, { yPercent: -100 }, { yPercent: -200, duration: 1, ease: 'osmo', overwrite: 'auto' }, 1.35);
-    tl.fromTo(panelBottom, { scaleY: 1 }, { scaleY: 0, duration: 1, overwrite: 'auto' }, '<');
-    tl.to(titleInner, { yPercent: -130, duration: 1.2, ease: 'expo.inOut', overwrite: 'auto' }, 1.0);
+    tl.add('startEnter', 1.35);
+
+    if (mainEl) tl.set(mainEl, { autoAlpha: 1 }, 'startEnter');
+
+    tl.fromTo(
+      panel,
+      { yPercent: -100 },
+      { yPercent: -200, duration: 1, ease: 'osmo', overwrite: 'auto', immediateRender: false },
+      'startEnter'
+    );
+    tl.fromTo(panelBottom, { scaleY: 1 }, { scaleY: 0, duration: 1, ease: 'osmo' }, '<');
     tl.set(panel, { autoAlpha: 0 }, '>');
+
+    tl.to(titleInner, { yPercent: -130, duration: 1.2, ease: 'expo.inOut' }, 'startEnter-=0.4');
+
+    if (mainEl) {
+      tl.from(mainEl, { y: '25dvh', duration: 1, ease: 'osmo', clearProps: 'y' }, 'startEnter');
+    }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname]);
 
   return (
-    <div className="pt-wrap">
+    <div ref={wrapRef} className="pt-wrap">
       <div ref={panelRef} className="pt-panel">
         <div ref={panelTopRef} className="pt-panel-top">
           <div className="pt-panel-circle" />
@@ -105,7 +130,7 @@ export default function PageTransition() {
           <div className="pt-panel-circle" />
         </div>
       </div>
-      <div ref={titleRef} className="pt-title">
+      <div ref={titleWrapRef} className="pt-title">
         <span ref={titleInnerRef} className="pt-title-inner" />
       </div>
     </div>

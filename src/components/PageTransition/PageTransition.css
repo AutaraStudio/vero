@@ -2,40 +2,44 @@
   position: fixed;
   inset: 0;
   z-index: 100;
-  overflow: hidden;
   pointer-events: none;
+  overflow: hidden;
 }
 
 .pt-panel {
-  background: var(--color--text-primary);
+  position: absolute;
+  top: 100%;   /* starts BELOW the viewport */
+  left: 0;
   width: 100%;
   height: 100%;
-  position: absolute;
-  top: 100%;
-  left: 0;
+  background-color: #201d1d;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* ── Top curved edge (sits above the panel) ── */
 .pt-panel-top {
   position: absolute;
   bottom: calc(100% - 1px);
   left: 0;
   width: 100%;
-  height: 0;
+  height: 15vw;
   overflow: hidden;
   transform-origin: bottom;
 }
 
 .pt-panel-top .pt-panel-circle {
   position: absolute;
-  background: inherit;
-  border-radius: 50%;
+  bottom: 0;
+  left: -12.5%;
   width: 125%;
   height: 500%;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  background-color: #201d1d;
+  border-radius: 50%;
 }
 
+/* ── Bottom curved edge (sits below the panel) ── */
 .pt-panel-bottom {
   position: absolute;
   top: calc(100% - 1px);
@@ -48,15 +52,15 @@
 
 .pt-panel-bottom .pt-panel-circle {
   position: absolute;
-  background: inherit;
-  border-radius: 50%;
+  top: 0;
+  left: -12.5%;
   width: 125%;
   height: 500%;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
+  background-color: #201d1d;
+  border-radius: 50%;
 }
 
+/* ── Title ── */
 .pt-title {
   position: absolute;
   top: 50%;
@@ -64,16 +68,17 @@
   transform: translate(-50%, -50%);
   opacity: 0;
   overflow: hidden;
-  color: var(--color--page-bg);
+  color: #f4f4f4;
   text-align: center;
   white-space: nowrap;
-  font-size: var(--font--display);
-  font-family: 'Aptos', sans-serif;
-  letter-spacing: -0.03em;
-  line-height: 1;
+  pointer-events: none;
 }
 
 .pt-title-inner {
   display: inline-block;
+  font-size: var(--font--display);
+  font-family: inherit;
+  font-weight: 700;
+  line-height: 1;
   will-change: transform;
 }
