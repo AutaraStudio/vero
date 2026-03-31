@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc:*)",
+      "Bash(find \"C:\\\\Users\\\\mattc\\\\Documents\\\\Autara Studio\\\\vero-assess\\\\src\\\\app\\\\\\(site\\)\\\\assessments\" -type f)"
+    ]
+  }
+}
