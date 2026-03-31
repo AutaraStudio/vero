@@ -1,10 +1,19 @@
 import { StructureBuilder } from 'sanity/structure'
-import { TagIcon, UsersIcon, UserIcon } from '@sanity/icons'
+import { HomeIcon, TagIcon, UsersIcon, UserIcon } from '@sanity/icons'
 
 export const structure = (S: StructureBuilder) =>
   S.list()
     .title('Vero Assess')
     .items([
+      S.listItem()
+        .title('Home Page')
+        .icon(HomeIcon)
+        .child(
+          S.document()
+            .schemaType('homePage')
+            .documentId('homePage')
+        ),
+      S.divider(),
       S.listItem()
         .title('Pricing Tiers')
         .icon(TagIcon)

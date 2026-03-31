@@ -1,3 +1,19 @@
+export const HOME_PAGE_QUERY = `
+  *[_type == "homePage"][0] {
+    heroTitle,
+    heroIntro,
+    heroCTALabel,
+    howItWorksHeading,
+    howItWorksIntro,
+    steps[] {
+      title,
+      body,
+      ctaLabel,
+      ctaHref
+    }
+  }
+`
+
 export const PRICING_TIERS_QUERY = `
   *[_type == "pricingTier"] | order(order asc) {
     _id,

@@ -5,7 +5,13 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import './Hero.css';
 
-export default function Hero() {
+interface HeroProps {
+  title?: string;
+  intro?: string;
+  ctaLabel?: string;
+}
+
+export default function Hero({ title, intro, ctaLabel }: HeroProps) {
   // On-load animations (no scroll trigger)
   const badgeRef = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const titleRef = useTextReveal({ scroll: false, delay: 0.3 });
@@ -25,20 +31,16 @@ export default function Hero() {
             <span ref={badgeRef as React.RefObject<HTMLSpanElement>} data-animate="" className="section-label">Vero Assess</span>
 
             <h1 ref={titleRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="hero__title text-h1 text-balance">
-              Identify authentic talent.
-              <br />
-              Make strategic hiring decisions.
+              {title ?? <>Identify authentic talent.<br />Make strategic hiring decisions.</>}
             </h1>
 
             <p ref={introRef as React.RefObject<HTMLParagraphElement>} data-animate="" className="hero__intro text-body--lg leading--snug text-centre max-ch-55 mx-auto">
-              Evaluate applicants in depth and at speed. Vero Assess reduces
-              workloads, enhances recruitment and delivers the talent your
-              organisation needs.
+              {intro ?? 'Evaluate applicants in depth and at speed. Vero Assess reduces workloads, enhances recruitment and delivers the talent your organisation needs.'}
             </p>
 
             <div ref={ctaRef as React.RefObject<HTMLDivElement>} data-animate="" className="hero__cta">
               <Button variant="cta" size="lg" href="/get-started">
-                Get started
+                {ctaLabel ?? 'Get started'}
               </Button>
             </div>
           </div>

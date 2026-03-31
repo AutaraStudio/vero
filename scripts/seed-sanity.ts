@@ -440,18 +440,55 @@ const roles = rolesData.map((r) => ({
   strengths: r.strengths,
 }))
 
+const homePageDoc = {
+  _id: 'homePage',
+  _type: 'homePage',
+  heroTitle: 'Identify authentic talent. Make strategic hiring decisions.',
+  heroIntro:
+    'Evaluate applicants in depth and at speed. Vero Assess reduces workloads, enhances recruitment and delivers the talent your organisation needs.',
+  heroCTALabel: 'Get started',
+  howItWorksHeading: 'Getting started is straightforward',
+  howItWorksIntro:
+    'Getting started with Vero Assess is straightforward. Here\u2019s what to expect.',
+  steps: [
+    {
+      _key: 'step1',
+      title: 'Choose your roles',
+      body: 'Browse 10 job families and select the roles you\u2019re hiring for. Each comes with a ready-to-go package of science-backed assessments, built around the specific traits, values and strengths that matter for that role. No configuration required.',
+      ctaLabel: 'Browse job families',
+      ctaHref: '/assessments',
+    },
+    {
+      _key: 'step2',
+      title: 'Assess your candidates',
+      body: 'Send assessments directly to candidates and let Vero Assess do the work. Candidates complete their assessments online, at their own pace, through a dedicated portal built for accessibility and ease of use. You can go live within 48 hours of purchase.',
+      ctaLabel: 'See how it works',
+      ctaHref: '/how-it-works',
+    },
+    {
+      _key: 'step3',
+      title: 'Make the right hire',
+      body: 'Review results in your assessor dashboard. Each candidate gets a percentage best-fit score alongside detailed performance data across every dimension. Pair that with the role-specific interview frameworks provided, and you have everything you need to make a confident, objective hiring decision.',
+      ctaLabel: 'Get started',
+      ctaHref: '/get-started',
+    },
+  ],
+}
+
 async function seed() {
   console.log('🌱 Starting Sanity seed...\n')
-  const allDocs = [...pricingTiers, ...jobCategories, ...roles]
+  const allDocs = [homePageDoc, ...pricingTiers, ...jobCategories, ...roles]
   let success = 0
   let failed = 0
   for (const doc of allDocs) {
     try {
       await client.createOrReplace(doc)
-      console.log(`  ✓ ${doc._type}: ${(doc as any).name}`)
+      const label = (doc as Record<string, unknown>).name ?? doc._id
+      console.log(`  ✓ ${doc._type}: ${label}`)
       success++
     } catch (err) {
-      console.error(`  ✗ Failed: ${(doc as any).name}`, err)
+      const label = (doc as Record<string, unknown>).name ?? doc._id
+      console.error(`  ✗ Failed: ${label}`, err)
       failed++
     }
   }
