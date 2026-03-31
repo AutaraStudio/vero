@@ -1,0 +1,159 @@
+/* ============================================================
+   GET STARTED — STEP 4: PAYMENT
+============================================================ */
+
+.payment-page {
+  padding: var(--space--section) 0;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.payment-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* ── Form ── */
+
+.payment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.payment-form__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+/* ── Card input group ── */
+
+.card-input-group {
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  background: var(--color--surface-raised);
+  overflow: hidden;
+  transition: var(--transition--default);
+}
+
+.card-input-group:focus-within {
+  border-color: var(--color--interactive-primary);
+  box-shadow: 0 0 0 3px var(--color--border-brand-subtle);
+}
+
+.card-number-row {
+  display: flex;
+  align-items: center;
+  padding: 0 0.75rem;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.card-type-icon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  width: 2.75rem;
+}
+
+.card-number-input {
+  flex: 1;
+  padding: 0.625rem 0.75rem 0.625rem 0;
+  border: none;
+  background: transparent;
+  color: var(--color--text-primary);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: var(--font--body-sm);
+  min-width: 0;
+}
+
+.card-number-input:focus {
+  outline: none;
+}
+
+.card-number-input::placeholder {
+  color: var(--color--text-tertiary);
+  letter-spacing: 0.12em;
+  font-family: inherit;
+}
+
+.card-secondary-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.card-field {
+  padding: 0.625rem 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--color--text-primary);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  width: 100%;
+}
+
+.card-field:focus {
+  outline: none;
+}
+
+.card-field + .card-field {
+  border-left: 1px solid var(--color--border-default);
+}
+
+.card-field::placeholder {
+  color: var(--color--text-tertiary);
+}
+
+.card-name-row {
+  border-top: 1px solid var(--color--border-default);
+}
+
+/* ── Secure label ── */
+
+.secure-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.secure-label__icon {
+  color: var(--color--text-tertiary);
+  flex-shrink: 0;
+  display: flex;
+}
+
+/* ── Actions ── */
+
+.payment-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+  .payment-layout {
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .payment-page {
+    padding: var(--space--section-mobile) 0;
+  }
+
+  .payment-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
+}

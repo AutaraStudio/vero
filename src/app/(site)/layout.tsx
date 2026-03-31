@@ -1,17 +1,12 @@
-import SmoothScroll from '@/components/SmoothScroll';
-import MegaNav from '@/components/MegaNav';
-import Footer from '@/components/Footer';
-import { SanityLive } from '@/sanity/lib/live';
+import { BasketProvider } from '@/store/basketStore';
+import ConditionalShell from './ConditionalShell';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <MegaNav />
-      <SmoothScroll>
+    <BasketProvider>
+      <ConditionalShell>
         {children}
-        <Footer />
-      </SmoothScroll>
-      <SanityLive />
-    </>
+      </ConditionalShell>
+    </BasketProvider>
   );
 }

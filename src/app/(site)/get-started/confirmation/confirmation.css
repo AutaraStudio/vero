@@ -1,0 +1,121 @@
+/* ============================================================
+   GET STARTED — STEP 5: CONFIRMATION
+============================================================ */
+
+.confirmation-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space--section) var(--space--container-padding);
+  min-height: calc(100vh - 10rem);
+}
+
+.confirmation-inner {
+  max-width: 40rem;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* ── Success icon ── */
+
+.success-icon {
+  width: 5rem;
+  height: 5rem;
+  overflow: visible;
+}
+
+.success-icon__circle,
+.success-icon__check {
+  stroke: var(--color--accent-green-text);
+}
+
+@keyframes circle-draw {
+  from { stroke-dashoffset: 226; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes check-draw {
+  from { stroke-dashoffset: 60; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.success-icon__circle {
+  stroke-dasharray: 226;
+  stroke-dashoffset: 226;
+  animation: circle-draw 0.65s cubic-bezier(0.4, 0, 0.2, 1) 0.2s forwards;
+}
+
+.success-icon__check {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: check-draw 0.45s cubic-bezier(0.4, 0, 0.2, 1) 0.85s forwards;
+}
+
+/* ── Text ── */
+
+.confirmation-heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.confirmation-body {
+  max-width: 36rem;
+  color: var(--color--text-secondary);
+}
+
+/* ── Actions ── */
+
+.confirmation-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* ── Recap card ── */
+
+.confirmation-recap {
+  width: 100%;
+  text-align: left;
+}
+
+.confirmation-recap__inner {
+  padding: 2rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.confirmation-recap__row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.confirmation-recap__divider {
+  height: 1px;
+  background: var(--color--border-default);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .confirmation-page {
+    padding: var(--space--section-mobile) var(--space--container-padding);
+    justify-content: flex-start;
+  }
+
+  .confirmation-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+}

@@ -1,0 +1,157 @@
+/* ============================================================
+   GET STARTED — STEP 2: YOUR DETAILS
+============================================================ */
+
+.details-page {
+  padding: var(--space--section) 0;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.details-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4rem;
+  align-items: start;
+}
+
+/* ── Form ── */
+
+.details-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.details-form__heading {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-field__label {
+  /* inherits .text-label--sm and .color--tertiary from utility classes */
+}
+
+.form-field__input {
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  line-height: 1.5;
+  appearance: none;
+  transition: var(--transition--default);
+}
+
+.form-field__input::placeholder {
+  color: var(--color--text-tertiary);
+}
+
+.form-field__input:focus {
+  outline: none;
+  border-color: var(--color--interactive-primary);
+  box-shadow: 0 0 0 3px var(--color--border-brand-subtle);
+}
+
+.form-field__input.has-error {
+  border-color: var(--color--accent-orange-border);
+}
+
+.form-field__input.has-error:focus {
+  box-shadow: 0 0 0 3px var(--color--accent-orange-bg);
+}
+
+.form-field__error {
+  color: var(--color--accent-orange-text);
+  font-size: var(--font--label-sm);
+  line-height: 1.4;
+  min-height: 1.2em;
+}
+
+.details-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 0.5rem;
+  flex-wrap: wrap;
+}
+
+/* ── Order summary sidebar ── */
+
+.order-summary {
+  position: sticky;
+  top: 2rem;
+}
+
+.order-summary__card {
+  padding: 1.5rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+}
+
+.order-summary__tier {
+  border-top: 1px solid var(--color--border-default);
+  padding-top: 1rem;
+}
+
+.order-summary__tier .section-label {
+  margin-bottom: 0;
+}
+
+.order-summary__contact {
+  border-top: 1px solid var(--color--border-default);
+  padding-top: 1rem;
+}
+
+.order-summary__bordered {
+  background: var(--color--surface-sunken);
+}
+
+.order-summary__bordered-inner {
+  padding: 2rem;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+  .details-layout {
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .details-page {
+    padding: var(--space--section-mobile) 0;
+  }
+
+  .details-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .order-summary {
+    position: static;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+}
