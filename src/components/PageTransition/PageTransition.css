@@ -1,0 +1,79 @@
+.pt-wrap {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.pt-panel {
+  background: var(--color--text-primary);
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 100%;
+  left: 0;
+}
+
+.pt-panel-top {
+  position: absolute;
+  bottom: calc(100% - 1px);
+  left: 0;
+  width: 100%;
+  height: 0;
+  overflow: hidden;
+  transform-origin: bottom;
+}
+
+.pt-panel-top .pt-panel-circle {
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+  width: 125%;
+  height: 500%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.pt-panel-bottom {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  width: 100%;
+  height: 20vw;
+  overflow: hidden;
+  transform-origin: top;
+}
+
+.pt-panel-bottom .pt-panel-circle {
+  position: absolute;
+  background: inherit;
+  border-radius: 50%;
+  width: 125%;
+  height: 500%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.pt-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  overflow: hidden;
+  color: var(--color--page-bg);
+  text-align: center;
+  white-space: nowrap;
+  font-size: var(--font--display);
+  font-family: 'Aptos', sans-serif;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.pt-title-inner {
+  display: inline-block;
+  will-change: transform;
+}
