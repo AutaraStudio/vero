@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { sanityFetch } from '@/sanity/lib/live';
+import { client } from '@/sanity/lib/client';
 import {
   JOB_CATEGORY_BY_SLUG_QUERY,
   JOB_CATEGORY_SLUGS_QUERY,
@@ -15,7 +16,7 @@ import './category.css';
 type Params = Promise<{ slug: string }>;
 
 export async function generateStaticParams() {
-  const { data: slugs } = await sanityFetch({ query: JOB_CATEGORY_SLUGS_QUERY });
+  const slugs = await client.fetch(JOB_CATEGORY_SLUGS_QUERY);
   return (slugs ?? []).map(({ slug }: { slug: string }) => ({ slug }));
 }
 

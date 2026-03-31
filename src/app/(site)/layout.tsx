@@ -1,5 +1,6 @@
 import { BasketProvider } from '@/store/basketStore';
 import ConditionalShell from './ConditionalShell';
+import { SanityLive } from '@/sanity/lib/live';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -7,6 +8,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
       <ConditionalShell>
         {children}
       </ConditionalShell>
+      <SanityLive />
     </BasketProvider>
   );
 }
