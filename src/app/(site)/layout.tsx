@@ -1,6 +1,7 @@
 import SmoothScroll from '@/components/SmoothScroll';
 import MegaNav from '@/components/MegaNav';
 import Footer from '@/components/Footer';
+import { SanityLive } from '@/sanity/lib/live';
 
 export default function SiteLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -10,6 +11,7 @@ export default function SiteLayout({ children }: { children: React.ReactNode }) 
         {children}
         <Footer />
       </SmoothScroll>
+      <SanityLive />
     </>
   );
 }
