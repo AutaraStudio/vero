@@ -26,6 +26,7 @@ export default function PageTransition() {
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     CustomEase.create('osmo', '0.625, 0.05, 0, 1');
+    if (panelRef.current) gsap.set(panelRef.current, { yPercent: 0, autoAlpha: 0 });
     if (panelTopRef.current) gsap.set(panelTopRef.current, { scaleY: 0 });
     if (panelBottomRef.current) gsap.set(panelBottomRef.current, { scaleY: 1, height: '20vw' });
   }, []);
@@ -124,10 +125,32 @@ export default function PageTransition() {
     <div ref={wrapRef} className="pt-wrap">
       <div ref={panelRef} className="pt-panel">
         <div ref={panelTopRef} className="pt-panel-top">
-          <div className="pt-panel-circle" />
+          <div
+            className="pt-panel-circle"
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: '-12.5%',
+              width: '125%',
+              height: '500%',
+              backgroundColor: '#201d1d',
+              borderRadius: '50%',
+            }}
+          />
         </div>
         <div ref={panelBottomRef} className="pt-panel-bottom">
-          <div className="pt-panel-circle" />
+          <div
+            className="pt-panel-circle"
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: '-12.5%',
+              width: '125%',
+              height: '500%',
+              backgroundColor: '#201d1d',
+              borderRadius: '50%',
+            }}
+          />
         </div>
       </div>
       <div ref={titleWrapRef} className="pt-title">
