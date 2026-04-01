@@ -41,6 +41,7 @@ export default function HeroCentred({
   const [modalOpen, setModalOpen] = useState(false);
   const [mounted, setMounted]     = useState(false);
 
+  const stripesRef  = useRef<HTMLDivElement>(null);
   const overlayRef  = useRef<HTMLDivElement>(null);
   const modalRef    = useRef<HTMLDivElement>(null);
   const videoRef    = useRef<HTMLVideoElement>(null);
@@ -48,6 +49,40 @@ export default function HeroCentred({
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  /* ── Stripe entrance animation ──────────────────────────── */
+  useEffect(() => {
+    const grid = stripesRef.current;
+    if (!grid) return;
+
+    const right = Array.from(grid.querySelectorAll<HTMLElement>(
+      '.hero-centred__stripe--r1-right, .hero-centred__stripe--r2-right, .hero-centred__stripe--r3-right'
+    ));
+    const left = Array.from(grid.querySelectorAll<HTMLElement>(
+      '.hero-centred__stripe--r2-left, .hero-centred__stripe--r3-left'
+    ));
+
+    gsap.set(right, { x: 200, opacity: 0 });
+    gsap.set(left,  { x: -200, opacity: 0 });
+
+    const ra = gsap.to(right, {
+      x: 0, opacity: 1,
+      duration: 0.9,
+      ease: 'power3.out',
+      stagger: 0.1,
+      delay: 0.15,
+    });
+
+    const la = gsap.to(left, {
+      x: 0, opacity: 1,
+      duration: 0.9,
+      ease: 'power3.out',
+      stagger: 0.12,
+      delay: 0.22,
+    });
+
+    return () => { ra.kill(); la.kill(); };
   }, []);
 
   /* ── Play button spring hover ───────────────────────────── */
@@ -171,7 +206,7 @@ export default function HeroCentred({
       {/* ── Decorative stripes ────────────────────────────── */}
       <div className="hero-centred__stripes-wrap" aria-hidden="true">
         <div className="hero-centred__stripes">
-          <div className="hero-centred__stripes-grid">
+          <div ref={stripesRef} className="hero-centred__stripes-grid">
             <div className="hero-centred__stripe hero-centred__stripe--r1-right" />
             <div className="hero-centred__stripe hero-centred__stripe--r2-left"  />
             <div className="hero-centred__stripe hero-centred__stripe--r2-right" />

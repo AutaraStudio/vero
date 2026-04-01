@@ -2,6 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY } from '@/sanity/lib/queries';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
 import FeaturedSlider from '@/components/FeaturedSlider/FeaturedSlider';
+import StepsSection from '@/components/StepsSection/StepsSection';
 import CTAStatement from '@/components/CTAStatement/CTAStatement';
 
 export default async function Home() {
@@ -56,9 +57,15 @@ export default async function Home() {
         />
       )}
 
+      <StepsSection
+        theme=""
+        heading={data?.howItWorksHeading}
+        intro={data?.howItWorksIntro}
+        steps={data?.steps}
+      />
+
       <CTAStatement
         theme="brand-purple"
-        
       />
     </main>
   );
