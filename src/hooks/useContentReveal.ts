@@ -64,7 +64,7 @@ export function useContentReveal() {
                     autoAlpha: 1,
                     duration: DURATION,
                     ease: EASE,
-                    onComplete: () => gsap.set(groupEl, { clearProps: 'all' }),
+                    onComplete: () => void gsap.set(groupEl, { clearProps: 'all' }),
                   }),
               });
               return;
@@ -138,13 +138,13 @@ export function useContentReveal() {
                   if (slot.type === 'item') {
                     tl.to(slot.el, {
                       y: 0, autoAlpha: 1, duration: DURATION, ease: EASE,
-                      onComplete: () => gsap.set(slot.el, { clearProps: 'all' }),
+                      onComplete: () => void gsap.set(slot.el, { clearProps: 'all' }),
                     }, slotTime);
                   } else {
                     if (slot.includeParent) {
                       tl.to(slot.parentEl, {
                         y: 0, autoAlpha: 1, duration: DURATION, ease: EASE,
-                        onComplete: () => gsap.set(slot.parentEl, { clearProps: 'all' }),
+                        onComplete: () => void gsap.set(slot.parentEl, { clearProps: 'all' }),
                       }, slotTime);
                     }
 
@@ -154,7 +154,7 @@ export function useContentReveal() {
                     slot.nestedChildren.forEach((nestedChild, nestedIndex) => {
                       tl.to(nestedChild, {
                         y: 0, autoAlpha: 1, duration: DURATION, ease: EASE,
-                        onComplete: () => gsap.set(nestedChild, { clearProps: 'all' }),
+                        onComplete: () => void gsap.set(nestedChild, { clearProps: 'all' }),
                       }, slotTime + nestedIndex * nestedStaggerSec);
                     });
                   }
