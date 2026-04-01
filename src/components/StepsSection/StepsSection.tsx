@@ -1,9 +1,10 @@
 'use client';
 
 import Button from '@/components/ui/Button';
+import StickyTabs from '@/components/StickyTabs';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
-import './HowItWorks.css';
+import './StepsSection.css';
 
 const THEMES = ['brand-purple', 'brand-blue', 'brand-green'] as const;
 
@@ -35,24 +36,45 @@ const DEFAULT_STEPS: Step[] = [
   },
 ];
 
-interface HowItWorksProps {
+interface StepsSectionProps {
   heading?: string;
   intro?: string;
   steps?: Step[];
 }
 
-export default function HowItWorks({ heading, intro, steps }: HowItWorksProps) {
+export default function StepsSection({ heading, intro, steps }: StepsSectionProps) {
   const resolvedSteps = steps ?? DEFAULT_STEPS;
-  // Scroll-triggered animations for header
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
   const headingRef = useTextReveal({ delay: 0.1 });
   const introRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 16 });
 
+  const tabs = resolvedSteps.map((step, index) => ({
+    theme: THEMES[index % THEMES.length],
+    label: `Step ${index + 1}: ${step.title}`,
+    children: (
+      <>
+        <div className="sticky-tab__text stack--lg">
+          <div className="stack--md">
+            <span className="text-label--sm color--brand">Step {index + 1} of {resolvedSteps.length}</span>
+            <h4 className="text-h4 color--primary">{step.title}</h4>
+            <p className="text-body--md leading--relaxed color--secondary">{step.body}</p>
+          </div>
+          <Button variant="primary" size="md" href={step.ctaHref}>
+            {step.ctaLabel}
+          </Button>
+        </div>
+
+        <div className="sticky-tab__image">
+          <div className="sticky-tab__image-placeholder" />
+        </div>
+      </>
+    ),
+  }));
+
   return (
-    <section className="how-it-works section">
-      {/* Section header */}
+    <section className="steps-section section">
       <div className="container">
-        <div className="how-it-works__header bordered-section stack--md pad--inset-lg">
+        <div className="steps-section__header bordered-section stack--md pad--inset-lg">
           <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">How it works</span>
           <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} className="section-heading">{heading ?? 'Getting started is straightforward'}</h2>
           <p ref={introRef as React.RefObject<HTMLParagraphElement>} className="section-intro text-body--lg leading--snug">
@@ -61,51 +83,7 @@ export default function HowItWorks({ heading, intro, steps }: HowItWorksProps) {
         </div>
       </div>
 
-      {/* Sticky tab group */}
-      <div className="sticky-tab-group">
-        <div className="sticky-tab-group__nav-bg" />
-
-        {resolvedSteps.map((step, index) => (
-          <section key={index} className="sticky-tab" data-theme={THEMES[index % THEMES.length]}>
-            {/* Sticky heading bar */}
-            <div className="sticky-tab__sticky">
-              <div className="sticky-tab__inner border--top border--bottom">
-                <div className="container">
-                  <div className="sticky-tab__content flex--between">
-                    <h3 className="sticky-tab__title text-h3 color--primary">
-                      Step {index + 1}: {step.title}
-                    </h3>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Step body */}
-            <div className="container">
-              <div className="sticky-tab__body bordered-section">
-                <div className="sticky-tab__body-inner">
-                  {/* Left: text */}
-                  <div className="sticky-tab__text stack--lg">
-                    <div className="stack--md">
-                      <span className="text-label--sm color--brand">Step {index + 1} of {resolvedSteps.length}</span>
-                      <h4 className="text-h4 color--primary">{step.title}</h4>
-                      <p className="text-body--md leading--relaxed color--secondary">{step.body}</p>
-                    </div>
-                    <Button variant="primary" size="md" href={step.ctaHref}>
-                      {step.ctaLabel}
-                    </Button>
-                  </div>
-
-                  {/* Right: placeholder image */}
-                  <div className="sticky-tab__image">
-                    <div className="sticky-tab__image-placeholder" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-        ))}
-      </div>
+      <StickyTabs tabs={tabs} />
     </section>
   );
 }

@@ -535,13 +535,6 @@ export function initMegaNav(root: HTMLElement): () => void {
 
   window.addEventListener('resize', handleResize);
 
-  /* ── Nav close event (triggered by page transitions) ── */
-  function handleNavClose() {
-    if (state.isOpen) closeDropdown();
-    if (state.mobileMenuOpen) closeMobileMenu();
-  }
-  document.addEventListener('nav:close', handleNavClose);
-
   /* ── Init ── */
   state.isMobile ? setupMobile() : resetDesktop();
 
@@ -562,7 +555,6 @@ export function initMegaNav(root: HTMLElement): () => void {
     burger.removeEventListener('click', burgerHandler);
     backBtn.removeEventListener('click', backHandler);
     window.removeEventListener('resize', handleResize);
-    document.removeEventListener('nav:close', handleNavClose);
     clearTimers();
     killDropdown();
     killMobile();

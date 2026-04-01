@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { initGSAPSlider } from './sliderAnimations';
-import './USPSlider.css';
+import './FeatureSlider.css';
 
 const usps = [
   {
@@ -37,10 +37,9 @@ const usps = [
   },
 ];
 
-export default function USPSlider() {
+export default function FeatureSlider() {
   const rootRef = useRef<HTMLDivElement>(null);
 
-  // Scroll-triggered animations for header
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
   const headingRef = useTextReveal({ delay: 0.1 });
   const introRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 16 });
@@ -53,10 +52,9 @@ export default function USPSlider() {
   }, []);
 
   return (
-    <section className="usp-slider-section">
-      {/* Section header */}
+    <section className="feature-slider">
       <div className="container">
-        <div className="usp-slider__header stack--md">
+        <div className="feature-slider__header stack--md">
           <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">Why Vero Assess</span>
           <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} className="section-heading">Better experiences. Better hires.</h2>
           <p ref={introRef as React.RefObject<HTMLParagraphElement>} className="section-intro text-body--lg leading--snug">
@@ -66,7 +64,6 @@ export default function USPSlider() {
         </div>
       </div>
 
-      {/* Slider */}
       <div
         ref={rootRef}
         aria-label="Features"
@@ -79,12 +76,9 @@ export default function USPSlider() {
           <div data-gsap-slider-list="" className="gsap-slider__list">
             {usps.map((usp, i) => (
               <div key={i} data-gsap-slider-item="" className="gsap-slider__item">
-                <div className="usp-card">
-                  {/* Placeholder image */}
-                  <div className="usp-card__image" />
-
-                  {/* Text content */}
-                  <div className="usp-card__content stack--sm">
+                <div className="slider-card">
+                  <div className="slider-card__image" />
+                  <div className="slider-card__content stack--sm">
                     <h3 className="text-h5 color--primary">{usp.title}</h3>
                     <p className="text-body--sm color--secondary leading--relaxed">{usp.body}</p>
                   </div>
@@ -94,7 +88,6 @@ export default function USPSlider() {
           </div>
         </div>
 
-        {/* Controls */}
         <div data-gsap-slider-controls="" className="gsap-slider__controls flex gap--sm">
           <button data-gsap-slider-control="prev" className="gsap-slider__control">Prev</button>
           <button data-gsap-slider-control="next" className="gsap-slider__control">Next</button>

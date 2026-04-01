@@ -1,17 +1,17 @@
 import Button from '@/components/ui/Button';
 
-interface BespokeCTAProps {
+interface ContactCTAProps {
   heading?: string;
   body?: string;
   ctaLabel?: string;
 }
 
-export default function BespokeCTA({ heading, body, ctaLabel }: BespokeCTAProps) {
+export default function ContactCTA({ heading, body, ctaLabel }: ContactCTAProps) {
   return (
-    <section className="bespoke-section">
+    <section className="contact-cta-section">
       <div className="container">
-        <div className="category__bespoke bordered-section">
-          <div className="category__bespoke-inner">
+        <div className="contact-cta-card bordered-section">
+          <div className="contact-cta-card__inner">
             <div className="stack--md">
               <h2 className="text-h4 color--primary">
                 {heading ?? 'Need a more customised solution?'}

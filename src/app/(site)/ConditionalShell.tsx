@@ -2,9 +2,7 @@
 
 import { usePathname } from 'next/navigation';
 import MegaNav from '@/components/MegaNav';
-import Footer from '@/components/Footer';
 import SmoothScroll from '@/components/SmoothScroll';
-import PageTransition from '@/components/PageTransition';
 export default function ConditionalShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const isCheckout = pathname.startsWith('/get-started');
@@ -15,11 +13,9 @@ export default function ConditionalShell({ children }: { children: React.ReactNo
 
   return (
     <>
-      <PageTransition />
       <MegaNav />
       <SmoothScroll>
         {children}
-        <Footer />
       </SmoothScroll>
     </>
   );

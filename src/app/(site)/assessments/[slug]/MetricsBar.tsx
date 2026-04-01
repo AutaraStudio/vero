@@ -21,7 +21,7 @@ function StatItem({ heading, body }: { heading?: string; body?: string }) {
   if (!heading) return null;
 
   return (
-    <div className="stats-bar__stat">
+    <div className="metrics-bar__stat">
       {parsed ? (
         <span
           ref={countRef as React.RefObject<HTMLSpanElement>}
@@ -39,7 +39,7 @@ function StatItem({ heading, body }: { heading?: string; body?: string }) {
   );
 }
 
-interface StatsBarProps {
+interface MetricsBarProps {
   stat1Heading?: string;
   stat1Body?: string;
   stat2Heading?: string;
@@ -48,18 +48,18 @@ interface StatsBarProps {
   stat3Body?: string;
 }
 
-export default function StatsBar({
+export default function MetricsBar({
   stat1Heading,
   stat1Body,
   stat2Heading,
   stat2Body,
   stat3Heading,
   stat3Body,
-}: StatsBarProps) {
+}: MetricsBarProps) {
   return (
-    <section data-theme="brand-purple-deep" className="stats-bar">
+    <section data-theme="brand-purple-deep" className="metrics-bar">
       <div className="container">
-        <div className="stats-bar__inner">
+        <div className="metrics-bar__inner">
           <StatItem heading={stat1Heading} body={stat1Body} />
           <StatItem heading={stat2Heading} body={stat2Body} />
           <StatItem heading={stat3Heading} body={stat3Body} />

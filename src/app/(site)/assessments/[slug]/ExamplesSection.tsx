@@ -3,7 +3,7 @@
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useTextReveal } from '@/hooks/useTextReveal';
 
-interface InActionSectionProps {
+interface ExamplesSectionProps {
   heading?: string;
   subheading?: string;
   assessmentsBlockHeading?: string;
@@ -14,7 +14,7 @@ interface InActionSectionProps {
   interviewBlockBody?: string;
 }
 
-export default function InActionSection({
+export default function ExamplesSection({
   heading,
   subheading,
   assessmentsBlockHeading,
@@ -23,7 +23,7 @@ export default function InActionSection({
   portalBlockBody,
   interviewBlockHeading,
   interviewBlockBody,
-}: InActionSectionProps) {
+}: ExamplesSectionProps) {
   const headingRef = useTextReveal({ delay: 0.05 });
   const subheadingRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 16 });
   const cardsRef = useFadeUp({ selector: '.card', stagger: 0.1, delay: 0.1, y: 28 });
@@ -35,11 +35,11 @@ export default function InActionSection({
   ];
 
   return (
-    <section className="in-action-section">
+    <section className="examples-section">
       <div className="container">
 
         {(heading || subheading) && (
-          <div className="in-action-section__header">
+          <div className="examples-section__header">
             {heading && (
               <h2
                 ref={headingRef as React.RefObject<HTMLHeadingElement>}
@@ -67,7 +67,7 @@ export default function InActionSection({
         >
           {blocks.map(({ badge, blockHeading, blockBody }) => (
             <div key={badge} className="card" data-animate="">
-              <span className="section-label in-action-card__badge">{badge}</span>
+              <span className="section-label example-card__badge">{badge}</span>
               {blockHeading && (
                 <h5 className="text-h5">{blockHeading}</h5>
               )}

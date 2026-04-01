@@ -1,18 +1,9 @@
 /* ============================================================
-   HOW IT WORKS — Sticky tab section
+   STICKY TABS — reusable sticky scroll tab group
    Structural / layout only. Typography via utility classes.
 ============================================================ */
 
-/* ── Header ── */
-
-.how-it-works__header {
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* ── Sticky tab group ── */
+/* ── Tab group wrapper ── */
 
 .sticky-tab-group {
   overflow: clip;
@@ -61,7 +52,7 @@
   display: flex;
 }
 
-/* ── Tab body (text + image layout) ── */
+/* ── Tab body ── */
 
 .sticky-tab__body {
   padding: 3rem 0;
@@ -81,7 +72,8 @@
   padding: 3rem;
 }
 
-/* Text column */
+/* ── Text column (opt-in via .sticky-tab__text on child) ── */
+
 .sticky-tab__text {
   flex: 1;
   display: flex;
@@ -90,7 +82,8 @@
   align-items: flex-start;
 }
 
-/* Image column */
+/* ── Image column (opt-in via .sticky-tab__image on child) ── */
+
 .sticky-tab__image {
   flex: 1;
   display: flex;

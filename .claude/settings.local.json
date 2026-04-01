@@ -3,7 +3,13 @@
     "allow": [
       "Bash(npx tsc:*)",
       "Bash(find \"C:\\\\Users\\\\mattc\\\\Documents\\\\Autara Studio\\\\vero-assess\\\\src\\\\app\\\\\\(site\\)\\\\assessments\" -type f)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(find /c/Users/mattc/Documents/Autara Studio/vero-assess/src/app -path */assessments* -type f \\\\\\(-name *.tsx -o -name *.css \\\\\\))",
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/CategoryHero.tsx\")",
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/DimensionsSection.tsx\")",
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/InActionSection.tsx\")",
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/StatsBar.tsx\")",
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/RoleRoster.tsx\")"
     ]
   }
 }

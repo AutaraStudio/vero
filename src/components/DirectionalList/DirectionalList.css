@@ -1,0 +1,143 @@
+/* ============================================================
+   DIRECTIONAL LIST — OSMO-04
+   Hoverable list rows with directional tile wipe effect.
+============================================================ */
+
+.directional-list {
+  width: 100%;
+}
+
+/* ── Header ── */
+
+.directional-list__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 0.625rem;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.directional-list__eyebrow {
+  display: block;
+  font-size: var(--font--label-sm);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--directional-accent);
+}
+
+/* ── Body ── */
+
+.directional-list__body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Item ── */
+
+.directional-list__item {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-block: 1rem;
+  overflow: hidden;
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--color--text-primary);
+  transition: color 300ms cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.directional-list__item:hover {
+  color: var(--color--text-inverse);
+}
+
+/* ── Tile (directional wipe background) ── */
+
+.directional-list__tile {
+  position: absolute;
+  inset: 0;
+  background-color: var(--directional-accent);
+  transform: translateY(-100%);
+  transition: transform 450ms cubic-bezier(0.25, 0.1, 0, 1);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Row rules ── */
+
+.directional-list__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: var(--color--border-default);
+  pointer-events: none;
+}
+
+.directional-list__rule--top {
+  top: 0;
+}
+
+.directional-list__rule--bottom {
+  position: static;
+  display: block;
+  height: 1px;
+  background-color: var(--color--border-default);
+  margin-top: 0;
+}
+
+/* ── Columns ── */
+
+.directional-list__col {
+  position: relative;
+  z-index: 1;
+}
+
+.directional-list__col--flex {
+  flex: 1;
+}
+
+.directional-list__col--primary {
+  flex: none;
+  min-width: 30%;
+}
+
+.directional-list__col--narrow {
+  flex: none;
+  min-width: 4rem;
+  text-align: right;
+  margin-left: auto;
+}
+
+.directional-list__col--auto {
+  flex: none;
+}
+
+/* ── Cell ── */
+
+.directional-list__cell {
+  display: block;
+  font-size: var(--font--body-sm);
+  color: inherit;
+  line-height: 1.5;
+}
+
+/* ── Reduced motion — replace tile wipe with tint ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .directional-list__tile {
+    transition: none;
+    transform: none;
+    opacity: 0;
+    background-color: color-mix(in srgb, var(--directional-accent) 12%, transparent);
+  }
+
+  .directional-list__item:hover .directional-list__tile {
+    opacity: 1;
+  }
+
+  .directional-list__item:hover {
+    color: var(--color--text-primary);
+  }
+}

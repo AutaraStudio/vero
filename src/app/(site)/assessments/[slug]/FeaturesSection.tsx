@@ -4,23 +4,23 @@ import Button from '@/components/ui/Button';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useTextReveal } from '@/hooks/useTextReveal';
 
-interface DimensionsSectionProps {
+interface FeaturesSectionProps {
   heading?: string;
   body?: string;
 }
 
-export default function DimensionsSection({ heading, body }: DimensionsSectionProps) {
+export default function FeaturesSection({ heading, body }: FeaturesSectionProps) {
   const headingRef = useTextReveal({ delay: 0.05 });
   const bodyRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 20 });
   const ctaRef = useFadeUp({ delay: 0.35, duration: 0.5, y: 16 });
   const visualRef = useFadeUp({ delay: 0.1, duration: 0.8, y: 32 });
 
   return (
-    <section data-theme="brand-purple" className="dimensions-section">
+    <section data-theme="brand-purple" className="features-section">
       <div className="container">
         <div className="grid--asymmetric">
 
-          <div className="dimensions-section__text">
+          <div className="features-section__text">
             {heading && (
               <h2
                 ref={headingRef as React.RefObject<HTMLHeadingElement>}
@@ -51,7 +51,7 @@ export default function DimensionsSection({ heading, body }: DimensionsSectionPr
 
           <div
             ref={visualRef as React.RefObject<HTMLDivElement>}
-            className="dimensions-section__placeholder"
+            className="features-section__placeholder"
           />
 
         </div>

@@ -4,23 +4,23 @@ import Button from '@/components/ui/Button';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 
-interface CategoryHeroProps {
+interface DetailHeroProps {
   heroHeadline: string;
   heroIntroCopy?: string;
   keyDimensionsAssessed?: string;
   slug: string;
 }
 
-export default function CategoryHero({
+export default function DetailHero({
   heroHeadline,
   heroIntroCopy,
   keyDimensionsAssessed,
   slug,
-}: CategoryHeroProps) {
+}: DetailHeroProps) {
   const badgeRef = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const titleRef = useTextReveal({ scroll: false, delay: 0.3 });
   const introRef = useFadeUp({ scroll: false, delay: 0.6, duration: 0.6, y: 16 });
-  const pillsRef = useFadeUp({ scroll: false, delay: 0.75, duration: 0.5, y: 16 });
+  const tagsRef = useFadeUp({ scroll: false, delay: 0.75, duration: 0.5, y: 16 });
   const ctaRef = useFadeUp({ scroll: false, delay: 0.9, duration: 0.5, y: 16 });
   const visualRef = useFadeUp({ delay: 0, duration: 0.8, y: 32 });
 
@@ -29,12 +29,12 @@ export default function CategoryHero({
     : [];
 
   return (
-    <section className="category-hero section--flush">
+    <section className="detail-hero section--flush">
       <div className="container">
-        <div className="bordered-section category-hero__header">
-          <div className="category-hero__header-inner">
+        <div className="bordered-section detail-hero__header">
+          <div className="detail-hero__header-inner">
 
-            <div className="category-hero__text">
+            <div className="detail-hero__text">
               <span
                 ref={badgeRef as React.RefObject<HTMLSpanElement>}
                 data-animate=""
@@ -55,7 +55,7 @@ export default function CategoryHero({
                 <p
                   ref={introRef as React.RefObject<HTMLParagraphElement>}
                   data-animate=""
-                  className="text-body--lg leading--snug category-hero__intro"
+                  className="text-body--lg leading--snug detail-hero__intro"
                 >
                   {heroIntroCopy}
                 </p>
@@ -63,9 +63,9 @@ export default function CategoryHero({
 
               {dimensions.length > 0 && (
                 <div
-                  ref={pillsRef as React.RefObject<HTMLDivElement>}
+                  ref={tagsRef as React.RefObject<HTMLDivElement>}
                   data-animate=""
-                  className="category-hero__pills"
+                  className="detail-hero__tags"
                 >
                   {dimensions.map((dim) => (
                     <span key={dim} className="section-label">
@@ -78,7 +78,7 @@ export default function CategoryHero({
               <div
                 ref={ctaRef as React.RefObject<HTMLDivElement>}
                 data-animate=""
-                className="category-hero__cta"
+                className="detail-hero__cta"
               >
                 <Button variant="primary" size="lg" href={`/get-started?category=${slug}`}>
                   Get started
@@ -88,9 +88,9 @@ export default function CategoryHero({
 
             <div
               ref={visualRef as React.RefObject<HTMLDivElement>}
-              className="category-hero__visual"
+              className="detail-hero__visual"
             >
-              <div className="category-hero__placeholder" />
+              <div className="detail-hero__placeholder" />
             </div>
 
           </div>

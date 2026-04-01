@@ -226,3 +226,9 @@
   .hero__tag--pos-3 { top: 45%; left: 0; }
   .hero__tag--pos-5 { bottom: 15%; right: 2%; }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .hero__tag {
+    animation: none;
+  }
+}

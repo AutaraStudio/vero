@@ -345,6 +345,12 @@
   --transition--slow:    all 0.4s ease;
   --transition--spring:  all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
+  /* Easing curves */
+  --ease-entry:  cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit:   cubic-bezier(0.4, 0, 1, 1);
+  --ease-micro:  cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-state:  cubic-bezier(0.87, 0, 0.13, 1);
+
   /* Spacing */
   --space--section:           6rem;
   --space--section-mobile:    4rem;
@@ -569,6 +575,97 @@
   --color--interactive-secondary-hover-bg: var(--swatch--yellow-o10);
   --shadow--card:       0 2px 24px var(--swatch--yellow-o20);
   --shadow--card-hover: 0 8px 40px var(--swatch--yellow-o30);
+}
+
+/* ============================================================
+   THEME: DARK ACCENT — PURPLE
+============================================================ */
+
+[data-theme="dark-purple"] {
+  --color--page-bg:        color-mix(in srgb, var(--swatch--purple-500) 10%, var(--swatch--neutral-900));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--purple-500) 6%,  var(--swatch--neutral-900));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--purple-500) 18%, var(--swatch--neutral-900));
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--purple-500) 6%,  var(--swatch--neutral-900));
+  --color--border-default: color-mix(in srgb, var(--swatch--purple-500) 22%, transparent);
+  --color--border-subtle:  color-mix(in srgb, var(--swatch--purple-500) 12%, transparent);
+  --color--border-strong:  color-mix(in srgb, var(--swatch--purple-500) 35%, transparent);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-brand:     var(--swatch--purple-300);
+}
+
+/* ============================================================
+   THEME: DARK ACCENT — BLUE
+============================================================ */
+
+[data-theme="dark-blue"] {
+  --color--page-bg:        color-mix(in srgb, var(--swatch--blue-500) 10%, var(--swatch--neutral-900));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--blue-500) 6%,  var(--swatch--neutral-900));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--blue-500) 16%, var(--swatch--neutral-900));
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--blue-500) 6%,  var(--swatch--neutral-900));
+  --color--border-default: color-mix(in srgb, var(--swatch--blue-500) 22%, transparent);
+  --color--border-subtle:  color-mix(in srgb, var(--swatch--blue-500) 12%, transparent);
+  --color--border-strong:  color-mix(in srgb, var(--swatch--blue-500) 35%, transparent);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-brand:     var(--swatch--blue-300);
+}
+
+/* ============================================================
+   THEME: DARK ACCENT — GREEN
+============================================================ */
+
+[data-theme="dark-green"] {
+  --color--page-bg:        color-mix(in srgb, var(--swatch--green-500) 10%, var(--swatch--neutral-900));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--green-500) 6%,  var(--swatch--neutral-900));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--green-500) 16%, var(--swatch--neutral-900));
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--green-500) 6%,  var(--swatch--neutral-900));
+  --color--border-default: color-mix(in srgb, var(--swatch--green-500) 22%, transparent);
+  --color--border-subtle:  color-mix(in srgb, var(--swatch--green-500) 12%, transparent);
+  --color--border-strong:  color-mix(in srgb, var(--swatch--green-500) 35%, transparent);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-brand:     var(--swatch--green-300);
+}
+
+/* ============================================================
+   THEME: DARK ACCENT — ORANGE
+============================================================ */
+
+[data-theme="dark-orange"] {
+  --color--page-bg:        color-mix(in srgb, var(--swatch--orange-500) 9%, var(--swatch--neutral-900));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--orange-500) 5%, var(--swatch--neutral-900));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--orange-500) 15%, var(--swatch--neutral-900));
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--orange-500) 5%, var(--swatch--neutral-900));
+  --color--border-default: color-mix(in srgb, var(--swatch--orange-500) 22%, transparent);
+  --color--border-subtle:  color-mix(in srgb, var(--swatch--orange-500) 12%, transparent);
+  --color--border-strong:  color-mix(in srgb, var(--swatch--orange-500) 35%, transparent);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-brand:     var(--swatch--orange-300);
+}
+
+/* ============================================================
+   THEME: DARK ACCENT — YELLOW
+   Max 1 section per page — most visually aggressive accent.
+============================================================ */
+
+[data-theme="dark-yellow"] {
+  --color--page-bg:        color-mix(in srgb, var(--swatch--yellow-500) 8%, var(--swatch--neutral-900));
+  --color--page-bg-subtle: color-mix(in srgb, var(--swatch--yellow-500) 4%, var(--swatch--neutral-900));
+  --color--surface-raised: color-mix(in srgb, var(--swatch--yellow-500) 14%, var(--swatch--neutral-900));
+  --color--surface-sunken: color-mix(in srgb, var(--swatch--yellow-500) 4%, var(--swatch--neutral-900));
+  --color--border-default: color-mix(in srgb, var(--swatch--yellow-500) 20%, transparent);
+  --color--border-subtle:  color-mix(in srgb, var(--swatch--yellow-500) 10%, transparent);
+  --color--border-strong:  color-mix(in srgb, var(--swatch--yellow-500) 30%, transparent);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-brand:     var(--swatch--yellow-400);
 }
 
 /* ============================================================

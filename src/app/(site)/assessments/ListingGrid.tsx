@@ -4,22 +4,22 @@ import Link from 'next/link';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { ACCENT_COLORS, accentStyles } from '@/lib/theme';
 
-interface JobCategory {
+interface Category {
   _id: string;
   name: string;
   slug: string;
   keyDimensionsAssessed?: string;
 }
 
-interface AssessmentsGridProps {
-  categories: JobCategory[];
+interface ListingGridProps {
+  categories: Category[];
 }
 
-export default function AssessmentsGrid({ categories }: AssessmentsGridProps) {
-  const gridRef = useFadeUp({ selector: '.job-family-card', stagger: 0.08, delay: 0.1, y: 24 });
+export default function ListingGrid({ categories }: ListingGridProps) {
+  const gridRef = useFadeUp({ selector: '.listing-card', stagger: 0.08, delay: 0.1, y: 24 });
 
   return (
-    <section className="assessments-grid-section">
+    <section className="listing-grid">
       <div className="container">
         <div
           ref={gridRef as React.RefObject<HTMLDivElement>}
@@ -32,20 +32,20 @@ export default function AssessmentsGrid({ categories }: AssessmentsGridProps) {
               <Link
                 key={category._id}
                 href={`/assessments/${category.slug}`}
-                className="job-family-card"
+                className="listing-card"
                 data-animate=""
               >
                 <div
                   className="card"
                   style={{ borderTopColor: border }}
                 >
-                  <h5 className="text-h5 job-family-card__name">{category.name}</h5>
+                  <h5 className="text-h5 listing-card__name">{category.name}</h5>
                   {category.keyDimensionsAssessed && (
-                    <p className="text-body--xs color--tertiary job-family-card__dimensions">
+                    <p className="text-body--xs color--tertiary listing-card__meta">
                       {category.keyDimensionsAssessed}
                     </p>
                   )}
-                  <span className="text-label--sm color--brand job-family-card__arrow">
+                  <span className="text-label--sm color--brand listing-card__cta">
                     View roles →
                   </span>
                 </div>

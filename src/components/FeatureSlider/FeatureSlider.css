@@ -1,17 +1,17 @@
 /* ============================================================
-   USP SLIDER — Structural styles only.
+   FEATURE SLIDER — Structural styles only.
    Typography handled by utility classes.
 ============================================================ */
 
 /* ── Section ── */
 
-.usp-slider-section {
+.feature-slider {
   padding-top: var(--space--section);
   padding-bottom: var(--space--section);
   border-bottom: 1px solid var(--color--border-default);
 }
 
-.usp-slider__header {
+.feature-slider__header {
   padding-bottom: 3rem;
 }
 
@@ -79,9 +79,9 @@
   margin-right: 0;
 }
 
-/* ── USP Card ── */
+/* ── Slider card ── */
 
-.usp-card {
+.slider-card {
   flex: 1;
   background-color: var(--color--surface-raised);
   border: 1px solid var(--color--border-default);
@@ -93,43 +93,43 @@
   transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
 }
 
-.usp-card__image {
+.slider-card__image {
   transition: background 0.5s ease, border-color 0.5s ease;
 }
 
-.usp-card .color--primary,
-.usp-card .color--secondary {
+.slider-card .color--primary,
+.slider-card .color--secondary {
   transition: color 0.5s ease;
 }
 
-.usp-card__image {
+.slider-card__image {
   width: 100%;
   aspect-ratio: 16 / 10;
   background: var(--color--accent-purple-bg);
   border-bottom: 1px solid var(--color--border-subtle);
 }
 
-.usp-card__content {
+.slider-card__content {
   padding: 1.5rem;
 }
 
 /* ── Active / inactive states ── */
 
-[data-gsap-slider-item-status="active"] .usp-card {
+[data-gsap-slider-item-status="active"] .slider-card {
   background-color: var(--swatch--purple-500);
   border-color: var(--swatch--purple-600);
   color: var(--swatch--neutral-0);
 }
 
-[data-gsap-slider-item-status="active"] .usp-card .color--primary {
+[data-gsap-slider-item-status="active"] .slider-card .color--primary {
   color: var(--swatch--neutral-0);
 }
 
-[data-gsap-slider-item-status="active"] .usp-card .color--secondary {
+[data-gsap-slider-item-status="active"] .slider-card .color--secondary {
   color: var(--swatch--neutral-0-o70);
 }
 
-[data-gsap-slider-item-status="active"] .usp-card__image {
+[data-gsap-slider-item-status="active"] .slider-card__image {
   background: var(--swatch--purple-600);
   border-bottom-color: var(--swatch--purple-700);
 }
@@ -173,7 +173,7 @@
 /* ── Responsive section spacing ── */
 
 @media (max-width: 768px) {
-  .usp-slider-section {
+  .feature-slider {
     padding-top: var(--space--section-mobile);
     padding-bottom: var(--space--section-mobile);
   }

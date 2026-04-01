@@ -3,7 +3,6 @@
 import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import TransitionLink from '@/components/TransitionLink';
 import Button from '@/components/ui/Button';
 import { initMegaNav } from './megaNavAnimations';
 import './MegaNav.css';
@@ -70,9 +69,9 @@ export default function MegaNav() {
                   </button>
                 </li>
                 <li data-nav-list-item="">
-                  <TransitionLink href="/pricing" transitionTitle="Pricing" className="mega-nav__bar-link">
+                  <Link href="/pricing" className="mega-nav__bar-link">
                     <span className="mega-nav__bar-link-label text-body--sm font--medium">Pricing</span>
-                  </TransitionLink>
+                  </Link>
                 </li>
               </ul>
 
@@ -122,26 +121,26 @@ export default function MegaNav() {
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Job families</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/assessments/administration" transitionTitle="Administration" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Administration</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Dependable, organised talent</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/operations-logistics" transitionTitle="Operations & Logistics" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Operations &amp; Logistics</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Precise, process-led hires</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/sales" transitionTitle="Sales" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Sales</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Commercially-minded performers</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/retail-hospitality" transitionTitle="Retail & Hospitality" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Retail &amp; Hospitality</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Service-led problem solvers</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/health-social-care" transitionTitle="Health & Social Care" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Health &amp; Social Care</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Compassionate, resilient staff</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/assessments/administration" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Administration</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Dependable, organised talent</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/operations-logistics" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Operations &amp; Logistics</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Precise, process-led hires</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/sales" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Sales</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Commercially-minded performers</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/retail-hospitality" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Retail &amp; Hospitality</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Service-led problem solvers</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/health-social-care" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Health &amp; Social Care</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Compassionate, resilient staff</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Early careers</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/assessments/graduates" transitionTitle="Graduates" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Graduates</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Future leaders, assessed early</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/apprentices" transitionTitle="Apprentices" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Apprentices</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Spot potential beyond CVs</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/interns" transitionTitle="Interns" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Interns</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Build your talent pipeline</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/assessments/graduates" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Graduates</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Future leaders, assessed early</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/apprentices" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Apprentices</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Spot potential beyond CVs</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/interns" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Interns</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Build your talent pipeline</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col is--colored">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Specialist</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/assessments/claims-collections" transitionTitle="Claims & Collections" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Claims &amp; Collections</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Integrity under pressure</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/assessments/field-service" transitionTitle="Field Service & Technicians" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Field Service &amp; Technicians</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Practical and customer-facing</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/assessments/claims-collections" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Claims &amp; Collections</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Integrity under pressure</span></Link></li>
+                  <li data-menu-fade=""><Link href="/assessments/field-service" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Field Service &amp; Technicians</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Practical and customer-facing</span></Link></li>
                 </ul>
               </div>
             </div>
@@ -153,27 +152,27 @@ export default function MegaNav() {
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">By challenge</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/solutions/high-volume-hiring" transitionTitle="High-volume hiring" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">High-volume hiring</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Process unlimited applicants</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/objective-assessment" transitionTitle="Objective assessment" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Objective assessment</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Decisions based on ability</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/candidate-experience" transitionTitle="Candidate experience" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Candidate experience</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Fair, accessible and smooth</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/ats-integration" transitionTitle="ATS integration" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">ATS integration</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Connect with your systems</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/solutions/high-volume-hiring" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">High-volume hiring</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Process unlimited applicants</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/objective-assessment" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Objective assessment</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Decisions based on ability</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/candidate-experience" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Candidate experience</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Fair, accessible and smooth</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/ats-integration" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">ATS integration</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Connect with your systems</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">By sector</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/solutions/public-sector" transitionTitle="Public sector" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Public sector</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Compliant, large-scale hiring</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/healthcare" transitionTitle="Healthcare" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Healthcare</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Values-led recruitment</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/financial-services" transitionTitle="Financial services" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Financial services</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Secure, regulated hiring</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/solutions/retail" transitionTitle="Retail" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Retail</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Seasonal and high-turnover</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/solutions/public-sector" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Public sector</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Compliant, large-scale hiring</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/healthcare" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Healthcare</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Values-led recruitment</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/financial-services" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Financial services</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Secure, regulated hiring</span></Link></li>
+                  <li data-menu-fade=""><Link href="/solutions/retail" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Retail</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Seasonal and high-turnover</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col is--colored">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Quick links</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/how-it-works" transitionTitle="How it works" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">How it works</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/pricing" transitionTitle="Pricing" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Pricing</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/contact" transitionTitle="Bespoke solutions" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Bespoke solutions</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/how-it-works" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">How it works</span></Link></li>
+                  <li data-menu-fade=""><Link href="/pricing" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Pricing</span></Link></li>
+                  <li data-menu-fade=""><Link href="/contact" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Bespoke solutions</span></Link></li>
                 </ul>
               </div>
             </div>
@@ -185,17 +184,17 @@ export default function MegaNav() {
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Company</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/about" transitionTitle="About" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">About Vero Assess</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our mission and approach</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/about/tazio" transitionTitle="Powered by Tazio" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Powered by Tazio</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">The platform behind Vero</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/contact" transitionTitle="Contact" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Contact</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Get in touch</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/about" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">About Vero Assess</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our mission and approach</span></Link></li>
+                  <li data-menu-fade=""><Link href="/about/tazio" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Powered by Tazio</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">The platform behind Vero</span></Link></li>
+                  <li data-menu-fade=""><Link href="/contact" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Contact</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Get in touch</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Resources</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><TransitionLink href="/resources/science" transitionTitle="The science" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">The science</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Research-backed methodology</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/resources/compliance" transitionTitle="Compliance" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Compliance</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">ISO, WCAG, Cyber Essentials</span></TransitionLink></li>
-                  <li data-menu-fade=""><TransitionLink href="/blog" transitionTitle="Blog" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Blog</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Insights and updates</span></TransitionLink></li>
+                  <li data-menu-fade=""><Link href="/resources/science" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">The science</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Research-backed methodology</span></Link></li>
+                  <li data-menu-fade=""><Link href="/resources/compliance" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Compliance</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">ISO, WCAG, Cyber Essentials</span></Link></li>
+                  <li data-menu-fade=""><Link href="/blog" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Blog</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Insights and updates</span></Link></li>
                 </ul>
               </div>
               <div data-menu-fade="" className="mega-nav__panel-col is--colored has--card">
