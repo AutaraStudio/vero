@@ -26,9 +26,9 @@ export default function PageTransition() {
   useEffect(() => {
     reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     CustomEase.create('osmo', '0.625, 0.05, 0, 1');
-    if (panelRef.current) gsap.set(panelRef.current, { yPercent: 0, autoAlpha: 0 });
-    if (panelTopRef.current) gsap.set(panelTopRef.current, { scaleY: 0 });
-    if (panelBottomRef.current) gsap.set(panelBottomRef.current, { scaleY: 1, height: '20vw' });
+    if (panelRef.current) gsap.set(panelRef.current, { autoAlpha: 0, yPercent: 0 });
+    if (panelTopRef.current) gsap.set(panelTopRef.current, { scaleY: 0, height: 0 });
+    if (panelBottomRef.current) gsap.set(panelBottomRef.current, { scaleY: 0, height: 0 });
   }, []);
 
   useEffect(() => {
@@ -69,8 +69,8 @@ export default function PageTransition() {
     });
 
     tl.set(panel, { autoAlpha: 1, yPercent: 0 }, 0);
-    tl.set(panelTop, { scaleY: 0, height: '15vw' }, 0);
-    tl.set(panelBottom, { scaleY: 1, height: '20vw' }, 0);
+    tl.set(panelTop, { height: '15vw', scaleY: 0 }, 0);
+    tl.set(panelBottom, { height: '20vw', scaleY: 1 }, 0);
     tl.set(titleWrap, { opacity: 0 }, 0);
     tl.set(titleInner, { yPercent: 105 }, 0);
 
@@ -112,6 +112,8 @@ export default function PageTransition() {
     );
     tl.fromTo(panelBottom, { scaleY: 1 }, { scaleY: 0, duration: 1, ease: 'osmo' }, '<');
     tl.set(panel, { autoAlpha: 0 }, '>');
+    tl.set(panelTopRef.current, { height: 0, scaleY: 0 }, '>');
+    tl.set(panelBottomRef.current, { height: 0, scaleY: 0 }, '>');
 
     tl.to(titleInner, { yPercent: -130, duration: 1.2, ease: 'expo.inOut' }, 'startEnter-=0.4');
 

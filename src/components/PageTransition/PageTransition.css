@@ -21,7 +21,7 @@
   bottom: calc(100% - 1px);
   left: 0;
   width: 100%;
-  height: 15vw;
+  height: 0;        /* GSAP sets to 15vw before leave */
   overflow: hidden;
   transform-origin: bottom;
 }
@@ -32,7 +32,7 @@
   top: calc(100% - 1px);
   left: 0;
   width: 100%;
-  height: 20vw;
+  height: 0;        /* GSAP sets to 20vw before leave */
   overflow: hidden;
   transform-origin: top;
 }
