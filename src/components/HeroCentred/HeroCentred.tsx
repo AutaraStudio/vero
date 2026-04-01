@@ -12,6 +12,7 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 
 interface HeroCentredProps {
+  theme?: string;
   badge?: { label: string; href: string };
   headline: string;
   intro?: string;
@@ -23,6 +24,7 @@ interface HeroCentredProps {
 }
 
 export default function HeroCentred({
+  theme = 'dark',
   badge,
   headline,
   intro,
@@ -114,7 +116,7 @@ export default function HeroCentred({
   }, [modalOpen, media, closeModal]);
 
   return (
-    <section className="hero-centred" data-theme="dark">
+    <section className="hero-centred" data-theme={theme}>
 
       {/* ── Content ───────────────────────────────────────── */}
       <div className="hero-centred__inner">
@@ -127,22 +129,7 @@ export default function HeroCentred({
               data-animate=""
               className="hero-centred__badge"
             >
-              <span className="hero-centred__badge-dot" aria-hidden="true" />
               {badge.label}
-              <svg
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                stroke="currentColor"
-                strokeWidth="2"
-                fill="none"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="hero-centred__badge-arrow"
-              >
-                <path d="M5 12h14m0 0-7-7m7 7-7 7" />
-              </svg>
             </a>
           )}
 
@@ -209,11 +196,13 @@ export default function HeroCentred({
             />
           ) : (
             <div className="hero-centred__thumbnail">
-              <img
-                src={media.thumbnailSrc}
-                alt="Video preview"
-                className="hero-centred__media-img"
-              />
+              {media.thumbnailSrc && (
+                <img
+                  src={media.thumbnailSrc}
+                  alt="Video preview"
+                  className="hero-centred__media-img"
+                />
+              )}
               <button
                 ref={playBtnRef}
                 className="hero-centred__play"

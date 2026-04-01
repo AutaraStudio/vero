@@ -450,6 +450,9 @@
   --color--interactive-secondary-border:   var(--swatch--purple-500);
   --color--interactive-secondary-text:     var(--swatch--purple-500);
   --color--interactive-secondary-hover-bg: var(--swatch--purple-o10);
+  --color--interactive-cta:       var(--swatch--purple-500);
+  --color--interactive-cta-hover: var(--swatch--purple-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--purple-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--purple-o30);
@@ -518,9 +521,49 @@
   --color--interactive-secondary-border:   var(--swatch--blue-500);
   --color--interactive-secondary-text:     var(--swatch--blue-600);
   --color--interactive-secondary-hover-bg: var(--swatch--blue-o10);
+  --color--interactive-cta:       var(--swatch--blue-500);
+  --color--interactive-cta-hover: var(--swatch--blue-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--blue-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--blue-o30);
+}
+
+/* ── BRAND BLUE DEEP — full blue peak
+   USE FOR: strong data/intelligence moment — max 1 per page
+   ────────────────────────────────────────────────────────── */
+
+/* ============================================================
+   THEME: BRAND BLUE DEEP
+============================================================ */
+
+[data-theme="brand-blue-deep"] {
+  --color--page-bg:        var(--swatch--blue-500);
+  --color--page-bg-subtle: var(--swatch--blue-600);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-muted:     var(--swatch--neutral-0-o30);
+  --color--text-brand:     var(--swatch--purple-300);
+  --color--border-default: var(--swatch--neutral-0-o15);
+  --color--border-subtle:  var(--swatch--neutral-0-o10);
+  --color--border-strong:  var(--swatch--neutral-0-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--neutral-0) 10%, var(--swatch--blue-500));
+  --color--surface-raised:  color-mix(in srgb, var(--swatch--neutral-0) 16%, var(--swatch--blue-500));
+  --color--surface-sunken:  var(--swatch--blue-600);
+  --color--interactive-primary:            var(--swatch--purple-500);
+  --color--interactive-primary-hover:      var(--swatch--purple-600);
+  --color--interactive-primary-text:       var(--swatch--neutral-0);
+  --color--interactive-secondary-border:   var(--swatch--neutral-0-o50);
+  --color--interactive-secondary-text:     var(--swatch--neutral-0);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o15);
+  /* cta variant: purple on blue — yellow would clash with the blue bg */
+  --color--interactive-cta:       var(--swatch--purple-500);
+  --color--interactive-cta-hover: var(--swatch--purple-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.25);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* ── BRAND GREEN — light tint
@@ -552,9 +595,49 @@
   --color--interactive-secondary-border:   var(--swatch--green-600);
   --color--interactive-secondary-text:     var(--swatch--green-700);
   --color--interactive-secondary-hover-bg: var(--swatch--green-o10);
+  --color--interactive-cta:       var(--swatch--green-600);
+  --color--interactive-cta-hover: var(--swatch--green-700);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--green-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--green-o30);
+}
+
+/* ── BRAND GREEN DEEP — full green peak
+   USE FOR: strong outcomes/success moment — max 1 per page
+   ────────────────────────────────────────────────────────── */
+
+/* ============================================================
+   THEME: BRAND GREEN DEEP
+============================================================ */
+
+[data-theme="brand-green-deep"] {
+  --color--page-bg:        var(--swatch--green-500);
+  --color--page-bg-subtle: var(--swatch--green-600);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-muted:     var(--swatch--neutral-0-o30);
+  --color--text-brand:     var(--swatch--purple-300);
+  --color--border-default: var(--swatch--neutral-0-o15);
+  --color--border-subtle:  var(--swatch--neutral-0-o10);
+  --color--border-strong:  var(--swatch--neutral-0-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--neutral-0) 10%, var(--swatch--green-500));
+  --color--surface-raised:  color-mix(in srgb, var(--swatch--neutral-0) 16%, var(--swatch--green-500));
+  --color--surface-sunken:  var(--swatch--green-600);
+  --color--interactive-primary:            var(--swatch--purple-500);
+  --color--interactive-primary-hover:      var(--swatch--purple-600);
+  --color--interactive-primary-text:       var(--swatch--neutral-0);
+  --color--interactive-secondary-border:   var(--swatch--neutral-0-o50);
+  --color--interactive-secondary-text:     var(--swatch--neutral-0);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o15);
+  /* cta variant: purple on green — yellow would clash with the green bg */
+  --color--interactive-cta:       var(--swatch--purple-500);
+  --color--interactive-cta-hover: var(--swatch--purple-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.25);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* ── BRAND ORANGE — light tint
@@ -586,9 +669,49 @@
   --color--interactive-secondary-border:   var(--swatch--orange-500);
   --color--interactive-secondary-text:     var(--swatch--orange-600);
   --color--interactive-secondary-hover-bg: var(--swatch--orange-o10);
+  --color--interactive-cta:       var(--swatch--orange-500);
+  --color--interactive-cta-hover: var(--swatch--orange-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--orange-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--orange-o30);
+}
+
+/* ── BRAND ORANGE DEEP — full orange peak
+   USE FOR: strong risk/urgency moment — max 1 per page
+   ────────────────────────────────────────────────────────── */
+
+/* ============================================================
+   THEME: BRAND ORANGE DEEP
+============================================================ */
+
+[data-theme="brand-orange-deep"] {
+  --color--page-bg:        var(--swatch--orange-500);
+  --color--page-bg-subtle: var(--swatch--orange-600);
+  --color--text-primary:   var(--swatch--neutral-0);
+  --color--text-secondary: var(--swatch--neutral-0-o70);
+  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  --color--text-muted:     var(--swatch--neutral-0-o30);
+  --color--text-brand:     var(--swatch--purple-300);
+  --color--border-default: var(--swatch--neutral-0-o15);
+  --color--border-subtle:  var(--swatch--neutral-0-o10);
+  --color--border-strong:  var(--swatch--neutral-0-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--neutral-0) 10%, var(--swatch--orange-500));
+  --color--surface-raised:  color-mix(in srgb, var(--swatch--neutral-0) 16%, var(--swatch--orange-500));
+  --color--surface-sunken:  var(--swatch--orange-600);
+  --color--interactive-primary:            var(--swatch--purple-500);
+  --color--interactive-primary-hover:      var(--swatch--purple-600);
+  --color--interactive-primary-text:       var(--swatch--neutral-0);
+  --color--interactive-secondary-border:   var(--swatch--neutral-0-o50);
+  --color--interactive-secondary-text:     var(--swatch--neutral-0);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o15);
+  /* cta variant: purple on orange — yellow is a similar warm hue and would clash */
+  --color--interactive-cta:       var(--swatch--purple-500);
+  --color--interactive-cta-hover: var(--swatch--purple-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.25);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
 
 /* ── BRAND YELLOW — light tint
@@ -620,9 +743,50 @@
   --color--interactive-secondary-border:   var(--swatch--yellow-600);
   --color--interactive-secondary-text:     var(--swatch--yellow-700);
   --color--interactive-secondary-hover-bg: var(--swatch--yellow-o10);
+  --color--interactive-cta:       var(--swatch--yellow-500);
+  --color--interactive-cta-hover: var(--swatch--yellow-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-900);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--yellow-o20);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--yellow-o30);
+}
+
+/* ── BRAND YELLOW DEEP — full yellow peak
+   USE FOR: maximum attention moment — use very sparingly
+   Text is dark because yellow is a light colour.
+   ────────────────────────────────────────────────────────── */
+
+/* ============================================================
+   THEME: BRAND YELLOW DEEP
+============================================================ */
+
+[data-theme="brand-yellow-deep"] {
+  --color--page-bg:        var(--swatch--yellow-500);
+  --color--page-bg-subtle: var(--swatch--yellow-600);
+  --color--text-primary:   var(--swatch--neutral-900);
+  --color--text-secondary: var(--swatch--neutral-900-o70);
+  --color--text-tertiary:  var(--swatch--neutral-900-o50);
+  --color--text-muted:     var(--swatch--neutral-900-o30);
+  --color--text-brand:     var(--swatch--purple-500);
+  --color--border-default: var(--swatch--neutral-900-o15);
+  --color--border-subtle:  var(--swatch--neutral-900-o10);
+  --color--border-strong:  var(--swatch--neutral-900-o30);
+  --color--surface-default: color-mix(in srgb, var(--swatch--neutral-900) 8%,  var(--swatch--yellow-500));
+  --color--surface-raised:  color-mix(in srgb, var(--swatch--neutral-900) 12%, var(--swatch--yellow-500));
+  --color--surface-sunken:  var(--swatch--yellow-600);
+  --color--interactive-primary:            var(--swatch--purple-500);
+  --color--interactive-primary-hover:      var(--swatch--purple-600);
+  --color--interactive-primary-text:       var(--swatch--neutral-0);
+  --color--interactive-secondary-border:   var(--swatch--neutral-900-o50);
+  --color--interactive-secondary-text:     var(--swatch--neutral-900);
+  --color--interactive-secondary-hover-bg: var(--swatch--neutral-900-o10);
+  /* cta variant: purple — bg IS yellow, yellow button = invisible */
+  --color--interactive-cta:       var(--swatch--purple-500);
+  --color--interactive-cta-hover: var(--swatch--purple-600);
+  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.15);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.25);
 }
 
 /* ============================================================

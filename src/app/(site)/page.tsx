@@ -1,6 +1,7 @@
 import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY } from '@/sanity/lib/queries';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
+import FeaturedSlider from '@/components/FeaturedSlider/FeaturedSlider';
 
 export default async function Home() {
   const data = await client.fetch(HOME_PAGE_QUERY);
@@ -11,10 +12,10 @@ export default async function Home() {
       : undefined;
 
   const media = (() => {
-    if (data?.heroMediaType === 'video' && data.heroVideoThumbnailUrl && data.heroVideoUrl) {
+    if (data?.heroMediaType === 'video' && data.heroVideoUrl) {
       return {
         type: 'video' as const,
-        thumbnailSrc: data.heroVideoThumbnailUrl,
+        thumbnailSrc: data.heroVideoThumbnailUrl ?? '',
         videoSrc: data.heroVideoUrl,
       };
     }
@@ -28,6 +29,7 @@ export default async function Home() {
   return (
     <main>
       <HeroCentred
+        theme="brand-purple"
         badge={badge}
         headline={data?.heroTitle ?? 'Hire the right people, every time.'}
         intro={data?.heroIntro ?? 'Science-backed skills assessments built for modern hiring teams. Objective, fast, and fair.'}
@@ -42,6 +44,14 @@ export default async function Home() {
         }
         media={media}
       />
+
+      {data?.usps?.length > 0 && (
+        <FeaturedSlider
+          heading={data.uspsSectionHeading}
+          intro={data.uspsSectionSubheading}
+          usps={data.usps}
+        />
+      )}
     </main>
   );
 }
