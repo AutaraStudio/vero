@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { ElementType } from 'react';
 
 interface RevealGroupProps {
   children: React.ReactNode;
   stagger?: number;
   distance?: string;
   start?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -38,7 +38,7 @@ interface RevealNestedProps {
   includeParent?: boolean;
   stagger?: number;
   distance?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
   className?: string;
   style?: React.CSSProperties;
 }
@@ -70,7 +70,7 @@ interface RevealItemProps {
   children: React.ReactNode;
   ignore?: boolean;
   distance?: string;
-  as?: keyof JSX.IntrinsicElements;
+  as?: ElementType;
   className?: string;
   style?: React.CSSProperties;
 }
