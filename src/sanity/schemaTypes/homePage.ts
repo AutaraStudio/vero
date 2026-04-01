@@ -15,6 +15,19 @@ export const homePage = defineType({
   fields: [
     /* ── Hero ── */
     defineField({
+      name: 'heroBadgeLabel',
+      title: 'Badge Label',
+      type: 'string',
+      group: 'hero',
+      description: 'Optional announcement pill above the headline. Leave blank to hide.',
+    }),
+    defineField({
+      name: 'heroBadgeHref',
+      title: 'Badge Link',
+      type: 'string',
+      group: 'hero',
+    }),
+    defineField({
       name: 'heroTitle',
       title: 'Hero Title',
       type: 'string',
@@ -50,6 +63,46 @@ export const homePage = defineType({
       title: 'Hero Secondary CTA Href',
       type: 'string',
       group: 'hero',
+    }),
+    defineField({
+      name: 'heroMediaType',
+      title: 'Media Type',
+      type: 'string',
+      group: 'hero',
+      options: {
+        list: [
+          { title: 'Image', value: 'image' },
+          { title: 'Video', value: 'video' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'image',
+    }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Image',
+      type: 'image',
+      group: 'hero',
+      options: { hotspot: true },
+      description: 'Shown when Media Type is "Image".',
+      fields: [
+        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+      ],
+    }),
+    defineField({
+      name: 'heroVideoThumbnail',
+      title: 'Video Thumbnail',
+      type: 'image',
+      group: 'hero',
+      options: { hotspot: true },
+      description: 'Shown when Media Type is "Video".',
+    }),
+    defineField({
+      name: 'heroVideoUrl',
+      title: 'Video URL',
+      type: 'url',
+      group: 'hero',
+      description: 'Direct MP4 URL. Loaded lazily — only when the modal opens.',
     }),
 
     /* ── How It Works ── */

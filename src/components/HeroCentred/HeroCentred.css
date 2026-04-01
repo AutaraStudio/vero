@@ -1,0 +1,292 @@
+/* ============================================================
+   HeroCentred
+   Adapted from: Untitled UI — Hero with media
+   Vero Assess pattern: HeroCentred
+============================================================ */
+
+/* ── Stripe tier colours ──────────────────────────────────── */
+/* Defined here so they don't need repeating on every stripe  */
+.hero-centred {
+  --stripe-t1: color-mix(in srgb, var(--swatch--purple-500) 8%,  var(--swatch--neutral-900));
+  --stripe-t2: color-mix(in srgb, var(--swatch--purple-500) 18%, var(--swatch--neutral-900));
+  --stripe-t3: var(--swatch--purple-500);
+  --stripe-h:  3rem;        /* 48px — tablet/desktop default */
+}
+
+@media (max-width: 767px) {
+  .hero-centred {
+    --stripe-h: 2.125rem;   /* 34px — mobile */
+  }
+}
+
+@media (min-width: 1400px) {
+  .hero-centred {
+    --stripe-h: 4.5rem;     /* 72px — wide desktop */
+  }
+}
+
+/* ── Section wrapper ──────────────────────────────────────── */
+.hero-centred {
+  position: relative;
+  background: var(--color--page-bg);
+  overflow: hidden;
+}
+
+/* ── Content container ────────────────────────────────────── */
+.hero-centred__inner {
+  max-width: 80rem;
+  margin: 0 auto;
+  padding: var(--space--section) var(--space--container-padding) 0;
+}
+
+@media (max-width: 767px) {
+  .hero-centred__inner {
+    padding-top: var(--space--section-mobile);
+  }
+}
+
+/* ── Header — centred flex column ─────────────────────────── */
+.hero-centred__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+}
+
+/* ── Badge pill ───────────────────────────────────────────── */
+.hero-centred__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.875rem 0.375rem 0.75rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--full);
+  font-size: var(--font--label);
+  font-weight: 600;
+  letter-spacing: var(--font--label-ls);
+  text-transform: uppercase;
+  color: var(--color--text-secondary);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: var(--transition--default);
+}
+
+.hero-centred__badge:hover {
+  border-color: var(--color--border-strong);
+  color: var(--color--text-primary);
+}
+
+.hero-centred__badge-dot {
+  display: inline-block;
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: var(--radius--full);
+  background: var(--swatch--purple-400);
+  flex-shrink: 0;
+}
+
+.hero-centred__badge-arrow {
+  flex-shrink: 0;
+  color: var(--swatch--purple-400);
+}
+
+/* ── Heading ──────────────────────────────────────────────── */
+.hero-centred__title {
+  max-width: 18ch;
+  margin: 0 0 1.5rem;
+}
+
+/* ── Intro ────────────────────────────────────────────────── */
+.hero-centred__intro {
+  /* section-intro utility provides sizing/colour */
+  text-align: center;
+  max-width: 48ch;
+  margin: 0 0 2.5rem;
+}
+
+/* ── CTA row ──────────────────────────────────────────────── */
+.hero-centred__cta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+@media (max-width: 479px) {
+  .hero-centred__cta {
+    flex-direction: column-reverse;
+    width: 100%;
+  }
+
+  .hero-centred__cta > * {
+    width: 100%;
+  }
+}
+
+/* ── Stripe wrapper ───────────────────────────────────────── */
+/* Sits between the CTA and the media.                        */
+/* overflow:hidden clips the skewed ends cleanly.             */
+.hero-centred__stripes-wrap {
+  position: relative;
+  height: calc(var(--stripe-h) * 3 + 6rem);
+  
+  margin-top: 3rem;
+}
+
+/* The skewed container */
+.hero-centred__stripes {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: skewY(-7deg);
+  transform-origin: bottom left;
+}
+
+/* CSS grid: 6 columns, 3 rows — each row = --stripe-h */
+.hero-centred__stripes-grid {
+  display: grid;
+  grid-template-rows: var(--stripe-h) var(--stripe-h) var(--stripe-h);
+  grid-template-columns: 18% 14% 19% 18% 16% 15%;
+  width: 100%;
+}
+
+/* Row 1 — Tier 3 full purple, right side (cols 5–6) */
+.hero-centred__stripe--r1-right {
+  grid-row: 1;
+  grid-column: 5 / -1;
+  background: var(--stripe-t3);
+}
+
+/* Row 2 — Tier 1 light purple, left-center (cols 2–3) */
+.hero-centred__stripe--r2-left {
+  grid-row: 2;
+  grid-column: 2 / 4;
+  background: var(--stripe-t1);
+}
+
+/* Row 2 — Tier 2 mid purple, right side (cols 4–6) */
+.hero-centred__stripe--r2-right {
+  grid-row: 2;
+  grid-column: 4 / -1;
+  background: var(--stripe-t2);
+}
+
+/* Row 3 — Tier 3 full purple, far left (col 1) */
+.hero-centred__stripe--r3-left {
+  grid-row: 3;
+  grid-column: 1 / 2;
+  background: var(--stripe-t3);
+}
+
+/* Row 3 — Tier 1 light purple, far right (col 6) */
+.hero-centred__stripe--r3-right {
+  grid-row: 3;
+  grid-column: 6 / -1;
+  background: var(--stripe-t1);
+}
+
+/* ── Media wrapper ────────────────────────────────────────── */
+.hero-centred__media-wrap {
+  padding: 0 var(--space--container-padding) var(--space--section);
+}
+
+@media (max-width: 767px) {
+  .hero-centred__media-wrap {
+    padding-bottom: var(--space--section-mobile);
+  }
+}
+
+/* ── Media box ────────────────────────────────────────────── */
+.hero-centred__media {
+  position: relative;
+  max-width: 60rem;
+  margin: 0 auto;
+  border-radius: var(--radius--xl);
+  overflow: hidden;
+  border: 1px solid var(--color--border-default);
+  aspect-ratio: 16 / 9;
+}
+
+.hero-centred__media-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* ── Video thumbnail ──────────────────────────────────────── */
+.hero-centred__thumbnail {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  cursor: pointer;
+}
+
+/* ── Play button ──────────────────────────────────────────── */
+.hero-centred__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.hero-centred__play::before {
+  content: '';
+  display: flex;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--neutral-0) 20%, transparent);
+  backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in srgb, var(--swatch--neutral-0) 30%, transparent);
+  position: absolute;
+}
+
+.hero-centred__play svg {
+  position: relative;
+  z-index: 1;
+  color: var(--swatch--neutral-0);
+}
+
+/* ── Video modal overlay ──────────────────────────────────── */
+.hero-centred__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--color--page-bg) 80%, transparent);
+  backdrop-filter: blur(12px);
+  cursor: pointer;
+}
+
+/* ── Video modal box ──────────────────────────────────────── */
+.hero-centred__modal {
+  position: relative;
+  width: 100%;
+  max-width: 64rem;
+  border-radius: var(--radius--xl);
+  overflow: hidden;
+  border: 1px solid var(--color--border-default);
+  cursor: default;
+  aspect-ratio: 16 / 9;
+}
+
+.hero-centred__modal-video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--swatch--neutral-900);
+}

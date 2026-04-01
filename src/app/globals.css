@@ -327,23 +327,34 @@
   --color--accent-purple-text:   var(--swatch--purple-500);
   --color--accent-purple-border: var(--swatch--purple-o30);
 
-  /* Shadows */
-  --shadow--card:        0 2px 24px var(--swatch--neutral-900-o10);
-  --shadow--card-hover:  0 8px 40px var(--swatch--neutral-900-o20);
-  --shadow--nav:         0 1px 0 var(--swatch--neutral-200);
+  /* Shadows
+     ⚠️  OVERLAY & MODAL USE ONLY.
+     Never apply --shadow--overlay or --shadow--overlay-lg to flat content cards.
+     Flat cards use borders only (1px solid var(--color--border-default)).
+     Shadows are reserved for: modals, dropdowns, tooltips, floating panels. */
+  --shadow--overlay:      0 2px 24px var(--swatch--neutral-900-o10);
+  --shadow--overlay-lg:   0 8px 40px var(--swatch--neutral-900-o20);
+  --shadow--nav:          0 1px 0 var(--swatch--neutral-200);
   --shadow--nav-scrolled: 0 4px 24px var(--swatch--neutral-900-o10);
 
   /* Radius */
-  --radius--sm:   0.25rem;
+  --radius--sm:   0.125rem;
   --radius--md:   0.25rem;
-  --radius--lg:   0.25rem;
-  --radius--xl:   0.25rem;
-  --radius--full: 0.25rem;
+  --radius--lg:   0.375rem;
+  --radius--xl:   0.5rem;   /* hard max for any surface */
+  --radius--full: 9999px;   /* pills only — badges, labels, tags */
 
-  /* Transitions */
-  --transition--default: all 0.2s ease;
-  --transition--slow:    all 0.4s ease;
-  --transition--spring:  all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* Transitions
+     Only use for simple hover state changes on interactive elements.
+     Never use for section animations — use GSAP with named Vero eases instead.
+     Never use `all` or `ease` as values. */
+  --transition--default: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                         background-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                         border-color 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+                         color 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition--slow:    opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1),
+                         background-color 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition--spring:  transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 
   /* Easing curves */
   --ease-entry:  cubic-bezier(0.16, 1, 0.3, 1);
@@ -404,10 +415,16 @@
   --color--interactive-secondary-border:   var(--swatch--neutral-0);
   --color--interactive-secondary-text:     var(--swatch--neutral-0);
   --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o10);
-  --shadow--card:       0 2px 24px rgba(0, 0, 0, 0.3);
-  --shadow--card-hover: 0 8px 40px rgba(0, 0, 0, 0.5);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.3);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
   --shadow--nav:        0 1px 0 var(--swatch--neutral-800);
 }
+
+/* ── BRAND PURPLE — light tint
+   USE FOR: light-mode modals, isolated UI cards, marketing microsites
+   DO NOT USE AS: a section background on the main dark site
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND PURPLE (soft tint)
@@ -433,9 +450,15 @@
   --color--interactive-secondary-border:   var(--swatch--purple-500);
   --color--interactive-secondary-text:     var(--swatch--purple-500);
   --color--interactive-secondary-hover-bg: var(--swatch--purple-o10);
-  --shadow--card:       0 2px 24px var(--swatch--purple-o15);
-  --shadow--card-hover: 0 8px 40px var(--swatch--purple-o30);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px var(--swatch--purple-o15);
+  --shadow--overlay-lg: 0 8px 40px var(--swatch--purple-o30);
 }
+
+/* ── BRAND PURPLE DEEP — full purple peak CTA
+   USE FOR: single peak-emphasis CTA banner — max 1 per page
+   DO NOT USE: more than once per page, ever
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND PURPLE DEEP (rich full purple)
@@ -461,9 +484,15 @@
   --color--interactive-secondary-border:   var(--swatch--neutral-0-o50);
   --color--interactive-secondary-text:     var(--swatch--neutral-0);
   --color--interactive-secondary-hover-bg: var(--swatch--neutral-0-o15);
-  --shadow--card:       0 2px 24px rgba(0, 0, 0, 0.25);
-  --shadow--card-hover: 0 8px 40px rgba(0, 0, 0, 0.4);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.25);
+  --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
 }
+
+/* ── BRAND BLUE — light tint
+   USE FOR: light-mode modals, isolated UI cards, marketing microsites
+   DO NOT USE AS: a section background on the main dark site
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND BLUE (soft tint)
@@ -489,9 +518,15 @@
   --color--interactive-secondary-border:   var(--swatch--blue-500);
   --color--interactive-secondary-text:     var(--swatch--blue-600);
   --color--interactive-secondary-hover-bg: var(--swatch--blue-o10);
-  --shadow--card:       0 2px 24px var(--swatch--blue-o15);
-  --shadow--card-hover: 0 8px 40px var(--swatch--blue-o30);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px var(--swatch--blue-o15);
+  --shadow--overlay-lg: 0 8px 40px var(--swatch--blue-o30);
 }
+
+/* ── BRAND GREEN — light tint
+   USE FOR: light-mode modals, isolated UI cards, marketing microsites
+   DO NOT USE AS: a section background on the main dark site
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND GREEN (soft tint)
@@ -517,9 +552,15 @@
   --color--interactive-secondary-border:   var(--swatch--green-600);
   --color--interactive-secondary-text:     var(--swatch--green-700);
   --color--interactive-secondary-hover-bg: var(--swatch--green-o10);
-  --shadow--card:       0 2px 24px var(--swatch--green-o15);
-  --shadow--card-hover: 0 8px 40px var(--swatch--green-o30);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px var(--swatch--green-o15);
+  --shadow--overlay-lg: 0 8px 40px var(--swatch--green-o30);
 }
+
+/* ── BRAND ORANGE — light tint
+   USE FOR: light-mode modals, isolated UI cards, marketing microsites
+   DO NOT USE AS: a section background on the main dark site
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND ORANGE (soft tint)
@@ -545,9 +586,15 @@
   --color--interactive-secondary-border:   var(--swatch--orange-500);
   --color--interactive-secondary-text:     var(--swatch--orange-600);
   --color--interactive-secondary-hover-bg: var(--swatch--orange-o10);
-  --shadow--card:       0 2px 24px var(--swatch--orange-o15);
-  --shadow--card-hover: 0 8px 40px var(--swatch--orange-o30);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px var(--swatch--orange-o15);
+  --shadow--overlay-lg: 0 8px 40px var(--swatch--orange-o30);
 }
+
+/* ── BRAND YELLOW — light tint
+   USE FOR: light-mode modals, isolated UI cards, marketing microsites
+   DO NOT USE AS: a section background on the main dark site
+   ────────────────────────────────────────────────────────── */
 
 /* ============================================================
    THEME: BRAND YELLOW (soft tint)
@@ -573,8 +620,9 @@
   --color--interactive-secondary-border:   var(--swatch--yellow-600);
   --color--interactive-secondary-text:     var(--swatch--yellow-700);
   --color--interactive-secondary-hover-bg: var(--swatch--yellow-o10);
-  --shadow--card:       0 2px 24px var(--swatch--yellow-o20);
-  --shadow--card-hover: 0 8px 40px var(--swatch--yellow-o30);
+  /* Overlays & modals only — never on flat cards */
+  --shadow--overlay:    0 2px 24px var(--swatch--yellow-o20);
+  --shadow--overlay-lg: 0 8px 40px var(--swatch--yellow-o30);
 }
 
 /* ============================================================

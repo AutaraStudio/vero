@@ -1,11 +1,18 @@
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
+    heroBadgeLabel,
+    heroBadgeHref,
     heroTitle,
     heroIntro,
     heroCTALabel,
     heroCTAHref,
     heroSecondaryCTALabel,
     heroSecondaryCTAHref,
+    heroMediaType,
+    "heroImageUrl": heroImage.asset->url,
+    "heroImageAlt": heroImage.alt,
+    "heroVideoThumbnailUrl": heroVideoThumbnail.asset->url,
+    heroVideoUrl,
     howItWorksHeading,
     howItWorksIntro,
     steps[] {
