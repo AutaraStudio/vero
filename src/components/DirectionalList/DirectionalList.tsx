@@ -58,13 +58,38 @@ function DirectionalRow<T extends { href?: string; id?: string | number }>({
     tile.style.transform = directionTransform[dir];
   }, [directionType]);
 
-  const Tag = item.href ? 'a' : 'div';
-  const tagProps = item.href
-    ? { href: item.href, target: '_blank', rel: 'noopener noreferrer' }
-    : { role: 'button', tabIndex: 0, onClick: () => onItemClick?.(item) };
+  if (item.href) {
+    return (
+      <a
+        href={item.href}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="directional-list__item"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        <div ref={tileRef} className="directional-list__tile" />
+        <div className="directional-list__rule directional-list__rule--top" />
+        {columns.map((col, i) => (
+          <div key={i} className={`directional-list__col directional-list__col--${col.width ?? 'flex'}`}>
+            <span className="directional-list__cell">
+              {typeof col.render === 'function' ? col.render(item) : String(item[col.render] ?? '')}
+            </span>
+          </div>
+        ))}
+      </a>
+    );
+  }
 
   return (
-    <Tag {...(tagProps as never)} className="directional-list__item" onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+    <div
+      role="button"
+      tabIndex={0}
+      onClick={() => onItemClick?.(item)}
+      className="directional-list__item"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div ref={tileRef} className="directional-list__tile" />
       <div className="directional-list__rule directional-list__rule--top" />
       {columns.map((col, i) => (
@@ -74,7 +99,7 @@ function DirectionalRow<T extends { href?: string; id?: string | number }>({
           </span>
         </div>
       ))}
-    </Tag>
+    </div>
   );
 }
 
