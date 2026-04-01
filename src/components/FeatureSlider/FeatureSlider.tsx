@@ -37,7 +37,11 @@ const usps = [
   },
 ];
 
-export default function FeatureSlider() {
+interface FeatureSliderProps {
+  theme?: string;
+}
+
+export default function FeatureSlider({ theme = 'dark' }: FeatureSliderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
@@ -52,7 +56,7 @@ export default function FeatureSlider() {
   }, []);
 
   return (
-    <section className="feature-slider">
+    <section className="feature-slider" data-theme={theme}>
       <div className="container">
         <div className="feature-slider__header stack--md">
           <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">Why Vero Assess</span>
@@ -89,8 +93,8 @@ export default function FeatureSlider() {
         </div>
 
         <div data-gsap-slider-controls="" className="gsap-slider__controls flex gap--sm">
-          <button data-gsap-slider-control="prev" className="gsap-slider__control">Prev</button>
-          <button data-gsap-slider-control="next" className="gsap-slider__control">Next</button>
+          <button data-gsap-slider-control="prev" className="gsap-slider__control text-body--sm font--medium">Prev</button>
+          <button data-gsap-slider-control="next" className="gsap-slider__control text-body--sm font--medium">Next</button>
         </div>
       </div>
     </section>

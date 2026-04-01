@@ -40,9 +40,10 @@ interface StepsSectionProps {
   heading?: string;
   intro?: string;
   steps?: Step[];
+  theme?: string;
 }
 
-export default function StepsSection({ heading, intro, steps }: StepsSectionProps) {
+export default function StepsSection({ heading, intro, steps, theme = 'dark' }: StepsSectionProps) {
   const resolvedSteps = steps ?? DEFAULT_STEPS;
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
   const headingRef = useTextReveal({ delay: 0.1 });
@@ -72,7 +73,7 @@ export default function StepsSection({ heading, intro, steps }: StepsSectionProp
   }));
 
   return (
-    <section className="steps-section section">
+    <section className="steps-section section" data-theme={theme}>
       <div className="container">
         <div className="steps-section__header bordered-section stack--md pad--inset-lg">
           <span ref={labelRef as React.RefObject<HTMLSpanElement>} className="section-label">How it works</span>

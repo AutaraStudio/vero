@@ -2,6 +2,7 @@ import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY } from '@/sanity/lib/queries';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
 import FeaturedSlider from '@/components/FeaturedSlider/FeaturedSlider';
+import CTAStatement from '@/components/CTAStatement/CTAStatement';
 
 export default async function Home() {
   const data = await client.fetch(HOME_PAGE_QUERY);
@@ -47,11 +48,18 @@ export default async function Home() {
 
       {data?.usps?.length > 0 && (
         <FeaturedSlider
+          theme="dark"
+          sectionLabel={data.uspsSectionLabel}
           heading={data.uspsSectionHeading}
           intro={data.uspsSectionSubheading}
           usps={data.usps}
         />
       )}
+
+      <CTAStatement
+        theme="dark"
+        boxTheme="brand-orange"
+      />
     </main>
   );
 }

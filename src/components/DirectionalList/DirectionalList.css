@@ -19,10 +19,6 @@
 
 .directional-list__eyebrow {
   display: block;
-  font-size: var(--font--label-sm);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
   color: var(--directional-accent);
 }
 
@@ -118,9 +114,7 @@
 
 .directional-list__cell {
   display: block;
-  font-size: var(--font--body-sm);
   color: inherit;
-  line-height: 1.5;
 }
 
 /* ── Reduced motion — replace tile wipe with tint ── */

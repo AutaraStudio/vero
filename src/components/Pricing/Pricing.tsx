@@ -81,19 +81,24 @@ function RoleDropdown({ id }: { id: string }) {
       <label className="text-label--sm color--tertiary" htmlFor={`role-select-${id}`}>
         How many roles are you hiring for?
       </label>
-      <select
-        id={`role-select-${id}`}
-        className="pricing-dropdown__select text-body--sm"
-        value={selected}
-        onChange={(e) => setSelected(e.target.value)}
-      >
-        <option value="">Select roles</option>
-        {roleOptions.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className="pricing-dropdown__select-wrap">
+        <select
+          id={`role-select-${id}`}
+          className="pricing-dropdown__select text-body--sm"
+          value={selected}
+          onChange={(e) => setSelected(e.target.value)}
+        >
+          <option value="">Select roles</option>
+          {roleOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <svg className="pricing-dropdown__chevron" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+          <path d="M6.667 8.333L10 11.667l3.333-3.334" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
       {current && (
         <p className="pricing-dropdown__hint text-body--xs">
           {current.hint}
@@ -108,6 +113,7 @@ interface PricingProps {
   bespokeBody?: string;
   bespokeCtaLabel?: string;
   bespokeCtaHref?: string;
+  theme?: string;
 }
 
 export default function Pricing({
@@ -115,6 +121,7 @@ export default function Pricing({
   bespokeBody = 'We also offer tailored assessments for hiring, development or training, and end-to-end solutions that take candidates from initial application through to onboarding and beyond.',
   bespokeCtaLabel = 'Talk to us',
   bespokeCtaHref = '/contact',
+  theme = 'dark',
 }: PricingProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
@@ -128,7 +135,7 @@ export default function Pricing({
   }, []);
 
   return (
-    <section className="pricing-section">
+    <section className="pricing-section" data-theme={theme}>
       {/* Header */}
       <div className="container">
         <div className="pricing__header stack--lg">
@@ -176,6 +183,11 @@ export default function Pricing({
                       <ul className="pricing-card__features">
                         {tier.features.map((f, i) => (
                           <li key={i} className="pricing-card__feature text-body--xs color--secondary">
+                            <span className="pricing-card__feature-icon" aria-hidden="true">
+                              <svg viewBox="0 0 12 12" fill="none">
+                                <path d="M3 6L5.25 8.25L9 3.75" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                              </svg>
+                            </span>
                             {f}
                           </li>
                         ))}
@@ -211,8 +223,8 @@ export default function Pricing({
         {/* Controls */}
         <div className="container">
           <div data-gsap-slider-controls="" className="pricing-slider__controls flex gap--sm">
-            <button data-gsap-slider-control="prev" className="pricing-slider__control">Prev</button>
-            <button data-gsap-slider-control="next" className="pricing-slider__control">Next</button>
+            <button data-gsap-slider-control="prev" className="pricing-slider__control text-body--sm font--medium">Prev</button>
+            <button data-gsap-slider-control="next" className="pricing-slider__control text-body--sm font--medium">Next</button>
           </div>
         </div>
       </div>

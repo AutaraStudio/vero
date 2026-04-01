@@ -127,7 +127,7 @@ export default function HeroCentred({
               ref={badgeRef as React.Ref<HTMLAnchorElement>}
               href={badge.href}
               data-animate=""
-              className="hero-centred__badge"
+              className="hero-centred__badge section-label"
             >
               {badge.label}
             </a>
@@ -136,7 +136,7 @@ export default function HeroCentred({
           <h1
             ref={headingRef as React.Ref<HTMLHeadingElement>}
             data-animate=""
-            className="hero-centred__title text-display--xl"
+            className="hero-centred__title text-display--xl max-ch-25"
           >
             {headline}
           </h1>
@@ -145,7 +145,7 @@ export default function HeroCentred({
             <p
               ref={introRef as React.Ref<HTMLParagraphElement>}
               data-animate=""
-              className="hero-centred__intro section-intro"
+              className="hero-centred__intro section-intro text-centre"
             >
               {intro}
             </p>

@@ -156,6 +156,13 @@ export const homePage = defineType({
 
     /* ── USPs ── */
     defineField({
+      name: 'uspsSectionLabel',
+      title: 'Section Eyebrow Label',
+      type: 'string',
+      group: 'usps',
+      description: 'Optional small label above the heading (e.g. "Why Vero Assess"). Leave blank to hide.',
+    }),
+    defineField({
       name: 'uspsSectionHeading',
       title: 'Section Heading',
       type: 'string',
@@ -191,6 +198,16 @@ export const homePage = defineType({
               title: 'Body',
               type: 'text',
               rows: 3,
+            }),
+            defineField({
+              name: 'image',
+              title: 'Card Image',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Optional image shown in the card header.',
+              fields: [
+                defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+              ],
             }),
           ],
         },

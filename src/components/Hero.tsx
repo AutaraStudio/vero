@@ -9,9 +9,10 @@ interface HeroProps {
   title?: string;
   intro?: string;
   ctaLabel?: string;
+  theme?: string;
 }
 
-export default function Hero({ title, intro, ctaLabel }: HeroProps) {
+export default function Hero({ title, intro, ctaLabel, theme = 'dark' }: HeroProps) {
   // On-load animations (no scroll trigger)
   const badgeRef = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const titleRef = useTextReveal({ scroll: false, delay: 0.3 });
@@ -22,7 +23,7 @@ export default function Hero({ title, intro, ctaLabel }: HeroProps) {
   const visualRef = useFadeUp({ delay: 0, duration: 0.8, y: 32 });
 
   return (
-    <section className="hero section--flush">
+    <section className="hero section--flush" data-theme={theme}>
       <div className="container">
 
         {/* ── Upper: centred text block ── */}
@@ -30,7 +31,7 @@ export default function Hero({ title, intro, ctaLabel }: HeroProps) {
           <div className="hero__header-inner">
             <span ref={badgeRef as React.RefObject<HTMLSpanElement>} data-animate="" className="section-label">Vero Assess</span>
 
-            <h1 ref={titleRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="hero__title text-h1 text-balance">
+            <h1 ref={titleRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="hero__title text-h1 text-balance max-ch-40">
               {title ?? <>Identify authentic talent.<br />Make strategic hiring decisions.</>}
             </h1>
 

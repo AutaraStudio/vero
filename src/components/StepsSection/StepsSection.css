@@ -2,6 +2,10 @@
    STEPS SECTION
 ============================================================ */
 
+.steps-section {
+  background-color: var(--color--page-bg);
+}
+
 .steps-section__header {
   text-align: center;
   display: flex;

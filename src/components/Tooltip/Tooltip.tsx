@@ -18,8 +18,8 @@ interface TooltipProps {
 export function TooltipContent({ title, body }: { title?: string; body: string }) {
   return (
     <>
-      {title && <div className="tooltip__card-title"><h3 className="tooltip__card-heading">{title}</h3></div>}
-      <div className="tooltip__card-body"><p className="tooltip__card-text">{body}</p></div>
+      {title && <div className="tooltip__card-title"><h3 className="tooltip__card-heading text-label--md color--primary">{title}</h3></div>}
+      <div className="tooltip__card-body"><p className="tooltip__card-text text-label--md color--secondary leading--normal">{body}</p></div>
     </>
   );
 }

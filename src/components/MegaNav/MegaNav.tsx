@@ -46,7 +46,7 @@ export default function MegaNav({
 
   return (
     <nav ref={navRef} data-menu-open="false" data-menu-wrap="" className="mega-nav">
-      <div className="mega-nav__bar surface--raised">
+      <div className="mega-nav__bar">
         <div className="mega-nav__container flex--between">
           <div className="mega-nav__bar-start flex">
 

@@ -21,11 +21,14 @@ export const HOME_PAGE_QUERY = `
       ctaLabel,
       ctaHref
     },
+    uspsSectionLabel,
     uspsSectionHeading,
     uspsSectionSubheading,
     usps[] {
       label,
-      body
+      body,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
     },
     pricingSectionHeading,
     pricingSectionSubheading,

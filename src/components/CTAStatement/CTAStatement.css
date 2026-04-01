@@ -1,0 +1,161 @@
+/* ============================================================
+   CTA STATEMENT
+   Problem statement → solution reveal with bordered feature box.
+============================================================ */
+
+.cta-statement {
+  padding-top: var(--space--section);
+  padding-bottom: var(--space--section);
+  background-color: var(--color--page-bg);
+}
+
+@media (max-width: 768px) {
+  .cta-statement {
+    padding-top: var(--space--section-mobile);
+    padding-bottom: var(--space--section-mobile);
+  }
+}
+
+/* ── Inner box ── */
+
+.cta-statement__box {
+  background-color: var(--color--page-bg);
+  border-radius: var(--radius--xl);
+  padding: 5rem 2rem 4rem;
+  overflow: hidden;
+}
+
+@media (max-width: 767px) {
+  .cta-statement__box {
+    padding: 3rem 1.5rem;
+  }
+}
+
+/* ── Header ── */
+
+.cta-statement__header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cta-statement__statement {
+  margin: 0 auto;
+}
+
+.cta-statement__divider {
+  width: 1px;
+  background-color: var(--color--border-default);
+  flex-shrink: 0;
+}
+
+/* ── Feature box ── */
+
+.cta-statement__feature {
+  position: relative;
+  max-width: 48rem;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color--border-default);
+  padding: 1.5rem 2rem;
+  min-height: 5.875rem;
+}
+
+/* Extending horizontal lines */
+.cta-statement__feature::before,
+.cta-statement__feature::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  height: 1px;
+  background-color: var(--color--border-default);
+  pointer-events: none;
+}
+
+.cta-statement__feature::before {
+  right: 100%;
+}
+
+.cta-statement__feature::after {
+  left: 100%;
+}
+
+/* ── Dot indicator ── */
+
+.cta-statement__dot {
+  position: absolute;
+  top: -0.9375rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  width: 1.875rem;
+  height: 1.875rem;
+  background-color: var(--color--page-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cta-statement__dot-inner {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: var(--radius--full);
+  background-color: var(--color--interactive-primary);
+}
+
+/* ── Benefit row ── */
+
+.cta-statement__benefit-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+
+.cta-statement__check {
+  flex-shrink: 0;
+  width: 1.125rem;
+  color: var(--color--interactive-primary);
+}
+
+/* ── Loop (grid stacking — widest item sets container width) ── */
+
+.cta-statement__loop {
+  display: grid;
+  height: 1.5em; /* one line height at text-h5 */
+  overflow: hidden;
+}
+
+/* All items in the same grid cell — grid auto-sizes to widest */
+.cta-statement__loop-item {
+  grid-area: 1 / 1;
+  white-space: nowrap;
+}
+
+/* ── CTA ── */
+
+.cta-statement__cta {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
+/* ── Reduced motion — pin first item, skip animation ── */
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-statement__loop-item:first-child {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 560px) {
+  .cta-statement__benefit-row {
+    gap: 0.875rem;
+  }
+}

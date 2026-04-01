@@ -7,6 +7,7 @@
   padding-top: var(--space--section);
   padding-bottom: var(--space--section);
   border-bottom: 1px solid var(--color--border-default);
+  background-color: var(--color--page-bg);
 }
 
 /* ── Header ── */
@@ -161,28 +162,33 @@
   padding: 0.25rem 0;
 }
 
-.pricing-card__feature::before {
-  content: "";
-  display: inline-block;
+.pricing-card__feature-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
   width: 1rem;
   height: 1rem;
-  flex-shrink: 0;
   margin-top: 0.1em;
   border-radius: var(--radius--full);
   background: var(--color--accent-green-bg);
   border: 1px solid var(--color--accent-green-border);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 6L5.25 8.25L9 3.75' stroke='%236fd08b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 0.75rem;
-  transition: background-color 0.5s ease, border-color 0.5s ease;
+  color: var(--swatch--green-500);
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* Active card check icons — light circles with white check on dark bg */
-[data-gsap-slider-item-status="active"] .pricing-card__feature::before {
+.pricing-card__feature-icon svg {
+  width: 0.75rem;
+  height: 0.75rem;
+  display: block;
+}
+
+[data-gsap-slider-item-status="active"] .pricing-card__feature-icon {
   background-color: var(--swatch--neutral-0-o15);
   border-color: var(--swatch--neutral-0-o20);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 6L5.25 8.25L9 3.75' stroke='%23ffffff' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  color: var(--swatch--neutral-0);
 }
 
 /* ── Upgrade note ── */
@@ -210,30 +216,45 @@
 
 /* ── Dropdown ── */
 
+.pricing-dropdown__select-wrap {
+  position: relative;
+}
+
 .pricing-dropdown__select {
   width: 100%;
-  padding: 0.625rem 0.75rem;
+  padding: 0.625rem 2.5rem 0.625rem 0.75rem;
   border: 1px solid var(--color--border-default);
   border-radius: var(--radius--md);
   background: var(--color--surface-raised);
   color: var(--color--text-primary);
   font-family: inherit;
-  font-size: var(--font--body-sm);
   cursor: pointer;
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M6.667 8.333L10 11.667l3.333-3.334' stroke='%23999' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1.125rem;
-  padding-right: 2.5rem;
-  transition: background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease;
+  transition: background-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.pricing-dropdown__chevron {
+  position: absolute;
+  right: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--color--text-tertiary);
+  pointer-events: none;
+  transition: color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-gsap-slider-item-status="active"] .pricing-dropdown__select {
   background-color: var(--swatch--neutral-0-o10);
   border-color: var(--swatch--neutral-0-o20);
   color: var(--swatch--neutral-0);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M6.667 8.333L10 11.667l3.333-3.334' stroke='%23ffffff' stroke-width='1.25' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+[data-gsap-slider-item-status="active"] .pricing-dropdown__chevron {
+  color: var(--swatch--neutral-0);
 }
 
 .pricing-dropdown__select option {
@@ -263,8 +284,6 @@
   border-radius: var(--radius--md);
   padding: 0.625em 1.25em;
   font-family: inherit;
-  font-size: var(--font--body-sm);
-  font-weight: 500;
   cursor: pointer;
   transition: var(--transition--default);
 }

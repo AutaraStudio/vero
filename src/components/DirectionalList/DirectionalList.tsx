@@ -72,7 +72,7 @@ function DirectionalRow<T extends { href?: string; id?: string | number }>({
         <div className="directional-list__rule directional-list__rule--top" />
         {columns.map((col, i) => (
           <div key={i} className={`directional-list__col directional-list__col--${col.width ?? 'flex'}`}>
-            <span className="directional-list__cell">
+            <span className="directional-list__cell text-body--sm">
               {typeof col.render === 'function' ? col.render(item) : String(item[col.render] ?? '')}
             </span>
           </div>
@@ -94,7 +94,7 @@ function DirectionalRow<T extends { href?: string; id?: string | number }>({
       <div className="directional-list__rule directional-list__rule--top" />
       {columns.map((col, i) => (
         <div key={i} className={`directional-list__col directional-list__col--${col.width ?? 'flex'}`}>
-          <span className="directional-list__cell">
+          <span className="directional-list__cell text-body--sm">
             {typeof col.render === 'function' ? col.render(item) : String(item[col.render] ?? '')}
           </span>
         </div>
@@ -111,7 +111,7 @@ export function DirectionalList<T extends { href?: string; id?: string | number 
       <div className="directional-list__header">
         {columns.map((col, i) => (
           <div key={i} className={`directional-list__col directional-list__col--${col.width ?? 'flex'}`}>
-            <span className="directional-list__eyebrow">{col.label}</span>
+            <span className="directional-list__eyebrow text-label--sm">{col.label}</span>
           </div>
         ))}
       </div>

@@ -513,6 +513,39 @@ export function initMegaNav(root: HTMLElement): () => void {
     }, 150);
   }
 
+  /* ── Hero theme inheritance + scroll/menu state ── */
+  const heroSection = document.querySelector<HTMLElement>('main > *:first-child');
+  const heroTheme = heroSection?.getAttribute('data-theme') ?? null;
+
+  if (heroTheme) {
+    root.setAttribute('data-theme', heroTheme);
+  }
+
+  function updateNavAppearance() {
+    const isScrolled = window.scrollY > 10;
+    const isMenuOpen = root.getAttribute('data-menu-open') === 'true';
+    const showLight = isScrolled || isMenuOpen;
+
+    root.classList.toggle('is--scrolled', showLight);
+    if (showLight) {
+      root.removeAttribute('data-theme');
+    } else if (heroTheme) {
+      root.setAttribute('data-theme', heroTheme);
+    } else {
+      root.removeAttribute('data-theme');
+    }
+  }
+
+  function handleNavScroll() {
+    updateNavAppearance();
+  }
+
+  const menuObserver = new MutationObserver(updateNavAppearance);
+  menuObserver.observe(root, { attributes: true, attributeFilter: ['data-menu-open'] });
+
+  window.addEventListener('scroll', handleNavScroll, { passive: true });
+  updateNavAppearance();
+
   /* ── Bind events ── */
   toggles.forEach((btn) => {
     btn.addEventListener('mouseenter', handleToggleEnter);
@@ -555,6 +588,8 @@ export function initMegaNav(root: HTMLElement): () => void {
     burger.removeEventListener('click', burgerHandler);
     backBtn.removeEventListener('click', backHandler);
     window.removeEventListener('resize', handleResize);
+    window.removeEventListener('scroll', handleNavScroll);
+    menuObserver.disconnect();
     clearTimers();
     killDropdown();
     killMobile();

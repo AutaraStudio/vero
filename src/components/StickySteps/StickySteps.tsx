@@ -76,9 +76,9 @@ export function StickySteps({
                 data-sticky-steps-status={isActive ? 'active' : isBefore ? 'before' : 'after'}
               >
                 <div ref={(el) => { anchorRefs.current[index] = el; }} className="sticky-steps__text">
-                  <span className="sticky-steps__eyebrow">{step.eyebrow}</span>
-                  <h2 className="sticky-steps__headline">{step.headline}</h2>
-                  <p className="sticky-steps__body">{step.body}</p>
+                  <span className="section-label">{step.eyebrow}</span>
+                  <h2 className="sticky-steps__headline text-h2 font--bold">{step.headline}</h2>
+                  <p className="sticky-steps__body text-body--lg max-ch-40">{step.body}</p>
                 </div>
 
                 <div className="sticky-steps__media">

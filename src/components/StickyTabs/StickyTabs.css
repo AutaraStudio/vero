@@ -86,6 +86,7 @@
 
 .sticky-tab__image {
   flex: 1;
+  position: relative;
   display: flex;
   align-items: stretch;
 }
