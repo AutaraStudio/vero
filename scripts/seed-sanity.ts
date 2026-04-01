@@ -447,6 +447,9 @@ const homePageDoc = {
   heroIntro:
     'Evaluate applicants in depth and at speed. Vero Assess reduces workloads, enhances recruitment and delivers the talent your organisation needs.',
   heroCTALabel: 'Get started',
+  heroCTAHref: '/get-started',
+  heroSecondaryCTALabel: 'See how it works',
+  heroSecondaryCTAHref: '/how-it-works',
   howItWorksHeading: 'Getting started is straightforward',
   howItWorksIntro:
     'Getting started with Vero Assess is straightforward. Here\u2019s what to expect.',
@@ -473,11 +476,131 @@ const homePageDoc = {
       ctaHref: '/get-started',
     },
   ],
+  uspsSectionHeading: 'Better experiences. Better hires.',
+  uspsSectionSubheading:
+    'Vero Assess puts a safe, accessible and scientifically-backed solution at the heart of your recruitment campaign.',
+  usps: [
+    {
+      _key: 'usp1',
+      label: 'Skills-based assessments',
+      body: 'Designed using the latest academic research, Vero Assess includes trait-level validated personality tests, situational judgment tests, aptitude assessments and values-based assessments.',
+    },
+    {
+      _key: 'usp2',
+      label: 'Tailored to specific roles',
+      body: 'Choose from 10 job families, target specific roles within them and plug a package of ready-to-go and relevant assessments into your process.',
+    },
+    {
+      _key: 'usp3',
+      label: 'Integrated into your systems',
+      body: 'Compatible with individual tech architecture and capable of integrating with ATS software, Vero Assess can be implemented quickly and cost effectively.',
+    },
+    {
+      _key: 'usp4',
+      label: 'Secure, compliant, accessible',
+      body: 'Vero Assess meets the highest standards including ISO27001, ISO9001, Cyber Essentials Plus Certified and WCAG 2.2, keeping data safe and giving everyone the opportunity to perform.',
+    },
+    {
+      _key: 'usp5',
+      label: 'In-depth reporting',
+      body: 'A simple dashboard gives assessors an at-a-glance view of each candidate\u2019s progress including a percentage best-fit score, while individual profiles provide detailed performance data.',
+    },
+    {
+      _key: 'usp6',
+      label: 'Powered by Tazio',
+      body: 'Based on the same tech as our recruitment and career development platform, Vero Assess offers candidates and assessors dedicated portals, built for ease of use and accessibility.',
+    },
+    {
+      _key: 'usp7',
+      label: 'Shaped around your needs',
+      body: 'Buy a package that meets your demands, from smaller one-off campaigns to annual high volume recruitment campaigns across multiple roles.',
+    },
+  ],
+  pricingSectionHeading: 'Flexible pricing',
+  pricingSectionSubheading:
+    'Pick an option that works for you or get in touch if you need something more tailored.',
+  pricingCtaLabel: 'Find out more and buy',
+}
+
+const siteSettingsDoc = {
+  _id: 'siteSettings',
+  _type: 'siteSettings',
+  footerCtaHeading: 'Ready to find the right people?',
+  footerCtaBody:
+    'Start assessing smarter. Go live within 48 hours with science-backed, role-specific assessments.',
+  footerCtaButtonLabel: 'Get started',
+  footerCtaButtonHref: '/get-started',
+  navCtaLabel: 'Get started',
+  navCtaHref: '/get-started',
+}
+
+const pricingPageDoc = {
+  _id: 'pricingPage',
+  _type: 'pricingPage',
+  heroHeadline: 'Flexible pricing',
+  heroIntro:
+    'Vero Assess is available at four levels. Pick an option that works for you or get in touch to discuss our bespoke service if you\u2019re looking for something more flexible to fit into your assessment process.',
+  bespokeHeading: 'Need a more customised solution?',
+  bespokeBody:
+    'We also offer tailored assessments for hiring, development or training, and end-to-end solutions that take candidates from initial application through to onboarding and beyond.',
+  bespokeCtaLabel: 'Talk to us',
+  bespokeCtaHref: '/contact',
+}
+
+const assessmentsPageDoc = {
+  _id: 'assessmentsPage',
+  _type: 'assessmentsPage',
+  heroHeadline: 'Assessment solutions for every role',
+  heroIntro:
+    'Choose from 10 job families, each with ready-to-go, science-backed assessments built around the specific traits, values and strengths that matter for that role.',
+  heroCTALabel: 'View pricing',
+  heroCTAHref: '/pricing',
+}
+
+const howItWorksPageDoc = {
+  _id: 'howItWorksPage',
+  _type: 'howItWorksPage',
+  heroHeadline: 'How Vero Assess works',
+  heroIntro:
+    'From purchase to shortlist in as little as 48 hours. Here\u2019s everything you need to know about getting started and what to expect.',
+  heroCTALabel: 'View pricing',
+  heroCTAHref: '/pricing',
+  heroSecondaryCTALabel: 'Get started',
+  heroSecondaryCTAHref: '/get-started',
+}
+
+const aboutPageDoc = {
+  _id: 'aboutPage',
+  _type: 'aboutPage',
+  heroHeadline: 'About Vero Assess',
+  heroIntro:
+    'Vero Assess is a skills-based hiring platform built to help organisations find the right people, faster. Powered by Tazio, it brings together validated assessments, objective scoring and role-specific insight in one ready-to-go solution.',
+  heroCTALabel: 'Get started',
+  heroCTAHref: '/get-started',
+}
+
+const contactPageDoc = {
+  _id: 'contactPage',
+  _type: 'contactPage',
+  heroHeadline: 'Get in touch',
+  heroIntro:
+    'Whether you\u2019re ready to get started or just want to find out more, we\u2019d love to hear from you.',
+  heroEmailLabel: 'Email us',
+  heroEmail: 'hello@veroassess.com',
 }
 
 async function seed() {
   console.log('🌱 Starting Sanity seed...\n')
-  const allDocs = [homePageDoc, ...pricingTiers, ...jobCategories, ...roles]
+  const singletons = [
+    homePageDoc,
+    siteSettingsDoc,
+    pricingPageDoc,
+    assessmentsPageDoc,
+    howItWorksPageDoc,
+    aboutPageDoc,
+    contactPageDoc,
+  ]
+  const allDocs = [...singletons, ...pricingTiers, ...jobCategories, ...roles]
   let success = 0
   let failed = 0
   for (const doc of allDocs) {

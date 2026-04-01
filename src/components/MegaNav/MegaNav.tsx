@@ -27,7 +27,15 @@ function ChevronLeft({ className }: { className?: string }) {
 
 /* ── Component ── */
 
-export default function MegaNav() {
+interface MegaNavProps {
+  navCtaLabel?: string;
+  navCtaHref?: string;
+}
+
+export default function MegaNav({
+  navCtaLabel = 'Get started',
+  navCtaHref = '/get-started',
+}: MegaNavProps) {
   const navRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -83,8 +91,8 @@ export default function MegaNav() {
                   </Button>
                 </li>
                 <li className="mega-nav__bar-action">
-                  <Button variant="primary" size="sm" href="/get-started">
-                    Get started
+                  <Button variant="primary" size="sm" href={navCtaHref}>
+                    {navCtaLabel}
                   </Button>
                 </li>
               </ul>

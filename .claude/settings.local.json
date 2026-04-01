@@ -9,7 +9,9 @@
       "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/DimensionsSection.tsx\")",
       "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/InActionSection.tsx\")",
       "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/StatsBar.tsx\")",
-      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/RoleRoster.tsx\")"
+      "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/RoleRoster.tsx\")",
+      "Bash(npx tsx:*)",
+      "Bash(npm run:*)"
     ]
   }
 }

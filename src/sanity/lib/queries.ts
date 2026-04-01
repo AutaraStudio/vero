@@ -3,6 +3,9 @@ export const HOME_PAGE_QUERY = `
     heroTitle,
     heroIntro,
     heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     howItWorksHeading,
     howItWorksIntro,
     steps[] {
@@ -10,7 +13,76 @@ export const HOME_PAGE_QUERY = `
       body,
       ctaLabel,
       ctaHref
-    }
+    },
+    uspsSectionHeading,
+    uspsSectionSubheading,
+    usps[] {
+      label,
+      body
+    },
+    pricingSectionHeading,
+    pricingSectionSubheading,
+    pricingCtaLabel
+  }
+`
+
+export const SITE_SETTINGS_QUERY = `
+  *[_type == "siteSettings"][0] {
+    footerCtaHeading,
+    footerCtaBody,
+    footerCtaButtonLabel,
+    footerCtaButtonHref,
+    navCtaLabel,
+    navCtaHref
+  }
+`
+
+export const PRICING_PAGE_QUERY = `
+  *[_type == "pricingPage"][0] {
+    heroHeadline,
+    heroIntro,
+    bespokeHeading,
+    bespokeBody,
+    bespokeCtaLabel,
+    bespokeCtaHref
+  }
+`
+
+export const ASSESSMENTS_PAGE_QUERY = `
+  *[_type == "assessmentsPage"][0] {
+    heroHeadline,
+    heroIntro,
+    heroCTALabel,
+    heroCTAHref
+  }
+`
+
+export const HOW_IT_WORKS_PAGE_QUERY = `
+  *[_type == "howItWorksPage"][0] {
+    heroHeadline,
+    heroIntro,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref
+  }
+`
+
+export const ABOUT_PAGE_QUERY = `
+  *[_type == "aboutPage"][0] {
+    heroHeadline,
+    heroIntro,
+    heroCTALabel,
+    heroCTAHref
+  }
+`
+
+export const CONTACT_PAGE_QUERY = `
+  *[_type == "contactPage"][0] {
+    heroHeadline,
+    heroIntro,
+    heroEmailLabel,
+    heroEmail
   }
 `
 

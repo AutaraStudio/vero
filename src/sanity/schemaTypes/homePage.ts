@@ -9,6 +9,8 @@ export const homePage = defineType({
   groups: [
     { name: 'hero', title: 'Hero' },
     { name: 'howItWorks', title: 'How It Works' },
+    { name: 'usps', title: 'USPs' },
+    { name: 'pricing', title: 'Pricing Section' },
   ],
   fields: [
     /* ── Hero ── */
@@ -28,6 +30,24 @@ export const homePage = defineType({
     defineField({
       name: 'heroCTALabel',
       title: 'Hero CTA Label',
+      type: 'string',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroCTAHref',
+      title: 'Hero CTA Href',
+      type: 'string',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroSecondaryCTALabel',
+      title: 'Hero Secondary CTA Label',
+      type: 'string',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroSecondaryCTAHref',
+      title: 'Hero Secondary CTA Href',
       type: 'string',
       group: 'hero',
     }),
@@ -79,6 +99,70 @@ export const homePage = defineType({
           ],
         },
       ],
+    }),
+
+    /* ── USPs ── */
+    defineField({
+      name: 'uspsSectionHeading',
+      title: 'Section Heading',
+      type: 'string',
+      group: 'usps',
+    }),
+    defineField({
+      name: 'uspsSectionSubheading',
+      title: 'Section Subheading',
+      type: 'text',
+      rows: 2,
+      group: 'usps',
+    }),
+    defineField({
+      name: 'usps',
+      title: 'USPs',
+      type: 'array',
+      group: 'usps',
+      of: [
+        {
+          type: 'object',
+          preview: {
+            select: { title: 'label' },
+          },
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'body',
+              title: 'Body',
+              type: 'text',
+              rows: 3,
+            }),
+          ],
+        },
+      ],
+    }),
+
+    /* ── Pricing Section ── */
+    defineField({
+      name: 'pricingSectionHeading',
+      title: 'Section Heading',
+      type: 'string',
+      group: 'pricing',
+    }),
+    defineField({
+      name: 'pricingSectionSubheading',
+      title: 'Section Subheading',
+      type: 'text',
+      rows: 2,
+      group: 'pricing',
+    }),
+    defineField({
+      name: 'pricingCtaLabel',
+      title: 'Pricing CTA Label',
+      type: 'string',
+      group: 'pricing',
     }),
   ],
   preview: {

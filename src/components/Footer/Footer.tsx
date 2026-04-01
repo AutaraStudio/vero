@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
+import { client } from '@/sanity/lib/client';
+import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import './Footer.css';
 
 const linkColumns = [
@@ -51,7 +53,14 @@ const linkColumns = [
   },
 ];
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await client.fetch(SITE_SETTINGS_QUERY);
+
+  const heading = settings?.footerCtaHeading ?? 'Ready to find the right people?';
+  const body = settings?.footerCtaBody ?? 'Start assessing smarter. Go live within 48 hours with science-backed, role-specific assessments.';
+  const btnLabel = settings?.footerCtaButtonLabel ?? 'Get started';
+  const btnHref = settings?.footerCtaButtonHref ?? '/get-started';
+
   return (
     <footer className="footer" data-theme="brand-purple-deep">
       {/* ── CTA banner ── */}
@@ -65,17 +74,16 @@ export default function Footer() {
             <div className="footer__cta-content">
               <div className="footer__cta-text">
                 <h2 className="text-h2 color--primary">
-                  Ready to find the right people?
+                  {heading}
                 </h2>
               </div>
               <div className="footer__cta-action">
                 <p className="text-body--sm color--secondary leading--snug">
-                  Start assessing smarter. Go live within 48 hours with
-                  science-backed, role-specific assessments.
+                  {body}
                 </p>
                 <div className="footer__cta-btn">
-                  <Button variant="cta" size="md" href="/get-started">
-                    Get started
+                  <Button variant="cta" size="md" href={btnHref}>
+                    {btnLabel}
                   </Button>
                 </div>
               </div>

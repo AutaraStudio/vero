@@ -1,5 +1,3 @@
-# Design Skill — Vero Assess
-
 # Dark SaaS Design Skill
 ## Premium Next.js / React Frontend — Codebase-Specific
 
@@ -12,7 +10,7 @@ codebase and its exact token system. Read it fully before writing any CSS.
 
 | Pattern | Why it failed | The fix |
 |---|---|---|
-| Centred hero every time | No editorial confidence | Asymmetric grid, text-left by default |
+| Same layout every section | No visual rhythm | Choose layout based on content — centred, split, or asymmetric |
 | `box-shadow` on flat cards | Muddy, floaty on dark | Borders only; shadows for overlays only |
 | `ease` on every transition | Soft, mushy, generic | Named bezier curves per interaction type |
 | Aptos same weight throughout | No hierarchy drama | 800/900 display vs 400 body — exploit the full range |
@@ -22,121 +20,61 @@ codebase and its exact token system. Read it fully before writing any CSS.
 
 ---
 
-## 1. The Colour Layering System
+## 1. The Colour System — The Fundamental Rule
 
-This is the most important section. Every accent colour operates on a strict
-**3-tier opacity ladder** over the dark base.
-
-From the reference sites: Inscribe uses 8% blue tints with full-opacity UI chrome.
-Daylit uses 12–15% yellow tints with full-opacity CTAs that match. Databricks barely
-tints at all — red only appears at 100% on specific elements. All three are correct
-for their brands. The pattern that unifies them is the jump from low tint to full
-opacity — no values in between.
-
-### The 3-Tier Ladder
+5 brand colours. Each gets exactly 2 theme variants. No exceptions, no mixing.
 
 ```
-Tier 1 — Section background:   accent at  8–10%  over neutral-900
-Tier 2 — Card / surface:        accent at 15–18%  over Tier 1
-Tier 3 — Elements:              accent at  100%   — icons, labels, borders, numbers
+Purple:  --swatch--purple-500  #472d6a
+Yellow:  --swatch--yellow-500  #fec601
+Green:   --swatch--green-500   #6fd08b
+Orange:  --swatch--orange-500  #f15f23
+Blue:    --swatch--blue-500    #21a4f4
 ```
 
-Never use a mid-opacity value (30–70%) on accent colours. It reads as a mistake,
-not a decision. The gap between 18% and 100% is what makes full-opacity elements pop.
+**Light variant** `[data-theme="brand-[color]"]` — that colour as a low-opacity
+tint over white. Text uses dark shades of that colour for legibility.
 
-### Dark Accent Themes — Add to globals.css
+**Dark variant** `[data-theme="brand-[color]-deep"]` — that colour at full
+opacity as the background. Text is white (exception: yellow-deep uses dark text
+because yellow is a light colour).
 
-The existing `brand-blue`, `brand-green` etc. are light-base themes (white + tint).
-These are the dark-base equivalents for dark pages:
+**No colour mixing.** A green section is green. A blue section is blue.
+Never mix brand colours into each other.
 
-```css
-/* ── DARK ACCENT: PURPLE ─────────────────────────────── */
-[data-theme="dark-purple"] {
-  --color--page-bg:         color-mix(in srgb, var(--swatch--purple-500) 10%, var(--swatch--neutral-900));
-  --color--page-bg-subtle:  color-mix(in srgb, var(--swatch--purple-500) 6%,  var(--swatch--neutral-900));
-  --color--surface-raised:  color-mix(in srgb, var(--swatch--purple-500) 18%, var(--swatch--neutral-900));
-  --color--surface-sunken:  color-mix(in srgb, var(--swatch--purple-500) 6%,  var(--swatch--neutral-900));
-  --color--border-default:  color-mix(in srgb, var(--swatch--purple-500) 22%, transparent);
-  --color--border-subtle:   color-mix(in srgb, var(--swatch--purple-500) 12%, transparent);
-  --color--border-strong:   color-mix(in srgb, var(--swatch--purple-500) 35%, transparent);
-  --color--text-primary:    var(--swatch--neutral-0);
-  --color--text-secondary:  var(--swatch--neutral-0-o70);
-  --color--text-tertiary:   var(--swatch--neutral-0-o50);
-  --color--text-brand:      var(--swatch--purple-300);
-}
+### The 10 Themes
 
-/* ── DARK ACCENT: BLUE ───────────────────────────────── */
-[data-theme="dark-blue"] {
-  --color--page-bg:         color-mix(in srgb, var(--swatch--blue-500) 10%, var(--swatch--neutral-900));
-  --color--page-bg-subtle:  color-mix(in srgb, var(--swatch--blue-500) 6%,  var(--swatch--neutral-900));
-  --color--surface-raised:  color-mix(in srgb, var(--swatch--blue-500) 16%, var(--swatch--neutral-900));
-  --color--surface-sunken:  color-mix(in srgb, var(--swatch--blue-500) 6%,  var(--swatch--neutral-900));
-  --color--border-default:  color-mix(in srgb, var(--swatch--blue-500) 22%, transparent);
-  --color--border-subtle:   color-mix(in srgb, var(--swatch--blue-500) 12%, transparent);
-  --color--border-strong:   color-mix(in srgb, var(--swatch--blue-500) 35%, transparent);
-  --color--text-primary:    var(--swatch--neutral-0);
-  --color--text-secondary:  var(--swatch--neutral-0-o70);
-  --color--text-tertiary:   var(--swatch--neutral-0-o50);
-  --color--text-brand:      var(--swatch--blue-300);
-}
+| Theme | Base | Text |
+|---|---|---|
+| `brand-purple` | purple-500 at ~8% over white | dark purple |
+| `brand-purple-deep` | purple-500 at 100% | white |
+| `brand-green` | green-500 at ~8% over white | dark green |
+| `brand-green-deep` | green-500 at 100% | white |
+| `brand-blue` | blue-500 at ~8% over white | dark blue |
+| `brand-blue-deep` | blue-500 at 100% | white |
+| `brand-orange` | orange-500 at ~8% over white | dark orange |
+| `brand-orange-deep` | orange-500 at 100% | white |
+| `brand-yellow` | yellow-500 at ~10% over white | neutral-900 dark |
+| `brand-yellow-deep` | yellow-500 at 100% | neutral-900 dark |
 
-/* ── DARK ACCENT: GREEN ──────────────────────────────── */
-[data-theme="dark-green"] {
-  --color--page-bg:         color-mix(in srgb, var(--swatch--green-500) 10%, var(--swatch--neutral-900));
-  --color--page-bg-subtle:  color-mix(in srgb, var(--swatch--green-500) 6%,  var(--swatch--neutral-900));
-  --color--surface-raised:  color-mix(in srgb, var(--swatch--green-500) 16%, var(--swatch--neutral-900));
-  --color--surface-sunken:  color-mix(in srgb, var(--swatch--green-500) 6%,  var(--swatch--neutral-900));
-  --color--border-default:  color-mix(in srgb, var(--swatch--green-500) 22%, transparent);
-  --color--border-subtle:   color-mix(in srgb, var(--swatch--green-500) 12%, transparent);
-  --color--border-strong:   color-mix(in srgb, var(--swatch--green-500) 35%, transparent);
-  --color--text-primary:    var(--swatch--neutral-0);
-  --color--text-secondary:  var(--swatch--neutral-0-o70);
-  --color--text-brand:      var(--swatch--green-300);
-}
+**CTA buttons on deep themes:**
+- purple-deep → yellow CTA (highest contrast, already correct)
+- green-deep / blue-deep / orange-deep → purple CTA (brand anchor)
+- yellow-deep → purple CTA (brand anchor, dark on light)
 
-/* ── DARK ACCENT: ORANGE ─────────────────────────────── */
-[data-theme="dark-orange"] {
-  --color--page-bg:         color-mix(in srgb, var(--swatch--orange-500) 9%, var(--swatch--neutral-900));
-  --color--page-bg-subtle:  color-mix(in srgb, var(--swatch--orange-500) 5%, var(--swatch--neutral-900));
-  --color--surface-raised:  color-mix(in srgb, var(--swatch--orange-500) 15%, var(--swatch--neutral-900));
-  --color--surface-sunken:  color-mix(in srgb, var(--swatch--orange-500) 5%, var(--swatch--neutral-900));
-  --color--border-default:  color-mix(in srgb, var(--swatch--orange-500) 22%, transparent);
-  --color--border-subtle:   color-mix(in srgb, var(--swatch--orange-500) 12%, transparent);
-  --color--border-strong:   color-mix(in srgb, var(--swatch--orange-500) 35%, transparent);
-  --color--text-primary:    var(--swatch--neutral-0);
-  --color--text-secondary:  var(--swatch--neutral-0-o70);
-  --color--text-brand:      var(--swatch--orange-300);
-}
+**Full definitions live in:** `src/app/globals.css`
+**Full CSS to add:** `docs/claude/themes.css`
 
-/* ── DARK ACCENT: YELLOW ─────────────────────────────── */
-/* Yellow is the most visually aggressive. Max 1 section per page. */
-[data-theme="dark-yellow"] {
-  --color--page-bg:         color-mix(in srgb, var(--swatch--yellow-500) 8%, var(--swatch--neutral-900));
-  --color--page-bg-subtle:  color-mix(in srgb, var(--swatch--yellow-500) 4%, var(--swatch--neutral-900));
-  --color--surface-raised:  color-mix(in srgb, var(--swatch--yellow-500) 14%, var(--swatch--neutral-900));
-  --color--surface-sunken:  color-mix(in srgb, var(--swatch--yellow-500) 4%, var(--swatch--neutral-900));
-  --color--border-default:  color-mix(in srgb, var(--swatch--yellow-500) 20%, transparent);
-  --color--border-subtle:   color-mix(in srgb, var(--swatch--yellow-500) 10%, transparent);
-  --color--border-strong:   color-mix(in srgb, var(--swatch--yellow-500) 30%, transparent);
-  --color--text-primary:    var(--swatch--neutral-0);
-  --color--text-secondary:  var(--swatch--neutral-0-o70);
-  --color--text-brand:      var(--swatch--yellow-400);
-}
+### Tier Ladder (inside any section)
+
+```
+Tier 1 — Section bg:   the theme colour at 8–12%  (set by data-theme)
+Tier 2 — Card surface: white at 10–15% over theme (set by data-theme)
+Tier 3 — Elements:     brand colour at 100%        — icons, labels, borders
 ```
 
-### Full-Opacity Elements (Tier 3) — Always 100%
-
-Within any tinted section, these always use the swatch at full opacity:
-
-- **Eyebrow / section labels** — `color: var(--swatch--[colour]-500)`
-- **Icon fills and strokes**
-- **Stat / metric numbers**
-- **Card top-border accent** — `border-top: 2px solid var(--swatch--[colour]-500)`
-- **Active pill / tag backgrounds**
-- **CTA button backgrounds** (matching accent)
-
-The contrast between an 8% background and a 100% icon is what makes a
-section feel designed rather than decorated.
+Never use mid-opacity (30–70%) on brand colours. The jump from ~12% to 100%
+is what creates the visual pop.
 
 ---
 
@@ -245,16 +183,20 @@ blue-500      #21a4f4   Data / intelligence accent
 
 ### Theme Quick Reference
 
-| Theme | Use for |
-|---|---|
-| `dark` | Default — hero, neutral, stats, footer |
-| `dark-purple` | Primary feature section |
-| `dark-blue` | Data / intelligence features |
-| `dark-green` | Outcomes, success, growth |
-| `dark-orange` | Risk, urgency, action |
-| `dark-yellow` | Max 1 use — CTA moment only |
-| `brand-purple-deep` | Single peak CTA banner per page |
+| Theme | Variant | Use for |
+|---|---|---|
+| `brand-purple` | light | General brand sections, feature highlights |
+| `brand-purple-deep` | dark | Hero, footer CTA, primary conversion — peak emphasis |
+| `brand-green` | light | Success outcomes, positive results |
+| `brand-green-deep` | dark | Strong success moment, hiring outcome sections |
+| `brand-blue` | light | Data, intelligence, analytics features |
+| `brand-blue-deep` | dark | Strong data moment, platform capability sections |
+| `brand-orange` | light | Risk, urgency, action features |
+| `brand-orange-deep` | dark | Strong urgency moment, fraud/risk sections |
+| `brand-yellow` | light | CTA spotlight, attention sections |
+| `brand-yellow-deep` | dark | Maximum attention — use very sparingly |
 
+**Never invent new colours or mix brand colours together.**
 ---
 
 ## 5. Typography
@@ -283,7 +225,31 @@ Labels/Caps:    600       0.75rem                      letter-spacing 0.08em
 
 ## 6. Layout
 
-### Hero — Asymmetric Split (default)
+The rule is **intentionality**, not asymmetry. Each layout pattern serves
+specific content. Choose the one that fits — don't default to the same
+grid for every section.
+
+### Hero Layouts
+
+**Centred** — works well when the headline is the hero. Big statement copy,
+a strong CTA, no competing visual. The homepage hero is a good example:
+the message is bold enough to carry the page on its own.
+```css
+.hero__header-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.5rem;
+  max-width: 44rem;
+  margin: 0 auto;
+}
+.hero__title { max-width: 22ch; }
+.hero__intro { max-width: 46ch; }
+```
+
+**Split (text left / visual right)** — works when there's a genuine
+product visual, UI screenshot, or illustration that earns its space.
 ```css
 .hero__header-inner {
   display: grid;
@@ -292,19 +258,46 @@ Labels/Caps:    600       0.75rem                      letter-spacing 0.08em
   align-items: center;
   text-align: left;
 }
-/* Centred ONLY for assessment / form-entry pages */
 ```
+
+**Statement / editorial** — works for interior page heroes where the
+headline is the dominant element. Let the type breathe.
+```css
+.hero__title {
+  font-size: clamp(3rem, 7vw, 6rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  max-width: 16ch; /* intentional line breaks */
+}
+```
+
+### Which to use when
+
+| Situation | Layout |
+|---|---|
+| Homepage — bold brand statement | Centred |
+| Feature / product page with UI visual | Split |
+| Assessment / job family page | Split (visual earns its place) |
+| Utility / form page | Centred |
+| Interior marketing page | Statement / editorial |
+
+The test: does the visual earn its place? If yes, split. If the headline
+is the hero, centre it. Never split just to avoid being centred.
 
 ### Feature Section Variants
 ```css
-/* A — standard: text left, visual right */
+/* A — text left, visual right (most common) */
 grid-template-columns: 1fr 1.3fr;
 
-/* B — bleed: visual touches section edge */
+/* B — visual bleeds to edge (high impact) */
 grid-template-columns: 1fr 1fr; gap: 0;
 
-/* C — text-dominant */
+/* C — text dominant, small visual */
 grid-template-columns: 1.4fr 1fr;
+
+/* D — full width, no visual (stats, testimonials, logos) */
+width: 100%; /* single column, centred content */
 ```
 
 ### Stats Row (never in cards)

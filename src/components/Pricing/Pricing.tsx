@@ -103,7 +103,19 @@ function RoleDropdown({ id }: { id: string }) {
   );
 }
 
-export default function Pricing() {
+interface PricingProps {
+  bespokeHeading?: string;
+  bespokeBody?: string;
+  bespokeCtaLabel?: string;
+  bespokeCtaHref?: string;
+}
+
+export default function Pricing({
+  bespokeHeading = 'Need a more customised solution?',
+  bespokeBody = 'We also offer tailored assessments for hiring, development or training, and end-to-end solutions that take candidates from initial application through to onboarding and beyond.',
+  bespokeCtaLabel = 'Talk to us',
+  bespokeCtaHref = '/contact',
+}: PricingProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
   const headingRef = useTextReveal({ delay: 0.1 });
@@ -210,15 +222,13 @@ export default function Pricing() {
         <div className="pricing__bespoke bordered-section">
           <div className="pricing__bespoke-inner">
             <div className="stack--md">
-              <h3 className="text-h4 color--primary">Need a more customised solution?</h3>
+              <h3 className="text-h4 color--primary">{bespokeHeading}</h3>
               <p className="text-body--md color--secondary leading--relaxed max-ch-60">
-                We also offer tailored assessments for hiring, development or
-                training, and end-to-end solutions that take candidates from
-                initial application through to onboarding and beyond.
+                {bespokeBody}
               </p>
             </div>
-            <Button variant="secondary" size="md" href="/contact">
-              Talk to us
+            <Button variant="secondary" size="md" href={bespokeCtaHref}>
+              {bespokeCtaLabel}
             </Button>
           </div>
         </div>

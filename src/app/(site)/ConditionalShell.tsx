@@ -3,7 +3,14 @@
 import { usePathname } from 'next/navigation';
 import MegaNav from '@/components/MegaNav';
 import SmoothScroll from '@/components/SmoothScroll';
-export default function ConditionalShell({ children }: { children: React.ReactNode }) {
+
+interface ConditionalShellProps {
+  children: React.ReactNode;
+  navCtaLabel?: string;
+  navCtaHref?: string;
+}
+
+export default function ConditionalShell({ children, navCtaLabel, navCtaHref }: ConditionalShellProps) {
   const pathname = usePathname();
   const isCheckout = pathname.startsWith('/get-started');
 
@@ -13,7 +20,7 @@ export default function ConditionalShell({ children }: { children: React.ReactNo
 
   return (
     <>
-      <MegaNav />
+      <MegaNav navCtaLabel={navCtaLabel} navCtaHref={navCtaHref} />
       <SmoothScroll>
         {children}
       </SmoothScroll>
