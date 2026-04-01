@@ -16,7 +16,6 @@ interface CTAStatementProps {
   benefits?: string[];
   cta?: { label: string; href: string };
   theme?: string;
-  boxTheme?: string;
 }
 
 export default function CTAStatement({
@@ -30,7 +29,6 @@ export default function CTAStatement({
   ],
   cta = { label: 'Get started free', href: '/get-started' },
   theme = 'dark',
-  boxTheme = 'brand-purple',
 }: CTAStatementProps) {
   const statementRef = useTextReveal({ delay: 0.1 });
   const eyebrowRef   = useFadeUp({ delay: 0.3, duration: 0.5, y: 12 });
@@ -77,7 +75,7 @@ export default function CTAStatement({
   return (
     <section className="cta-statement" data-theme={theme}>
       <div className="container">
-        <div className="cta-statement__box" data-theme={boxTheme}>
+        <div className="cta-statement__box">
 
           {/* Header — statement → dividers → eyebrow */}
           <div className="cta-statement__header">

@@ -48,7 +48,7 @@ export default async function Home() {
 
       {data?.usps?.length > 0 && (
         <FeaturedSlider
-          theme="dark"
+          theme=""
           sectionLabel={data.uspsSectionLabel}
           heading={data.uspsSectionHeading}
           intro={data.uspsSectionSubheading}
@@ -57,8 +57,8 @@ export default async function Home() {
       )}
 
       <CTAStatement
-        theme="dark"
-        boxTheme="brand-orange"
+        theme="brand-purple"
+        
       />
     </main>
   );

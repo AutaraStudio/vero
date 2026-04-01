@@ -388,6 +388,10 @@
 
   /* Layout */
   --height--navbar: 4rem;
+
+  /* Bordered-section sparkle — SVG data URL (raw hex required; url() strings cannot use var())
+     Override per theme below. Default = purple, matches brand-purple-deep context. */
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23472d6a'/%3E%3C/svg%3E");
 }
 
 /* ============================================================
@@ -419,6 +423,7 @@
   --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.3);
   --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
   --shadow--nav:        0 1px 0 var(--swatch--neutral-800);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23ffffff'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND PURPLE — light tint
@@ -456,6 +461,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--purple-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--purple-o30);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23472d6a'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND PURPLE DEEP — full purple peak CTA
@@ -490,6 +496,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px rgba(0, 0, 0, 0.25);
   --shadow--overlay-lg: 0 8px 40px rgba(0, 0, 0, 0.4);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23fec601'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND BLUE — light tint
@@ -527,6 +534,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--blue-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--blue-o30);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%2321a4f4'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND BLUE DEEP — full blue peak
@@ -601,6 +609,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--green-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--green-o30);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%236fd08b'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND GREEN DEEP — full green peak
@@ -675,6 +684,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--orange-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--orange-o30);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23f15f23'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND ORANGE DEEP — full orange peak
@@ -749,6 +759,7 @@
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--yellow-o20);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--yellow-o30);
+  --bordered-section-sparkle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 13 13' fill='none'%3E%3Cpath d='M5.74 1.03L5.37 4.4C5.31 4.96 4.86 5.4 4.31 5.46L0.94 5.83L0.41 5.89v1.22l.53.06 3.37.37c.55.06 1 .51 1.06 1.06l.37 3.37.06.54h1.22l.06-.54.37-3.37c.06-.55.51-1 1.06-1.06l3.37-.37.54-.06V5.89l-.54-.06-3.37-.37c-.55-.06-1-.51-1.06-1.06L7.08 1.03 7.02.5H5.8l-.06.53Z' fill='%23472d6a'/%3E%3C/svg%3E");
 }
 
 /* ── BRAND YELLOW DEEP — full yellow peak

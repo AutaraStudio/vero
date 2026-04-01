@@ -17,12 +17,230 @@ codebase and its exact token system. Read it fully before writing any CSS.
 | Purple gradient backgrounds | Instant AI tell | Flat surfaces + single-colour accent elements |
 | Same section background repeated | Visually inert scroll | Deliberate section rhythm — each has a purpose |
 | Accent colour sprayed everywhere | Loses all impact | Each accent has one job. Yellow = 1 per page max. |
+| Hardcoded hex / rgb() anywhere | Theme breaks instantly | Every colour through a CSS custom property, always |
+| Colouring child elements manually | Breaks on theme change | Let the theme cascade do it — semantic tokens only |
+| Card with no surface token | Floats or disappears | `var(--color--surface-raised)` always, no exceptions |
+| Button hover with raw colour | Breaks in other themes | All states use `var(--color--interactive-*-hover)` |
 
 ---
 
-## 1. The Colour System — The Fundamental Rule
+## ★ 1. The Theme Cascade — The Primary Mental Model
 
-5 brand colours. Each gets exactly 2 theme variants. No exceptions, no mixing.
+> **Set `data-theme` once on the wrapper. Every child uses semantic tokens.
+> The right colour for every element falls out automatically.
+> Never override colours manually inside a themed wrapper.**
+
+This is the entire system. Everything else in this file is detail.
+
+### How it works
+
+`data-theme` on any element redefines every `--color--*` custom property scoped
+to that element and all its descendants. Every child uses only semantic tokens
+(`var(--color--text-primary)`, `var(--color--surface-raised)`, etc.) — it never
+needs to know which theme is active. Change `data-theme` and everything adapts.
+
+```
+┌──────────────────────────────────────────────────────────────────┐
+│  <section data-theme="brand-orange">                             │
+│    ↳ ALL --color--* tokens are redefined for every child here    │
+│                                                                  │
+│    --color--page-bg         = warm peach (orange 7% over white)  │
+│    --color--text-primary    = dark orange                        │
+│    --color--surface-raised  = pure white                         │
+│    --color--border-default  = orange at 20% opacity              │
+│    --color--interactive-cta = orange-500                         │
+│                                                                  │
+│  ┌─────────────────────────────────────────────────────────┐     │
+│  │  <h2> color: var(--color--text-primary)                 │  →  dark orange
+│  │                                                         │     │
+│  │  <div class="card">                                     │     │
+│  │    background: var(--color--surface-raised)             │  →  white
+│  │    border: 1px solid var(--color--border-default)       │  →  orange-20%
+│  │  </div>                                                 │     │
+│  │                                                         │     │
+│  │  <button class="btn--cta">                              │     │
+│  │    background: var(--color--interactive-cta)            │  →  orange-500
+│  │    color:      var(--color--interactive-cta-text)       │  →  white
+│  │  </button>                                              │     │
+│  └─────────────────────────────────────────────────────────┘     │
+└──────────────────────────────────────────────────────────────────┘
+```
+
+### Same component, every theme — zero CSS changes
+
+The exact same JSX and CSS produces a fully correct, different result in every theme:
+
+| Token | `brand-orange` | `dark-blue` | `brand-purple-deep` | `dark` |
+|---|---|---|---|---|
+| `--color--page-bg` | warm peach | dark navy-blue | full purple | dark navy |
+| `--color--text-primary` | dark orange | white | white | white |
+| `--color--surface-raised` | pure white | blue 18% over dark | purple 16% tint | neutral 16% over dark |
+| `--color--border-default` | orange 20% | white 15% | white 15% | white 15% |
+| `--color--interactive-cta` | orange-500 | purple-500 | yellow-500 | yellow-500 |
+
+**Same JSX. Same CSS. Different `data-theme`. Correct result every time.**
+
+### The rule that follows
+
+Never write CSS that targets a specific theme to colour a child element.
+The moment you write `[data-theme="brand-orange"] .my-text { color: var(--swatch--orange-700); }`
+you have broken the system — that component will be wrong in every other theme.
+
+```css
+/* ❌ Wrong — component knows about the theme */
+[data-theme="brand-orange"] .section-heading {
+  color: var(--swatch--orange-700);
+}
+
+/* ✅ Correct — component is theme-agnostic */
+.section-heading {
+  color: var(--color--text-primary);
+  /* The theme decides what this resolves to */
+}
+```
+
+**The only exception:** Tier 3 decorative accent elements (icons, eyebrow labels,
+stat numbers, accent top-borders) use swatch tokens directly. These are intentional
+100% opacity punctuation marks and are deliberately fixed to the section accent.
+Everything else uses semantic tokens only.
+
+---
+
+## 2. Complete Element → Token Reference
+
+This is the lookup table. Use it before writing any colour value.
+
+```css
+/* ══ SECTION / PAGE ══════════════════════════════════════════════ */
+
+/* Themed section */
+<section data-theme="[theme]">
+  /* background-color: var(--color--page-bg) is set automatically by the theme */
+
+/* Plain section without an accent theme */
+.my-section {
+  background-color: var(--color--page-bg);  /* MUST be explicit — never implicit */
+}
+
+/* ══ SURFACES (elements raised above the section background) ═════ */
+
+card, panel, pricing card,
+CTA box, testimonial block   →  background: var(--color--surface-raised)
+inset / recessed surface      →  background: var(--color--surface-sunken)
+modal / drawer backdrop       →  background: var(--color--surface-overlay)
+
+/* ══ TEXT ════════════════════════════════════════════════════════ */
+
+heading (h1–h6)               →  color: var(--color--text-primary)
+body copy, paragraphs         →  color: var(--color--text-secondary)
+caption, footnote, muted      →  color: var(--color--text-tertiary)
+brand overline, label text    →  color: var(--color--text-brand)
+inverse text (on dark bg)     →  color: var(--color--text-inverse)
+
+/* Tier 3 exception — eyebrow label text and stat numbers only */
+eyebrow label text            →  color: var(--swatch--[colour]-500)
+stat number                   →  color: var(--swatch--[colour]-400)
+
+/* ══ BORDERS ═════════════════════════════════════════════════════ */
+
+standard card / section       →  border: 1px solid var(--color--border-default)
+subtle divider / separator    →  border: 1px solid var(--color--border-subtle)
+strong emphasis border        →  border: 1px solid var(--color--border-strong)
+
+/* Tier 3 exception — accent top border on cards only */
+card accent top-border        →  border-top: 2px solid var(--swatch--[colour]-500)
+
+/* ══ BUTTONS — PRIMARY ═══════════════════════════════════════════ */
+
+background (rest)             →  var(--color--interactive-primary)
+background (hover)            →  var(--color--interactive-primary-hover)
+label text                    →  var(--color--interactive-primary-text)
+
+/* ══ BUTTONS — SECONDARY / GHOST ════════════════════════════════ */
+
+border                        →  var(--color--interactive-secondary-border)
+label text                    →  var(--color--interactive-secondary-text)
+background (hover)            →  var(--color--interactive-secondary-hover-bg)
+
+/* ══ BUTTONS — CTA (max 1 per page) ════════════════════════════ */
+
+background (rest)             →  var(--color--interactive-cta)
+background (hover)            →  var(--color--interactive-cta-hover)
+label text                    →  var(--color--interactive-cta-text)
+
+/* ══ ICONS ═══════════════════════════════════════════════════════ */
+
+icon in body content          →  color: var(--color--text-secondary)   (inherits)
+icon as Tier 3 accent         →  color: var(--swatch--[colour]-500)     (swatch OK)
+SVG fill / stroke             →  fill: currentColor  OR  var(--color--*)
+                                 NEVER a hardcoded hex or rgb()
+
+/* ══ INTERACTIVE STATES ══════════════════════════════════════════ */
+
+focus ring                    →  outline: 2px solid var(--color--interactive-primary)
+```
+
+---
+
+## 3. Worked Example — Brand Orange Section (from the screenshot)
+
+The section in the screenshot uses `data-theme="brand-orange"`. Here is the
+correct implementation — every element uses semantic tokens only.
+
+```tsx
+<section data-theme="brand-orange">
+  {/*
+    Tokens resolved inside this wrapper:
+    --color--page-bg         = warm peach  (orange 7% over white)
+    --color--text-primary    = dark orange
+    --color--text-secondary  = muted orange-tinted grey
+    --color--surface-raised  = pure white
+    --color--border-default  = orange at 20% opacity
+    --color--interactive-cta = orange-500
+    --color--interactive-cta-text = white
+  */}
+
+  <h2 className="section-heading">
+    {/* color: var(--color--text-primary) → resolves to dark orange */}
+    Siloed assessment data gives you fragments,
+    not the full picture of candidate potential.
+  </h2>
+
+  <span className="section-label">
+    {/* background: var(--color--surface-raised) → white pill
+        border: var(--color--border-default)     → orange-20% border
+        color: var(--color--text-secondary)      → muted orange text  */}
+    With Vero Assess you can
+  </span>
+
+  <div className="feature-card">
+    {/* background: var(--color--surface-raised) → white card
+        border: 1px solid var(--color--border-default) → orange-20% */}
+
+    <CheckIcon style={{ color: 'var(--swatch--orange-500)' }} />
+    {/* ↑ Tier 3 accent icon — swatch token is correct here */}
+
+    <p className="text-body--lg">
+      {/* color: var(--color--text-secondary) → muted orange-tinted */}
+      Make data-backed hiring decisions with confidence
+    </p>
+  </div>
+
+  <button className="btn--cta">
+    {/* background: var(--color--interactive-cta)      → orange-500
+        color:      var(--color--interactive-cta-text) → white     */}
+    Get started free
+  </button>
+</section>
+```
+
+**Now change `data-theme="brand-orange"` to `data-theme="dark-blue"` — the same JSX
+and CSS produces white text, a blue-tinted card, a blue border, and a purple CTA.
+No CSS changes whatsoever. The theme cascade does all the work.**
+
+---
+
+## 4. Colour System — 5 Colours, Multiple Variants Each
 
 ```
 Purple:  --swatch--purple-500  #472d6a
@@ -32,64 +250,41 @@ Orange:  --swatch--orange-500  #f15f23
 Blue:    --swatch--blue-500    #21a4f4
 ```
 
-**Light variant** `[data-theme="brand-[color]"]` — that colour as a low-opacity
-tint over white. Text uses dark shades of that colour for legibility.
+**No colour mixing.** A green section is green. An orange section is orange.
+Never mix brand colours. Never add a second accent to a section.
 
-**Dark variant** `[data-theme="brand-[color]-deep"]` — that colour at full
-opacity as the background. Text is white (exception: yellow-deep uses dark text
-because yellow is a light colour).
-
-**No colour mixing.** A green section is green. A blue section is blue.
-Never mix brand colours into each other.
-
-### The 10 Themes
-
-| Theme | Base | Text |
-|---|---|---|
-| `brand-purple` | purple-500 at ~8% over white | dark purple |
-| `brand-purple-deep` | purple-500 at 100% | white |
-| `brand-green` | green-500 at ~8% over white | dark green |
-| `brand-green-deep` | green-500 at 100% | white |
-| `brand-blue` | blue-500 at ~8% over white | dark blue |
-| `brand-blue-deep` | blue-500 at 100% | white |
-| `brand-orange` | orange-500 at ~8% over white | dark orange |
-| `brand-orange-deep` | orange-500 at 100% | white |
-| `brand-yellow` | yellow-500 at ~10% over white | neutral-900 dark |
-| `brand-yellow-deep` | yellow-500 at 100% | neutral-900 dark |
-
-**CTA buttons on deep themes:**
-- purple-deep → yellow CTA (highest contrast, already correct)
-- green-deep / blue-deep / orange-deep → purple CTA (brand anchor)
-- yellow-deep → purple CTA (brand anchor, dark on light)
-
-**Full definitions live in:** `src/app/globals.css`
-**Full CSS to add:** `docs/claude/themes.css`
-
-### Tier Ladder (inside any section)
+### What each theme variant resolves to
 
 ```
-Tier 1 — Section bg:   the theme colour at 8–12%  (set by data-theme)
-Tier 2 — Card surface: white at 10–15% over theme (set by data-theme)
-Tier 3 — Elements:     brand colour at 100%        — icons, labels, borders
+brand-[colour]         Light tint over white — for panels, modals, isolated cards
+                       surface-raised = white (clean lift on tinted bg)
+                       text-primary   = dark shade of the colour
+                       interactive-cta = the brand colour at 500
+
+dark-[colour]          Colour tint over dark navy — for main site sections
+                       surface-raised = colour at 18% over dark (tinted dark card)
+                       text-primary   = white
+                       interactive-cta = varies (see theme file)
+
+brand-[colour]-deep    Colour at 100% as the bg — peak emphasis moments only
+                       surface-raised = colour + 16% white (lighter card on bold)
+                       text-primary   = white (or dark for yellow)
+                       interactive-cta = contrasting colour (yellow or purple)
 ```
 
-Never use mid-opacity (30–70%) on brand colours. The jump from ~12% to 100%
-is what creates the visual pop.
+Full token values live in `src/app/globals.css`.
 
 ---
 
-## 2. Section Rhythm — The Page Architecture
-
-Based on the 5 reference sites, here is the proven rhythm for a typical page.
-Never deviate without a reason.
+## 5. Section Rhythm — Page Architecture
 
 ```
 1. Hero              → data-theme="dark"              (base dark — establish identity)
-2. Social proof      → no theme / border-only          (logos, trust signals — keep quiet)
+2. Social proof      → no theme / border-only          (logos — keep quiet)
 3. Feature A         → data-theme="dark-purple"        (primary brand — biggest feature)
-4. Feature B         → data-theme="dark"               (back to base — let it breathe)
+4. Feature B         → data-theme="dark"               (back to base — breathe)
 5. Feature C         → data-theme="dark-blue"          (second accent — new energy)
-6. Stats / Numbers   → data-theme="dark" (plain)       (earned dark moment — credibility)
+6. Stats / Numbers   → data-theme="dark"               (earned credibility moment)
 7. Feature D         → data-theme="dark-green"         (third accent — positive outcome)
 8. Testimonials      → no theme / subtle border        (quiet — let customer speak)
 9. CTA Banner        → data-theme="brand-purple-deep"  (peak emphasis — the close)
@@ -97,302 +292,144 @@ Never deviate without a reason.
 ```
 
 ### Rhythm Rules
-- **Never place two tinted sections back-to-back** — always a plain `dark` section between
-- **`brand-purple-deep`** is reserved for the single peak-emphasis CTA — once per page
+- **Never place two tinted sections back-to-back** — always a plain `dark` between
+- **`brand-purple-deep`** is reserved for the single peak CTA — once per page only
 - **Yellow** if used, replaces one accent slot — never the footer CTA
-- **Orange** works best for a mid-page urgency moment (risk, alert, fraud features)
-- The plain dark stats section is earned — it lands harder after a tinted section
+- **Orange** works best for a mid-page urgency/risk moment
 
-### Which Accent Goes Where
+---
+
+## 6. The 3-Tier Opacity Ladder
+
+Three distinct levels inside any section. The tier is set by which token you use.
+
 ```
-Purple   → trust, brand identity, primary feature
-Blue     → data, intelligence, analytics features
-Green    → outcomes, success, growth, hiring features
-Orange   → risk, urgency, action, detection features
-Yellow   → CTA spotlight only — max 1 per page
+Tier 1 — Section background:  var(--color--page-bg)          set by data-theme
+Tier 2 — Card / surface:      var(--color--surface-raised)   set by token
+Tier 3 — Accent elements:     var(--swatch--[colour]-500)    100% direct swatch
+```
+
+The jump from Tier 2 (~16–18%) to Tier 3 (100%) is what creates visual pop.
+Never use mid-opacity (30–70%) on brand accent colours.
+
+### What surface-raised resolves to per theme (Tier 2)
+
+```
+dark-blue:          blue-500 at 18% over dark navy   → blue-tinted dark card
+brand-orange:       pure white (neutral-0)            → clean white card on peach
+brand-purple-deep:  white at 16% over purple-500      → lighter purple card
+dark:               white at 12% over dark navy       → subtle lifted dark card
 ```
 
 ---
 
-## 3. Applying the Tiers Inside a Section
+## 7. Card, Panel & CTA Box Patterns
 
-### Card Pattern (inside tinted section)
+All surface elements follow the same pattern. The theme does the work.
+
 ```css
-/* Section = Tier 1 (8–10% bg) via data-theme                    */
-/* Card   = Tier 2 (15–18% surface) via --color--surface-raised   */
-/* Icon   = Tier 3 (100%) via swatch directly                     */
-
+/* Feature card — works in every theme */
 .feature-card {
-  background: var(--color--surface-raised);       /* Tier 2 — auto from theme */
-  border: 1px solid var(--color--border-default); /* ~22% opacity */
-  border-top: 2px solid var(--swatch--blue-500);  /* Tier 3 — 100% */
-  padding: 1.5rem;
+  background: var(--color--surface-raised);        /* Tier 2 — theme sets the shade */
+  border: 1px solid var(--color--border-default);  /* theme sets the opacity */
   border-radius: var(--radius--md);
+  padding: 1.5rem;
 }
-.feature-card__icon { color: var(--swatch--blue-500); }   /* Tier 3 */
-.feature-card__label {
-  color: var(--swatch--blue-400);
-  font-size: var(--font--label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+/* Optional Tier 3 accent top-border */
+.feature-card--accented {
+  border-top: 2px solid var(--swatch--[colour]-500);
 }
-```
 
-### Eyebrow Label (in tinted sections — use swatch, not semantic token)
-```tsx
-<span
-  className="section-label"
-  style={{ color: 'var(--swatch--blue-500)' }}
->
-  Feature name
-</span>
-```
+.feature-card__icon  { color: var(--swatch--[colour]-500); }  /* Tier 3 */
+.feature-card__title { color: var(--color--text-primary); }
+.feature-card__body  { color: var(--color--text-secondary); }
 
-### Stat Block (in tinted sections)
-```css
-.stat__number {
-  font-size: clamp(2.5rem, 5vw, 4.5rem);
-  font-weight: 800;
-  line-height: 1;
-  color: var(--swatch--[colour]-400);   /* full opacity, slightly lighter */
-  font-variant-numeric: tabular-nums;
+/* CTA box / highlight panel — same pattern */
+.cta-box {
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-top: 2px solid var(--swatch--[colour]-500);
+  border-radius: var(--radius--lg);
+  padding: 2rem;
 }
-.stat__label {
-  font-size: var(--font--label);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--color--text-secondary);
+.cta-box__heading { color: var(--color--text-primary); }
+.cta-box__body    { color: var(--color--text-secondary); }
+
+/* Pricing card */
+.pricing-card {
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
 }
+.pricing-card--featured {
+  border-color: var(--color--border-strong);
+  border-top: 3px solid var(--swatch--purple-500);
+}
+.pricing-card__price  { color: var(--color--text-primary); }
+.pricing-card__period { color: var(--color--text-tertiary); }
 ```
 
 ---
 
-## 4. Brand Tokens — Source of Truth
+## 8. Button System — Full Token Reference
 
-**Never hardcode hex values.** Always use tokens from `src/app/globals.css`.
-
-```
-neutral-900   #1d2331   Dark base canvas
-neutral-800   #2a3347   Elevated dark surface
-purple-500    #472d6a   Primary brand / purple accent
-yellow-500    #fec601   CTA spotlight — max 1 per page
-green-500               Success / outcomes accent
-orange-500    #f15f23   Risk / urgency accent
-blue-500      #21a4f4   Data / intelligence accent
-```
-
-### Theme Quick Reference
-
-| Theme | Variant | Use for |
-|---|---|---|
-| `brand-purple` | light | General brand sections, feature highlights |
-| `brand-purple-deep` | dark | Hero, footer CTA, primary conversion — peak emphasis |
-| `brand-green` | light | Success outcomes, positive results |
-| `brand-green-deep` | dark | Strong success moment, hiring outcome sections |
-| `brand-blue` | light | Data, intelligence, analytics features |
-| `brand-blue-deep` | dark | Strong data moment, platform capability sections |
-| `brand-orange` | light | Risk, urgency, action features |
-| `brand-orange-deep` | dark | Strong urgency moment, fraud/risk sections |
-| `brand-yellow` | light | CTA spotlight, attention sections |
-| `brand-yellow-deep` | dark | Maximum attention — use very sparingly |
-
-**Never invent new colours or mix brand colours together.**
----
-
-## 5. Typography
-
-### Font: Aptos Only
-All weights loaded (300–900). Exploit the full range.
-Do NOT introduce external fonts.
-
-```
-Display hero:   800–900   clamp(3rem, 7vw, 6rem)     line-height 1.05
-H1:             700       clamp(2.5rem, 5vw, 3.75rem) line-height 1.08
-H2:             700       clamp(1.75rem, 3.5vw, 2.75rem)
-H3:             600       1.75rem
-Body:           400       1rem                         line-height 1.65
-Labels/Caps:    600       0.75rem                      letter-spacing 0.08em
-```
-
-### Typography Rules
-- All large text: `letter-spacing: -0.02em`
-- Body copy max: `60ch`
-- Hero intro max: `40ch`
-- Avoid centred body copy longer than 2 lines
-- Stat numbers: `font-variant-numeric: tabular-nums`
-
----
-
-## 6. Layout
-
-The rule is **intentionality**, not asymmetry. Each layout pattern serves
-specific content. Choose the one that fits — don't default to the same
-grid for every section.
-
-### Hero Layouts
-
-**Centred** — works well when the headline is the hero. Big statement copy,
-a strong CTA, no competing visual. The homepage hero is a good example:
-the message is bold enough to carry the page on its own.
 ```css
-.hero__header-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 1.5rem;
-  max-width: 44rem;
-  margin: 0 auto;
-}
-.hero__title { max-width: 22ch; }
-.hero__intro { max-width: 46ch; }
-```
+/* PRIMARY */
+.btn--primary { background: var(--color--interactive-primary); color: var(--color--interactive-primary-text); }
+.btn--primary:hover { background: var(--color--interactive-primary-hover); }
 
-**Split (text left / visual right)** — works when there's a genuine
-product visual, UI screenshot, or illustration that earns its space.
-```css
-.hero__header-inner {
-  display: grid;
-  grid-template-columns: 1.15fr 0.85fr;
-  gap: 5rem;
-  align-items: center;
-  text-align: left;
-}
-```
+/* SECONDARY / GHOST */
+.btn--secondary { background: transparent; color: var(--color--interactive-secondary-text); border: 1.5px solid var(--color--interactive-secondary-border); }
+.btn--secondary:hover { background: var(--color--interactive-secondary-hover-bg); }
 
-**Statement / editorial** — works for interior page heroes where the
-headline is the dominant element. Let the type breathe.
-```css
-.hero__title {
-  font-size: clamp(3rem, 7vw, 6rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  line-height: 1.05;
-  max-width: 16ch; /* intentional line breaks */
-}
-```
+/* CTA — max 1 per page */
+.btn--cta { background: var(--color--interactive-cta); color: var(--color--interactive-cta-text); }
+.btn--cta:hover { background: var(--color--interactive-cta-hover); }
 
-### Which to use when
-
-| Situation | Layout |
-|---|---|
-| Homepage — bold brand statement | Centred |
-| Feature / product page with UI visual | Split |
-| Assessment / job family page | Split (visual earns its place) |
-| Utility / form page | Centred |
-| Interior marketing page | Statement / editorial |
-
-The test: does the visual earn its place? If yes, split. If the headline
-is the hero, centre it. Never split just to avoid being centred.
-
-### Feature Section Variants
-```css
-/* A — text left, visual right (most common) */
-grid-template-columns: 1fr 1.3fr;
-
-/* B — visual bleeds to edge (high impact) */
-grid-template-columns: 1fr 1fr; gap: 0;
-
-/* C — text dominant, small visual */
-grid-template-columns: 1.4fr 1fr;
-
-/* D — full width, no visual (stats, testimonials, logos) */
-width: 100%; /* single column, centred content */
-```
-
-### Stats Row (never in cards)
-```css
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr));
-  border-top: 1px solid var(--color--border-default);
-}
-.stats-row__item {
-  padding: 2.5rem 2rem;
-  border-right: 1px solid var(--color--border-default);
-}
-.stats-row__item:last-child { border-right: none; }
+/* Focus — all variants */
+:focus-visible { outline: 2px solid var(--color--interactive-primary); outline-offset: 2px; }
 ```
 
 ---
 
-## 7. Card Design
+## 9. Typography
 
-### Tier 1 — Flat bordered (default in plain dark sections)
-```css
-background: var(--color--surface-raised);
-border: 1px solid var(--color--border-default);
-border-radius: var(--radius--md);  /* 0.25rem — never softer */
-padding: 1.5rem;
-/* NO box-shadow */
+**Font: Aptos only.** Do NOT introduce external fonts.
+
+```
+Display:  800–900  clamp(3rem, 7vw, 6rem)        line-height 1.05
+H1:       700      clamp(2.5rem, 5vw, 3.75rem)   line-height 1.08
+H2:       700      clamp(1.75rem, 3.5vw, 2.75rem)
+H3:       600      1.75rem
+Body:     400      1rem                            line-height 1.65
+Labels:   600      0.75rem                         letter-spacing 0.08em
 ```
 
-### Tier 2 — Accent top-border (in tinted sections)
-```css
-background: var(--color--surface-raised);
-border: 1px solid var(--color--border-default);
-border-top: 2px solid var(--swatch--[colour]-500);
+Rules: large text `letter-spacing: -0.02em` — body max `60ch` — stat numbers `font-variant-numeric: tabular-nums` — all text colour via `var(--color--text-*)` tokens.
+
+---
+
+## 10. Easing Curves
+
+Named curves only. Never `ease`, `ease-in-out`, or `linear`.
+
+```
+power2.out    scroll reveals, page transitions
+power3.out    modal / panel open
+power2.in     modal / panel close
+power4.inOut  page-level wipes
+elastic.out   bounce feedback (sparingly)
 ```
 
-### Tier 3 — Elevated (modals, dropdowns, tooltips ONLY)
+CSS hover transitions only — never section animations (use GSAP):
 ```css
-border: 1px solid var(--color--border-strong);
-box-shadow: var(--shadow--card);  /* shadows ONLY here */
-```
-
-### Card Hover (all tiers)
-```css
-.card { transition: border-color 180ms cubic-bezier(0.16, 1, 0.3, 1); }
-.card:hover { border-color: var(--color--border-strong); }
-/* No lift, no shadow change — just the border brightens */
+transition: background-color var(--transition--default);
+transition: transform var(--transition--spring);
 ```
 
 ---
 
-## 8. Motion — Snappy & Precise
-
-### Add to globals.css
-```css
-:root {
-  --ease-entry:  cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-exit:   cubic-bezier(0.4, 0, 1, 1);
-  --ease-micro:  cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-state:  cubic-bezier(0.87, 0, 0.13, 1);
-}
-```
-
-### Duration Map
-```
-Hover / button feedback:  150–200ms  --ease-micro
-Tab / state change:       250–350ms  --ease-state
-Scroll reveal:            500–650ms  --ease-entry
-Dismiss / exit:           180–250ms  --ease-exit
-```
-
-### Scroll Reveal
-```css
-[data-reveal] {
-  opacity: 0;
-  transform: translateY(1.25rem);
-  transition: opacity 600ms var(--ease-entry), transform 600ms var(--ease-entry);
-}
-[data-reveal].is-visible { opacity: 1; transform: none; }
-
-[data-reveal-stagger] > * { opacity: 0; transform: translateY(0.75rem);
-  transition: opacity 500ms var(--ease-entry), transform 500ms var(--ease-entry); }
-[data-reveal-stagger].is-visible > *:nth-child(1) { opacity:1; transform:none; transition-delay:   0ms; }
-[data-reveal-stagger].is-visible > *:nth-child(2) { opacity:1; transform:none; transition-delay:  70ms; }
-[data-reveal-stagger].is-visible > *:nth-child(3) { opacity:1; transform:none; transition-delay: 140ms; }
-[data-reveal-stagger].is-visible > *:nth-child(4) { opacity:1; transform:none; transition-delay: 210ms; }
-
-@media (prefers-reduced-motion: reduce) {
-  [data-reveal], [data-reveal-stagger] > * { opacity:1; transform:none; transition:none; }
-}
-```
-
----
-
-## 9. Component Rules
+## 11. Component Rules
 
 ### Navbar
 ```css
@@ -400,528 +437,107 @@ Dismiss / exit:           180–250ms  --ease-exit
   background: color-mix(in srgb, var(--color--page-bg) 85%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--color--border-subtle);
-  /* No heavy shadow */
-  transition: all 200ms ease;
+  transition: background-color 200ms var(--transition--default);
 }
 ```
 
-### Eyebrow Labels (brand signature — keep)
+### Eyebrow Labels
 ```css
 .section-label {
-  padding: 0.25rem 0.75rem;
-  border: 1px solid var(--color--border-default);
   background: var(--color--surface-raised);
-  font-size: var(--font--label);
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  border: 1px solid var(--color--border-default);
+  color: var(--color--text-secondary);
   border-radius: var(--radius--full);
+  /* In tinted sections: override text to swatch Tier 3 */
 }
-/* In tinted sections: override text colour to section accent at 100% */
 ```
 
-### The Bordered Section (keep — use deliberately)
+### The Bordered Section
 ```html
-<!-- Only for: primary CTA banner, featured product moment -->
-<!-- Never on standard feature or testimonial sections -->
+<!-- Only for: primary CTA banner, featured product moment — never standard sections -->
 <div class="bordered-section" data-theme="brand-purple-deep">...</div>
 ```
 
 ---
 
-## 10. Hard Bans
+## 12. Hard Bans
 
 ```css
 /* ❌ NEVER */
-background: linear-gradient(...);                /* any gradient background */
-box-shadow: ... ;                                /* on flat content cards */
-border-radius: 0.75rem;                          /* keep sharp: max 0.5rem */
-transition: all 0.3s ease;                       /* use named curves */
-color: rgba(var(--accent), 0.4);                 /* mid-opacity accent = design mistake */
+background: linear-gradient(...);
+box-shadow on flat cards;
+border-radius > var(--radius--xl);
+transition: all 0.3s ease;
+color: rgba(var(--accent), 0.4);   /* mid-opacity accent */
+
+/* ❌ NEVER — raw colour values of any kind */
+color: #472d6a;
+background-color: rgba(71, 45, 106, 0.1);
+border-color: rgb(200, 200, 200);
+background: white; color: black;
+fill: #fff; stroke: #000;
+style={{ color: '#fff', background: 'rgba(...)' }}
+
+/* ❌ NEVER — theme-targeting overrides */
+[data-theme="brand-orange"] .any-child { color: var(--swatch--orange-700); }
+/* Use var(--color--text-primary) and let the theme resolve it */
 ```
 
 ```
-// ❌ NEVER in page structure
-Two tinted accent sections back-to-back (no plain dark section between)
-brand-purple-deep on more than 1 section per page
-Yellow theme used as a background more than once
-Centred hero on a marketing/feature page
+❌ NEVER in page structure
+Two tinted sections back-to-back
+brand-purple-deep more than once per page
+Yellow theme used more than once
+Centred hero on a feature or category page
+A surface element (card, panel, CTA) without an explicit background token
+A section without data-theme or explicit background-color token
 ```
 
 ---
 
-## 11. Pre-Build Checklist
+## 13. Pre-Build Checklist
 
-- [ ] What `data-theme` does this section use? Is it different from the one before it?
-- [ ] Which tier is each element on? (8% bg / 18% surface / 100% element)
-- [ ] Is the layout asymmetric, or is there a reason it's centred?
-- [ ] Does the headline use `clamp()` and `letter-spacing: -0.02em`?
-- [ ] Are card shadows removed?
-- [ ] Does the eyebrow label colour use the section accent at 100%?
-- [ ] Are `data-reveal` / `data-reveal-stagger` attributes added?
-- [ ] Is the easing curve named — not `ease` or `linear`?
-- [ ] Does the section before and after have a different background?
+### Theme cascade
+- [ ] Does the section wrapper have `data-theme`?
+- [ ] If no `data-theme`, does the section have `background-color: var(--color--page-bg)`?
+- [ ] Would the component look correct if I changed `data-theme` to any other theme?
+- [ ] Are all headings using `var(--color--text-primary)`?
+- [ ] Is all body copy using `var(--color--text-secondary)`?
+- [ ] Do all cards / panels / CTA boxes have `background: var(--color--surface-raised)`?
+- [ ] Do all borders use `var(--color--border-*)` tokens?
+- [ ] Do all buttons use `var(--color--interactive-*)` for bg, text, and hover?
+- [ ] Are there zero hex, rgb(), rgba(), hsl(), or named CSS colours anywhere?
+- [ ] Are swatches only used for Tier 3 (icons, eyebrows, stat numbers, accent borders)?
+
+### Design quality
+- [ ] Is this theme different from the section immediately before and after it?
 - [ ] Is `brand-purple-deep` used more than once on this page?
+- [ ] Does every `h1–h4` use `useTextReveal`? Every other reveal use `useFadeUp`?
+- [ ] Are card shadows removed (borders only on flat surfaces)?
+- [ ] Is the easing curve named — not `ease` or `linear`?
 
 ---
 
-## 12. The Litmus Test
+## 14. The Litmus Tests
 
-> **"Is every accent element at 8%, 18%, or 100% — nothing in between?"**
+> **"If I change `data-theme` on this wrapper to any other theme — does every child
+> automatically adapt with zero CSS changes?"**
+> If no — there are manual colour overrides that must be removed.
+
+> **"Is every accent element at page-bg / surface-raised / 100% swatch — nothing between?"**
+
+> **"Are there zero hex, rgb(), or rgba() values in this file?"**
 
 > **"Would a designer at Linear, Vercel, or Databricks ship this?"**
 
-If no to either — find the single weakest element and fix only that.
-One precise fix beats a full redesign every time.
-
 ---
 
-## 13. Osmo Animation Library
-
-Pre-built, project-restyled components adapted from the Osmo platform.
-Each has been converted to React + TypeScript with all visual values remapped
-to the project token system. Use them proactively — don't wait to be asked.
-
-When a layout calls for one of these patterns, reach for the right component directly.
-
----
-
-### OSMO-01 — StickySteps
-
-**Files:** `src/components/StickySteps/StickySteps.tsx` + `StickySteps.css`
-
-**What it does:**
-Scroll-driven feature section. Text blocks stack vertically on the left and
-become "active" as they cross the viewport centre. The right-side visual
-(image or custom React node) fades in/out in sync. On mobile it stacks
-vertically with all scroll logic disabled.
-
-**GSAP / dependencies:** None — vanilla scroll listener only.
-
-**When to use:**
-- 3–5 sequential product features that each need a dedicated visual
-- "How it works" step-by-step flows
-- Any feature section where listing all content at once would overwhelm
-- Replaces generic alternating left/right feature rows
-
-**When NOT to use:**
-- Fewer than 3 steps (use a simple split layout instead)
-- Content that isn't sequential or doesn't have distinct visuals per step
-
-**Usage:**
-```tsx
-import { StickySteps } from '@/components/StickySteps/StickySteps';
-
-const steps = [
-  {
-    eyebrow: 'Step 01',
-    headline: 'Ingest your data',
-    body: 'Connect any data source in minutes. We handle the schema.',
-    imageSrc: '/images/feature-ingest.png',
-    imageAlt: 'Data ingestion interface',
-  },
-  {
-    eyebrow: 'Step 02',
-    headline: 'Run assessments',
-    body: 'AI-powered scoring across every dimension that matters.',
-    imageSrc: '/images/feature-assess.png',
-    imageAlt: 'Assessment dashboard',
-  },
-  {
-    eyebrow: 'Step 03',
-    headline: 'Act on results',
-    body: 'Export, share, and integrate findings into your workflow.',
-    imageSrc: '/images/feature-results.png',
-    imageAlt: 'Results export screen',
-  },
-];
-
-// Dark-blue theme
-<StickySteps
-  steps={steps}
-  theme="dark-blue"
-  accentSwatch="var(--swatch--blue-500)"
-/>
-
-// Dark-green theme
-<StickySteps
-  steps={steps}
-  theme="dark-green"
-  accentSwatch="var(--swatch--green-500)"
-/>
-
-// Custom visual (any React node instead of an image)
-const stepsWithVisual = [
-  {
-    eyebrow: 'Step 01',
-    headline: 'Live dashboard',
-    body: 'See scores update in real time.',
-    visual: <DashboardPreview />,
-  },
-];
-```
-
-**Theming rules:**
-- Always pass a `dark-*` theme — this component lives on dark backgrounds
-- `accentSwatch` should match the theme colour (e.g. `dark-blue` → `--swatch--blue-500`)
-- The visual gets a 2px full-opacity accent top-border (Tier 3) automatically
-- The eyebrow renders at full opacity (Tier 3) — do not reduce it
-- Inactive steps dim to 30% opacity — do not change this value
-
-**Customising the visual aspect ratio:**
-The visual defaults to 4:3. Override per page if needed:
-```css
-.my-page .sticky-steps__visual { aspect-ratio: 16 / 10; }
-```
-
-**Page rhythm position:** slots 3, 5, or 7 (feature sections).
-Never place two StickySteps instances back-to-back on the same page.
-
----
-
-### OSMO-02 — useDisplayCount
-
-**File:** `src/hooks/useDisplayCount.ts`
-
-**What it does:**
-Counts rendered items and returns the number for display anywhere in JSX.
-Two exports: `useDisplayCount` for a single array, `useDisplayCounts` for
-multiple named groups simultaneously. Stays in sync automatically as the
-data changes — no DOM scanning, no `useEffect` needed.
-
-**GSAP / dependencies:** None — pure React `useMemo`.
-
-**When to use:**
-- Dynamic counts that reflect real data: "12 open positions", "47 assessments"
-- Stat callouts that must stay in sync with a filtered or paginated list
-- Any place the Osmo original used `[data-count-display]` + `[data-count-item]`
-
-**When NOT to use:**
-- Static hardcoded numbers (just write the number directly)
-- Counts that come from an API response (use the API value directly, not `.length`)
-
-**Usage — single group:**
-```tsx
-import { useDisplayCount } from '@/hooks/useDisplayCount';
-
-const count = useDisplayCount(jobs);
-
-<p className="text-secondary">
-  We have{' '}
-  <strong style={{ color: 'var(--swatch--purple-500)' }}>{count}</strong>
-  {' '}open positions
-</p>
-```
-
-**Usage — multiple groups:**
-```tsx
-import { useDisplayCounts } from '@/hooks/useDisplayCount';
-
-const counts = useDisplayCounts({ jobs, articles, integrations });
-
-<div className="stats-row">
-  <div className="stats-row__item">
-    <span className="stat__number">{counts.jobs}</span>
-    <span className="stat__label">Open positions</span>
-  </div>
-  <div className="stats-row__item">
-    <span className="stat__number">{counts.integrations}</span>
-    <span className="stat__label">Integrations</span>
-  </div>
-</div>
-```
-
-**Pairing with stat styling:**
-Count outputs pair directly with the stat block pattern from Section 9:
-```tsx
-<span
-  className="stat__number"
-  style={{ color: 'var(--swatch--blue-400)' }}
->
-  {counts.jobs}
-</span>
-```
-
-**Note:** For animated counting (number ticks up on scroll), combine with
-a GSAP `CountTo` animation — document separately when that Osmo component
-is added to the library.
-
----
-
-### OSMO-03 — Tooltip
-
-**Files:** `src/components/Tooltip/Tooltip.tsx` + `Tooltip.css`
-
-**What it does:**
-CSS-only hover tooltip. Configurable position (top/bottom × center/left/right),
-three icon types (info/question/alert) each with their own semantic accent colour,
-and a free content slot inside the card. No JS, no GSAP, no state.
-
-**GSAP / dependencies:** None — pure CSS `:hover` + transition.
-
-**When to use:**
-- Inline help on form labels, metric names, or jargon
-- Explaining a score, dimension, or data point without cluttering the UI
-- Any "?" or "ⓘ" moment next to a piece of text
-
-**When NOT to use:**
-- Content longer than 3–4 lines (use a modal or drawer)
-- Touch-primary surfaces (hover doesn't fire on mobile)
-- Interactive content inside (links, buttons — use Radix Popover instead)
-
-**Icon semantics (applied automatically via CSS):**
-- `info`     → blue  (`--swatch--blue-500`)   — neutral contextual info
-- `question` → purple (`--swatch--purple-500`) — "what does this mean?"
-- `alert`    → orange (`--swatch--orange-500`) — warning or caution
-
-**Usage:**
-```tsx
-import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
-
-// Standard title + body
-<Tooltip
-  icon="info"
-  y="top"
-  x="center"
-  content={
-    <TooltipContent
-      title="Dimension score"
-      body="This score reflects performance across 4 assessed competencies."
-    />
-  }
->
-  Cognitive ability
-</Tooltip>
-
-// Alert icon, bottom position
-<Tooltip
-  icon="alert"
-  y="bottom"
-  x="left"
-  content={<TooltipContent body="Score below threshold. Review recommended." />}
->
-  Risk score
-</Tooltip>
-
-// Custom content (no title, just a note)
-<Tooltip
-  icon="question"
-  content={<p className="tooltip__card-text">Calculated from last 90 days of data.</p>}
->
-  Trailing average
-</Tooltip>
-```
-
-**Theming notes:**
-- Card uses `--color--surface-raised` + `--color--border-strong` — adapts
-  automatically across all `data-theme` variants, no manual overrides needed
-- Box shadow is intentional here — this is an elevated overlay (Tier 3 card rule)
-- Icon colours are hardcoded to semantic swatches — do not override per section
-
----
-
-### OSMO-04 — DirectionalList
-
-**Files:** `src/components/DirectionalList/DirectionalList.tsx` + `DirectionalList.css`
-
-**What it does:**
-A table-style list where a coloured accent tile wipes in from the exact
-edge the cursor enters, and exits the same way it came. Creates a fluid,
-directional reveal on every row hover. Fully generic — accepts any column
-schema via props.
-
-**GSAP / dependencies:** None — vanilla mouseenter/mouseleave.
-
-**Direction modes:**
-- `"y"` — top/bottom only (best default for most lists)
-- `"x"` — left/right only
-- `"all"` — nearest edge detected (most dynamic, good for wide rows)
-
-**When to use:**
-- Assessment or candidate result rows
-- Integration / partner / tool listings
-- Press mentions, awards, publications
-- Any scannable list where rows link somewhere
-- Replaces boring striped tables or card grids for list-type content
-
-**When NOT to use:**
-- More than ~12 items (use a paginated table instead)
-- Non-clickable/non-linkable rows (the hover implies interactivity)
-- Dense data tables with 5+ columns
-
-**Usage:**
-```tsx
-import { DirectionalList } from '@/components/DirectionalList/DirectionalList';
-
-// Assessment results list
-const columns = [
-  { label: 'Candidate',  render: 'name',   width: 'primary' },
-  { label: 'Role',       render: 'role',   width: 'flex'    },
-  { label: 'Score',      render: (item) => `${item.score}%`, width: 'narrow' },
-  { label: 'Date',       render: 'date',   width: 'narrow'  },
-];
-
-<DirectionalList
-  columns={columns}
-  items={candidates}
-  directionType="y"
-  accentSwatch="var(--swatch--purple-500)"
-  onItemClick={(item) => router.push(`/candidates/${item.id}`)}
-/>
-
-// Integration listing (with hrefs)
-const integrations = [
-  { id: 1, name: 'Greenhouse', category: 'ATS', href: '/integrations/greenhouse' },
-  { id: 2, name: 'Workday',    category: 'HRIS', href: '/integrations/workday' },
-];
-
-const intCols = [
-  { label: 'Integration', render: 'name',     width: 'primary' },
-  { label: 'Category',    render: 'category', width: 'flex'    },
-];
-
-<DirectionalList
-  columns={intCols}
-  items={integrations}
-  directionType="y"
-  accentSwatch="var(--swatch--blue-500)"
-/>
-```
-
-**Theming:**
-- Pass `accentSwatch` matching the parent section's theme
-  (e.g. section `dark-green` → `accentSwatch="var(--swatch--green-500)"`)
-- The tile renders at 100% accent opacity (Tier 3) — intentional
-- Text colour transitions to `--color--text-inverse` on hover (white over tile)
-- Reduced motion: tile wipe is replaced by a simple background tint
-
-**Column width tokens:**
-- `primary` — 30% min-width, for the main identifier column
-- `flex` — fills remaining space
-- `auto` — shrinks to content
-- `narrow` — right-aligned, for years, scores, counts
-
-**Page rhythm position:** works in any section.
-Pairs especially well inside `dark-purple` or `dark-blue` themed sections
-where the accent tile colour is already established.
-
----
-
-### OSMO-05 — useContentReveal + RevealGroup
-
-**Files:**
-- `src/hooks/useContentReveal.ts` — GSAP hook
-- `src/components/RevealGroup/RevealGroup.tsx` — JSX wrappers
-
-**What it does:**
-The most versatile scroll reveal system in the library. Elements animate
-upward and fade in as they enter the viewport, with configurable stagger
-timing, entrance distance, and full support for nested groups with their
-own independent stagger. This replaces the plain CSS `[data-reveal]`
-system for any layout that needs GSAP-quality easing or nested sequences.
-
-**GSAP dependencies:**
-- `gsap` — `npm install gsap`
-- `gsap/ScrollTrigger` — imported dynamically inside the hook (no SSR issues)
-
-**Three components:**
-- `<RevealGroup>` — wraps a set of siblings to animate in sequence
-- `<RevealNested>` — nested sub-group with its own stagger/distance
-- `<RevealItem>` — marks a specific child to skip or override distance
-
-**One hook:**
-- `useContentReveal()` — call once per page, wires up all groups on that page
-
-**When to use:**
-- Hero section (headline + subtext + CTA stagger in sequence)
-- Feature card grids (each card staggers in)
-- Stat rows (numbers reveal one by one)
-- Any section where the CSS `[data-reveal]` pattern isn't expressive enough
-
-**When NOT to use:**
-- Simple single-element reveals (use CSS `[data-reveal]` instead — no GSAP overhead)
-- Components that mount/unmount dynamically after page load (use GSAP context directly)
-
-**Setup — call the hook once per page:**
-```tsx
-// app/(site)/page.tsx  or any layout component
-'use client';
-import { useContentReveal } from '@/hooks/useContentReveal';
-
-export default function HomePage() {
-  useContentReveal(); // scans DOM on mount, wires all [data-reveal-group] elements
-  return <main>...</main>;
-}
-```
-
-**Usage examples:**
-
-```tsx
-import { RevealGroup, RevealNested, RevealItem } from '@/components/RevealGroup/RevealGroup';
-
-// 1. Hero — headline, subtext, CTA stagger in at 120ms intervals
-<RevealGroup stagger={120} distance="1.5rem" start="top 90%">
-  <h1 className="hero__title">Hire with confidence</h1>
-  <p className="hero__intro">Science-backed assessments for every role.</p>
-  <div className="hero__cta">
-    <Button variant="primary">Get started</Button>
-    <Button variant="secondary">See how it works</Button>
-  </div>
-</RevealGroup>
-
-// 2. Feature card grid — cards stagger in at 80ms
-<RevealGroup stagger={80} as="ul" className="grid grid--3">
-  {features.map(f => (
-    <li key={f.id}>
-      <FeatureCard {...f} />
-    </li>
-  ))}
-</RevealGroup>
-
-// 3. Nested — section header reveals first, then cards stagger
-<RevealGroup stagger={100}>
-  <div className="section__header">       {/* reveals first */}
-    <span className="section-label">Features</span>
-    <h2>Everything you need</h2>
-  </div>
-  <RevealNested stagger={70} distance="1rem">
-    {cards.map(c => <FeatureCard key={c.id} {...c} />)}
-  </RevealNested>
-</RevealGroup>
-
-// 4. Skip a decorative element from the sequence
-<RevealGroup stagger={100}>
-  <RevealItem ignore>
-    <div className="decorative-line" />  {/* skipped */}
-  </RevealItem>
-  <h2>Section headline</h2>
-  <p>Supporting copy</p>
-</RevealGroup>
-
-// 5. Nested group where the wrapper card itself also animates
-<RevealGroup stagger={100}>
-  <RevealNested includeParent stagger={60}>
-    {items.map(i => <Item key={i.id} {...i} />)}
-  </RevealNested>
-</RevealGroup>
-```
-
-**Easing change from original:**
-Osmo used `power4.inOut` — remapped to `power4.out`. Entrances should
-always ease out (fast start → graceful landing). In-out reads as hesitant
-on entrance and is better suited to state transitions.
-
-**Default values (project-aligned):**
-- `stagger`: 100ms
-- `distance`: 1.25rem (was "2em" in original — aligned to spacing scale)
-- `start`: "top 80%"
-- `duration`: 0.7s (was 0.8s — slightly snappier)
-
-**CSS `[data-reveal]` vs `useContentReveal` — when to use which:**
-| Situation | Use |
-|---|---|
-| Single element, simple fade-up | CSS `[data-reveal]` |
-| Multiple siblings staggering in | `useContentReveal` |
-| Cards in a grid | `useContentReveal` |
-| Hero sequence (3+ elements) | `useContentReveal` |
-| Nested groups with different timings | `useContentReveal` |
+## 15. Osmo Animation Library
+
+| ID | Component | File | Use for |
+|---|---|---|---|
+| OSMO-01 | StickySteps | `src/components/StickySteps/` | Scroll-driven feature sections |
+| OSMO-02 | useDisplayCount | `src/hooks/useDisplayCount.ts` | Dynamic item counts in UI copy |
+| OSMO-03 | Tooltip | `src/components/Tooltip/` | Inline contextual help |
+| OSMO-04 | DirectionalList | `src/components/DirectionalList/` | Hoverable list rows with wipe |
+| OSMO-05 | useContentReveal + RevealGroup | `src/hooks/useContentReveal.ts` | GSAP scroll reveal |

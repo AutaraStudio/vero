@@ -95,20 +95,9 @@
   width: 100%;
   height: 100%;
   min-height: 20rem;
-  background: var(--color--accent-purple-bg);
-  border: 1px solid var(--color--accent-purple-border);
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
   border-radius: var(--radius--md);
-}
-
-/* Per-theme placeholder tints */
-[data-theme="brand-blue"] .sticky-tab__image-placeholder {
-  background: var(--color--accent-blue-bg);
-  border-color: var(--color--accent-blue-border);
-}
-
-[data-theme="brand-green"] .sticky-tab__image-placeholder {
-  background: var(--color--accent-green-bg);
-  border-color: var(--color--accent-green-border);
 }
 
 /* ── Responsive ── */

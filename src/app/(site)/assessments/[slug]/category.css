@@ -6,6 +6,7 @@
 
 .detail-hero {
   overflow: visible;
+  background-color: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
 }
 
@@ -91,6 +92,7 @@
 .examples-section {
   padding-top: var(--space--section);
   padding-bottom: var(--space--section);
+  background-color: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
 }
 

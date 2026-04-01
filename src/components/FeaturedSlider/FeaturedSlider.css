@@ -111,7 +111,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 10;
-  background: var(--color--accent-purple-bg);
+  background: var(--color--surface-sunken);
   border-bottom: 1px solid var(--color--border-subtle);
   transition: background 0.5s cubic-bezier(0.16, 1, 0.3, 1),
               border-color 0.5s cubic-bezier(0.16, 1, 0.3, 1);
@@ -124,22 +124,22 @@
 /* ── Active / inactive states ── */
 
 [data-gsap-slider-item-status="active"] .usp-card {
-  background-color: var(--swatch--purple-500);
-  border-color: var(--swatch--purple-600);
-  color: var(--swatch--neutral-0);
+  background-color: var(--color--interactive-primary);
+  border-color: var(--color--interactive-primary-hover);
+  color: var(--color--interactive-primary-text);
 }
 
 [data-gsap-slider-item-status="active"] .usp-card .color--primary {
-  color: var(--swatch--neutral-0);
+  color: var(--color--interactive-primary-text);
 }
 
 [data-gsap-slider-item-status="active"] .usp-card .color--secondary {
-  color: var(--swatch--neutral-0-o70);
+  color: color-mix(in srgb, var(--color--interactive-primary-text) 70%, transparent);
 }
 
 [data-gsap-slider-item-status="active"] .usp-card__image {
-  background: var(--swatch--purple-600);
-  border-bottom-color: var(--swatch--purple-700);
+  background: var(--color--interactive-primary-hover);
+  border-bottom-color: var(--color--interactive-primary-hover);
 }
 
 /* ── Controls ── */
