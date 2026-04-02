@@ -40,6 +40,13 @@ export const role = defineType({
       type: 'string',
       description: 'Comma-separated strengths, e.g. "Organisation, attention to detail, clear communication"',
     }),
+    defineField({
+      name: 'lottieFile',
+      title: 'Lottie Animation',
+      type: 'file',
+      options: { accept: '.json' },
+      description: 'Lottie JSON animation file',
+    }),
   ],
   preview: {
     select: {
