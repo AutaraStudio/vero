@@ -19,6 +19,20 @@ export interface ContactDetails {
   company: string;
   jobTitle: string;
   phone: string;
+  // Key project contact
+  keyContactName: string;
+  keyContactEmail: string;
+  keyContactSameAsMe: boolean;
+  // System access
+  usersToAdd: string;
+  // Portal
+  bespokeUrl: string;
+  sendFeedbackReports: 'yes' | 'no' | '';
+  // Branding
+  brandColour1: string;
+  brandColour2: string;
+  // Campaign dates keyed by roleId
+  roleDates: Record<string, { openDate: string; closeDate: string }>;
 }
 
 // Internal reducer state — recommendedTier is derived, not stored
@@ -51,6 +65,15 @@ const emptyContact: ContactDetails = {
   company: '',
   jobTitle: '',
   phone: '',
+  keyContactName: '',
+  keyContactEmail: '',
+  keyContactSameAsMe: false,
+  usersToAdd: '',
+  bespokeUrl: '',
+  sendFeedbackReports: '',
+  brandColour1: '',
+  brandColour2: '',
+  roleDates: {},
 };
 
 const initialState: InternalState = {
