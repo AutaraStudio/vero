@@ -169,59 +169,46 @@ export default function BasketContent({ categories }: BasketContentProps) {
 
       <div className="basket__tier">
         {tierInfo ? (
-          recommendedTier === 'bespoke' ? (
-            <div className="basket__tier-card">
-              <div className="basket__tier-top">
-                <span className="section-label basket__tier-badge">Bespoke</span>
-              </div>
-              <div className="basket__tier-price">
-                <span className="text-h4 color--primary basket__tier-amount">Contact us</span>
-                <span className="text-body--xs color--tertiary">tailored pricing</span>
-              </div>
-              <div className="basket__tier-limits">
-                <span className="text-body--xs color--tertiary">Our team will build a custom solution for your organisation.</span>
-              </div>
+          <>
+
+            {/* Tier name — plain, no badge */}
+            <div className="basket__tier-name-row">
+              <span className="basket__tier-name">{tierInfo.name}</span>
             </div>
-          ) : (
-            <div className="basket__tier-card">
 
-              {/* Row 1: badge + toggle side by side */}
-              <div className="basket__tier-top">
-                <span className="section-label basket__tier-badge">{tierInfo.name}</span>
-                {tierInfo.hasFrequencyToggle && (
-                  <div className="basket__freq-toggle">
-                    <button
-                      className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
-                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
-                      type="button"
-                    >
-                      Annual
-                    </button>
-                    <button
-                      className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
-                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
-                      type="button"
-                    >
-                      Monthly
-                    </button>
-                  </div>
-                )}
+            {/* Frequency toggle — its own row, only for subscription tiers */}
+            {tierInfo.hasFrequencyToggle && (
+              <div className="basket__tier-freq-row">
+                <div className="basket__freq-toggle">
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
+                    type="button"
+                  >
+                    Annual
+                  </button>
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
+                    type="button"
+                  >
+                    Monthly
+                  </button>
+                </div>
               </div>
+            )}
 
-              {/* Row 2: price */}
-              <div className="basket__tier-price">
-                <span className="text-h4 color--primary basket__tier-amount">{price}</span>
+            {/* Price + limits */}
+            <div className="basket__tier-pricing-row">
+              <span className="basket__tier-price">{price}</span>
+              <div className="basket__tier-meta">
                 <span className="text-body--xs color--tertiary">{priceNote}</span>
-              </div>
-
-              {/* Row 3: limits */}
-              <div className="basket__tier-limits">
                 <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
                 <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
               </div>
-
             </div>
-          )
+
+          </>
         ) : (
           <span className="text-body--sm color--tertiary">—</span>
         )}

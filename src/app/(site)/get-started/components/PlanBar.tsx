@@ -66,15 +66,18 @@ export default function PlanBar({ theme }: PlanBarProps) {
         <div className="container">
           <div className="plan-bar__inner">
 
-            {/* Left — tier + frequency */}
+            {/* Left — tier name (plain) + billing frequency label */}
             <div className="plan-bar__left">
-              <span className="section-label plan-bar__badge">{tierInfo.name}</span>
+              <span className="plan-bar__tier-name">{tierInfo.name}</span>
               {tierInfo.hasFrequencyToggle && (
-                <span className="text-label--sm plan-bar__freq-label color--tertiary">
+                <span className="plan-bar__freq-label text-body--xs color--tertiary">
                   {paymentFrequency === 'annual' ? 'Billed annually' : 'Billed monthly'}
                 </span>
               )}
             </div>
+
+            {/* Divider */}
+            <span className="plan-bar__sep" aria-hidden="true" />
 
             {/* Centre — price + limits */}
             <div className="plan-bar__centre">
