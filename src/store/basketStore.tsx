@@ -1,9 +1,24 @@
 'use client';
 
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { type TierKey, recommendTier } from '@/lib/tierRecommendation';
+import { type TierKey, type PaymentFrequency, recommendTier } from '@/lib/tierRecommendation';
+
+export type { PaymentFrequency };
 
 // ── Types ─────────────────────────────────────────────────────
+
+export interface BespokeDetails {
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  jobTitle: string;
+  phone: string;
+  approxRoles: string;
+  approxCandidates: string;
+  targetGoLive: string;
+  requirements: string;
+}
 
 export interface SelectedRole {
   roleId: string;
@@ -40,6 +55,10 @@ interface InternalState {
   selectedRoles: SelectedRole[];
   contactDetails: ContactDetails;
   contractAccepted: boolean;
+  paymentFrequency: PaymentFrequency;
+  nudgeShown: boolean;
+  bespokeDetails: BespokeDetails;
+  isBespokeEnquiry: boolean;
 }
 
 // Public state shape (recommendedTier derived and added by useBasket)
@@ -54,6 +73,10 @@ export type BasketAction =
   | { type: 'REMOVE_ROLE'; payload: { roleId: string } }
   | { type: 'SET_CONTACT_DETAILS'; payload: ContactDetails }
   | { type: 'ACCEPT_CONTRACT' }
+  | { type: 'SET_PAYMENT_FREQUENCY'; payload: PaymentFrequency }
+  | { type: 'SET_NUDGE_SHOWN' }
+  | { type: 'SET_BESPOKE_DETAILS'; payload: BespokeDetails }
+  | { type: 'SUBMIT_BESPOKE_ENQUIRY' }
   | { type: 'CLEAR_BASKET' };
 
 // ── Reducer ───────────────────────────────────────────────────
@@ -76,10 +99,27 @@ const emptyContact: ContactDetails = {
   roleDates: {},
 };
 
+const emptyBespoke: BespokeDetails = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  company: '',
+  jobTitle: '',
+  phone: '',
+  approxRoles: '',
+  approxCandidates: '',
+  targetGoLive: '',
+  requirements: '',
+};
+
 const initialState: InternalState = {
   selectedRoles: [],
   contactDetails: emptyContact,
   contractAccepted: false,
+  paymentFrequency: 'annual',
+  nudgeShown: false,
+  bespokeDetails: emptyBespoke,
+  isBespokeEnquiry: false,
 };
 
 function basketReducer(state: InternalState, action: BasketAction): InternalState {
@@ -102,6 +142,14 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
       return { ...state, contactDetails: action.payload };
     case 'ACCEPT_CONTRACT':
       return { ...state, contractAccepted: true };
+    case 'SET_PAYMENT_FREQUENCY':
+      return { ...state, paymentFrequency: action.payload };
+    case 'SET_NUDGE_SHOWN':
+      return { ...state, nudgeShown: true };
+    case 'SET_BESPOKE_DETAILS':
+      return { ...state, bespokeDetails: action.payload };
+    case 'SUBMIT_BESPOKE_ENQUIRY':
+      return { ...state, isBespokeEnquiry: true };
     case 'CLEAR_BASKET':
       return initialState;
     default:

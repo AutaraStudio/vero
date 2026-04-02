@@ -1,0 +1,89 @@
+/* ============================================================
+   UPSELL NUDGE MODAL
+============================================================ */
+
+.nudge-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--color--surface-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.nudge-card {
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--xl);
+  padding: 2rem;
+  max-width: 26rem;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  box-shadow: var(--shadow--overlay-lg);
+}
+
+/* Icon */
+.nudge-icon {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius--lg);
+  background: var(--color--accent-purple-bg);
+  border: 1px solid var(--color--accent-purple-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color--accent-purple-text);
+  flex-shrink: 0;
+}
+
+/* Content */
+.nudge-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.nudge-body {
+  line-height: 1.6;
+}
+
+/* Actions */
+.nudge-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+
+.nudge-secondary-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  text-decoration: none;
+  transition: opacity var(--transition--default);
+}
+
+.nudge-secondary-btn:hover {
+  opacity: 0.75;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+  .nudge-card {
+    padding: 1.5rem;
+  }
+
+  .nudge-actions {
+    width: 100%;
+  }
+
+  .nudge-actions > button:first-child {
+    width: 100%;
+  }
+}

@@ -1,0 +1,49 @@
+/* ============================================================
+   GET STARTED — BESPOKE ENQUIRY
+============================================================ */
+
+.bespoke-page {
+  padding: var(--space--section) 0;
+}
+
+.bespoke-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding-bottom: 1.75rem;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.bespoke-page__header .section-label {
+  margin-bottom: 0;
+}
+
+.bespoke-sidebar {
+  position: sticky;
+  top: 2rem;
+}
+
+.bespoke-sidebar__categories {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.375rem;
+}
+
+.bespoke-sidebar__note {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color--border-subtle);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .bespoke-page {
+    padding: var(--space--section-mobile) 0;
+  }
+
+  .bespoke-sidebar {
+    position: static;
+    order: -1;
+  }
+}

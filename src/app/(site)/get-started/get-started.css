@@ -635,3 +635,41 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ── Frequency toggle ── */
+
+.basket__frequency-toggle {
+  display: flex;
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  overflow: hidden;
+  background: var(--color--surface-sunken);
+}
+
+.basket__freq-btn {
+  flex: 1;
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font--label-sm);
+  font-weight: 600;
+  letter-spacing: var(--font--label-ls);
+  text-transform: uppercase;
+  color: var(--color--text-tertiary);
+  transition: background-color var(--transition--default), color var(--transition--default);
+}
+
+.basket__freq-btn + .basket__freq-btn {
+  border-left: 1px solid var(--color--border-default);
+}
+
+.basket__freq-btn.is-active {
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+}
+
+.basket__freq-btn:hover:not(.is-active) {
+  color: var(--color--text-secondary);
+}

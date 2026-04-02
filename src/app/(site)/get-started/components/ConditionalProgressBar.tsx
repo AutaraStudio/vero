@@ -4,6 +4,7 @@ import ProgressBar from './ProgressBar';
 
 export default function ConditionalProgressBar() {
   const pathname = usePathname();
-  if (pathname === '/get-started/confirmation') return null;
+  const HIDDEN = ['/get-started/confirmation', '/get-started/bespoke'];
+  if (HIDDEN.includes(pathname)) return null;
   return <ProgressBar />;
 }

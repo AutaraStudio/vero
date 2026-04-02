@@ -1,11 +1,13 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA } from '@/lib/tierRecommendation';
+import { TIER_DATA, getNudgeContent } from '@/lib/tierRecommendation';
 import BasketContent from './BasketContent';
+import UpsellNudge from './UpsellNudge';
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -85,11 +87,13 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
 // ── Main component ────────────────────────────────────────────
 
 export default function RolePicker({ categories }: RolePickerProps) {
+  const router = useRouter();
   const { state, dispatch } = useBasket();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [nudgeVisible, setNudgeVisible] = useState(false);
 
-  const { selectedRoles, recommendedTier } = state;
+  const { selectedRoles, recommendedTier, nudgeShown } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
 
   const toggleCategory = (id: string) =>
@@ -117,126 +121,162 @@ export default function RolePicker({ categories }: RolePickerProps) {
     }
   };
 
+  const handleContinue = () => {
+    if (recommendedTier === 'bespoke') {
+      router.push('/get-started/bespoke');
+      return;
+    }
+    if (!nudgeShown && recommendedTier) {
+      const content = getNudgeContent(recommendedTier, selectedRoles.length);
+      if (content) {
+        setNudgeVisible(true);
+        return;
+      }
+    }
+    router.push('/get-started/details');
+  };
+
   return (
-    <div className="role-picker">
-      {/* ── Left: Basket ── */}
-      <aside className="basket hide--mobile">
-        <div className="basket__sticky">
-          <BasketContent categories={categories} />
-        </div>
-      </aside>
-
-      {/* ── Right: Role browser ── */}
-      <div className="role-picker__browser">
-        <div className="role-picker__header">
-          <h1 className="text-h2 color--primary">Select your roles</h1>
-          <p className="text-body--lg color--secondary leading--snug">
-            Choose the roles you&apos;re hiring for. You can select as many as you need.
-          </p>
-        </div>
-
-        <div className="role-picker__categories">
-          {categories.map((category) => {
-            const isExpanded = expanded.has(category._id);
-            const selectedCount = selectedRoles.filter(
-              (r) => r.categorySlug === category.slug
-            ).length;
-
-            return (
-              <div
-                key={category._id}
-                className={`role-category${isExpanded ? ' is-expanded' : ''}`}
-              >
-                <button
-                  className="role-category__header"
-                  onClick={() => toggleCategory(category._id)}
-                  aria-expanded={isExpanded}
-                >
-                  <div className="role-category__info">
-                    <span className="text-h5 role-category__name color--primary">
-                      {category.name}
-                    </span>
-                    <div className="role-category__meta">
-                      <span className="role-category__count-badge text-label--sm color--tertiary">
-                        {category.roles.length} roles
-                      </span>
-                      {selectedCount > 0 && (
-                        <span className="role-category__selected-pill text-label--sm">
-                          {selectedCount} selected
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                  <span className="role-category__chevron" aria-hidden="true" />
-                </button>
-
-                {isExpanded && (
-                  <CategoryBody
-                    roles={category.roles}
-                    onToggle={(role) => handleToggleRole(role, category)}
-                    isSelected={isSelected}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* ── Mobile: sticky bottom bar ── */}
-      <div className="basket-mobile-bar show--mobile-only">
-        <div className="basket-mobile-bar__inner">
-          <div className="basket-mobile-bar__info">
-            <span className="text-body--sm font--medium color--primary">
-              {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} selected
-            </span>
-            {tierInfo && (
-              <span className="section-label">{tierInfo.name}</span>
-            )}
-          </div>
-          <div className="basket-mobile-bar__actions">
-            <button
-              className="basket-mobile-bar__view"
-              onClick={() => setDrawerOpen(true)}
-            >
-              View basket
-            </button>
-            <Button
-              variant="primary"
-              size="sm"
-              href={selectedRoles.length > 0 ? '/get-started/details' : undefined}
-              disabled={selectedRoles.length === 0}
-            >
-              Continue →
-            </Button>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Mobile: basket drawer ── */}
-      {drawerOpen && (
-        <div
-          className="basket-drawer show--mobile-only"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Your basket"
-        >
-          <div
-            className="basket-drawer__backdrop"
-            onClick={() => setDrawerOpen(false)}
-          />
-          <div className="basket-drawer__panel">
-            <button
-              className="basket-drawer__close"
-              onClick={() => setDrawerOpen(false)}
-              aria-label="Close basket"
-            >
-              ×
-            </button>
+    <>
+      <div className="role-picker">
+        {/* ── Left: Basket ── */}
+        <aside className="basket hide--mobile">
+          <div className="basket__sticky">
             <BasketContent categories={categories} />
           </div>
+        </aside>
+
+        {/* ── Right: Role browser ── */}
+        <div className="role-picker__browser">
+          <div className="role-picker__header">
+            <h1 className="text-h2 color--primary">Select your roles</h1>
+            <p className="text-body--lg color--secondary leading--snug">
+              Choose the roles you&apos;re hiring for. You can select as many as you need.
+            </p>
+          </div>
+
+          <div className="role-picker__categories">
+            {categories.map((category) => {
+              const isExpanded = expanded.has(category._id);
+              const selectedCount = selectedRoles.filter(
+                (r) => r.categorySlug === category.slug
+              ).length;
+
+              return (
+                <div
+                  key={category._id}
+                  className={`role-category${isExpanded ? ' is-expanded' : ''}`}
+                >
+                  <button
+                    className="role-category__header"
+                    onClick={() => toggleCategory(category._id)}
+                    aria-expanded={isExpanded}
+                  >
+                    <div className="role-category__info">
+                      <span className="text-h5 role-category__name color--primary">
+                        {category.name}
+                      </span>
+                      <div className="role-category__meta">
+                        <span className="role-category__count-badge text-label--sm color--tertiary">
+                          {category.roles.length} roles
+                        </span>
+                        {selectedCount > 0 && (
+                          <span className="role-category__selected-pill text-label--sm">
+                            {selectedCount} selected
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <span className="role-category__chevron" aria-hidden="true" />
+                  </button>
+
+                  {isExpanded && (
+                    <CategoryBody
+                      roles={category.roles}
+                      onToggle={(role) => handleToggleRole(role, category)}
+                      isSelected={isSelected}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
         </div>
-      )}
-    </div>
+
+        {/* ── Mobile: sticky bottom bar ── */}
+        <div className="basket-mobile-bar show--mobile-only">
+          <div className="basket-mobile-bar__inner">
+            <div className="basket-mobile-bar__info">
+              <span className="text-body--sm font--medium color--primary">
+                {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} selected
+              </span>
+              {tierInfo && (
+                <span className="section-label">{tierInfo.name}</span>
+              )}
+            </div>
+            <div className="basket-mobile-bar__actions">
+              <button
+                className="basket-mobile-bar__view"
+                onClick={() => setDrawerOpen(true)}
+              >
+                View basket
+              </button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={selectedRoles.length > 0 ? handleContinue : undefined}
+                disabled={selectedRoles.length === 0}
+              >
+                {recommendedTier === 'bespoke' ? 'Discuss requirements →' : 'Continue →'}
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Mobile: basket drawer ── */}
+        {drawerOpen && (
+          <div
+            className="basket-drawer show--mobile-only"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Your basket"
+          >
+            <div
+              className="basket-drawer__backdrop"
+              onClick={() => setDrawerOpen(false)}
+            />
+            <div className="basket-drawer__panel">
+              <button
+                className="basket-drawer__close"
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Close basket"
+              >
+                ×
+              </button>
+              <BasketContent categories={categories} />
+            </div>
+          </div>
+        )}
+      </div>
+
+      {nudgeVisible && recommendedTier && (() => {
+        const content = getNudgeContent(recommendedTier, selectedRoles.length);
+        if (!content) return null;
+        return (
+          <UpsellNudge
+            content={content}
+            onAddMore={() => {
+              dispatch({ type: 'SET_NUDGE_SHOWN' });
+              setNudgeVisible(false);
+            }}
+            onContinue={() => {
+              dispatch({ type: 'SET_NUDGE_SHOWN' });
+              setNudgeVisible(false);
+              router.push('/get-started/details');
+            }}
+          />
+        );
+      })()}
+    </>
   );
 }

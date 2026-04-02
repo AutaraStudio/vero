@@ -29,7 +29,7 @@ export default async function Home() {
   return (
     <main>
       <HeroCentred
-        theme="brand-orange"
+        theme="brand-purple"
         badge={badge}
         headline={data?.heroTitle ?? 'Hire the right people, every time.'}
         intro={data?.heroIntro ?? 'Science-backed skills assessments built for modern hiring teams. Objective, fast, and fair.'}

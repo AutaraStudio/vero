@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA } from '@/lib/tierRecommendation';
+import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
@@ -12,9 +12,12 @@ import './confirmation.css';
 export default function ConfirmationPage() {
   const router = useRouter();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails, recommendedTier } = state;
+  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, isBespokeEnquiry, bespokeDetails } = state;
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+  const { price: tierPrice } = tierInfo
+    ? getTierPrice(tierInfo, paymentFrequency)
+    : { price: '' };
   const isHighTier =
     recommendedTier === 'growth' ||
     recommendedTier === 'scale' ||
@@ -62,236 +65,395 @@ export default function ConfirmationPage() {
       <div className="confirmation-inner">
 
         {/* ── Hero ── */}
-        <div className="confirmation-hero">
-
-          {/* Animated success icon */}
-          <div ref={iconRef as React.RefObject<HTMLDivElement>}>
-            <svg
-              className="success-icon"
-              viewBox="0 0 80 80"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
-            >
-              <circle
-                className="success-icon__circle"
-                cx="40"
-                cy="40"
-                r="36"
-                strokeWidth="2.5"
+        {isBespokeEnquiry ? (
+          <div className="confirmation-hero">
+            <div ref={iconRef as React.RefObject<HTMLDivElement>}>
+              <svg
+                className="success-icon"
+                viewBox="0 0 80 80"
                 fill="none"
-              />
-              <path
-                className="success-icon__check"
-                d="M24 40 L34 52 L56 28"
-                strokeWidth="2.5"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <circle
+                  className="success-icon__circle"
+                  cx="40"
+                  cy="40"
+                  r="36"
+                  strokeWidth="2.5"
+                  fill="none"
+                />
+                <path
+                  className="success-icon__check"
+                  d="M24 40 L34 52 L56 28"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className="confirmation-heading">
+              <h1
+                ref={headingRef as React.RefObject<HTMLHeadingElement>}
+                className="text-h2 color--primary"
+              >
+                Enquiry received
+              </h1>
+              <p
+                ref={bodyRef as React.RefObject<HTMLParagraphElement>}
+                className="text-body--lg color--secondary confirmation-body-text"
+              >
+                Your dedicated account manager will be in touch within 24 hours to
+                discuss your requirements and build a tailored solution.
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="confirmation-hero">
+            <div ref={iconRef as React.RefObject<HTMLDivElement>}>
+              <svg
+                className="success-icon"
+                viewBox="0 0 80 80"
                 fill="none"
-              />
-            </svg>
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <circle
+                  className="success-icon__circle"
+                  cx="40"
+                  cy="40"
+                  r="36"
+                  strokeWidth="2.5"
+                  fill="none"
+                />
+                <path
+                  className="success-icon__check"
+                  d="M24 40 L34 52 L56 28"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className="confirmation-heading">
+              <h1
+                ref={headingRef as React.RefObject<HTMLHeadingElement>}
+                className="text-h2 color--primary"
+              >
+                You&apos;re all set
+              </h1>
+              <p
+                ref={bodyRef as React.RefObject<HTMLParagraphElement>}
+                className="text-body--lg confirmation-body-text color--secondary"
+              >
+                {isHighTier ? (
+                  <>
+                    Your dedicated Customer Success Manager will be in touch within 24 hours to
+                    confirm your setup.
+                  </>
+                ) : (
+                  <>
+                    Your portal link will be shared within 2 working days. Check your inbox at{' '}
+                    <span className="color--primary">
+                      {contactDetails.email || 'your email address'}
+                    </span>.
+                  </>
+                )}
+              </p>
+            </div>
           </div>
-
-          <div className="confirmation-heading">
-            <h1
-              ref={headingRef as React.RefObject<HTMLHeadingElement>}
-              className="text-h2 color--primary"
-            >
-              You&apos;re all set
-            </h1>
-            <p
-              ref={bodyRef as React.RefObject<HTMLParagraphElement>}
-              className="text-body--lg confirmation-body-text color--secondary"
-            >
-              {isHighTier ? (
-                <>
-                  Your dedicated Customer Success Manager will be in touch within 24 hours to
-                  confirm your setup.
-                </>
-              ) : (
-                <>
-                  Your portal link will be shared within 2 working days. Check your inbox at{' '}
-                  <span className="color--primary">
-                    {contactDetails.email || 'your email address'}
-                  </span>.
-                </>
-              )}
-            </p>
-          </div>
-        </div>
+        )}
 
         {/* ── What happens next ── */}
-        <div className="confirmation-next-steps">
-          <div className="confirmation-next-steps__header">
-            <p className="text-h5 color--primary">What happens next</p>
-            <p className="text-body--sm color--secondary">
-              Here&apos;s what to expect after your order is confirmed.
-            </p>
+        {isBespokeEnquiry ? (
+          <div className="confirmation-next-steps">
+            <p className="text-label--sm color--tertiary confirmation-next-steps__label">What happens next</p>
+            <ol className="confirmation-next-steps__list">
+              {([
+                {
+                  num: '1',
+                  title: 'Enquiry reviewed',
+                  body: 'Our team will review your role selection and requirements before reaching out.',
+                },
+                {
+                  num: '2',
+                  title: 'Discovery call',
+                  body: "We'll schedule a call within 24 hours to understand your needs in detail and answer any questions.",
+                },
+                {
+                  num: '3',
+                  title: 'Tailored proposal',
+                  body: "We'll put together a custom solution and pricing proposal based on your specific requirements.",
+                },
+              ] as const).map(({ num, title, body }) => (
+                <li key={num} className="confirmation-next-step">
+                  <span className="confirmation-next-step__num" aria-hidden="true">{num}</span>
+                  <div className="confirmation-next-step__content">
+                    <span className="text-body--sm font--medium color--primary">{title}</span>
+                    <span className="text-body--sm color--secondary">{body}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
           </div>
-          <ol className="confirmation-next-steps__list">
-            {([
-              {
-                num: '1',
-                title: 'Order confirmed',
-                body: 'A confirmation email is on its way with your full order details and invoice.',
-              },
-              {
-                num: '2',
-                title: 'Account built',
-                body: isHighTier
-                  ? 'Your Success Manager will call within 24 hours to confirm setup details.'
-                  : "We'll configure your assessment portal based on the roles and settings you chose.",
-              },
-              {
-                num: '3',
-                title: "You're live",
-                body: isHighTier
-                  ? 'Portal access and instructions will be shared once your setup is confirmed.'
-                  : 'Your portal link and access instructions will arrive within 2 working days.',
-              },
-            ] as const).map(({ num, title, body }) => (
-              <li key={num} className="confirmation-next-step">
-                <span className="confirmation-next-step__num" aria-hidden="true">{num}</span>
-                <div className="confirmation-next-step__content">
-                  <span className="text-body--sm font--medium color--primary">{title}</span>
-                  <span className="text-body--sm color--secondary">{body}</span>
-                </div>
-              </li>
-            ))}
-          </ol>
-        </div>
+        ) : (
+          <div className="confirmation-next-steps">
+            <div className="confirmation-next-steps__header">
+              <p className="text-h5 color--primary">What happens next</p>
+              <p className="text-body--sm color--secondary">
+                Here&apos;s what to expect after your order is confirmed.
+              </p>
+            </div>
+            <ol className="confirmation-next-steps__list">
+              {([
+                {
+                  num: '1',
+                  title: 'Order confirmed',
+                  body: 'A confirmation email is on its way with your full order details and invoice.',
+                },
+                {
+                  num: '2',
+                  title: 'Account built',
+                  body: isHighTier
+                    ? 'Your Success Manager will call within 24 hours to confirm setup details.'
+                    : "We'll configure your assessment portal based on the roles and settings you chose.",
+                },
+                {
+                  num: '3',
+                  title: "You're live",
+                  body: isHighTier
+                    ? 'Portal access and instructions will be shared once your setup is confirmed.'
+                    : 'Your portal link and access instructions will arrive within 2 working days.',
+                },
+              ] as const).map(({ num, title, body }) => (
+                <li key={num} className="confirmation-next-step">
+                  <span className="confirmation-next-step__num" aria-hidden="true">{num}</span>
+                  <div className="confirmation-next-step__content">
+                    <span className="text-body--sm font--medium color--primary">{title}</span>
+                    <span className="text-body--sm color--secondary">{body}</span>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
 
         {/* ── Order receipt ── */}
-        <div className="confirmation-receipt">
-
-          {/* Always-visible summary toggle */}
-          <button
-            className="confirmation-receipt__toggle"
-            onClick={() => setReceiptOpen((p) => !p)}
-            type="button"
-            aria-expanded={receiptOpen}
-          >
-            <div className="confirmation-receipt__summary">
-              {tierInfo && (
-                <span className="section-label confirmation-receipt__tier">{tierInfo.name}</span>
-              )}
-              <span className="text-body--sm color--secondary">
-                {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} across{' '}
-                {Object.keys(rolesByCategory).length} categor{Object.keys(rolesByCategory).length !== 1 ? 'ies' : 'y'}
-              </span>
-              <span className="confirmation-receipt__dot" aria-hidden="true" />
-              <span className="text-body--sm color--secondary">
-                {contactDetails.firstName} {contactDetails.lastName}
-                {contactDetails.company ? `, ${contactDetails.company}` : ''}
-              </span>
-            </div>
-            <div className="confirmation-receipt__expand">
-              <span className="text-body--xs color--brand">
-                {receiptOpen ? 'Hide details' : 'View full order'}
-              </span>
-              <span
-                className={`confirmation-receipt__chevron${receiptOpen ? ' is-open' : ''}`}
-                aria-hidden="true"
-              />
-            </div>
-          </button>
-
-          {/* Expandable detail */}
-          {receiptOpen && (
-            <div className="confirmation-receipt__detail">
-
-              {/* Roles */}
-              <div className="confirmation-receipt__section">
-                <span className="text-label--sm color--tertiary">Roles</span>
-                <div className="confirmation-roles-list">
-                  {Object.entries(rolesByCategory).map(([, { name, roles }]) => (
-                    <div key={name} className="confirmation-role-group">
-                      <span className="text-label--sm color--tertiary">{name}</span>
-                      <div className="confirmation-role-chips">
-                        {roles.map((r) => (
-                          <span key={r} className="confirmation-role-chip text-body--xs color--primary">
-                            {r}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="confirmation-receipt__divider" />
-
-              {/* Plan */}
-              {tierInfo && (
-                <div className="confirmation-receipt__section confirmation-receipt__plan-row">
-                  <div className="confirmation-receipt__plan-left">
-                    <span className="text-label--sm color--tertiary">Plan</span>
-                    <span className="text-body--sm font--medium color--primary">{tierInfo.name}</span>
-                    <span className="text-body--xs color--tertiary">
-                      {tierInfo.candidateLimit} · {tierInfo.roleLimit}
-                    </span>
-                  </div>
-                  <span className="text-h4 color--primary">{tierInfo.price}</span>
-                </div>
-              )}
-
-              <div className="confirmation-receipt__divider" />
-
-              {/* Contact */}
-              <div className="confirmation-receipt__section">
-                <span className="text-label--sm color--tertiary">Account contact</span>
-                <span className="text-body--sm font--medium color--primary">
-                  {contactDetails.firstName} {contactDetails.lastName}
+        {isBespokeEnquiry ? (
+          <div className="confirmation-receipt">
+            <button
+              className="confirmation-receipt__toggle"
+              onClick={() => setReceiptOpen((p) => !p)}
+              type="button"
+              aria-expanded={receiptOpen}
+            >
+              <div className="confirmation-receipt__summary">
+                <span className="section-label confirmation-receipt__tier">Bespoke enquiry</span>
+                <span className="text-body--sm color--secondary">
+                  {selectedRoles.length} roles · {bespokeDetails.firstName} {bespokeDetails.lastName}
                 </span>
-                {contactDetails.company && (
-                  <span className="text-body--xs color--tertiary">{contactDetails.company}</span>
-                )}
-                <span className="text-body--xs color--tertiary">{contactDetails.email}</span>
-                {hasKeyContact && (
-                  <div className="confirmation-receipt__sub-section">
-                    <span className="text-label--sm color--tertiary">Project contact</span>
-                    <span className="text-body--sm color--primary">{contactDetails.keyContactName}</span>
-                    <span className="text-body--xs color--tertiary">{contactDetails.keyContactEmail}</span>
-                  </div>
-                )}
               </div>
+              <div className="confirmation-receipt__expand">
+                <span className="text-body--xs color--brand">
+                  {receiptOpen ? 'Hide details' : 'View enquiry details'}
+                </span>
+                <span
+                  className={`confirmation-receipt__chevron${receiptOpen ? ' is-open' : ''}`}
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
 
-              {/* Campaign dates */}
-              {hasRoleDates && (
-                <>
-                  <div className="confirmation-receipt__divider" />
-                  <div className="confirmation-receipt__section">
-                    <span className="text-label--sm color--tertiary">Campaign dates</span>
-                    {selectedRoles.map((role) => {
-                      const dates = contactDetails.roleDates[role.roleId];
-                      if (!dates?.openDate && !dates?.closeDate) return null;
-                      return (
-                        <div key={role.roleId} className="confirmation-date-row">
-                          <span className="text-body--xs color--secondary">{role.roleName}</span>
-                          <span className="text-body--xs color--tertiary">
-                            {dates.openDate ? `Opens ${dates.openDate}` : ''}
-                            {dates.openDate && dates.closeDate ? ' · ' : ''}
-                            {dates.closeDate ? `Closes ${dates.closeDate}` : ''}
-                          </span>
+            {receiptOpen && (
+              <div className="confirmation-receipt__detail">
+
+                {/* Contact */}
+                <div className="confirmation-receipt__section">
+                  <span className="text-label--sm color--tertiary">Contact</span>
+                  <span className="text-body--sm font--medium color--primary">
+                    {bespokeDetails.firstName} {bespokeDetails.lastName}
+                  </span>
+                  <span className="text-body--xs color--tertiary">{bespokeDetails.company}</span>
+                  <span className="text-body--xs color--tertiary">{bespokeDetails.email}</span>
+                </div>
+
+                <div className="confirmation-receipt__divider" />
+
+                {/* Requirements */}
+                <div className="confirmation-receipt__section">
+                  <span className="text-label--sm color--tertiary">Requirements submitted</span>
+                  {bespokeDetails.approxRoles && (
+                    <span className="text-body--xs color--secondary">Roles: {bespokeDetails.approxRoles}</span>
+                  )}
+                  {bespokeDetails.approxCandidates && (
+                    <span className="text-body--xs color--secondary">Candidates/yr: {bespokeDetails.approxCandidates}</span>
+                  )}
+                  {bespokeDetails.targetGoLive && (
+                    <span className="text-body--xs color--secondary">Target go-live: {bespokeDetails.targetGoLive}</span>
+                  )}
+                  {bespokeDetails.requirements && (
+                    <span className="text-body--xs color--secondary">{bespokeDetails.requirements}</span>
+                  )}
+                </div>
+
+                <div className="confirmation-receipt__divider" />
+
+                {/* Roles */}
+                <div className="confirmation-receipt__section">
+                  <span className="text-label--sm color--tertiary">Roles of interest ({selectedRoles.length})</span>
+                  <div className="confirmation-roles-list">
+                    {Object.entries(rolesByCategory).map(([, { name, roles }]) => (
+                      <div key={name} className="confirmation-role-group">
+                        <span className="text-label--sm color--tertiary">{name}</span>
+                        <div className="confirmation-role-chips">
+                          {roles.map((r) => (
+                            <span key={r} className="confirmation-role-chip text-body--xs color--primary">{r}</span>
+                          ))}
                         </div>
-                      );
-                    })}
+                      </div>
+                    ))}
                   </div>
-                </>
-              )}
+                </div>
 
-            </div>
-          )}
-        </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="confirmation-receipt">
+
+            {/* Always-visible summary toggle */}
+            <button
+              className="confirmation-receipt__toggle"
+              onClick={() => setReceiptOpen((p) => !p)}
+              type="button"
+              aria-expanded={receiptOpen}
+            >
+              <div className="confirmation-receipt__summary">
+                {tierInfo && (
+                  <span className="section-label confirmation-receipt__tier">{tierInfo.name}</span>
+                )}
+                <span className="text-body--sm color--secondary">
+                  {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} across{' '}
+                  {Object.keys(rolesByCategory).length} categor{Object.keys(rolesByCategory).length !== 1 ? 'ies' : 'y'}
+                </span>
+                <span className="confirmation-receipt__dot" aria-hidden="true" />
+                <span className="text-body--sm color--secondary">
+                  {contactDetails.firstName} {contactDetails.lastName}
+                  {contactDetails.company ? `, ${contactDetails.company}` : ''}
+                </span>
+              </div>
+              <div className="confirmation-receipt__expand">
+                <span className="text-body--xs color--brand">
+                  {receiptOpen ? 'Hide details' : 'View full order'}
+                </span>
+                <span
+                  className={`confirmation-receipt__chevron${receiptOpen ? ' is-open' : ''}`}
+                  aria-hidden="true"
+                />
+              </div>
+            </button>
+
+            {/* Expandable detail */}
+            {receiptOpen && (
+              <div className="confirmation-receipt__detail">
+
+                {/* Roles */}
+                <div className="confirmation-receipt__section">
+                  <span className="text-label--sm color--tertiary">Roles</span>
+                  <div className="confirmation-roles-list">
+                    {Object.entries(rolesByCategory).map(([, { name, roles }]) => (
+                      <div key={name} className="confirmation-role-group">
+                        <span className="text-label--sm color--tertiary">{name}</span>
+                        <div className="confirmation-role-chips">
+                          {roles.map((r) => (
+                            <span key={r} className="confirmation-role-chip text-body--xs color--primary">
+                              {r}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="confirmation-receipt__divider" />
+
+                {/* Plan */}
+                {tierInfo && (
+                  <div className="confirmation-receipt__section confirmation-receipt__plan-row">
+                    <div className="confirmation-receipt__plan-left">
+                      <span className="text-label--sm color--tertiary">Plan</span>
+                      <span className="text-body--sm font--medium color--primary">{tierInfo.name}</span>
+                      <span className="text-body--xs color--tertiary">
+                        {tierInfo.candidateLimit} · {tierInfo.roleLimit}
+                      </span>
+                    </div>
+                    <span className="text-h4 color--primary">{tierPrice}</span>
+                  </div>
+                )}
+
+                <div className="confirmation-receipt__divider" />
+
+                {/* Contact */}
+                <div className="confirmation-receipt__section">
+                  <span className="text-label--sm color--tertiary">Account contact</span>
+                  <span className="text-body--sm font--medium color--primary">
+                    {contactDetails.firstName} {contactDetails.lastName}
+                  </span>
+                  {contactDetails.company && (
+                    <span className="text-body--xs color--tertiary">{contactDetails.company}</span>
+                  )}
+                  <span className="text-body--xs color--tertiary">{contactDetails.email}</span>
+                  {hasKeyContact && (
+                    <div className="confirmation-receipt__sub-section">
+                      <span className="text-label--sm color--tertiary">Project contact</span>
+                      <span className="text-body--sm color--primary">{contactDetails.keyContactName}</span>
+                      <span className="text-body--xs color--tertiary">{contactDetails.keyContactEmail}</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Campaign dates */}
+                {hasRoleDates && (
+                  <>
+                    <div className="confirmation-receipt__divider" />
+                    <div className="confirmation-receipt__section">
+                      <span className="text-label--sm color--tertiary">Campaign dates</span>
+                      {selectedRoles.map((role) => {
+                        const dates = contactDetails.roleDates[role.roleId];
+                        if (!dates?.openDate && !dates?.closeDate) return null;
+                        return (
+                          <div key={role.roleId} className="confirmation-date-row">
+                            <span className="text-body--xs color--secondary">{role.roleName}</span>
+                            <span className="text-body--xs color--tertiary">
+                              {dates.openDate ? `Opens ${dates.openDate}` : ''}
+                              {dates.openDate && dates.closeDate ? ' · ' : ''}
+                              {dates.closeDate ? `Closes ${dates.closeDate}` : ''}
+                            </span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+              </div>
+            )}
+          </div>
+        )}
 
         {/* ── Actions ── */}
         <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="confirmation-actions">
           <Button variant="primary" size="md" onClick={handleReturn}>
-            Return to Vero Assess
+            Return to Vero Assess →
           </Button>
-          <Button variant="secondary" size="md" href="#">
-            Download summary
-          </Button>
+          {!isBespokeEnquiry && (
+            <Button variant="secondary" size="md" href="#">
+              Download summary
+            </Button>
+          )}
         </div>
 
         {/* ── Support ── */}

@@ -56,6 +56,16 @@
   text-overflow: ellipsis;
 }
 
+.plan-bar__freq-badge {
+  display: none;
+}
+
+@media (min-width: 900px) {
+  .plan-bar__freq-badge {
+    display: inline;
+  }
+}
+
 /* Right — Button inherits primary token → yellow-500 from brand-purple-deep */
 
 /* ── Responsive ── */

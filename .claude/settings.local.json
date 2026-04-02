@@ -12,7 +12,8 @@
       "Bash(rm \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/assessments/[slug]/RoleRoster.tsx\")",
       "Bash(npx tsx:*)",
       "Bash(npm run:*)",
-      "Bash(grep -rn \"rgba\\\\|rgb\\(\\\\|#[0-9A-Fa-f]\\\\{3,6\\\\}\\\\b\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/details/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/contract/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/payment/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/confirmation/page.tsx\")"
+      "Bash(grep -rn \"rgba\\\\|rgb\\(\\\\|#[0-9A-Fa-f]\\\\{3,6\\\\}\\\\b\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/details/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/contract/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/payment/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/confirmation/page.tsx\")",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

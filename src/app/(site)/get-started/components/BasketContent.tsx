@@ -1,10 +1,12 @@
 'use client';
 
 import { useState, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { gsap } from '@/lib/gsap';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA } from '@/lib/tierRecommendation';
+import { TIER_DATA, getTierPrice, getNudgeContent } from '@/lib/tierRecommendation';
+import UpsellNudge from './UpsellNudge';
 
 interface CategorySummary {
   _id: string;
@@ -20,11 +22,13 @@ const COLLAPSE_THRESHOLD = 3;
 const VISIBLE_COUNT = 2;
 
 export default function BasketContent({ categories }: BasketContentProps) {
+  const router = useRouter();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, recommendedTier } = state;
+  const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const [nudgeVisible, setNudgeVisible] = useState(false);
   const hasAnimatedRef = useRef<Set<string>>(new Set());
 
   const groupedByCategory = categories.filter((cat) =>
@@ -58,6 +62,25 @@ export default function BasketContent({ categories }: BasketContentProps) {
       return next;
     });
   };
+
+  const handleContinue = () => {
+    if (recommendedTier === 'bespoke') {
+      router.push('/get-started/bespoke');
+      return;
+    }
+    if (!nudgeShown && recommendedTier) {
+      const nudgeContent = getNudgeContent(recommendedTier, selectedRoles.length);
+      if (nudgeContent) {
+        setNudgeVisible(true);
+        return;
+      }
+    }
+    router.push('/get-started/details');
+  };
+
+  const { price, priceNote } = tierInfo
+    ? getTierPrice(tierInfo, paymentFrequency)
+    : { price: '', priceNote: '' };
 
   return (
     <>
@@ -147,14 +170,49 @@ export default function BasketContent({ categories }: BasketContentProps) {
       <div className="basket__tier">
         <span className="text-label--sm color--tertiary">Recommended plan:</span>
         {tierInfo ? (
-          <div className="basket__tier-detail">
-            <span className="section-label">{tierInfo.name}</span>
-            <div className="basket__tier-meta">
-              <span className="text-h5 color--primary">{tierInfo.price}</span>
-              <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
-              <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
+          recommendedTier === 'bespoke' ? (
+            <div className="basket__tier-detail">
+              <span className="section-label">Bespoke</span>
+              <div className="basket__tier-meta">
+                <span className="text-body--sm color--secondary">
+                  Tailored pricing
+                </span>
+                <span className="text-body--xs color--tertiary">
+                  Our team will build a custom solution for your organisation.
+                </span>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="basket__tier-detail">
+              <span className="section-label">{tierInfo.name}</span>
+
+              {tierInfo.hasFrequencyToggle && (
+                <div className="basket__frequency-toggle">
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
+                    type="button"
+                  >
+                    Annual
+                  </button>
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
+                    type="button"
+                  >
+                    Monthly
+                  </button>
+                </div>
+              )}
+
+              <div className="basket__tier-meta">
+                <span className="text-h5 color--primary">{price}</span>
+                <span className="text-body--xs color--tertiary">{priceNote}</span>
+                <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
+                <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
+              </div>
+            </div>
+          )
         ) : (
           <span className="text-body--sm color--tertiary">—</span>
         )}
@@ -164,14 +222,35 @@ export default function BasketContent({ categories }: BasketContentProps) {
         <Button
           variant="primary"
           size="md"
-          href={selectedRoles.length > 0 ? '/get-started/details' : undefined}
+          onClick={selectedRoles.length > 0 ? handleContinue : undefined}
           disabled={selectedRoles.length === 0}
         >
-          {selectedRoles.length > 0
-            ? `Continue to details (${selectedRoles.length}) →`
-            : 'Continue to details →'}
+          {recommendedTier === 'bespoke'
+            ? 'Discuss your requirements →'
+            : selectedRoles.length > 0
+              ? `Continue to details (${selectedRoles.length}) →`
+              : 'Continue to details →'}
         </Button>
       </div>
+
+      {nudgeVisible && recommendedTier && (() => {
+        const content = getNudgeContent(recommendedTier, selectedRoles.length);
+        if (!content) return null;
+        return (
+          <UpsellNudge
+            content={content}
+            onAddMore={() => {
+              dispatch({ type: 'SET_NUDGE_SHOWN' });
+              setNudgeVisible(false);
+            }}
+            onContinue={() => {
+              dispatch({ type: 'SET_NUDGE_SHOWN' });
+              setNudgeVisible(false);
+              router.push('/get-started/details');
+            }}
+          />
+        );
+      })()}
     </>
   );
 }
