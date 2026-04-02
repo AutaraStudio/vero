@@ -159,6 +159,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     heroHeadline,
     heroIntroCopy,
     "heroImage": heroImage { asset->, ... },
+    "heroImageUrl": heroImage.asset->url,
     dimensionsSectionHeading,
     dimensionsSectionBody,
     "dimensionsSectionImage": dimensionsSectionImage { asset->, ... },

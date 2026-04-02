@@ -2,25 +2,52 @@
    CATEGORY PAGE — /assessments/[slug]
 ============================================================ */
 
-/* ── Detail hero ── */
+/* ============================================================
+   CATEGORY PAGE — DETAIL HERO
+============================================================ */
+
+/* ── Stripe colour variables ─────────────────────────────── */
+/* Inherit the three-tier stripe system from HeroCentred.     */
+/* Uses the same swatch variables — adapts to any data-theme. */
 
 .detail-hero {
-  overflow: visible;
-  background-color: var(--color--page-bg);
+  --stripe-h: 3.5rem;
+  --stripe-t1: color-mix(in srgb, var(--swatch--purple-500)  8%, transparent);
+  --stripe-t2: color-mix(in srgb, var(--swatch--purple-500) 20%, transparent);
+  --stripe-t3: var(--swatch--purple-500);
+}
+
+@media (max-width: 767px) {
+  .detail-hero { --stripe-h: 2.125rem; }
+}
+
+@media (min-width: 1400px) {
+  .detail-hero { --stripe-h: 4.5rem; }
+}
+
+/* ── Section wrapper — skew lives here ── */
+
+.detail-hero {
+  position: relative;
+  overflow: hidden;
   border-bottom: 1px solid var(--color--border-default);
+  background-color: var(--color--page-bg);
 }
 
-.detail-hero__header {
-  padding-top: calc(var(--height--navbar) + 4rem);
-}
+/* ── Two-column inner grid ── */
 
-.detail-hero__header-inner {
+.detail-hero__inner {
+  position: relative;
+  z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--space--card);
+  gap: 4rem;
   align-items: center;
-  padding: 0 2rem 5rem;
+  padding-top: calc(var(--height--navbar) + 4rem);
+  padding-bottom: 5rem;
 }
+
+/* ── Text column ── */
 
 .detail-hero__text {
   display: flex;
@@ -48,19 +75,99 @@
   margin-top: 0.25rem;
 }
 
+/* ── Visual column ── */
+
 .detail-hero__visual {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.detail-hero__placeholder {
+/* ── Stripe decoration (full section width, behind both columns) ── */
+
+.detail-hero__stripes-wrap {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: calc(var(--stripe-h) * 3 + 4rem);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.detail-hero__stripes {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  transform: skewY(-7deg);
+  transform-origin: bottom left;
+}
+
+.detail-hero__stripes-grid {
+  display: grid;
+  grid-template-rows: var(--stripe-h) var(--stripe-h) var(--stripe-h);
+  grid-template-columns: 18% 14% 19% 18% 16% 15%;
   width: 100%;
-  max-width: 28rem;
-  aspect-ratio: 1 / 1;
+}
+
+/* Row 1 — Tier 3 full, right side (cols 5–6) */
+.detail-hero__stripe--r1-right {
+  grid-row: 1;
+  grid-column: 5 / -1;
+  background: var(--stripe-t3);
+}
+
+/* Row 2 — Tier 1 light, left-center (cols 2–3) */
+.detail-hero__stripe--r2-left {
+  grid-row: 2;
+  grid-column: 2 / 4;
+  background: var(--stripe-t1);
+}
+
+/* Row 2 — Tier 2 mid, right side (cols 4–6) */
+.detail-hero__stripe--r2-right {
+  grid-row: 2;
+  grid-column: 4 / -1;
+  background: var(--stripe-t2);
+}
+
+/* Row 3 — Tier 3 full, far left (col 1) */
+.detail-hero__stripe--r3-left {
+  grid-row: 3;
+  grid-column: 1 / 2;
+  background: var(--stripe-t3);
+}
+
+/* Row 3 — Tier 1 light, far right (col 6) */
+.detail-hero__stripe--r3-right {
+  grid-row: 3;
+  grid-column: 6 / -1;
+  background: var(--stripe-t1);
+}
+
+/* ── Image card ── */
+
+.detail-hero__image-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  aspect-ratio: 4 / 3;
   border-radius: var(--radius--xl);
+  overflow: hidden;
+  border: 1px solid var(--color--border-default);
+  background: var(--color--surface-sunken);
+}
+
+.detail-hero__image {
+  object-fit: cover;
+}
+
+.detail-hero__image-placeholder {
+  width: 100%;
+  height: 100%;
   background: var(--color--accent-purple-bg);
-  border: 1px solid var(--color--accent-purple-border);
 }
 
 /* ── Features section ── */
@@ -209,24 +316,25 @@
   }
 }
 
-@media (max-width: 768px) {
-  .detail-hero__header {
-    padding-top: calc(var(--height--navbar) + 2.5rem);
-  }
-
-  .detail-hero__header-inner {
+@media (max-width: 900px) {
+  .detail-hero__inner {
     grid-template-columns: 1fr;
-    padding: 2.5rem 1rem 3rem;
+    gap: 2.5rem;
+    padding-bottom: 3.5rem;
   }
 
   .detail-hero__visual {
     order: -1;
   }
+}
 
-  .detail-hero__placeholder {
-    max-width: 16rem;
+@media (max-width: 767px) {
+  .detail-hero__inner {
+    padding-top: calc(var(--height--navbar) + var(--space--section-mobile));
   }
+}
 
+@media (max-width: 768px) {
   .features-section,
   .examples-section,
   .metrics-bar,
