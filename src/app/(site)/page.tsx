@@ -1,8 +1,6 @@
 import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY } from '@/sanity/lib/queries';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
-import FeaturedSlider from '@/components/FeaturedSlider/FeaturedSlider';
-import StepsSection from '@/components/StepsSection/StepsSection';
 import CTAStatement from '@/components/CTAStatement/CTAStatement';
 
 export default async function Home() {
@@ -47,22 +45,7 @@ export default async function Home() {
         media={media}
       />
 
-      {data?.usps?.length > 0 && (
-        <FeaturedSlider
-          theme=""
-          sectionLabel={data.uspsSectionLabel}
-          heading={data.uspsSectionHeading}
-          intro={data.uspsSectionSubheading}
-          usps={data.usps}
-        />
-      )}
-
-      <StepsSection
-        theme=""
-        heading={data?.howItWorksHeading}
-        intro={data?.howItWorksIntro}
-        steps={data?.steps}
-      />
+      <div style={{ height: '100vh' }} />
 
       <CTAStatement
         theme="brand-purple"
