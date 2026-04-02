@@ -40,6 +40,15 @@ export interface NudgeContent {
   body: string;
   primaryLabel: string;
   secondaryLabel: string;
+  // slots-remaining
+  tierName?: string;
+  selectedCount?: number;
+  maxRoles?: number;
+  // upgrade
+  fromTierName?: string;
+  fromDetail?: string;
+  toTierName?: string;
+  toDetail?: string;
 }
 
 export function getNudgeContent(
@@ -54,6 +63,9 @@ export function getNudgeContent(
       body: `Your Essential plan includes up to 5 roles at the same price. You've selected ${roleCount} — you could add ${remaining} more before continuing at no extra cost.`,
       primaryLabel: 'Add more roles',
       secondaryLabel: `Continue with ${roleCount} role${roleCount !== 1 ? 's' : ''} →`,
+      tierName: 'Essential',
+      selectedCount: roleCount,
+      maxRoles: 5,
     };
   }
 
@@ -65,6 +77,9 @@ export function getNudgeContent(
       body: `Your Growth plan includes up to 20 roles at the same price. You've selected ${roleCount} — you could add ${remaining} more before continuing at no extra cost.`,
       primaryLabel: 'Add more roles',
       secondaryLabel: `Continue with ${roleCount} roles →`,
+      tierName: 'Growth',
+      selectedCount: roleCount,
+      maxRoles: 20,
     };
   }
 
@@ -75,6 +90,10 @@ export function getNudgeContent(
       body: 'Our Essential plan covers up to 5 roles for £9,000/yr. If you have multiple positions to fill, it could be worth exploring before you continue.',
       primaryLabel: 'Explore Essential',
       secondaryLabel: 'Continue with Starter →',
+      fromTierName: 'Starter',
+      fromDetail: '1 role · £3,500',
+      toTierName: 'Essential',
+      toDetail: 'Up to 5 roles · from £750/mo',
     };
   }
 

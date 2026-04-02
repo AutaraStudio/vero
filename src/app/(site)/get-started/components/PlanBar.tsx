@@ -66,22 +66,27 @@ export default function PlanBar({ theme }: PlanBarProps) {
         <div className="container">
           <div className="plan-bar__inner">
 
-            {/* Left — tier name pill */}
-            <span className="section-label plan-bar__badge">{tierInfo.name}</span>
-
-            {/* Centre — plan details */}
-            <div className="plan-bar__details">
-              <span className="plan-bar__price text-h4 color--primary">{price}</span>
-              <span className="text-body--xs color--tertiary">{priceNote}</span>
+            {/* Left — tier + frequency */}
+            <div className="plan-bar__left">
+              <span className="section-label plan-bar__badge">{tierInfo.name}</span>
               {tierInfo.hasFrequencyToggle && (
-                <span className="plan-bar__freq-badge text-label--sm color--tertiary">
-                  {paymentFrequency === 'annual' ? 'billed annually' : 'billed monthly'}
+                <span className="text-label--sm plan-bar__freq-label color--tertiary">
+                  {paymentFrequency === 'annual' ? 'Billed annually' : 'Billed monthly'}
                 </span>
               )}
-              <span className="plan-bar__divider" aria-hidden="true" />
-              <span className="text-body--sm color--secondary plan-bar__limit">{tierInfo.candidateLimit}</span>
-              <span className="plan-bar__divider" aria-hidden="true" />
-              <span className="text-body--sm color--secondary plan-bar__limit">{tierInfo.roleLimit}</span>
+            </div>
+
+            {/* Centre — price + limits */}
+            <div className="plan-bar__centre">
+              <div className="plan-bar__price-row">
+                <span className="plan-bar__price text-h4 color--primary">{price}</span>
+                <span className="text-body--xs color--tertiary">{priceNote}</span>
+              </div>
+              <div className="plan-bar__limits-row">
+                <span className="text-body--xs color--secondary">{tierInfo.candidateLimit}</span>
+                <span className="plan-bar__dot" aria-hidden="true" />
+                <span className="text-body--xs color--secondary">{tierInfo.roleLimit}</span>
+              </div>
             </div>
 
             {/* Right — CTA */}

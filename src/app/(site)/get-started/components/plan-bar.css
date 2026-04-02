@@ -1,5 +1,5 @@
 /* ============================================================
-   PLAN BAR — Fixed bottom strip across checkout flow
+   PLAN BAR — Fixed bottom strip
 ============================================================ */
 
 .plan-bar {
@@ -9,8 +9,6 @@
   right: 0;
   z-index: 100;
   border-top: 1px solid var(--color--border-default);
-  /* data-theme="brand-purple-deep" applied in JSX —
-     background resolves to var(--swatch--purple-500) via --color--page-bg */
   background: var(--color--page-bg);
 }
 
@@ -19,64 +17,78 @@
   align-items: center;
   justify-content: space-between;
   gap: 2rem;
-  padding: 0.875rem 0;
+  padding: 0.75rem 0;
 }
 
-/* Left */
-.plan-bar__badge {
+/* Left — tier name + billing frequency label */
+
+.plan-bar__left {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
   flex-shrink: 0;
+}
+
+.plan-bar__badge {
   margin-bottom: 0;
 }
 
-/* Centre */
-.plan-bar__details {
+.plan-bar__freq-label {
+  line-height: 1;
+}
+
+/* Centre — price + limits stacked */
+
+.plan-bar__centre {
   display: flex;
-  align-items: baseline;
-  gap: 0.875rem;
+  flex-direction: column;
+  gap: 0.2rem;
   flex: 1;
   min-width: 0;
 }
 
+.plan-bar__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
 .plan-bar__price {
-  flex-shrink: 0;
   letter-spacing: -0.02em;
-}
-
-.plan-bar__divider {
-  width: 1px;
-  height: 1rem;
-  background: var(--color--border-default);
+  line-height: 1;
   flex-shrink: 0;
-  align-self: center;
 }
 
-.plan-bar__limit {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.plan-bar__limits-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.plan-bar__freq-badge {
-  display: none;
+.plan-bar__dot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius--full);
+  background: var(--color--border-strong);
+  flex-shrink: 0;
 }
 
-@media (min-width: 900px) {
-  .plan-bar__freq-badge {
-    display: inline;
-  }
-}
-
-/* Right — Button inherits primary token → yellow-500 from brand-purple-deep */
+/* Right — Button renders at its natural size */
 
 /* ── Responsive ── */
 
-@media (max-width: 640px) {
-  .plan-bar__divider,
-  .plan-bar__limit {
+@media (max-width: 768px) {
+  .plan-bar__limits-row {
     display: none;
   }
 
-  .plan-bar__details {
-    gap: 0.5rem;
+  .plan-bar__freq-label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .plan-bar__centre {
+    display: none;
   }
 }

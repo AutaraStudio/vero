@@ -57,8 +57,6 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
     });
   };
 
-  const isUpgrade = content.type === 'upgrade';
-
   return (
     <div
       ref={backdropRef}
@@ -72,29 +70,60 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
     >
       <div ref={cardRef} className="nudge-card">
 
-        {/* Icon */}
-        <div className="nudge-icon" aria-hidden="true">
-          {isUpgrade ? (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-              <circle cx="12" cy="12" r="4" stroke="currentColor" strokeWidth="1.5"/>
-            </svg>
-          ) : (
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <rect x="3" y="3" width="18" height="18" rx="3" stroke="currentColor" strokeWidth="1.5"/>
-              <path d="M8 12l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          )}
-        </div>
+        {/* Visual block */}
+        {content.type === 'slots-remaining' && content.maxRoles && (() => {
+          const maxDisplay = content.maxRoles <= 10 ? content.maxRoles : 10;
+          const filled = content.maxRoles <= 10
+            ? (content.selectedCount ?? 0)
+            : Math.round(((content.selectedCount ?? 0) / content.maxRoles) * 10);
+          return (
+            <div className="nudge-capacity">
+              <div className="nudge-capacity__header">
+                <span className="section-label nudge-capacity__label">{content.tierName}</span>
+                <span className="text-body--xs color--tertiary">
+                  {content.selectedCount} of {content.maxRoles} roles
+                </span>
+              </div>
+              <div
+                className="nudge-capacity__bar"
+                role="meter"
+                aria-valuenow={content.selectedCount}
+                aria-valuemax={content.maxRoles}
+                aria-label={`${content.selectedCount} of ${content.maxRoles} role slots used`}
+              >
+                {Array.from({ length: maxDisplay }).map((_, i) => (
+                  <span
+                    key={i}
+                    className={`nudge-capacity__segment${i < filled ? ' is-filled' : ''}`}
+                  />
+                ))}
+              </div>
+            </div>
+          );
+        })()}
 
-        {/* Content */}
+        {content.type === 'upgrade' && (
+          <div className="nudge-comparison">
+            <div className="nudge-comparison__card">
+              <span className="section-label nudge-comparison__label">{content.fromTierName}</span>
+              <span className="text-body--xs color--secondary">{content.fromDetail}</span>
+            </div>
+            <div className="nudge-comparison__arrow" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </div>
+            <div className="nudge-comparison__card is-highlight">
+              <span className="section-label nudge-comparison__label">{content.toTierName}</span>
+              <span className="text-body--xs color--secondary">{content.toDetail}</span>
+            </div>
+          </div>
+        )}
+
+        {/* Text */}
         <div className="nudge-content">
-          <h2 id="nudge-headline" className="text-h4 color--primary">
-            {content.headline}
-          </h2>
-          <p className="text-body--sm color--secondary nudge-body">
-            {content.body}
-          </p>
+          <h2 id="nudge-headline" className="text-h4 color--primary">{content.headline}</h2>
+          <p className="text-body--sm color--secondary nudge-body">{content.body}</p>
         </div>
 
         {/* Actions */}
