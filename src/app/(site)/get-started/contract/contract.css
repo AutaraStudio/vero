@@ -171,6 +171,17 @@
   flex-wrap: wrap;
 }
 
+.form-back-link {
+  text-decoration: none;
+  color: var(--color--text-brand);
+  font-size: var(--font--body-sm);
+  transition: var(--transition--default);
+}
+
+.form-back-link:hover {
+  opacity: 0.75;
+}
+
 /* ── Responsive ── */
 
 @media (max-width: 768px) {

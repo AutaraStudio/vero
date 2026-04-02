@@ -14,6 +14,7 @@ export interface ButtonProps {
   className?: string;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
+  form?: string;
   external?: boolean;
 }
 
@@ -26,6 +27,7 @@ export default function Button({
   className = '',
   onClick,
   type = 'button',
+  form,
   external = false,
 }: ButtonProps) {
 
@@ -81,6 +83,7 @@ export default function Button({
   return (
     <button
       type={type}
+      form={form}
       className={classes}
       disabled={disabled}
       aria-disabled={disabled}

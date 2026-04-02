@@ -1,64 +1,124 @@
 'use client';
 
+import { useState, useRef } from 'react';
+import { gsap } from '@/lib/gsap';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA } from '@/lib/tierRecommendation';
 
 interface OrderSummaryProps {
   showContact?: boolean;
-  bordered?: boolean;
 }
 
-export default function OrderSummary({ showContact = false, bordered = false }: OrderSummaryProps) {
-  const { state } = useBasket();
-  const { selectedRoles, recommendedTier, contactDetails } = state;
-  const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+const COLLAPSE_THRESHOLD = 3;
+const VISIBLE_COUNT = 2;
 
-  const rolesByCategory = selectedRoles.reduce<Record<string, { name: string; roles: string[] }>>(
-    (acc, role) => {
-      if (!acc[role.categorySlug]) {
-        acc[role.categorySlug] = { name: role.categoryName, roles: [] };
-      }
-      acc[role.categorySlug].roles.push(role.roleName);
-      return acc;
-    },
-    {}
-  );
+export default function OrderSummary({ showContact = false }: OrderSummaryProps) {
+  const { state } = useBasket();
+  const { selectedRoles, contactDetails } = state;
+
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  const hasAnimatedRef = useRef<Set<string>>(new Set());
+
+  const rolesByCategory = selectedRoles.reduce<
+    Record<string, { slug: string; name: string; roles: string[] }>
+  >((acc, role) => {
+    if (!acc[role.categorySlug]) {
+      acc[role.categorySlug] = { slug: role.categorySlug, name: role.categoryName, roles: [] };
+    }
+    acc[role.categorySlug].roles.push(role.roleName);
+    return acc;
+  }, {});
+
+  const makeHiddenRolesRef = (slug: string) => (el: HTMLDivElement | null) => {
+    if (!el || hasAnimatedRef.current.has(slug)) return;
+    hasAnimatedRef.current.add(slug);
+    const items = el.querySelectorAll('.order-summary__role-chip');
+    if (items.length === 0) return;
+    gsap.from(items, {
+      height: 0,
+      opacity: 0,
+      stagger: 0.04,
+      duration: 0.25,
+      ease: 'power2.out',
+      clearProps: 'height,opacity',
+    });
+  };
+
+  const collapseCategory = (slug: string) => {
+    hasAnimatedRef.current.delete(slug);
+    setExpandedCategories((prev) => {
+      const next = new Set(prev);
+      next.delete(slug);
+      return next;
+    });
+  };
 
   const inner = (
-    <div className="order-summary__inner stack--lg">
+    <div className="order-summary__inner">
       <h3 className="text-h5 color--primary">Order summary</h3>
 
       {/* Roles */}
       {selectedRoles.length === 0 ? (
         <p className="text-body--sm color--tertiary">No roles selected.</p>
       ) : (
-        <div className="stack--md">
-          {Object.values(rolesByCategory).map(({ name, roles }) => (
-            <div key={name} className="stack--xs">
-              <span className="text-label--sm color--tertiary">{name}</span>
-              {roles.map((r) => (
-                <span key={r} className="text-body--sm color--primary">{r}</span>
-              ))}
-            </div>
-          ))}
-        </div>
-      )}
+        <div className="order-summary__roles">
+          {Object.values(rolesByCategory).map(({ slug, name, roles }) => {
+            const needsCollapse = roles.length > COLLAPSE_THRESHOLD;
+            const isExpanded = expandedCategories.has(slug);
+            const visibleRoles = needsCollapse ? roles.slice(0, VISIBLE_COUNT) : roles;
+            const hiddenCount = roles.length - VISIBLE_COUNT;
 
-      {/* Tier */}
-      {tierInfo && (
-        <div className="stack--xs order-summary__tier">
-          <span className="text-label--sm color--tertiary">Recommended plan</span>
-          <span className="section-label">{tierInfo.name}</span>
-          <span className="text-body--sm font--medium color--primary">{tierInfo.price}</span>
-          <span className="text-body--xs color--tertiary">{tierInfo.priceNote}</span>
-          <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
-          <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
+            return (
+              <div key={slug} className="order-summary__category-group">
+                <span className="text-label--sm color--tertiary order-summary__cat-label">
+                  {name}
+                </span>
+
+                {visibleRoles.map((r) => (
+                  <div key={r} className="order-summary__role-chip">
+                    <span className="text-body--xs font--medium color--primary">{r}</span>
+                  </div>
+                ))}
+
+                {needsCollapse && !isExpanded && (
+                  <button
+                    className="order-summary__show-more"
+                    onClick={() =>
+                      setExpandedCategories((prev) => new Set([...prev, slug]))
+                    }
+                  >
+                    +{hiddenCount} more
+                  </button>
+                )}
+
+                {needsCollapse && isExpanded && (
+                  <>
+                    <div
+                      className="order-summary__hidden-roles"
+                      ref={makeHiddenRolesRef(slug)}
+                    >
+                      {roles.slice(VISIBLE_COUNT).map((r) => (
+                        <div key={r} className="order-summary__role-chip">
+                          <span className="text-body--xs font--medium color--primary">{r}</span>
+                        </div>
+                      ))}
+                    </div>
+                    <button
+                      className="order-summary__show-more"
+                      onClick={() => collapseCategory(slug)}
+                    >
+                      Show less
+                    </button>
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
 
       {/* Contact info (Payment page) */}
       {showContact && contactDetails.firstName && (
-        <div className="stack--xs order-summary__contact">
+        <div className="order-summary__contact">
           <span className="text-label--sm color--tertiary">Contact</span>
           <span className="text-body--sm color--primary">
             {contactDetails.firstName} {contactDetails.lastName}
@@ -69,16 +129,6 @@ export default function OrderSummary({ showContact = false, bordered = false }: 
       )}
     </div>
   );
-
-  if (bordered) {
-    return (
-      <aside className="order-summary">
-        <div className="bordered-section order-summary__bordered">
-          <div className="order-summary__bordered-inner">{inner}</div>
-        </div>
-      </aside>
-    );
-  }
 
   return (
     <aside className="order-summary">

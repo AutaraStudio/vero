@@ -1,11 +1,20 @@
 export type ThemeVariant =
   | 'dark'
+  | 'dark-purple'
+  | 'dark-blue'
+  | 'dark-green'
+  | 'dark-orange'
+  | 'dark-yellow'
   | 'brand-purple'
   | 'brand-purple-deep'
   | 'brand-blue'
+  | 'brand-blue-deep'
   | 'brand-green'
+  | 'brand-green-deep'
   | 'brand-orange'
-  | 'brand-yellow';
+  | 'brand-orange-deep'
+  | 'brand-yellow'
+  | 'brand-yellow-deep';
 
 export const ACCENT_COLORS = ['green', 'orange', 'blue', 'yellow', 'purple'] as const;
 export type AccentColor = typeof ACCENT_COLORS[number];

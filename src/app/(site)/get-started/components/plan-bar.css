@@ -1,0 +1,72 @@
+/* ============================================================
+   PLAN BAR — Fixed bottom strip across checkout flow
+============================================================ */
+
+.plan-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-top: 1px solid var(--color--border-default);
+  /* data-theme="brand-purple-deep" applied in JSX —
+     background resolves to var(--swatch--purple-500) via --color--page-bg */
+  background: var(--color--page-bg);
+}
+
+.plan-bar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 0.875rem 0;
+}
+
+/* Left */
+.plan-bar__badge {
+  flex-shrink: 0;
+  margin-bottom: 0;
+}
+
+/* Centre */
+.plan-bar__details {
+  display: flex;
+  align-items: baseline;
+  gap: 0.875rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-bar__price {
+  flex-shrink: 0;
+  letter-spacing: -0.02em;
+}
+
+.plan-bar__divider {
+  width: 1px;
+  height: 1rem;
+  background: var(--color--border-default);
+  flex-shrink: 0;
+  align-self: center;
+}
+
+.plan-bar__limit {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right — Button inherits primary token → yellow-500 from brand-purple-deep */
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .plan-bar__divider,
+  .plan-bar__limit {
+    display: none;
+  }
+
+  .plan-bar__details {
+    gap: 0.5rem;
+  }
+}

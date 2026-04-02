@@ -22,12 +22,35 @@
   height: 1rem;
   flex-shrink: 0;
   cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s var(--ease-entry);
 }
 
 .tooltip__icon > svg {
   width: 1rem;
   height: 1rem;
   display: block;
+  position: relative;
+  z-index: 1;
+}
+
+/* Subtle halo on hover */
+.tooltip__icon::before {
+  content: '';
+  position: absolute;
+  inset: -0.3125rem;
+  border-radius: var(--radius--full);
+  background: currentColor;
+  opacity: 0;
+  transition: opacity 0.2s var(--ease-entry);
+}
+
+[data-css-tooltip-hover]:hover .tooltip__icon {
+  opacity: 1;
+}
+
+[data-css-tooltip-hover]:hover .tooltip__icon::before {
+  opacity: 0.08;
 }
 
 [data-css-tooltip-icon="info"]     { color: var(--swatch--blue-500); }
@@ -41,7 +64,7 @@
   z-index: 100;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+  transition: opacity 0.15s var(--ease-exit);
   width: max-content;
   max-width: 18rem;
 }
@@ -81,16 +104,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  transform: translateY(0.5rem) scale(0.95);
+  transform: translateY(0.375rem) scale(0.94);
   transition:
-    transform 350ms cubic-bezier(0.4, 0, 0.2, 1),
-    opacity 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity 0.2s var(--ease-entry);
   opacity: 0;
 }
 
 [data-css-tooltip-y="bottom"] .tooltip__box-inner {
   flex-direction: column-reverse;
-  transform: translateY(-0.5rem) scale(0.95);
+  transform: translateY(-0.375rem) scale(0.94);
 }
 
 /* ── Hover state ── */
@@ -99,6 +122,7 @@
 [data-css-tooltip-hover]:focus-within .tooltip__box {
   opacity: 1;
   pointer-events: auto;
+  transition: opacity 0.2s var(--ease-entry);
 }
 
 [data-css-tooltip-hover]:hover .tooltip__box-inner,
@@ -111,17 +135,17 @@
 
 .tooltip__card {
   background-color: var(--color--surface-raised);
-  border: 1px solid var(--color--border-strong);
-  box-shadow: var(--shadow--card);
-  border-radius: var(--radius--md);
-  padding: 0.75rem 1rem;
+  border: 1px solid var(--color--border-default);
+  box-shadow: var(--shadow--overlay);
+  border-radius: var(--radius--lg);
+  padding: 0.875rem 1rem;
   text-align: left;
 }
 
 .tooltip__card-title {
   padding-bottom: 0.5rem;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color--border-default);
+  border-bottom: 1px solid var(--color--border-subtle);
 }
 
 .tooltip__card-body {
@@ -144,7 +168,7 @@
   width: 100%;
   height: 100%;
   display: block;
-  filter: drop-shadow(0 1px 0 var(--color--border-strong));
+  filter: drop-shadow(0 1px 0 var(--color--border-default));
 }
 
 [data-css-tooltip-y="bottom"] .tooltip__tip {

@@ -282,11 +282,7 @@ export default function ContractPage() {
           >
             Continue to payment →
           </Button>
-          <Link
-            href="/get-started/details"
-            className="text-body--sm color--brand"
-            style={{ textDecoration: 'none' }}
-          >
+          <Link href="/get-started/details" className="form-back-link">
             ← Back
           </Link>
         </div>

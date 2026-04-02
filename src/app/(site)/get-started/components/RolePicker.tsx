@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA } from '@/lib/tierRecommendation';
+import BasketContent from './BasketContent';
 
 // ── Types ─────────────────────────────────────────────────────
 
@@ -26,7 +27,7 @@ interface RolePickerProps {
   categories: Category[];
 }
 
-// ── Category body (mounts on expand, animates rows in) ────────
+// ── Category body (mounts on expand, animates cards in) ───────
 
 interface CategoryBodyProps {
   roles: Role[];
@@ -35,35 +36,48 @@ interface CategoryBodyProps {
 }
 
 function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
-  const bodyRef = useFadeUp({ selector: '[data-animate]', stagger: 0.04, delay: 0, y: 10 });
+  const bodyRef = useFadeUp({ selector: '[data-animate]', stagger: 0.04, delay: 0, y: 10, scroll: false });
 
   return (
     <div ref={bodyRef as React.RefObject<HTMLDivElement>} className="role-category__body">
-      {roles.map((role) => {
-        const selected = isSelected(role._id);
-        return (
-          <div
-            key={role._id}
-            className={`role-row${selected ? ' is-selected' : ''}`}
-            data-animate=""
-          >
-            <div className="role-row__info">
-              <span className="text-body--sm font--medium color--primary">{role.name}</span>
-              {role.strengths && (
-                <span className="text-body--xs color--tertiary">{role.strengths}</span>
-              )}
-            </div>
-            <button
-              className={`role-row__toggle${selected ? ' is-selected' : ''}`}
-              onClick={() => onToggle(role)}
-              aria-pressed={selected}
-              aria-label={selected ? `Remove ${role.name}` : `Add ${role.name}`}
+      <div className="role-card-grid">
+        {roles.map((role) => {
+          const selected = isSelected(role._id);
+
+          return (
+            <div
+              key={role._id}
+              className={`role-card${selected ? ' is-selected' : ''}`}
+              data-animate=""
             >
-              <span aria-hidden="true">{selected ? '−' : '+'}</span>
-            </button>
-          </div>
-        );
-      })}
+              <div className="role-card__info">
+                <span className="text-body--sm font--medium color--primary">{role.name}</span>
+                {role.strengths && (
+                  <div className="role-card__tags">
+                    {role.strengths.split(',').map((s) => {
+                      const tag = s.trim();
+                      const label = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
+                      return (
+                        <span key={tag} className="role-tag">
+                          {label}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+              <button
+                className="role-card__action"
+                onClick={() => onToggle(role)}
+                aria-pressed={selected}
+                aria-label={selected ? `Remove ${role.name}` : `Add ${role.name}`}
+              >
+                <span aria-hidden="true">{selected ? '−' : '+'}</span>
+              </button>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
@@ -103,79 +117,12 @@ export default function RolePicker({ categories }: RolePickerProps) {
     }
   };
 
-  // Grouped view for basket
-  const groupedByCategory = categories.filter((cat) =>
-    selectedRoles.some((r) => r.categorySlug === cat.slug)
-  );
-
-  const BasketContent = () => (
-    <>
-      <h2 className="text-h5 color--primary basket__title">Your basket</h2>
-
-      {selectedRoles.length === 0 ? (
-        <p className="text-body--sm basket__empty">No roles selected yet.</p>
-      ) : (
-        <div className="basket__roles">
-          {groupedByCategory.map((cat) => {
-            const catRoles = selectedRoles.filter((r) => r.categorySlug === cat.slug);
-            return (
-              <div key={cat._id} className="basket__category-group">
-                <span className="text-label--sm color--tertiary">{cat.name}</span>
-                {catRoles.map((role) => (
-                  <div key={role.roleId} className="basket__role-row">
-                    <span className="text-body--sm font--medium color--primary">{role.roleName}</span>
-                    <button
-                      className="basket__remove"
-                      onClick={() => dispatch({ type: 'REMOVE_ROLE', payload: { roleId: role.roleId } })}
-                      aria-label={`Remove ${role.roleName}`}
-                    >
-                      ×
-                    </button>
-                  </div>
-                ))}
-              </div>
-            );
-          })}
-        </div>
-      )}
-
-      <div className="basket__tier">
-        <span className="text-label--sm color--tertiary">Recommended plan:</span>
-        {tierInfo ? (
-          <div className="basket__tier-detail">
-            <span className="section-label">{tierInfo.name}</span>
-            <div className="basket__tier-meta">
-              <span className="text-body--sm font--medium color--primary">{tierInfo.price}</span>
-              <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
-              <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
-            </div>
-          </div>
-        ) : (
-          <span className="text-body--sm color--tertiary">—</span>
-        )}
-      </div>
-
-      <div className="basket__cta">
-        <Button
-          variant="primary"
-          size="md"
-          href={selectedRoles.length > 0 ? '/get-started/details' : undefined}
-          disabled={selectedRoles.length === 0}
-        >
-          {selectedRoles.length > 0
-            ? `Continue to details (${selectedRoles.length}) →`
-            : 'Continue to details →'}
-        </Button>
-      </div>
-    </>
-  );
-
   return (
     <div className="role-picker">
       {/* ── Left: Basket ── */}
       <aside className="basket hide--mobile">
         <div className="basket__sticky">
-          <BasketContent />
+          <BasketContent categories={categories} />
         </div>
       </aside>
 
@@ -191,7 +138,9 @@ export default function RolePicker({ categories }: RolePickerProps) {
         <div className="role-picker__categories">
           {categories.map((category) => {
             const isExpanded = expanded.has(category._id);
-            const selectedCount = selectedRoles.filter((r) => r.categorySlug === category.slug).length;
+            const selectedCount = selectedRoles.filter(
+              (r) => r.categorySlug === category.slug
+            ).length;
 
             return (
               <div
@@ -204,13 +153,15 @@ export default function RolePicker({ categories }: RolePickerProps) {
                   aria-expanded={isExpanded}
                 >
                   <div className="role-category__info">
-                    <span className="text-h5 role-category__name">{category.name}</span>
+                    <span className="text-h5 role-category__name color--primary">
+                      {category.name}
+                    </span>
                     <div className="role-category__meta">
-                      <span className="text-label--sm color--tertiary">
+                      <span className="role-category__count-badge text-label--sm color--tertiary">
                         {category.roles.length} roles
                       </span>
                       {selectedCount > 0 && (
-                        <span className="section-label role-category__selected-count">
+                        <span className="role-category__selected-pill text-label--sm">
                           {selectedCount} selected
                         </span>
                       )}
@@ -282,7 +233,7 @@ export default function RolePicker({ categories }: RolePickerProps) {
             >
               ×
             </button>
-            <BasketContent />
+            <BasketContent categories={categories} />
           </div>
         </div>
       )}
