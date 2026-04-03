@@ -194,26 +194,49 @@ export default function RoleGrid({
         </div>
       </section>
 
-      {/* Floating basket bar — visible when roles are selected */}
+      {/* Fixed bottom bar — matches PlanBar pattern */}
       {selectedCount > 0 && (
-        <div className="role-bar rounded--lg border--default pad--inset-md surface--raised">
-          <div className="role-bar__left">
-            <span className="role-bar__pill text-label--sm rounded--full">
-              {selectedCount} {selectedCount === 1 ? 'role' : 'roles'}
-            </span>
-            <div className="stack--xs">
-              <span className="text-body--sm font--medium color--primary">
-                {selectedRoles.map((r) => r.roleName).join(' · ')}
-              </span>
+        <div className="role-bar" data-theme={theme}>
+          <div className="container">
+            <div className="role-bar__inner">
+
+              {/* Left — count pill */}
+              <div className="role-bar__left">
+                <span className="role-bar__count text-label--sm font--medium color--primary">
+                  {selectedCount} {selectedCount === 1 ? 'role' : 'roles'} selected
+                </span>
+              </div>
+
+              {/* Divider */}
+              <span className="role-bar__sep" aria-hidden="true" />
+
+              {/* Centre — scrollable role badges */}
+              <div className="role-bar__centre">
+                <div className="role-bar__scroll">
+                  {selectedRoles.map((r) => (
+                    <span
+                      key={r.roleId}
+                      className="role-bar__badge text-label--xs rounded--full"
+                    >
+                      {r.roleName}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Divider */}
+              <span className="role-bar__sep" aria-hidden="true" />
+
+              {/* Right — CTA */}
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => router.push('/get-started')}
+              >
+                Get started →
+              </Button>
             </div>
           </div>
-          <Button
-            variant="primary"
-            size="sm"
-            onClick={() => router.push('/get-started')}
-          >
-            Get started →
-          </Button>
         </div>
       )}
     </>

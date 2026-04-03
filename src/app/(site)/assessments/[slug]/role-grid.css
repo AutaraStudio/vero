@@ -184,40 +184,99 @@
   color: var(--color--interactive-primary);
 }
 
-/* ── Basket bar ───────────────────────────────────────────── */
+/* ── Basket bar — matches PlanBar pattern ─────────────────── */
 
 .role-bar {
   position: fixed;
-  bottom: 1.25rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 90;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-top: 1px solid var(--color--border-default);
+  background: var(--color--page-bg);
+}
+
+.role-bar__inner {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
-  width: min(52rem, calc(100vw - 2.5rem));
-  box-shadow: 0 4px 24px var(--color--border-subtle);
+  gap: 1.75rem;
+  padding: 0.75rem 0;
 }
+
+/* Left — count label */
 
 .role-bar__left {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
+  flex-shrink: 0;
 }
 
-.role-bar__pill {
-  background: var(--color--interactive-primary);
-  color: var(--color--interactive-primary-text);
-  padding: 0.3em 0.875em;
+.role-bar__count {
   white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Vertical separator */
+
+.role-bar__sep {
+  width: 1px;
+  height: 2rem;
+  background: var(--color--border-default);
   flex-shrink: 0;
+}
+
+/* Centre — scrollable badges with fade masks */
+
+.role-bar__centre {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  -webkit-mask-image:
+    linear-gradient(
+      to right,
+      transparent,
+      black 1.5rem,
+      black calc(100% - 1.5rem),
+      transparent
+    );
+  mask-image:
+    linear-gradient(
+      to right,
+      transparent,
+      black 1.5rem,
+      black calc(100% - 1.5rem),
+      transparent
+    );
+}
+
+.role-bar__scroll {
+  display: flex;
+  gap: 0.375rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 0 0.25rem;
+}
+
+.role-bar__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.role-bar__badge {
+  flex-shrink: 0;
+  border: 1px solid var(--color--border-default);
+  background: var(--color--surface-sunken);
+  color: var(--color--text-secondary);
+  padding: 0.25em 0.75em;
+  white-space: nowrap;
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
 
+@media (max-width: 900px) {
+  .role-bar__sep { display: none; }
+  .role-bar__inner { gap: 1rem; }
+}
+
 @media (max-width: 767px) {
   .role-grid-section { padding: var(--space--section-mobile) 0; }
   .role-grid { grid-template-columns: 1fr; gap: 0.75rem; }
-  .role-bar { bottom: 0.75rem; }
+  .role-bar__centre { display: none; }
 }
