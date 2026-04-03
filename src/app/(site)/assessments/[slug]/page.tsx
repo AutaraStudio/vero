@@ -5,7 +5,11 @@ import {
   JOB_CATEGORY_SLUGS_QUERY,
 } from '@/sanity/lib/queries';
 import DetailHero from './DetailHero';
+import DimensionsSection from './DimensionsSection';
+import InActionSection from './InActionSection';
+import StatsSection from './StatsSection';
 import RoleGrid from './RoleGrid';
+import BespokeSection from './BespokeSection';
 
 type Params = Promise<{ slug: string }>;
 
@@ -32,10 +36,31 @@ export default async function CategoryPage({ params }: { params: Params }) {
     heroIntroCopy,
     keyDimensionsAssessed,
     heroImageUrl,
+    dimensionsSectionHeading,
+    dimensionsSectionBody,
+    dimensionsSectionImage,
+    inActionSectionHeading,
+    inActionSectionSubheading,
+    assessmentsBlockHeading,
+    assessmentsBlockBody,
+    portalBlockHeading,
+    portalBlockBody,
+    interviewBlockHeading,
+    interviewBlockBody,
+    stat1Heading,
+    stat1Body,
+    stat2Heading,
+    stat2Body,
+    stat3Heading,
+    stat3Body,
     roles,
     name,
     roleRosterHeading,
     roleRosterSubheading,
+    bespokeSectionHeading,
+    bespokeSectionBody,
+    bespokeCTALabel,
+    bespokeSectionImage,
   } = data;
 
   // Pre-fetch Lottie JSON data server-side so the client doesn't need to
@@ -63,6 +88,39 @@ export default async function CategoryPage({ params }: { params: Params }) {
         slug={slug}
         heroImageUrl={heroImageUrl}
       />
+
+      {dimensionsSectionHeading && (
+        <DimensionsSection
+          heading={dimensionsSectionHeading}
+          body={dimensionsSectionBody}
+          imageUrl={dimensionsSectionImage?.asset?.url}
+        />
+      )}
+
+      {inActionSectionHeading && (
+        <InActionSection
+          sectionHeading={inActionSectionHeading}
+          sectionSubheading={inActionSectionSubheading}
+          assessmentsHeading={assessmentsBlockHeading}
+          assessmentsBody={assessmentsBlockBody}
+          portalHeading={portalBlockHeading}
+          portalBody={portalBlockBody}
+          interviewHeading={interviewBlockHeading}
+          interviewBody={interviewBlockBody}
+        />
+      )}
+
+      {stat1Heading && (
+        <StatsSection
+          stat1Heading={stat1Heading}
+          stat1Body={stat1Body}
+          stat2Heading={stat2Heading}
+          stat2Body={stat2Body}
+          stat3Heading={stat3Heading}
+          stat3Body={stat3Body}
+        />
+      )}
+
       {rolesWithLottieData?.length > 0 && (
         <RoleGrid
           roles={rolesWithLottieData}
@@ -70,6 +128,15 @@ export default async function CategoryPage({ params }: { params: Params }) {
           categorySlug={slug}
           heading={roleRosterHeading || `${name} roles`}
           subheading={roleRosterSubheading || 'Select the roles you want to assess. Click to add them to your basket.'}
+        />
+      )}
+
+      {bespokeSectionHeading && (
+        <BespokeSection
+          heading={bespokeSectionHeading}
+          body={bespokeSectionBody}
+          ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
+          imageUrl={bespokeSectionImage?.asset?.url}
         />
       )}
     </main>
