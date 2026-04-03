@@ -57,8 +57,10 @@ Same JSX. Same CSS. Different `data-theme`. Correct result every time.
 
 ### What this means in practice
 
-**Sections** must have `data-theme` on their wrapper element. If no accent theme
-applies, `data-theme="dark"` is still required — explicit, never implicit.
+**Sections** must have `data-theme` on their wrapper element. The default theme for
+all section components is `brand-purple`, applied via a `theme` prop. Never
+hardcode `data-theme="dark"` as a section default. `dark` may only be used when
+explicitly passed as a prop override by the page.
 
 **Cards, panels, CTA boxes, pricing cards** must have `background: var(--color--surface-raised)`.
 This resolves to the correct surface colour for whatever theme the card lives inside.
@@ -75,6 +77,32 @@ and text. The right button colour for the section's theme is set automatically.
 **The only exception** is Tier 3 accent elements — icons, eyebrow label text,
 stat numbers, and card accent top-borders. These use swatch tokens directly
 (`var(--swatch--[colour]-500)`) because they intentionally sit at 100% opacity.
+
+**Default theme is `brand-purple` — applied via props, never hardcoded.**
+Every section component must accept a `theme` prop typed as `ThemeVariant`
+with a default value of `'brand-purple'`. Pages override this prop when a
+different theme is required. Never default to `'dark'` inside a component.
+
+```tsx
+// ✅ Correct — theme is a prop, brand-purple is the default
+interface MySectionProps {
+  theme?: ThemeVariant;
+}
+export default function MySection({ theme = 'brand-purple' }: MySectionProps) {
+  return <section data-theme={theme}>...</section>;
+}
+
+// ✅ Correct — page overrides the default
+<MySection theme="dark-blue" />
+
+// ❌ Wrong — dark hardcoded inside the component
+export default function MySection() {
+  return <section data-theme="dark">...</section>;
+}
+
+// ❌ Wrong — theme prop exists but defaults to dark
+export default function MySection({ theme = 'dark' }: MySectionProps) { ... }
+```
 
 ---
 
@@ -162,7 +190,8 @@ body text, or button.
 Apply via `data-theme` on the section wrapper. All children inherit automatically.
 
 ```
-dark                Default dark — hero, stats, footer, any plain section
+brand-purple        DEFAULT — light purple tint, used when no override is specified
+dark                Explicit dark — must be passed as a prop, never a component default
 dark-purple         10% purple tint — primary feature, trust, brand identity
 dark-blue           10% blue tint — data, intelligence, analytics
 dark-green          10% green tint — outcomes, success, growth
@@ -210,7 +239,9 @@ style={{ color: '...', background: '...' }}   /* TSX inline styles */
 - Yellow theme more than once per page
 - Centred hero on a feature or category page
 - A heading (h1–h4) without useTextReveal
-- A section without data-theme or explicit background-color token
+- A section without data-theme bound to a theme prop
+- A component with theme defaulting to 'dark' — default must always be 'brand-purple'
+- A hardcoded data-theme="dark" inside a component — dark must come from a page prop
 - A card / panel / CTA box without background: var(--color--surface-raised)
 - A button without var(--color--interactive-*) tokens for all states
 - Any text without var(--color--text-*) tokens

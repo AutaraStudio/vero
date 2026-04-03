@@ -104,6 +104,40 @@ stat numbers, accent top-borders) use swatch tokens directly. These are intentio
 100% opacity punctuation marks and are deliberately fixed to the section accent.
 Everything else uses semantic tokens only.
 
+### Component Theme Props — The Standard Pattern
+
+Every section component accepts a `theme` prop. The default is always `brand-purple`.
+Pages compose sections and pass theme overrides where the rhythm requires it.
+
+```tsx
+// ── Component definition ──────────────────────────────────────
+import type { ThemeVariant } from '@/lib/theme';
+
+interface FeatureSectionProps {
+  heading: string;
+  theme?: ThemeVariant;          // always optional, always has a default
+}
+
+export default function FeatureSection({ heading, theme = 'brand-purple' }: FeatureSectionProps) {
+  return (
+    <section data-theme={theme}>
+      <h2>{heading}</h2>
+    </section>
+  );
+}
+
+// ── Page usage — override where needed ───────────────────────
+<FeatureSection heading="Our platform" />                    // brand-purple (default)
+<FeatureSection heading="See the data" theme="dark-blue" />  // explicit override
+<FeatureSection heading="Footer area" theme="dark" />        // explicit dark
+```
+
+**Rules:**
+- `theme` prop is always `ThemeVariant` (from `@/lib/theme`)
+- Default is always `'brand-purple'` — never `'dark'`, never omitted
+- `data-theme={theme}` goes on the outermost wrapper element
+- Pages are the only place where non-default themes are set
+
 ---
 
 ## 2. Complete Element → Token Reference
@@ -279,19 +313,22 @@ Full token values live in `src/app/globals.css`.
 ## 5. Section Rhythm — Page Architecture
 
 ```
-1. Hero              → data-theme="dark"              (base dark — establish identity)
-2. Social proof      → no theme / border-only          (logos — keep quiet)
-3. Feature A         → data-theme="dark-purple"        (primary brand — biggest feature)
-4. Feature B         → data-theme="dark"               (back to base — breathe)
-5. Feature C         → data-theme="dark-blue"          (second accent — new energy)
-6. Stats / Numbers   → data-theme="dark"               (earned credibility moment)
-7. Feature D         → data-theme="dark-green"         (third accent — positive outcome)
-8. Testimonials      → no theme / subtle border        (quiet — let customer speak)
-9. CTA Banner        → data-theme="brand-purple-deep"  (peak emphasis — the close)
-10. Footer           → data-theme="dark"               (return to base)
+1. Hero              → theme prop (default: brand-purple)   (light tint — open, clear)
+2. Social proof      → no theme / border-only               (logos — keep quiet)
+3. Feature A         → theme prop (default: brand-purple)   (primary brand moment)
+4. Feature B         → theme prop → pass "dark"             (explicit dark — breathe)
+5. Feature C         → theme prop → pass "brand-blue"       (second accent)
+6. Stats / Numbers   → theme prop → pass "dark"             (earned credibility)
+7. Feature D         → theme prop → pass "dark-green"       (positive outcome)
+8. Testimonials      → no theme / subtle border             (quiet — let customer speak)
+9. CTA Banner        → theme prop → pass "brand-purple-deep" (peak emphasis — the close)
+10. Footer           → theme prop → pass "dark"             (return to base)
 ```
 
 ### Rhythm Rules
+- **Default theme is `brand-purple`** — components default to it via props; pages
+  override by passing a different `theme` value
+- **`dark` is never a component default** — it must always be explicitly passed as a prop
 - **Never place two tinted sections back-to-back** — always a plain `dark` between
 - **`brand-purple-deep`** is reserved for the single peak CTA — once per page only
 - **Yellow** if used, replaces one accent slot — never the footer CTA
@@ -490,7 +527,9 @@ brand-purple-deep more than once per page
 Yellow theme used more than once
 Centred hero on a feature or category page
 A surface element (card, panel, CTA) without an explicit background token
-A section without data-theme or explicit background-color token
+A section without data-theme bound to a theme prop
+A component with theme defaulting to 'dark' — default must always be 'brand-purple'
+A hardcoded data-theme="dark" inside a component — dark must come from a page prop
 ```
 
 ---
@@ -498,8 +537,9 @@ A section without data-theme or explicit background-color token
 ## 13. Pre-Build Checklist
 
 ### Theme cascade
-- [ ] Does the section wrapper have `data-theme`?
-- [ ] If no `data-theme`, does the section have `background-color: var(--color--page-bg)`?
+- [ ] Does the section wrapper have `data-theme={theme}` bound to a prop?
+- [ ] Does the `theme` prop default to `'brand-purple'` (not `'dark'`)?
+- [ ] If the page needs a dark section, is `theme="dark"` passed explicitly from the page?
 - [ ] Would the component look correct if I changed `data-theme` to any other theme?
 - [ ] Are all headings using `var(--color--text-primary)`?
 - [ ] Is all body copy using `var(--color--text-secondary)`?
