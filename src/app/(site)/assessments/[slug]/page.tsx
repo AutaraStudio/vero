@@ -1,4 +1,5 @@
 import { client } from '@/sanity/lib/client';
+import { sanityFetch } from '@/sanity/lib/live';
 import {
   JOB_CATEGORY_BY_SLUG_QUERY,
   JOB_CATEGORY_SLUGS_QUERY,
@@ -16,13 +17,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: Params }) {
   const { slug } = await params;
-  const data = await client.fetch(JOB_CATEGORY_BY_SLUG_QUERY, { slug });
+  const { data } = await sanityFetch({ query: JOB_CATEGORY_BY_SLUG_QUERY, params: { slug } });
   return { title: data?.name ?? slug };
 }
 
 export default async function CategoryPage({ params }: { params: Params }) {
   const { slug } = await params;
-  const data = await client.fetch(JOB_CATEGORY_BY_SLUG_QUERY, { slug });
+  const { data } = await sanityFetch({ query: JOB_CATEGORY_BY_SLUG_QUERY, params: { slug } });
 
   if (!data) return <main></main>;
 
