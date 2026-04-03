@@ -1,0 +1,22 @@
+/* ── FixedBar — shared fixed bottom strip ─────────────────── */
+
+.fixed-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  border-top: 1px solid var(--color--border-default);
+  background: var(--color--page-bg);
+}
+
+.fixed-bar__inner {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  padding: 0.75rem 0;
+}
+
+@media (max-width: 900px) {
+  .fixed-bar__inner { gap: 1rem; }
+}

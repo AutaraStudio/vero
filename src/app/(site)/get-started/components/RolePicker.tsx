@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button from '@/components/ui/Button';
+import ActionButton from '@/components/ui/ActionButton';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA, getNudgeContent } from '@/lib/tierRecommendation';
@@ -60,7 +61,7 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
                       const tag = s.trim();
                       const label = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
                       return (
-                        <span key={tag} className="role-tag">
+                        <span key={tag} className="pill">
                           {label}
                         </span>
                       );
@@ -68,14 +69,11 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
                   </div>
                 )}
               </div>
-              <button
-                className="role-card__action"
+              <ActionButton
+                selected={selected}
                 onClick={() => onToggle(role)}
-                aria-pressed={selected}
-                aria-label={selected ? `Remove ${role.name}` : `Add ${role.name}`}
-              >
-                <span aria-hidden="true">{selected ? '−' : '+'}</span>
-              </button>
+                label={selected ? `Remove ${role.name}` : `Add ${role.name}`}
+              />
             </div>
           );
         })}
