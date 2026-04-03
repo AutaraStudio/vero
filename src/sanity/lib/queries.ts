@@ -189,7 +189,8 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
       name,
       "slug": slug.current,
       tasks,
-      strengths
+      strengths,
+      "lottieUrl": lottieFile.asset->url
     }
   }
 `
