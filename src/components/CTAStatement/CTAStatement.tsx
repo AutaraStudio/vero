@@ -8,6 +8,7 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
+import type { ThemeVariant } from '@/lib/theme';
 import './CTAStatement.css';
 
 interface CTAStatementProps {
@@ -15,7 +16,7 @@ interface CTAStatementProps {
   eyebrow?: string;
   benefits?: string[];
   cta?: { label: string; href: string };
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
 export default function CTAStatement({
@@ -28,7 +29,7 @@ export default function CTAStatement({
     'Build fairer, more inclusive hiring processes',
   ],
   cta = { label: 'Get started free', href: '/get-started' },
-  theme = 'dark',
+  theme = 'brand-purple',
 }: CTAStatementProps) {
   const statementRef = useTextReveal({ delay: 0.1 });
   const eyebrowRef   = useFadeUp({ delay: 0.3, duration: 0.5, y: 12 });

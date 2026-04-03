@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
+import type { ThemeVariant } from '@/lib/theme';
 import './StickySteps.css';
 
 export interface StickyStep {
@@ -15,13 +16,13 @@ export interface StickyStep {
 
 interface StickyStepsProps {
   steps: StickyStep[];
-  theme?: string;
+  theme?: ThemeVariant;
   accentSwatch?: string;
 }
 
 export function StickySteps({
   steps,
-  theme = 'dark-purple',
+  theme = 'brand-purple',
   accentSwatch = 'var(--swatch--purple-500)',
 }: StickyStepsProps) {
   const [activeIndex, setActiveIndex] = useState(0);

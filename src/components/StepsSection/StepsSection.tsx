@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import StickyTabs from '@/components/StickyTabs';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
+import type { ThemeVariant } from '@/lib/theme';
 import './StepsSection.css';
 
 const THEMES = ['brand-purple', 'brand-blue', 'brand-green'] as const;
@@ -40,10 +41,10 @@ interface StepsSectionProps {
   heading?: string;
   intro?: string;
   steps?: Step[];
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
-export default function StepsSection({ heading, intro, steps, theme = 'dark' }: StepsSectionProps) {
+export default function StepsSection({ heading, intro, steps, theme = 'brand-purple' }: StepsSectionProps) {
   const resolvedSteps = steps ?? DEFAULT_STEPS;
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
   const headingRef = useTextReveal({ delay: 0.1 });

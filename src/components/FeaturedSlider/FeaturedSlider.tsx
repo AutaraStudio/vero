@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { initGSAPSlider } from './sliderAnimations';
+import type { ThemeVariant } from '@/lib/theme';
 import './FeaturedSlider.css';
 
 interface UspItem {
@@ -19,10 +20,10 @@ interface FeaturedSliderProps {
   heading?: string;
   intro?: string;
   usps: UspItem[];
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
-export default function FeaturedSlider({ sectionLabel, heading, intro, usps, theme = 'dark' }: FeaturedSliderProps) {
+export default function FeaturedSlider({ sectionLabel, heading, intro, usps, theme = 'brand-purple' }: FeaturedSliderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const labelRef   = useFadeUp({ delay: 0, duration: 0.5, y: 16 });

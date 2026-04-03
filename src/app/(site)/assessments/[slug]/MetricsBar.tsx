@@ -1,6 +1,7 @@
 'use client';
 
 import { useCountUp } from '@/hooks/useCountUp';
+import type { ThemeVariant } from '@/lib/theme';
 
 function parseStatHeading(heading: string): { prefix: string; end: number; suffix: string } | null {
   const match = heading.match(/^([^0-9]*)([0-9][0-9,]*(?:\.[0-9]+)?)(.*)$/);
@@ -46,6 +47,7 @@ interface MetricsBarProps {
   stat2Body?: string;
   stat3Heading?: string;
   stat3Body?: string;
+  theme?: ThemeVariant;
 }
 
 export default function MetricsBar({
@@ -55,9 +57,10 @@ export default function MetricsBar({
   stat2Body,
   stat3Heading,
   stat3Body,
+  theme = 'brand-purple-deep',
 }: MetricsBarProps) {
   return (
-    <section data-theme="brand-purple-deep" className="metrics-bar">
+    <section data-theme={theme} className="metrics-bar">
       <div className="container">
         <div className="metrics-bar__inner">
           <StatItem heading={stat1Heading} body={stat1Body} />

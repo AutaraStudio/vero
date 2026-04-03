@@ -6,6 +6,7 @@ import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
 import Button from '@/components/ui/Button';
+import type { ThemeVariant } from '@/lib/theme';
 import './role-grid.css';
 
 interface Role {
@@ -24,6 +25,7 @@ interface RoleGridProps {
   categorySlug: string;
   heading?: string;
   subheading?: string;
+  theme?: ThemeVariant;
 }
 
 interface RoleCardProps {
@@ -108,6 +110,7 @@ export default function RoleGrid({
   categorySlug,
   heading,
   subheading,
+  theme = 'brand-purple',
 }: RoleGridProps) {
   const router = useRouter();
   const { state, dispatch } = useBasket();
@@ -143,7 +146,7 @@ export default function RoleGrid({
 
   return (
     <>
-      <section className="role-grid-section" data-theme="dark">
+      <section className="role-grid-section" data-theme={theme}>
         <div className="container">
           {(heading || subheading) && (
             <div className="role-grid__header">

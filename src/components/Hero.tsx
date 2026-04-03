@@ -3,16 +3,17 @@
 import Button from '@/components/ui/Button';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
+import type { ThemeVariant } from '@/lib/theme';
 import './Hero.css';
 
 interface HeroProps {
   title?: string;
   intro?: string;
   ctaLabel?: string;
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
-export default function Hero({ title, intro, ctaLabel, theme = 'dark' }: HeroProps) {
+export default function Hero({ title, intro, ctaLabel, theme = 'brand-purple' }: HeroProps) {
   // On-load animations (no scroll trigger)
   const badgeRef = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const titleRef = useTextReveal({ scroll: false, delay: 0.3 });

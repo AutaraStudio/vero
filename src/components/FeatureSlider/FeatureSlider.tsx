@@ -4,6 +4,7 @@ import { useRef, useEffect } from 'react';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { initGSAPSlider } from './sliderAnimations';
+import type { ThemeVariant } from '@/lib/theme';
 import './FeatureSlider.css';
 
 const usps = [
@@ -38,10 +39,10 @@ const usps = [
 ];
 
 interface FeatureSliderProps {
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
-export default function FeatureSlider({ theme = 'dark' }: FeatureSliderProps) {
+export default function FeatureSlider({ theme = 'brand-purple' }: FeatureSliderProps) {
   const rootRef = useRef<HTMLDivElement>(null);
 
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });

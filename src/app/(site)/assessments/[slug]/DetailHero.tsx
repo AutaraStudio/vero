@@ -7,6 +7,7 @@ import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
+import type { ThemeVariant } from '@/lib/theme';
 
 interface DetailHeroProps {
   heroHeadline: string;
@@ -14,7 +15,7 @@ interface DetailHeroProps {
   keyDimensionsAssessed?: string;
   slug: string;
   heroImageUrl?: string;
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
 export default function DetailHero({
@@ -23,7 +24,7 @@ export default function DetailHero({
   keyDimensionsAssessed,
   slug,
   heroImageUrl,
-  theme,
+  theme = 'brand-purple',
 }: DetailHeroProps) {
   const badgeRef  = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const titleRef  = useTextReveal({ scroll: false, delay: 0.3 });
@@ -82,7 +83,7 @@ export default function DetailHero({
   }, []);
 
   return (
-    <section className="detail-hero section--flush" data-theme={theme ?? 'dark'}>
+    <section className="detail-hero section--flush" data-theme={theme}>
       <div className="container">
         <div className="detail-hero__inner">
 

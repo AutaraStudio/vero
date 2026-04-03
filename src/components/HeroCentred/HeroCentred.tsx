@@ -10,9 +10,10 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
+import type { ThemeVariant } from '@/lib/theme';
 
 interface HeroCentredProps {
-  theme?: string;
+  theme?: ThemeVariant;
   badge?: { label: string; href: string };
   headline: string;
   intro?: string;
@@ -24,7 +25,7 @@ interface HeroCentredProps {
 }
 
 export default function HeroCentred({
-  theme = 'dark',
+  theme = 'brand-purple',
   badge,
   headline,
   intro,

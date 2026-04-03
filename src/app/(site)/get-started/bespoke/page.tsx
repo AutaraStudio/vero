@@ -75,7 +75,7 @@ export default function BespokePage() {
   const uniqueCategoryCount = uniqueCategories.length;
 
   return (
-    <section className="bespoke-page" data-theme="dark">
+    <section className="bespoke-page" data-theme="brand-purple">
       <div className="container">
         <div className="details-layout">
 

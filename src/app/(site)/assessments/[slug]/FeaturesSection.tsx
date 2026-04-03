@@ -3,20 +3,22 @@
 import Button from '@/components/ui/Button';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useTextReveal } from '@/hooks/useTextReveal';
+import type { ThemeVariant } from '@/lib/theme';
 
 interface FeaturesSectionProps {
   heading?: string;
   body?: string;
+  theme?: ThemeVariant;
 }
 
-export default function FeaturesSection({ heading, body }: FeaturesSectionProps) {
+export default function FeaturesSection({ heading, body, theme = 'brand-purple' }: FeaturesSectionProps) {
   const headingRef = useTextReveal({ delay: 0.05 });
   const bodyRef = useFadeUp({ delay: 0.2, duration: 0.6, y: 20 });
   const ctaRef = useFadeUp({ delay: 0.35, duration: 0.5, y: 16 });
   const visualRef = useFadeUp({ delay: 0.1, duration: 0.8, y: 32 });
 
   return (
-    <section data-theme="brand-purple" className="features-section">
+    <section data-theme={theme} className="features-section">
       <div className="container">
         <div className="grid--asymmetric">
 

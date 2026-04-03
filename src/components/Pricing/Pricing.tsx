@@ -5,6 +5,7 @@ import Button from '@/components/ui/Button';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { initGSAPSlider } from './pricingSlider';
+import type { ThemeVariant } from '@/lib/theme';
 import './Pricing.css';
 
 const roleOptions = [
@@ -113,7 +114,7 @@ interface PricingProps {
   bespokeBody?: string;
   bespokeCtaLabel?: string;
   bespokeCtaHref?: string;
-  theme?: string;
+  theme?: ThemeVariant;
 }
 
 export default function Pricing({
@@ -121,7 +122,7 @@ export default function Pricing({
   bespokeBody = 'We also offer tailored assessments for hiring, development or training, and end-to-end solutions that take candidates from initial application through to onboarding and beyond.',
   bespokeCtaLabel = 'Talk to us',
   bespokeCtaHref = '/contact',
-  theme = 'dark',
+  theme = 'brand-purple',
 }: PricingProps) {
   const sliderRef = useRef<HTMLDivElement>(null);
   const labelRef = useFadeUp({ delay: 0, duration: 0.5, y: 16 });
