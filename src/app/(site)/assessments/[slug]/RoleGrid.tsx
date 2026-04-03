@@ -51,7 +51,7 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
   return (
     <button
       type="button"
-      className={`role-grid__card${selected ? ' is-selected' : ''}`}
+      className={`role-grid__card rounded--lg border--default pad--card${selected ? ' is-selected' : ''}`}
       onClick={onToggle}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
@@ -64,18 +64,22 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
     >
       {/* Top row: icon + title + check */}
       <div className="role-grid__card-top">
-        {role.lottieData && (
-          <div className="role-grid__card-lottie">
+        <div className="role-grid__card-lottie rounded--md surface--sunken">
+          {role.lottieData && (
             <Lottie
               lottieRef={lottieRef}
               animationData={role.lottieData}
               loop
               autoplay={false}
             />
-          </div>
-        )}
-        <h3 className="role-grid__card-title">{role.name}</h3>
-        <div className="role-grid__card-check" aria-hidden="true">
+          )}
+        </div>
+        <div className="role-grid__card-header">
+          <h3 className="role-grid__card-title text-h6 color--primary leading--snug">
+            {role.name}
+          </h3>
+        </div>
+        <div className="role-grid__card-check rounded--full" aria-hidden="true">
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
             <path
               d="M3.5 8.5L6.5 11.5L12.5 4.5"
@@ -88,18 +92,33 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
         </div>
       </div>
 
-      {/* Divider */}
-      <div className="role-grid__card-divider" />
-
       {/* Description */}
       {role.tasks && (
-        <p className="role-grid__card-desc">{role.tasks}</p>
+        <p className="role-grid__card-desc text-body--xs color--secondary">
+          {role.tasks}
+        </p>
       )}
 
-      {/* Footer action hint */}
-      <span className="role-grid__card-action">
-        {selected ? 'Remove from basket' : 'Add to basket'}
-      </span>
+      {/* Strength tags */}
+      {role.strengths && (
+        <div className="role-grid__card-tags">
+          {role.strengths.split(',').map((s) => (
+            <span key={s} className="role-grid__card-tag text-label--xs rounded--full">
+              {s.trim()}
+            </span>
+          ))}
+        </div>
+      )}
+
+      {/* Footer */}
+      <div className="role-grid__card-footer border--top-subtle">
+        <span className="role-grid__card-action text-label--sm">
+          {selected ? 'Added to basket' : 'Add to basket'}
+        </span>
+        <span className="role-grid__card-plus text-body--sm color--tertiary" aria-hidden="true">
+          {selected ? '✓' : '+'}
+        </span>
+      </div>
     </button>
   );
 }
@@ -175,21 +194,26 @@ export default function RoleGrid({
         </div>
       </section>
 
-      {/* Sticky bottom bar — visible when roles are selected */}
+      {/* Floating basket bar — visible when roles are selected */}
       {selectedCount > 0 && (
-        <div className="role-bar">
-          <div className="role-bar__inner container">
-            <span className="text-body--sm font--medium color--primary">
-              {selectedCount} role{selectedCount !== 1 ? 's' : ''} selected
+        <div className="role-bar rounded--lg border--default pad--inset-md surface--raised">
+          <div className="role-bar__left">
+            <span className="role-bar__pill text-label--sm rounded--full">
+              {selectedCount} {selectedCount === 1 ? 'role' : 'roles'}
             </span>
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={() => router.push('/get-started')}
-            >
-              Get started →
-            </Button>
+            <div className="stack--xs">
+              <span className="text-body--sm font--medium color--primary">
+                {selectedRoles.map((r) => r.roleName).join(' · ')}
+              </span>
+            </div>
           </div>
+          <Button
+            variant="primary"
+            size="sm"
+            onClick={() => router.push('/get-started')}
+          >
+            Get started →
+          </Button>
         </div>
       )}
     </>

@@ -18,60 +18,76 @@
 .role-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
-  gap: 1.25rem;
+  gap: 1rem;
 }
 
-/* ── Card ──────────────────────────────────────────────────── */
+/* ── Card shell ───────────────────────────────────────────── */
 
 .role-grid__card {
   position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--color--surface-raised);
-  border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--lg);
-  padding: 1.25rem;
+  gap: 0.75rem;
   text-align: left;
   cursor: pointer;
+  font-family: inherit;
   transition:
     border-color var(--transition--default),
-    background-color var(--transition--default);
-  font-family: inherit;
+    background-color var(--transition--default),
+    transform var(--transition--default);
 }
 
 .role-grid__card:hover {
   border-color: var(--color--border-strong);
+  transform: translateY(-1px);
 }
 
 .role-grid__card.is-selected {
-  border-color: var(--color--interactive-primary);
+  border: 1.5px solid var(--color--interactive-primary);
+  background-color: var(--color--accent-purple-bg);
+  transform: none;
 }
 
-/* ── Top row: icon + title + check ────────────────────────── */
+/* ── Top row ──────────────────────────────────────────────── */
 
 .role-grid__card-top {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.75rem;
 }
 
-/* ── Lottie icon — small, contained ──────────────────────── */
+.role-grid__card-header {
+  flex: 1;
+  min-width: 0;
+  padding-top: 0.125rem;
+}
+
+.role-grid__card-title {
+  margin: 0;
+}
+
+/* ── Lottie icon box ──────────────────────────────────────── */
 
 .role-grid__card-lottie {
   flex-shrink: 0;
-  width: 2.5rem;
-  height: 2.5rem;
-  border-radius: var(--radius--md);
+  width: 2.75rem;
+  height: 2.75rem;
+  border: 1px solid var(--color--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
   color: var(--color--text-brand);
+  transition: background-color var(--transition--default);
 }
 
-.role-grid__card-lottie svg {
-  width: 100% !important;
-  height: 100% !important;
+.role-grid__card.is-selected .role-grid__card-lottie {
+  background-color: var(--color--accent-purple-bg);
+  border-color: var(--color--accent-purple-border);
 }
 
-/* Force Lottie SVG elements to inherit theme color */
+/* Force Lottie SVG to inherit theme colour */
+.role-grid__card-lottie svg { width: 100% !important; height: 100% !important; }
 .role-grid__card-lottie svg path,
 .role-grid__card-lottie svg circle,
 .role-grid__card-lottie svg rect,
@@ -83,30 +99,17 @@
   fill: none !important;
 }
 
-/* ── Title ────────────────────────────────────────────────── */
-
-.role-grid__card-title {
-  flex: 1;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  line-height: 1.3;
-  color: var(--color--text-primary);
-  margin: 0;
-}
-
-/* ── Checkmark ────────────────────────────────────────────── */
+/* ── Check badge ──────────────────────────────────────────── */
 
 .role-grid__card-check {
   flex-shrink: 0;
+  width: 1.375rem;
+  height: 1.375rem;
+  border: 1.5px solid var(--color--border-default);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 1.375rem;
-  height: 1.375rem;
-  border-radius: var(--radius--full);
-  border: 1.5px solid var(--color--border-default);
   color: transparent;
-  background: transparent;
   transition:
     background-color var(--transition--default),
     border-color var(--transition--default),
@@ -114,39 +117,55 @@
 }
 
 .role-grid__card.is-selected .role-grid__card-check {
-  background: var(--color--interactive-primary);
+  background-color: var(--color--interactive-primary);
   border-color: var(--color--interactive-primary);
   color: var(--color--interactive-primary-text);
-}
-
-/* ── Divider ──────────────────────────────────────────────── */
-
-.role-grid__card-divider {
-  height: 1px;
-  background: var(--color--border-subtle);
-  margin: 0.875rem 0;
 }
 
 /* ── Description ──────────────────────────────────────────── */
 
 .role-grid__card-desc {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--color--text-tertiary);
-  margin: 0 0 auto;
+  margin: 0;
 }
 
-/* ── Action hint ──────────────────────────────────────────── */
+/* ── Strength tags ────────────────────────────────────────── */
+
+.role-grid__card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.role-grid__card-tag {
+  border: 1px solid var(--color--border-default);
+  background: var(--color--surface-sunken);
+  color: var(--color--text-tertiary);
+  padding: 0.2em 0.625em;
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.role-grid__card.is-selected .role-grid__card-tag {
+  background-color: var(--color--accent-purple-bg);
+  border-color: var(--color--accent-purple-border);
+  color: var(--color--interactive-primary);
+}
+
+/* ── Footer ───────────────────────────────────────────────── */
+
+.role-grid__card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 0.75rem;
+  margin-top: auto;
+}
 
 .role-grid__card-action {
-  display: block;
-  margin-top: 0.875rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  color: var(--color--text-tertiary);
   transition: color var(--transition--default);
+  color: var(--color--text-tertiary);
 }
 
 .role-grid__card:hover .role-grid__card-action {
@@ -157,49 +176,48 @@
   color: var(--color--interactive-primary);
 }
 
-/* ── Sticky bottom bar ────────────────────────────────────── */
+.role-grid__card-plus {
+  transition: color var(--transition--default);
+}
+
+.role-grid__card.is-selected .role-grid__card-plus {
+  color: var(--color--interactive-primary);
+}
+
+/* ── Basket bar ───────────────────────────────────────────── */
 
 .role-bar {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 90;
-  background: var(--color--surface-raised);
-  border-top: 1px solid var(--color--border-default);
-  backdrop-filter: blur(12px);
-  padding: 0.75rem 0;
-}
-
-.role-bar__inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
+  gap: 1.5rem;
+  width: min(52rem, calc(100vw - 2.5rem));
+  box-shadow: 0 4px 24px var(--color--border-subtle);
+}
+
+.role-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.role-bar__pill {
+  background: var(--color--interactive-primary);
+  color: var(--color--interactive-primary-text);
+  padding: 0.3em 0.875em;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
 
 @media (max-width: 767px) {
-  .role-grid-section {
-    padding: var(--space--section-mobile) 0;
-  }
-
-  .role-grid {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-
-  .role-grid__card {
-    padding: 1rem;
-  }
-
-  .role-grid__header {
-    margin-bottom: 1.5rem;
-  }
-
-  .role-grid__card-lottie {
-    width: 2rem;
-    height: 2rem;
-  }
+  .role-grid-section { padding: var(--space--section-mobile) 0; }
+  .role-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+  .role-bar { bottom: 0.75rem; }
 }
