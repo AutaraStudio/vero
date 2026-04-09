@@ -67,38 +67,21 @@ export interface NudgeContent {
   toDetail?: string;
 }
 
+/** Maximum number of roles included in each tier */
+const TIER_MAX_ROLES: Partial<Record<TierKey, number>> = {
+  starter: 1,
+  essential: 5,
+  growth: 20,
+  scale: 50,
+};
+
 export function getNudgeContent(
   tier: TierKey,
   roleCount: number
 ): NudgeContent | null {
-  if (tier === 'essential' && roleCount >= 2 && roleCount <= 4) {
-    const remaining = 5 - roleCount;
-    return {
-      type: 'slots-remaining',
-      headline: `You have ${remaining} role slot${remaining !== 1 ? 's' : ''} left`,
-      body: `Your Essential plan includes up to 5 roles at the same price. You've selected ${roleCount} — you could add ${remaining} more before continuing at no extra cost.`,
-      primaryLabel: 'Add more roles',
-      secondaryLabel: `Continue with ${roleCount} role${roleCount !== 1 ? 's' : ''} →`,
-      tierName: 'Essential',
-      selectedCount: roleCount,
-      maxRoles: 5,
-    };
-  }
+  const maxRoles = TIER_MAX_ROLES[tier];
 
-  if (tier === 'growth' && roleCount >= 6 && roleCount <= 19) {
-    const remaining = 20 - roleCount;
-    return {
-      type: 'slots-remaining',
-      headline: `You have ${remaining} role slot${remaining !== 1 ? 's' : ''} left`,
-      body: `Your Growth plan includes up to 20 roles at the same price. You've selected ${roleCount} — you could add ${remaining} more before continuing at no extra cost.`,
-      primaryLabel: 'Add more roles',
-      secondaryLabel: `Continue with ${roleCount} roles →`,
-      tierName: 'Growth',
-      selectedCount: roleCount,
-      maxRoles: 20,
-    };
-  }
-
+  // Starter with 1 role — suggest upgrading to Essential
   if (tier === 'starter' && roleCount === 1) {
     return {
       type: 'upgrade',
@@ -110,6 +93,22 @@ export function getNudgeContent(
       fromDetail: '1 role · £3,500',
       toTierName: 'Essential',
       toDetail: 'Up to 5 roles · from £750/mo',
+    };
+  }
+
+  // Any tier with remaining slots — show how many are left
+  if (maxRoles && roleCount > 0 && roleCount < maxRoles) {
+    const tierInfo = TIER_DATA[tier];
+    const remaining = maxRoles - roleCount;
+    return {
+      type: 'slots-remaining',
+      headline: `You have ${remaining} role slot${remaining !== 1 ? 's' : ''} left`,
+      body: `Your ${tierInfo.name} plan includes up to ${maxRoles} roles at the same price. You've selected ${roleCount} — you could add ${remaining} more before continuing at no extra cost.`,
+      primaryLabel: 'Add more roles',
+      secondaryLabel: `Continue with ${roleCount} role${roleCount !== 1 ? 's' : ''} →`,
+      tierName: tierInfo.name,
+      selectedCount: roleCount,
+      maxRoles,
     };
   }
 
