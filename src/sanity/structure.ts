@@ -105,14 +105,14 @@ export const structure = (S: StructureBuilder) =>
               S.divider(),
               ...([
                 'Administration',
-                'Operations and Logistics',
+                'Operations and logistics',
                 'Apprentices',
-                'Claims and Collections',
-                'Field Service and Technicians',
+                'Claims and collections',
+                'Field service and technicians',
                 'Graduates',
-                'Health and Social Care',
+                'Health and social care',
                 'Interns',
-                'Retail and Hospitality',
+                'Retail and hospitality',
                 'Sales',
               ].map((cat) =>
                 S.listItem()
