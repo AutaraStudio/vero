@@ -8,7 +8,7 @@
 }
 
 .contract-inner {
-  max-width: 48rem;
+  max-width: 40rem;
   margin: 0 auto;
   padding: 0 var(--space--container-padding);
   display: flex;
@@ -22,96 +22,32 @@
   gap: 0.5rem;
 }
 
-.contract-parties {
-  color: var(--color--text-tertiary);
-}
+/* ── Contract prompt ── */
 
-/* ── Contract scroll body ── */
-
-.contract-body {
-  height: 26rem;
-  overflow-y: scroll;
-  border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--md);
-  padding: 1.5rem 1.75rem;
-  background: var(--color--surface-sunken);
-  scroll-behavior: smooth;
-}
-
-.contract-body::-webkit-scrollbar {
-  width: 6px;
-}
-
-.contract-body::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-.contract-body::-webkit-scrollbar-thumb {
-  background: var(--color--border-strong);
-  border-radius: 3px;
-}
-
-/* Contract text layout */
-.contract-text {
+.contract-prompt {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
+  padding: 1.75rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
 }
 
-.contract-text h2 {
-  font-size: var(--font--body-sm);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  color: var(--color--text-primary);
-  margin-top: 1rem;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
-.contract-text h2:first-child {
-  margin-top: 0;
-}
-
-.contract-text p {
-  font-size: var(--font--body-sm);
-  color: var(--color--text-secondary);
+.contract-prompt__text {
   line-height: 1.7;
 }
 
-.contract-text .clause {
+.contract-prompt__action {
   display: flex;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.contract-text .clause-num {
-  font-size: var(--font--body-sm);
+.contract-prompt__status {
+  color: var(--color--text-brand);
   font-weight: 600;
-  color: var(--color--text-primary);
-  min-width: 2.5rem;
-  flex-shrink: 0;
-}
-
-.contract-text .clause-body {
-  font-size: var(--font--body-sm);
-  color: var(--color--text-secondary);
-  line-height: 1.7;
-}
-
-/* ── Scroll progress indicator ── */
-
-.contract-scroll-progress {
-  height: 3px;
-  background: var(--color--border-subtle);
-  border-radius: 2px;
-  overflow: hidden;
-  margin-top: -1.5rem; /* pull close to the contract box */
-}
-
-.contract-scroll-progress__fill {
-  height: 100%;
-  background: var(--color--interactive-primary);
-  transition: width 0.1s linear;
-  border-radius: 2px;
 }
 
 /* ── Accept section ── */
@@ -187,9 +123,5 @@
 @media (max-width: 768px) {
   .contract-page {
     padding: var(--space--section-mobile) 0;
-  }
-
-  .contract-body {
-    height: 20rem;
   }
 }
