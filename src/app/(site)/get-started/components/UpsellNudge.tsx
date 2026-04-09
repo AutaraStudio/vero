@@ -1,6 +1,7 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import type { NudgeContent } from '@/lib/tierRecommendation';
@@ -57,7 +58,7 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
     });
   };
 
-  return (
+  return createPortal(
     <div
       ref={backdropRef}
       className="nudge-backdrop"
@@ -141,6 +142,7 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
         </div>
 
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
