@@ -6,7 +6,7 @@ import {
 } from '@/sanity/lib/queries';
 import DetailHero from './DetailHero';
 import DimensionsSection from './DimensionsSection';
-import InActionSection from './InActionSection';
+
 import StatsSection from './StatsSection';
 import RoleGrid from './RoleGrid';
 import BespokeSection from './BespokeSection';
@@ -39,14 +39,6 @@ export default async function CategoryPage({ params }: { params: Params }) {
     dimensionsSectionHeading,
     dimensionsSectionBody,
     dimensionsSectionImage,
-    inActionSectionHeading,
-    inActionSectionSubheading,
-    assessmentsBlockHeading,
-    assessmentsBlockBody,
-    portalBlockHeading,
-    portalBlockBody,
-    interviewBlockHeading,
-    interviewBlockBody,
     stat1Heading,
     stat1Body,
     stat2Heading,
@@ -94,19 +86,6 @@ export default async function CategoryPage({ params }: { params: Params }) {
           heading={dimensionsSectionHeading}
           body={dimensionsSectionBody}
           imageUrl={dimensionsSectionImage?.asset?.url}
-        />
-      )}
-
-      {inActionSectionHeading && (
-        <InActionSection
-          sectionHeading={inActionSectionHeading}
-          sectionSubheading={inActionSectionSubheading}
-          assessmentsHeading={assessmentsBlockHeading}
-          assessmentsBody={assessmentsBlockBody}
-          portalHeading={portalBlockHeading}
-          portalBody={portalBlockBody}
-          interviewHeading={interviewBlockHeading}
-          interviewBody={interviewBlockBody}
         />
       )}
 
