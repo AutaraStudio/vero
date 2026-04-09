@@ -25,16 +25,44 @@ function ChevronLeft({ className }: { className?: string }) {
   );
 }
 
+/* ── Types ── */
+
+export interface NavCategory {
+  name: string;
+  slug: string;
+}
+
+/* ── Nav grouping config ── */
+/* Maps each slug to its column group and short description shown in the menu. */
+/* If a new category is added in Sanity, add it here to include it in the nav. */
+
+type NavGroup = 'jobFamilies' | 'earlyCareers' | 'specialist';
+
+const categoryMeta: Record<string, { group: NavGroup; label: string; desc: string }> = {
+  'administration':                { group: 'jobFamilies',  label: 'Administration',              desc: 'Dependable, organised talent' },
+  'operations-and-logistics':      { group: 'jobFamilies',  label: 'Operations & Logistics',      desc: 'Precise, process-led hires' },
+  'sales':                         { group: 'jobFamilies',  label: 'Sales',                       desc: 'Commercially-minded performers' },
+  'retail-and-hospitality':        { group: 'jobFamilies',  label: 'Retail & Hospitality',        desc: 'Service-led problem solvers' },
+  'health-and-social-care':        { group: 'jobFamilies',  label: 'Health & Social Care',        desc: 'Compassionate, resilient staff' },
+  'graduates':                     { group: 'earlyCareers', label: 'Graduates',                   desc: 'Future leaders, assessed early' },
+  'apprentices':                   { group: 'earlyCareers', label: 'Apprentices',                 desc: 'Spot potential beyond CVs' },
+  'interns':                       { group: 'earlyCareers', label: 'Interns',                     desc: 'Build your talent pipeline' },
+  'claims-and-collections':        { group: 'specialist',   label: 'Claims & Collections',        desc: 'Integrity under pressure' },
+  'field-service-and-technicians': { group: 'specialist',   label: 'Field Service & Technicians', desc: 'Practical and customer-facing' },
+};
+
 /* ── Component ── */
 
 interface MegaNavProps {
   navCtaLabel?: string;
   navCtaHref?: string;
+  categories?: NavCategory[];
 }
 
 export default function MegaNav({
   navCtaLabel = 'Get started',
   navCtaHref = '/get-started',
+  categories = [],
 }: MegaNavProps) {
   const navRef = useRef<HTMLElement>(null);
 
@@ -126,31 +154,31 @@ export default function MegaNav({
           {/* ── Assessments panel ── */}
           <div data-panel-state="" data-nav-content="assessments" role="region" aria-label="assessments menu" className="mega-nav__dropdown-panel">
             <div className="mega-nav__dropdown-inner flex">
-              <div data-menu-fade="" className="mega-nav__panel-col">
-                <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Job families</span>
-                <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/assessments/administration" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Administration</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Dependable, organised talent</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/operations-logistics" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Operations &amp; Logistics</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Precise, process-led hires</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/sales" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Sales</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Commercially-minded performers</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/retail-hospitality" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Retail &amp; Hospitality</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Service-led problem solvers</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/health-social-care" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Health &amp; Social Care</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Compassionate, resilient staff</span></Link></li>
-                </ul>
-              </div>
-              <div data-menu-fade="" className="mega-nav__panel-col">
-                <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Early careers</span>
-                <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/assessments/graduates" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Graduates</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Future leaders, assessed early</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/apprentices" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Apprentices</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Spot potential beyond CVs</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/interns" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Interns</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Build your talent pipeline</span></Link></li>
-                </ul>
-              </div>
-              <div data-menu-fade="" className="mega-nav__panel-col is--colored">
-                <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Specialist</span>
-                <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/assessments/claims-collections" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Claims &amp; Collections</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Integrity under pressure</span></Link></li>
-                  <li data-menu-fade=""><Link href="/assessments/field-service" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Field Service &amp; Technicians</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Practical and customer-facing</span></Link></li>
-                </ul>
-              </div>
+              {([
+                { key: 'jobFamilies',  title: 'Job families',  colored: false },
+                { key: 'earlyCareers', title: 'Early careers', colored: false },
+                { key: 'specialist',   title: 'Specialist',    colored: true },
+              ] as const).map(({ key, title, colored }) => {
+                const items = categories
+                  .filter((c) => categoryMeta[c.slug]?.group === key)
+                  .map((c) => ({ slug: c.slug, ...categoryMeta[c.slug] }));
+                if (items.length === 0) return null;
+                return (
+                  <div key={key} data-menu-fade="" className={`mega-nav__panel-col${colored ? ' is--colored' : ''}`}>
+                    <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">{title}</span>
+                    <ul className="mega-nav__panel-list stack--xs">
+                      {items.map((item) => (
+                        <li key={item.slug} data-menu-fade="">
+                          <Link href={`/assessments/${item.slug}`} className="mega-nav__panel-link rounded--sm">
+                            <span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">{item.label}</span>
+                            <span className="mega-nav__panel-link-desc text-body--xs color--tertiary">{item.desc}</span>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                );
+              })}
             </div>
           </div>
 

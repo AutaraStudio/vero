@@ -2,20 +2,27 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { client } from '@/sanity/lib/client';
-import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { SITE_SETTINGS_QUERY, NAV_CATEGORIES_QUERY } from '@/sanity/lib/queries';
 import './Footer.css';
 
-const linkColumns = [
-  {
-    title: 'Assessments',
-    links: [
-      { label: 'Administration', href: '/assessments/administration' },
-      { label: 'Graduates', href: '/assessments/graduates' },
-      { label: 'Sales', href: '/assessments/sales' },
-      { label: 'Retail & Hospitality', href: '/assessments/retail-hospitality' },
-      { label: 'All job families', href: '/assessments' },
-    ],
-  },
+/* Short display labels for the footer (keeps the column compact) */
+const footerLabel: Record<string, string> = {
+  'operations-and-logistics': 'Operations & Logistics',
+  'retail-and-hospitality': 'Retail & Hospitality',
+  'health-and-social-care': 'Health & Social Care',
+  'claims-and-collections': 'Claims & Collections',
+  'field-service-and-technicians': 'Field Service & Technicians',
+};
+
+/* Which slugs to feature in the footer (subset of all categories) */
+const footerSlugs = [
+  'administration',
+  'graduates',
+  'sales',
+  'retail-and-hospitality',
+];
+
+const staticLinkColumns = [
   {
     title: 'Solutions',
     links: [
@@ -54,7 +61,25 @@ const linkColumns = [
 ];
 
 export default async function Footer() {
-  const settings = await client.fetch(SITE_SETTINGS_QUERY);
+  const [settings, categories] = await Promise.all([
+    client.fetch(SITE_SETTINGS_QUERY),
+    client.fetch(NAV_CATEGORIES_QUERY) as Promise<{ name: string; slug: string }[]>,
+  ]);
+
+  /* Build the Assessments column dynamically from Sanity slugs */
+  const assessmentLinks = footerSlugs
+    .map((slug) => {
+      const cat = categories?.find((c) => c.slug === slug);
+      if (!cat) return null;
+      return { label: footerLabel[cat.slug] ?? cat.name, href: `/assessments/${cat.slug}` };
+    })
+    .filter(Boolean) as { label: string; href: string }[];
+  assessmentLinks.push({ label: 'All job families', href: '/assessments' });
+
+  const linkColumns = [
+    { title: 'Assessments', links: assessmentLinks },
+    ...staticLinkColumns,
+  ];
 
   const heading = settings?.footerCtaHeading ?? 'Ready to find the right people?';
   const body = settings?.footerCtaBody ?? 'Start assessing smarter. Go live within 48 hours with science-backed, role-specific assessments.';

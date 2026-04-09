@@ -195,6 +195,13 @@ export const JOB_CATEGORY_SLUGS_QUERY = `
   *[_type == "jobCategory"] { "slug": slug.current }
 `
 
+export const NAV_CATEGORIES_QUERY = `
+  *[_type == "jobCategory"] | order(name asc) {
+    name,
+    "slug": slug.current
+  }
+`
+
 export const ALL_ROLES_QUERY = `
   *[_type == "role"] | order(parentCategory->name asc, name asc) {
     _id,
