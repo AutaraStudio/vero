@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useReducer, type ReactNode } from 'react';
-import { type TierKey, type PaymentFrequency, recommendTier } from '@/lib/tierRecommendation';
+import { type TierKey, type PaymentFrequency, recommendTier, isTierAtLeast } from '@/lib/tierRecommendation';
 
 export type { PaymentFrequency };
 
@@ -53,6 +53,7 @@ export interface ContactDetails {
 // Internal reducer state — recommendedTier is derived, not stored
 interface InternalState {
   selectedRoles: SelectedRole[];
+  tierOverride: TierKey | null;
   contactDetails: ContactDetails;
   contractAccepted: boolean;
   paymentFrequency: PaymentFrequency;
@@ -71,6 +72,7 @@ export interface BasketState extends InternalState {
 export type BasketAction =
   | { type: 'ADD_ROLE'; payload: SelectedRole }
   | { type: 'REMOVE_ROLE'; payload: { roleId: string } }
+  | { type: 'SET_TIER_OVERRIDE'; payload: TierKey | null }
   | { type: 'SET_CONTACT_DETAILS'; payload: ContactDetails }
   | { type: 'ACCEPT_CONTRACT' }
   | { type: 'SET_PAYMENT_FREQUENCY'; payload: PaymentFrequency }
@@ -114,6 +116,7 @@ const emptyBespoke: BespokeDetails = {
 
 const initialState: InternalState = {
   selectedRoles: [],
+  tierOverride: null,
   contactDetails: emptyContact,
   contractAccepted: false,
   paymentFrequency: 'annual',
@@ -138,6 +141,8 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
         ...state,
         selectedRoles: state.selectedRoles.filter((r) => r.roleId !== action.payload.roleId),
       };
+    case 'SET_TIER_OVERRIDE':
+      return { ...state, tierOverride: action.payload };
     case 'SET_CONTACT_DETAILS':
       return { ...state, contactDetails: action.payload };
     case 'ACCEPT_CONTRACT':
@@ -181,8 +186,19 @@ export function useBasket() {
   const ctx = useContext(BasketContext);
   if (!ctx) throw new Error('useBasket must be used within a BasketProvider');
   const { _internal, dispatch } = ctx;
-  const recommendedTier: TierKey | null =
+
+  // Auto-tier from role count
+  const autoTier: TierKey | null =
     _internal.selectedRoles.length > 0 ? recommendTier(_internal.selectedRoles.length) : null;
+
+  // Override only applies if it's at least as high as the auto-tier
+  let recommendedTier = autoTier;
+  if (_internal.tierOverride) {
+    if (!autoTier || isTierAtLeast(_internal.tierOverride, autoTier)) {
+      recommendedTier = _internal.tierOverride;
+    }
+  }
+
   return {
     state: { ..._internal, recommendedTier } satisfies BasketState,
     dispatch,

@@ -9,7 +9,7 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import './contract.css';
 
-const CONTRACT_PDF_URL = '/documents/vero-assess-agreement.pdf';
+const CONTRACT_PDF_URL = 'https://example.com';
 
 export default function ContractPage() {
   const router = useRouter();

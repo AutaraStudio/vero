@@ -1,12 +1,19 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import ActionButton from '@/components/ui/ActionButton';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA, getNudgeContent } from '@/lib/tierRecommendation';
+import {
+  TIER_DATA,
+  getNudgeContent,
+  SELECTABLE_TIERS,
+  recommendTier,
+  isTierAtLeast,
+  type TierKey,
+} from '@/lib/tierRecommendation';
 import BasketContent from './BasketContent';
 import UpsellNudge from './UpsellNudge';
 
@@ -86,13 +93,34 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
 
 export default function RolePicker({ categories }: RolePickerProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [nudgeVisible, setNudgeVisible] = useState(false);
 
-  const { selectedRoles, recommendedTier, nudgeShown } = state;
+  // Read ?tier= from URL (e.g. from pricing page) and set as override
+  useEffect(() => {
+    const tierParam = searchParams.get('tier') as TierKey | null;
+    if (tierParam && SELECTABLE_TIERS.includes(tierParam)) {
+      dispatch({ type: 'SET_TIER_OVERRIDE', payload: tierParam });
+    }
+  }, [searchParams, dispatch]);
+
+  const { selectedRoles, recommendedTier, tierOverride, nudgeShown } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+
+  // The minimum tier required by the current role count
+  const autoTier = selectedRoles.length > 0 ? recommendTier(selectedRoles.length) : null;
+
+  const handleTierSelect = (tier: TierKey) => {
+    if (tier === tierOverride) {
+      // Deselect override — revert to auto
+      dispatch({ type: 'SET_TIER_OVERRIDE', payload: null });
+    } else {
+      dispatch({ type: 'SET_TIER_OVERRIDE', payload: tier });
+    }
+  };
 
   const toggleCategory = (id: string) =>
     setExpanded((prev) => {
@@ -151,6 +179,37 @@ export default function RolePicker({ categories }: RolePickerProps) {
             <p className="text-body--lg color--secondary leading--snug">
               Choose the roles you&apos;re hiring for. You can select as many as you need.
             </p>
+
+            {/* Tier selector */}
+            <div className="tier-selector">
+              <span className="tier-selector__label text-label--sm color--tertiary">
+                Choose your plan
+              </span>
+              <div className="tier-selector__options">
+                {SELECTABLE_TIERS.map((tierKey) => {
+                  const tier = TIER_DATA[tierKey];
+                  const isActive = recommendedTier === tierKey;
+                  const isBelowMinimum = autoTier ? !isTierAtLeast(tierKey, autoTier) : false;
+
+                  return (
+                    <button
+                      key={tierKey}
+                      className={`tier-selector__option${isActive ? ' is-active' : ''}${isBelowMinimum ? ' is-disabled' : ''}`}
+                      disabled={isBelowMinimum}
+                      onClick={() => handleTierSelect(tierKey)}
+                      type="button"
+                    >
+                      <span className="tier-selector__option-name text-body--sm font--semibold">
+                        {tier.name}
+                      </span>
+                      <span className="tier-selector__option-detail text-body--xs color--tertiary">
+                        {tier.roleLimit}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
           </div>
 
           <div className="role-picker__categories">

@@ -1,6 +1,22 @@
 export type TierKey = 'starter' | 'essential' | 'growth' | 'scale' | 'bespoke';
 export type PaymentFrequency = 'annual' | 'monthly';
 
+/** Ordered list of tiers from lowest to highest */
+const TIER_ORDER: TierKey[] = ['starter', 'essential', 'growth', 'scale', 'bespoke'];
+
+/** Returns the numeric rank of a tier (0 = starter, 4 = bespoke) */
+export function tierRank(tier: TierKey): number {
+  return TIER_ORDER.indexOf(tier);
+}
+
+/** Returns true if `a` is a higher or equal tier to `b` */
+export function isTierAtLeast(a: TierKey, b: TierKey): boolean {
+  return tierRank(a) >= tierRank(b);
+}
+
+/** All selectable tiers (excludes bespoke which is a separate flow) */
+export const SELECTABLE_TIERS: TierKey[] = ['starter', 'essential', 'growth', 'scale'];
+
 export function recommendTier(roleCount: number): TierKey {
   if (roleCount === 1) return 'starter';
   if (roleCount <= 5) return 'essential';
