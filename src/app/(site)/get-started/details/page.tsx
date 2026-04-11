@@ -15,7 +15,8 @@ import './details.css';
 
 // ── Helper: user email input ──────────────────────────────────
 
-const EMAIL_COLLAPSE_THRESHOLD = 5;
+const EMAIL_INITIAL_VISIBLE = 5;
+const EMAIL_LOAD_MORE_COUNT = 10;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function UserEmailInput({
@@ -42,7 +43,7 @@ function UserEmailInput({
   const csvRef = useRef<HTMLInputElement>(null);
   const atLimit = emails.length >= maxEmails;
 
-  const [showAll, setShowAll] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(EMAIL_INITIAL_VISIBLE);
   const [searchQuery, setSearchQuery] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
@@ -61,12 +62,22 @@ function UserEmailInput({
         .filter(({ email }) => email.toLowerCase().includes(searchQuery.toLowerCase()))
     : emails.map((email, i) => ({ email, originalIndex: i }));
 
-  // Collapse logic: show first N unless expanded or searching
-  const shouldCollapse = emails.length > EMAIL_COLLAPSE_THRESHOLD && !searchQuery;
-  const visibleEmails = shouldCollapse && !showAll
-    ? filteredEmails.slice(0, EMAIL_COLLAPSE_THRESHOLD)
-    : filteredEmails;
-  const hiddenCount = shouldCollapse ? filteredEmails.length - EMAIL_COLLAPSE_THRESHOLD : 0;
+  // Progressive loading: show visibleCount items, load 10 more at a time
+  const isSearching = searchQuery.length > 0;
+  const visibleEmails = isSearching
+    ? filteredEmails
+    : filteredEmails.slice(0, visibleCount);
+  const remainingCount = isSearching ? 0 : filteredEmails.length - visibleCount;
+  const hasMore = remainingCount > 0;
+  const showLessVisible = !isSearching && visibleCount > EMAIL_INITIAL_VISIBLE;
+
+  const handleShowMore = () => {
+    setVisibleCount((prev) => prev + EMAIL_LOAD_MORE_COUNT);
+  };
+
+  const handleShowLess = () => {
+    setVisibleCount(EMAIL_INITIAL_VISIBLE);
+  };
 
   // Inline editing
   const startEdit = (index: number, email: string) => {
@@ -141,17 +152,14 @@ function UserEmailInput({
 
       {emails.length > 0 && (
         <>
-          {/* Search bar — shown when emails exceed threshold */}
-          {emails.length > EMAIL_COLLAPSE_THRESHOLD && (
+          {/* Search bar — shown when emails exceed initial threshold */}
+          {emails.length > EMAIL_INITIAL_VISIBLE && (
             <div className="user-emails__search">
               <input
                 type="text"
                 className="form-field__input user-emails__search-input"
                 value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value);
-                  if (e.target.value) setShowAll(true);
-                }}
+                onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search email addresses..."
                 aria-label="Search email addresses"
               />
@@ -185,35 +193,60 @@ function UserEmailInput({
                     autoFocus
                   />
                 ) : (
-                  <span
-                    className="text-body--sm color--primary user-email-chip__address"
-                    onDoubleClick={() => startEdit(originalIndex, email)}
-                    title="Double-click to edit"
-                  >
+                  <span className="text-body--sm color--primary user-email-chip__address">
                     {email}
                   </span>
                 )}
-                <button
-                  type="button"
-                  className="user-email-chip__remove"
-                  onClick={() => onRemove(originalIndex)}
-                  aria-label={`Remove ${email}`}
-                >
-                  ×
-                </button>
+                <div className="user-email-chip__actions">
+                  {editingIndex !== originalIndex && (
+                    <button
+                      type="button"
+                      className="user-email-chip__edit"
+                      onClick={() => startEdit(originalIndex, email)}
+                      aria-label={`Edit ${email}`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    className="user-email-chip__remove"
+                    onClick={() => onRemove(originalIndex)}
+                    aria-label={`Remove ${email}`}
+                  >
+                    ×
+                  </button>
+                </div>
               </div>
             ))}
           </div>
 
-          {/* Show more / Show less toggle */}
-          {shouldCollapse && hiddenCount > 0 && (
-            <button
-              type="button"
-              className="user-emails__toggle text-body--xs"
-              onClick={() => setShowAll(!showAll)}
-            >
-              {showAll ? 'Show less' : `+${hiddenCount} more`}
-            </button>
+          {/* Show more / Show less */}
+          {(hasMore || showLessVisible) && (
+            <div className="user-emails__toggle-row">
+              {hasMore && (
+                <button
+                  type="button"
+                  className="user-emails__toggle text-body--xs"
+                  onClick={handleShowMore}
+                >
+                  Show {Math.min(remainingCount, EMAIL_LOAD_MORE_COUNT)} more
+                  <span className="color--tertiary"> ({remainingCount} remaining)</span>
+                </button>
+              )}
+              {showLessVisible && (
+                <button
+                  type="button"
+                  className="user-emails__toggle text-body--xs"
+                  onClick={handleShowLess}
+                >
+                  Collapse
+                </button>
+              )}
+            </div>
           )}
 
           {/* Search results count */}
