@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
-import { getStripePriceId } from '@/lib/tierRecommendation';
+import { getStripePriceId, TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
 
 export async function POST(request: Request) {
@@ -23,9 +23,6 @@ export async function POST(request: Request) {
     }
 
     const isOneOff = tier === 'starter';
-    const mode = isOneOff ? 'payment' : 'subscription';
-
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
 
     // Metadata for Stripe records
     const metadata: Record<string, string> = {
@@ -38,27 +35,64 @@ export async function POST(request: Request) {
       paymentMethod: 'card',
     };
 
-    // Create embedded Checkout Session
-    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      mode,
-      ui_mode: 'embedded_page',
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: contactDetails.email,
-      return_url: `${origin}/get-started/confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      metadata,
-    };
+    let clientSecret: string;
+    let intentType: 'payment' | 'subscription';
 
-    // For subscriptions, set cancel_at_period_end if auto-renewal is off
-    if (!isOneOff) {
-      sessionParams.subscription_data = {
+    if (isOneOff) {
+      // ── Starter: one-off Payment Intent ──
+      const tierInfo = TIER_DATA[tier];
+      const { price } = getTierPrice(tierInfo, paymentFrequency);
+      const amount = parseInt(price.replace(/[^0-9]/g, '')) * 100;
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: 'gbp',
         metadata,
-        ...(paymentFrequency === 'annual' && !autoRenewal
-          ? {} // We'll set cancel_at_period_end in the webhook after subscription is created
-          : {}),
-      };
-    }
+        receipt_email: contactDetails.email,
+      });
 
-    const session = await stripe.checkout.sessions.create(sessionParams);
+      clientSecret = paymentIntent.client_secret!;
+      intentType = 'payment';
+    } else {
+      // ── Subscription: create Customer + Subscription ──
+      const customer = await stripe.customers.create({
+        email: contactDetails.email,
+        name: `${contactDetails.firstName} ${contactDetails.lastName}`,
+        metadata: {
+          company: contactDetails.company,
+          tier,
+        },
+      });
+
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+        },
+        metadata,
+        cancel_at_period_end: paymentFrequency === 'annual' && !autoRenewal,
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Extract client_secret from the expanded payment intent
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const latestInvoice = subscription.latest_invoice as any;
+      const paymentIntent = latestInvoice?.payment_intent;
+
+      if (!paymentIntent?.client_secret) {
+        console.error('[Checkout] Subscription created but no client_secret found', {
+          subscriptionId: subscription.id,
+          invoiceType: typeof subscription.latest_invoice,
+          hasPaymentIntent: !!paymentIntent,
+        });
+        throw new Error('Payment setup failed — please try again');
+      }
+
+      clientSecret = paymentIntent.client_secret;
+      intentType = 'subscription';
+    }
 
     // Push data to HubSpot (non-blocking)
     try {
@@ -67,10 +101,10 @@ export async function POST(request: Request) {
       console.error('[Checkout] HubSpot submission failed (non-blocking):', err);
     }
 
-    return NextResponse.json({ clientSecret: session.client_secret });
+    return NextResponse.json({ clientSecret, type: intentType });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
-    console.error('[Checkout] Error:', message, err);
+    console.error('[Checkout] Error:', message);
     return NextResponse.json(
       { error: message },
       { status: 500 }

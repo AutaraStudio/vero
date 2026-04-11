@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA } from '@/lib/tierRecommendation';
 import { stripePromise } from '@/lib/stripeClient';
@@ -23,6 +23,74 @@ export default function PaymentPage() {
   );
 }
 
+// ── Stripe Payment Form (inside Elements provider) ──────────
+
+function StripePaymentForm({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: () => void;
+  onError: (message: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+    onError('');
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      redirect: 'if_required',
+      confirmParams: {
+        return_url: `${window.location.origin}/get-started/confirmation`,
+      },
+    });
+
+    if (error) {
+      onError(error.message || 'Payment failed. Please try again.');
+      setIsProcessing(false);
+    } else {
+      onSuccess();
+    }
+  };
+
+  return (
+    <>
+      <div className="stripe-element-wrapper">
+        <PaymentElement
+          onReady={() => setReady(true)}
+          options={{ layout: 'tabs' }}
+        />
+        {!ready && (
+          <div className="stripe-element-loading">
+            <span className="text-body--sm color--tertiary">Loading payment form...</span>
+          </div>
+        )}
+      </div>
+      <div className="payment-actions">
+        <Button
+          variant="primary"
+          size="md"
+          onClick={handleSubmit}
+          disabled={!stripe || !elements || isProcessing || !ready}
+        >
+          {isProcessing ? 'Processing payment...' : 'Complete order →'}
+        </Button>
+        <Link href="/get-started/contract" className="form-back-link">
+          ← Back
+        </Link>
+      </div>
+    </>
+  );
+}
+
+// ── Main payment content ────────────────────────────────────
+
 function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -32,13 +100,14 @@ function PaymentContent() {
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [intentCreated, setIntentCreated] = useState(false);
 
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const isSubscription = tierInfo?.hasFrequencyToggle ?? false;
   const showAutoRenewal = isSubscription && paymentFrequency === 'annual';
 
-  // Check if user returned after a cancelled/failed attempt
   const wasCancelled = searchParams.get('cancelled') === 'true';
 
   // Guards
@@ -50,7 +119,7 @@ function PaymentContent() {
     }
   }, [selectedRoles.length, contractAccepted, router]);
 
-  // ── Build checkout payload from basket state ──
+  // ── Build checkout payload ──
 
   const buildPayload = useCallback((): CheckoutPayload => {
     return {
@@ -84,19 +153,37 @@ function PaymentContent() {
     };
   }, [selectedRoles, recommendedTier, paymentFrequency, autoRenewal, contactDetails]);
 
-  // ── Fetch client secret for Stripe Embedded Checkout ──
+  // ── Create Payment Intent when card tab is active ──
 
-  const fetchClientSecret = useCallback(async () => {
-    const res = await fetch('/api/checkout', {
+  useEffect(() => {
+    if (payMethod !== 'card' || intentCreated || clientSecret) return;
+    if (!recommendedTier || selectedRoles.length === 0) return;
+
+    setIntentCreated(true);
+
+    fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildPayload()),
-    });
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+        } else {
+          setError(data.error || 'Failed to initialize payment');
+        }
+      })
+      .catch(() => {
+        setError('Failed to connect to payment service');
+      });
+  }, [payMethod, intentCreated, clientSecret, recommendedTier, selectedRoles.length, buildPayload]);
 
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.error || 'Failed to initialize payment');
-    return data.clientSecret as string;
-  }, [buildPayload]);
+  // ── Handle successful payment ──
+
+  const handlePaymentSuccess = () => {
+    router.push('/get-started/confirmation');
+  };
 
   // ── Handle invoice checkout ──
 
@@ -127,7 +214,7 @@ function PaymentContent() {
   // Animations
   const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
   const methodRef = useFadeUp({ delay: 0.15, y: 12 });
-  const checkoutRef = useFadeUp({ delay: 0.2, y: 16 });
+  const cardFormRef = useFadeUp({ delay: 0.2, y: 16 });
   const renewalRef = useFadeUp({ delay: 0.3, y: 12 });
   const trustRef = useFadeUp({ delay: 0.35, y: 12 });
   const actionsRef = useFadeUp({ delay: 0.4, y: 16 });
@@ -211,13 +298,117 @@ function PaymentContent() {
             </div>
 
             {payMethod === 'card' ? (
-              <div ref={checkoutRef as React.RefObject<HTMLDivElement>} className="stripe-checkout-wrapper">
-                <EmbeddedCheckoutProvider
-                  stripe={stripePromise}
-                  options={{ fetchClientSecret }}
-                >
-                  <EmbeddedCheckout />
-                </EmbeddedCheckoutProvider>
+              <div ref={cardFormRef as React.RefObject<HTMLDivElement>}>
+                {clientSecret ? (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{
+                      clientSecret,
+                      appearance: {
+                        theme: 'flat',
+                        variables: {
+                          // Core brand
+                          colorPrimary: '#472d6a',
+                          colorBackground: '#ffffff',
+                          colorText: '#201530',
+                          colorTextSecondary: '#6b5a7e',
+                          colorTextPlaceholder: '#9b8dab',
+
+                          // Surfaces
+                          colorDanger: '#f15f23',
+
+                          // Shape
+                          borderRadius: '4px',
+                          spacingUnit: '4px',
+                          spacingGridRow: '16px',
+                          spacingGridColumn: '16px',
+
+                          // Typography — matches Aptos
+                          fontFamily: 'Aptos, system-ui, -apple-system, sans-serif',
+                          fontSizeBase: '14px',
+                          fontSizeSm: '13px',
+                          fontWeightNormal: '400',
+                          fontWeightMedium: '500',
+                          fontWeightBold: '600',
+
+                          // Focus ring
+                          focusBoxShadow: '0 0 0 3px rgba(71, 45, 106, 0.15)',
+                          focusOutline: 'none',
+                        },
+                        rules: {
+                          '.Input': {
+                            border: '1px solid rgba(71, 45, 106, 0.2)',
+                            boxShadow: 'none',
+                            padding: '10px 12px',
+                            fontSize: '14px',
+                            transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
+                          },
+                          '.Input:focus': {
+                            border: '1px solid #472d6a',
+                            boxShadow: '0 0 0 3px rgba(71, 45, 106, 0.15)',
+                          },
+                          '.Input:hover': {
+                            border: '1px solid rgba(71, 45, 106, 0.35)',
+                          },
+                          '.Input--invalid': {
+                            border: '1px solid #f15f23',
+                            boxShadow: 'none',
+                          },
+                          '.Label': {
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            color: '#6b5a7e',
+                            textTransform: 'none',
+                            letterSpacing: '0',
+                            marginBottom: '6px',
+                          },
+                          '.Tab': {
+                            border: '1px solid rgba(71, 45, 106, 0.2)',
+                            borderRadius: '4px',
+                            boxShadow: 'none',
+                            padding: '10px 16px',
+                            transition: 'border-color 0.15s ease, background-color 0.15s ease',
+                          },
+                          '.Tab:hover': {
+                            border: '1px solid rgba(71, 45, 106, 0.35)',
+                            backgroundColor: 'rgba(71, 45, 106, 0.04)',
+                          },
+                          '.Tab--selected': {
+                            border: '1px solid #472d6a',
+                            backgroundColor: '#ffffff',
+                            boxShadow: 'none',
+                            color: '#472d6a',
+                          },
+                          '.TabIcon--selected': {
+                            color: '#472d6a',
+                          },
+                          '.Error': {
+                            fontSize: '13px',
+                            color: '#f15f23',
+                          },
+                          '.CheckboxInput': {
+                            borderColor: 'rgba(71, 45, 106, 0.2)',
+                          },
+                          '.CheckboxInput--checked': {
+                            backgroundColor: '#472d6a',
+                            borderColor: '#472d6a',
+                          },
+                        },
+                      },
+                    }}
+                  >
+                    <StripePaymentForm
+                      onSuccess={handlePaymentSuccess}
+                      onError={(msg) => setError(msg || null)}
+                    />
+                  </Elements>
+                ) : (
+                  <div className="stripe-element-loading">
+                    <span className="text-body--sm color--tertiary">
+                      Initializing secure payment...
+                    </span>
+                  </div>
+                )}
               </div>
             ) : (
               <>
@@ -323,15 +514,6 @@ function PaymentContent() {
                 </div>
               ))}
             </div>
-
-            {/* Back link for card flow */}
-            {payMethod === 'card' && (
-              <div className="payment-actions">
-                <Link href="/get-started/contract" className="form-back-link">
-                  ← Back
-                </Link>
-              </div>
-            )}
 
             {/* What happens next */}
             <div ref={nextStepsRef as React.RefObject<HTMLDivElement>} className="payment-next-steps">
