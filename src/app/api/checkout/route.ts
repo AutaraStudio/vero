@@ -62,7 +62,7 @@ export async function POST(request: Request) {
     // Create the session
     const session = await stripe.checkout.sessions.create(params);
 
-    // Push data to HubSpot via Forms API (non-blocking)
+    // Push data to HubSpot (non-blocking — don't fail checkout if HubSpot is down)
     try {
       await submitCheckoutToHubSpot(payload);
     } catch (err) {

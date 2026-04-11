@@ -81,8 +81,8 @@ function mapCheckoutToHubSpot(
   // Determine payment frequency label
   const frequencyLabel = tier === 'starter' ? 'One-off' : paymentFrequency === 'annual' ? 'Annual' : 'Monthly';
 
-  // Build role names — semicolon-separated for HubSpot multi-checkbox
-  const roleNames = selectedRoles.map((r) => r.roleName).join(';');
+  // Build role names — one per line for HubSpot multi-line text
+  const roleNames = selectedRoles.map((r) => r.roleName).join('\n');
 
   const props: Record<string, string> = {
     // Company name (required by HubSpot)
@@ -109,7 +109,7 @@ function mapCheckoutToHubSpot(
     vero_assess_payment_method: paymentMethod === 'card' ? 'Online card payment' : 'Invoice',
     vero_assess_order_value: price.replace(/[^0-9.]/g, ''),
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles: roleNames,
+    vero_assess_roles_order: roleNames,
 
     // Auto-renewal (only meaningful for annual subscriptions)
     vero_assess_autorenewal_annual: (tier !== 'starter' && paymentFrequency === 'annual')
@@ -145,7 +145,7 @@ function mapBespokeToHubSpot(
   payload: BespokePayload
 ): Record<string, string> {
   const { selectedRoles, bespokeDetails } = payload;
-  const roleNames = selectedRoles.map((r) => r.roleName).join(';');
+  const roleNames = selectedRoles.map((r) => r.roleName).join('\n');
 
   const props: Record<string, string> = {
     name: bespokeDetails.company,
@@ -156,7 +156,7 @@ function mapBespokeToHubSpot(
     vero_assess_buyer_phone: bespokeDetails.phone,
     vero_assess_tier: 'Bespoke',
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles: roleNames,
+    vero_assess_roles_order: roleNames,
     vero_assess_approx_roles: bespokeDetails.approxRoles,
     vero_assess_approx_candidates: bespokeDetails.approxCandidates,
     vero_assess_target_go_live: bespokeDetails.targetGoLive,
