@@ -112,7 +112,7 @@ function mapCheckoutToHubSpot(
     vero_assess_order_value: price.replace(/[^0-9.]/g, ''),
     vero_assess_role_count: String(selectedRoles.length),
     vero_assess_roles_order: roleNamesText,
-    vero_assess_roles: roleNamesCheckbox,
+    // vero_assess_roles checkbox skipped — name mismatches between Sanity and HubSpot options
 
     // Auto-renewal (only meaningful for annual subscriptions)
     vero_assess_autorenewal_annual: (tier !== 'starter' && paymentFrequency === 'annual')
@@ -165,7 +165,7 @@ function mapBespokeToHubSpot(
     vero_assess_tier: 'Bespoke',
     vero_assess_role_count: String(selectedRoles.length),
     vero_assess_roles_order: roleNamesText,
-    vero_assess_roles: roleNamesCheckbox,
+    // vero_assess_roles checkbox skipped — name mismatches between Sanity and HubSpot options
     vero_assess_approx_roles: bespokeDetails.approxRoles,
     vero_assess_approx_candidates: bespokeDetails.approxCandidates,
     vero_assess_target_go_live: bespokeDetails.targetGoLive,
