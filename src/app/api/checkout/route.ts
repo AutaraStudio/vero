@@ -84,23 +84,23 @@ export async function POST(request: Request) {
         throw new Error('No invoice created for subscription');
       }
 
-      const invoice = await stripe.invoices.retrieve(invoiceId);
-
-      // Get the payment intent ID — SDK types say object but API returns string without expand
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rawPi = (invoice as any).payment_intent;
-      const piId = typeof rawPi === 'string' ? rawPi : rawPi?.id;
+      // Fetch invoice via raw API — SDK v22 strips payment_intent from response
+      const invoiceRes = await fetch(`https://api.stripe.com/v1/invoices/${invoiceId}`, {
+        headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
+      });
+      const invoiceData = await invoiceRes.json();
+      const piId = invoiceData.payment_intent;
 
       if (!piId) {
         console.error('[Checkout] No payment_intent on invoice', {
           subscriptionId: subscription.id,
           invoiceId,
-          rawPiType: typeof rawPi,
+          invoiceStatus: invoiceData.status,
         });
         throw new Error('Payment setup failed — please try again');
       }
 
-      // Retrieve the payment intent directly to get the client_secret
+      // Retrieve the payment intent to get the client_secret
       const paymentIntent = await stripe.paymentIntents.retrieve(piId);
       clientSecret = paymentIntent.client_secret!;
       intentType = 'subscription';
