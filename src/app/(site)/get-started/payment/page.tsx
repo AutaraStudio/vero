@@ -3,7 +3,7 @@
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA } from '@/lib/tierRecommendation';
 import { stripePromise } from '@/lib/stripeClient';
@@ -23,76 +23,6 @@ export default function PaymentPage() {
   );
 }
 
-// ── Stripe Payment Form (inside Elements provider) ──────────
-
-function StripePaymentForm({
-  onSuccess,
-  onError,
-}: {
-  onSuccess: (paymentIntentId: string) => void;
-  onError: (message: string) => void;
-}) {
-  const stripe = useStripe();
-  const elements = useElements();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [ready, setReady] = useState(false);
-
-  const handleSubmit = async () => {
-    if (!stripe || !elements) return;
-
-    setIsProcessing(true);
-    onError('');
-
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      redirect: 'if_required',
-      confirmParams: {
-        return_url: `${window.location.origin}/get-started/confirmation`,
-      },
-    });
-
-    if (error) {
-      onError(error.message || 'Payment failed. Please try again.');
-      setIsProcessing(false);
-    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-      onSuccess(paymentIntent.id);
-    }
-  };
-
-  return (
-    <>
-      <div className="stripe-element-wrapper">
-        <PaymentElement
-          onReady={() => setReady(true)}
-          options={{
-            layout: 'tabs',
-          }}
-        />
-        {!ready && (
-          <div className="stripe-element-loading">
-            <span className="text-body--sm color--tertiary">Loading payment form...</span>
-          </div>
-        )}
-      </div>
-      <div className="payment-actions">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleSubmit}
-          disabled={!stripe || !elements || isProcessing || !ready}
-        >
-          {isProcessing ? 'Processing payment...' : 'Complete order →'}
-        </Button>
-        <Link href="/get-started/contract" className="form-back-link">
-          ← Back
-        </Link>
-      </div>
-    </>
-  );
-}
-
-// ── Main payment content ────────────────────────────────────
-
 function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -102,8 +32,6 @@ function PaymentContent() {
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [intentCreating, setIntentCreating] = useState(false);
 
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
@@ -156,38 +84,19 @@ function PaymentContent() {
     };
   }, [selectedRoles, recommendedTier, paymentFrequency, autoRenewal, contactDetails]);
 
-  // ── Create Payment Intent when card tab is selected ──
+  // ── Fetch client secret for Stripe Embedded Checkout ──
 
-  useEffect(() => {
-    if (payMethod !== 'card' || clientSecret || intentCreating) return;
-    if (!recommendedTier || selectedRoles.length === 0) return;
-
-    setIntentCreating(true);
-
-    fetch('/api/checkout', {
+  const fetchClientSecret = useCallback(async () => {
+    const res = await fetch('/api/checkout', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(buildPayload()),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.clientSecret) {
-          setClientSecret(data.clientSecret);
-        } else {
-          setError(data.error || 'Failed to initialize payment');
-        }
-      })
-      .catch(() => {
-        setError('Failed to connect to payment service');
-      })
-      .finally(() => setIntentCreating(false));
-  }, [payMethod, clientSecret, intentCreating, recommendedTier, selectedRoles.length, buildPayload]);
+    });
 
-  // ── Handle successful payment ──
-
-  const handlePaymentSuccess = (paymentIntentId: string) => {
-    router.push(`/get-started/confirmation?payment_intent=${paymentIntentId}`);
-  };
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || 'Failed to initialize payment');
+    return data.clientSecret as string;
+  }, [buildPayload]);
 
   // ── Handle invoice checkout ──
 
@@ -218,7 +127,7 @@ function PaymentContent() {
   // Animations
   const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
   const methodRef = useFadeUp({ delay: 0.15, y: 12 });
-  const cardFormRef = useFadeUp({ delay: 0.2, y: 16 });
+  const checkoutRef = useFadeUp({ delay: 0.2, y: 16 });
   const renewalRef = useFadeUp({ delay: 0.3, y: 12 });
   const trustRef = useFadeUp({ delay: 0.35, y: 12 });
   const actionsRef = useFadeUp({ delay: 0.4, y: 16 });
@@ -302,34 +211,13 @@ function PaymentContent() {
             </div>
 
             {payMethod === 'card' ? (
-              <div ref={cardFormRef as React.RefObject<HTMLDivElement>}>
-                {clientSecret ? (
-                  <Elements
-                    stripe={stripePromise}
-                    options={{
-                      clientSecret,
-                      appearance: {
-                        theme: 'stripe',
-                        variables: {
-                          colorPrimary: '#472d6a',
-                          borderRadius: '4px',
-                          fontFamily: 'Aptos, system-ui, sans-serif',
-                        },
-                      },
-                    }}
-                  >
-                    <StripePaymentForm
-                      onSuccess={handlePaymentSuccess}
-                      onError={(msg) => setError(msg || null)}
-                    />
-                  </Elements>
-                ) : (
-                  <div className="stripe-element-loading">
-                    <span className="text-body--sm color--tertiary">
-                      {intentCreating ? 'Initializing secure payment...' : 'Loading...'}
-                    </span>
-                  </div>
-                )}
+              <div ref={checkoutRef as React.RefObject<HTMLDivElement>} className="stripe-checkout-wrapper">
+                <EmbeddedCheckoutProvider
+                  stripe={stripePromise}
+                  options={{ fetchClientSecret }}
+                >
+                  <EmbeddedCheckout />
+                </EmbeddedCheckoutProvider>
               </div>
             ) : (
               <>
@@ -435,6 +323,15 @@ function PaymentContent() {
                 </div>
               ))}
             </div>
+
+            {/* Back link for card flow */}
+            {payMethod === 'card' && (
+              <div className="payment-actions">
+                <Link href="/get-started/contract" className="form-back-link">
+                  ← Back
+                </Link>
+              </div>
+            )}
 
             {/* What happens next */}
             <div ref={nextStepsRef as React.RefObject<HTMLDivElement>} className="payment-next-steps">

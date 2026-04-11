@@ -28,14 +28,14 @@ function ConfirmationContent() {
 
   // Verify payment if returning from checkout
   useEffect(() => {
-    const paymentIntentId = searchParams.get('payment_intent');
+    const sessionId = searchParams.get('session_id');
 
-    if (paymentIntentId && !sessionVerified && !verifying) {
+    if (sessionId && !sessionVerified && !verifying) {
       setVerifying(true);
-      fetch(`/api/checkout/verify?payment_intent=${paymentIntentId}`)
+      fetch(`/api/checkout/verify?session_id=${sessionId}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.status === 'succeeded') {
+          if (data.status === 'complete' || data.paymentStatus === 'paid') {
             setSessionVerified(true);
           }
         })

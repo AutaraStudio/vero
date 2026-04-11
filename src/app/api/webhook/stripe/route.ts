@@ -26,11 +26,33 @@ export async function POST(request: Request) {
   }
 
   switch (event.type) {
-    case 'payment_intent.succeeded': {
-      const paymentIntent = event.data.object;
-      console.log(`[Webhook] payment_intent.succeeded — ${paymentIntent.id}`);
-      console.log(`  Amount: ${paymentIntent.amount} ${paymentIntent.currency}`);
-      console.log(`  Tier: ${paymentIntent.metadata?.tier}`);
+    case 'checkout.session.completed': {
+      const session = event.data.object;
+      const metadata = session.metadata ?? {};
+
+      console.log(`[Webhook] checkout.session.completed — ${session.id}`);
+      console.log(`  Tier: ${metadata.tier}, AutoRenewal: ${metadata.autoRenewal}`);
+
+      // If subscription + auto-renewal OFF, set cancel_at_period_end
+      if (
+        session.subscription &&
+        metadata.autoRenewal === 'false' &&
+        metadata.paymentFrequency === 'annual'
+      ) {
+        try {
+          const subId = typeof session.subscription === 'string'
+            ? session.subscription
+            : session.subscription.id;
+
+          await stripe.subscriptions.update(subId, {
+            cancel_at_period_end: true,
+          });
+          console.log(`  Set cancel_at_period_end=true for subscription ${subId}`);
+        } catch (err) {
+          console.error('  Failed to set cancel_at_period_end:', err);
+        }
+      }
+
       break;
     }
 

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
-import { getStripePriceId, TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
+import { getStripePriceId } from '@/lib/tierRecommendation';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
 
 export async function POST(request: Request) {
@@ -23,6 +23,9 @@ export async function POST(request: Request) {
     }
 
     const isOneOff = tier === 'starter';
+    const mode = isOneOff ? 'payment' : 'subscription';
+
+    const origin = request.headers.get('origin') || 'http://localhost:3000';
 
     // Metadata for Stripe records
     const metadata: Record<string, string> = {
@@ -35,60 +38,27 @@ export async function POST(request: Request) {
       paymentMethod: 'card',
     };
 
-    let clientSecret: string;
-    let intentType: 'payment' | 'subscription';
+    // Create embedded Checkout Session
+    const sessionParams: Parameters<typeof stripe.checkout.sessions.create>[0] = {
+      mode,
+      ui_mode: 'embedded_page',
+      line_items: [{ price: priceId, quantity: 1 }],
+      customer_email: contactDetails.email,
+      return_url: `${origin}/get-started/confirmation?session_id={CHECKOUT_SESSION_ID}`,
+      metadata,
+    };
 
-    if (isOneOff) {
-      // ── Starter: one-off Payment Intent ──
-      const tierInfo = TIER_DATA[tier];
-      const { price } = getTierPrice(tierInfo, paymentFrequency);
-      const amount = parseInt(price.replace(/[^0-9]/g, '')) * 100; // £3,500 → 350000 pence
-
-      const paymentIntent = await stripe.paymentIntents.create({
-        amount,
-        currency: 'gbp',
+    // For subscriptions, set cancel_at_period_end if auto-renewal is off
+    if (!isOneOff) {
+      sessionParams.subscription_data = {
         metadata,
-        receipt_email: contactDetails.email,
-      });
-
-      clientSecret = paymentIntent.client_secret!;
-      intentType = 'payment';
-    } else {
-      // ── Subscription: create Customer + Subscription ──
-      const customer = await stripe.customers.create({
-        email: contactDetails.email,
-        name: `${contactDetails.firstName} ${contactDetails.lastName}`,
-        metadata: {
-          company: contactDetails.company,
-          tier,
-        },
-      });
-
-      const subscription = await stripe.subscriptions.create({
-        customer: customer.id,
-        items: [{ price: priceId }],
-        payment_behavior: 'default_incomplete',
-        payment_settings: {
-          save_default_payment_method: 'on_subscription',
-        },
-        metadata,
-        cancel_at_period_end: paymentFrequency === 'annual' && !autoRenewal,
-        expand: ['latest_invoice.payment_intent'],
-      });
-
-      // Get the payment intent from the subscription's first invoice
-      const invoice = subscription.latest_invoice as Record<string, unknown> | string | null;
-      if (typeof invoice === 'string' || !invoice) {
-        throw new Error('Failed to expand subscription invoice');
-      }
-      const paymentIntent = invoice.payment_intent as Record<string, unknown> | string | null;
-      if (typeof paymentIntent === 'string' || !paymentIntent) {
-        throw new Error('Failed to expand payment intent');
-      }
-
-      clientSecret = paymentIntent.client_secret as string;
-      intentType = 'subscription';
+        ...(paymentFrequency === 'annual' && !autoRenewal
+          ? {} // We'll set cancel_at_period_end in the webhook after subscription is created
+          : {}),
+      };
     }
+
+    const session = await stripe.checkout.sessions.create(sessionParams);
 
     // Push data to HubSpot (non-blocking)
     try {
@@ -97,11 +67,12 @@ export async function POST(request: Request) {
       console.error('[Checkout] HubSpot submission failed (non-blocking):', err);
     }
 
-    return NextResponse.json({ clientSecret, type: intentType });
+    return NextResponse.json({ clientSecret: session.client_secret });
   } catch (err) {
-    console.error('[Checkout] Error:', err);
+    const message = err instanceof Error ? err.message : 'Unknown error';
+    console.error('[Checkout] Error:', message, err);
     return NextResponse.json(
-      { error: 'Failed to create payment' },
+      { error: message },
       { status: 500 }
     );
   }
