@@ -73,18 +73,28 @@ export async function POST(request: Request) {
         },
         metadata,
         cancel_at_period_end: paymentFrequency === 'annual' && !autoRenewal,
-        expand: ['latest_invoice.payment_intent'],
       });
 
-      // Extract client_secret from the expanded payment intent
+      // Get the latest invoice and its payment intent separately
+      const invoiceId = typeof subscription.latest_invoice === 'string'
+        ? subscription.latest_invoice
+        : subscription.latest_invoice?.id;
+
+      if (!invoiceId) {
+        throw new Error('No invoice created for subscription');
+      }
+
+      const invoice = await stripe.invoices.retrieve(invoiceId, {
+        expand: ['payment_intent'],
+      });
+
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const latestInvoice = subscription.latest_invoice as any;
-      const paymentIntent = latestInvoice?.payment_intent;
+      const paymentIntent = (invoice as any).payment_intent;
 
       if (!paymentIntent?.client_secret) {
-        console.error('[Checkout] Subscription created but no client_secret found', {
+        console.error('[Checkout] No client_secret on invoice payment_intent', {
           subscriptionId: subscription.id,
-          invoiceType: typeof subscription.latest_invoice,
+          invoiceId,
           hasPaymentIntent: !!paymentIntent,
         });
         throw new Error('Payment setup failed — please try again');
