@@ -271,7 +271,7 @@ function PaymentContent() {
             <div ref={methodRef as React.RefObject<HTMLDivElement>} className="payment-method-tabs">
               <button
                 className={`payment-method-tab${payMethod === 'card' ? ' is-active' : ''}`}
-                onClick={() => setPayMethod('card')}
+                onClick={() => { setPayMethod('card'); setError(null); }}
                 type="button"
               >
                 <span className="payment-method-tab__icon" aria-hidden="true">
@@ -284,7 +284,7 @@ function PaymentContent() {
               </button>
               <button
                 className={`payment-method-tab${payMethod === 'invoice' ? ' is-active' : ''}`}
-                onClick={() => setPayMethod('invoice')}
+                onClick={() => { setPayMethod('invoice'); setError(null); }}
                 type="button"
               >
                 <span className="payment-method-tab__icon" aria-hidden="true">

@@ -33,10 +33,10 @@
 /* ── Stripe Payment Element ── */
 
 .stripe-element-wrapper {
-  border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--lg);
-  padding: 1.5rem;
-  background: var(--color--surface-raised);
+  border: none;
+  border-radius: 0;
+  padding: 0;
+  background: transparent;
 }
 
 .stripe-element-wrapper + .payment-actions {
