@@ -26,16 +26,16 @@ function ConfirmationContent() {
   const [sessionVerified, setSessionVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  // Verify Stripe session if returning from checkout
+  // Verify payment if returning from checkout
   useEffect(() => {
-    const sessionId = searchParams.get('session_id');
+    const paymentIntentId = searchParams.get('payment_intent');
 
-    if (sessionId && !sessionVerified && !verifying) {
+    if (paymentIntentId && !sessionVerified && !verifying) {
       setVerifying(true);
-      fetch(`/api/checkout/verify?session_id=${sessionId}`)
+      fetch(`/api/checkout/verify?payment_intent=${paymentIntentId}`)
         .then((res) => res.json())
         .then((data) => {
-          if (data.status === 'complete' || data.paymentStatus === 'paid') {
+          if (data.status === 'succeeded') {
             setSessionVerified(true);
           }
         })

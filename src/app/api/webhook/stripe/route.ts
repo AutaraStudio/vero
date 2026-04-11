@@ -25,42 +25,18 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
   }
 
-  // Handle events
   switch (event.type) {
-    case 'checkout.session.completed': {
-      const session = event.data.object;
-      const metadata = session.metadata ?? {};
-
-      console.log(`[Webhook] checkout.session.completed — ${session.id}`);
-      console.log(`  Tier: ${metadata.tier}, AutoRenewal: ${metadata.autoRenewal}`);
-
-      // If this is a subscription with auto-renewal OFF, cancel at period end
-      if (
-        session.subscription &&
-        metadata.autoRenewal === 'false' &&
-        metadata.paymentFrequency === 'annual'
-      ) {
-        try {
-          const subId = typeof session.subscription === 'string'
-            ? session.subscription
-            : session.subscription.id;
-
-          await stripe.subscriptions.update(subId, {
-            cancel_at_period_end: true,
-          });
-          console.log(`  Set cancel_at_period_end=true for subscription ${subId}`);
-        } catch (err) {
-          console.error('  Failed to set cancel_at_period_end:', err);
-        }
-      }
-
+    case 'payment_intent.succeeded': {
+      const paymentIntent = event.data.object;
+      console.log(`[Webhook] payment_intent.succeeded — ${paymentIntent.id}`);
+      console.log(`  Amount: ${paymentIntent.amount} ${paymentIntent.currency}`);
+      console.log(`  Tier: ${paymentIntent.metadata?.tier}`);
       break;
     }
 
     case 'invoice.payment_failed': {
       const invoice = event.data.object;
       console.warn(`[Webhook] invoice.payment_failed — ${invoice.id}`);
-      // Future: update HubSpot record, send notification
       break;
     }
 

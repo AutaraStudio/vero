@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
-import { getStripePriceId } from '@/lib/tierRecommendation';
+import { getStripePriceId, TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
 
 export async function POST(request: Request) {
@@ -22,14 +22,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'No price configured for this tier' }, { status: 400 });
     }
 
-    // Determine mode: one-off for Starter, subscription for others
     const isOneOff = tier === 'starter';
-    const mode = isOneOff ? 'payment' : 'subscription';
 
-    // Build origin for redirect URLs
-    const origin = request.headers.get('origin') || 'http://localhost:3000';
-
-    // Metadata to store on the Stripe session (for webhook use)
+    // Metadata for Stripe records
     const metadata: Record<string, string> = {
       tier,
       paymentFrequency,
@@ -40,40 +35,73 @@ export async function POST(request: Request) {
       paymentMethod: 'card',
     };
 
-    // Build Stripe Checkout Session params
-    const params: Parameters<typeof stripe.checkout.sessions.create>[0] = {
-      mode,
-      line_items: [{ price: priceId, quantity: 1 }],
-      customer_email: contactDetails.email,
-      success_url: `${origin}/get-started/confirmation?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/get-started/payment?cancelled=true`,
-      metadata,
-      billing_address_collection: 'required',
-      currency: 'gbp',
-    };
+    let clientSecret: string;
+    let intentType: 'payment' | 'subscription';
 
-    // For subscriptions, attach metadata to the subscription too
-    if (!isOneOff) {
-      params.subscription_data = {
+    if (isOneOff) {
+      // ── Starter: one-off Payment Intent ──
+      const tierInfo = TIER_DATA[tier];
+      const { price } = getTierPrice(tierInfo, paymentFrequency);
+      const amount = parseInt(price.replace(/[^0-9]/g, '')) * 100; // £3,500 → 350000 pence
+
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount,
+        currency: 'gbp',
         metadata,
-      };
+        receipt_email: contactDetails.email,
+      });
+
+      clientSecret = paymentIntent.client_secret!;
+      intentType = 'payment';
+    } else {
+      // ── Subscription: create Customer + Subscription ──
+      const customer = await stripe.customers.create({
+        email: contactDetails.email,
+        name: `${contactDetails.firstName} ${contactDetails.lastName}`,
+        metadata: {
+          company: contactDetails.company,
+          tier,
+        },
+      });
+
+      const subscription = await stripe.subscriptions.create({
+        customer: customer.id,
+        items: [{ price: priceId }],
+        payment_behavior: 'default_incomplete',
+        payment_settings: {
+          save_default_payment_method: 'on_subscription',
+        },
+        metadata,
+        cancel_at_period_end: paymentFrequency === 'annual' && !autoRenewal,
+        expand: ['latest_invoice.payment_intent'],
+      });
+
+      // Get the payment intent from the subscription's first invoice
+      const invoice = subscription.latest_invoice as Record<string, unknown> | string | null;
+      if (typeof invoice === 'string' || !invoice) {
+        throw new Error('Failed to expand subscription invoice');
+      }
+      const paymentIntent = invoice.payment_intent as Record<string, unknown> | string | null;
+      if (typeof paymentIntent === 'string' || !paymentIntent) {
+        throw new Error('Failed to expand payment intent');
+      }
+
+      clientSecret = paymentIntent.client_secret as string;
+      intentType = 'subscription';
     }
 
-    // Create the session
-    const session = await stripe.checkout.sessions.create(params);
-
-    // Push data to HubSpot (non-blocking — don't fail checkout if HubSpot is down)
+    // Push data to HubSpot (non-blocking)
     try {
       await submitCheckoutToHubSpot(payload);
     } catch (err) {
       console.error('[Checkout] HubSpot submission failed (non-blocking):', err);
     }
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ clientSecret, type: intentType });
   } catch (err) {
-    console.error('[Checkout] Error creating session:', err);
+    console.error('[Checkout] Error:', err);
     return NextResponse.json(
-      { error: 'Failed to create checkout session' },
+      { error: 'Failed to create payment' },
       { status: 500 }
     );
   }

@@ -1,10 +1,12 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA } from '@/lib/tierRecommendation';
+import { stripePromise } from '@/lib/stripeClient';
 import type { CheckoutPayload } from '@/lib/checkout-schema';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
@@ -21,6 +23,76 @@ export default function PaymentPage() {
   );
 }
 
+// ── Stripe Payment Form (inside Elements provider) ──────────
+
+function StripePaymentForm({
+  onSuccess,
+  onError,
+}: {
+  onSuccess: (paymentIntentId: string) => void;
+  onError: (message: string) => void;
+}) {
+  const stripe = useStripe();
+  const elements = useElements();
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  const handleSubmit = async () => {
+    if (!stripe || !elements) return;
+
+    setIsProcessing(true);
+    onError('');
+
+    const { error, paymentIntent } = await stripe.confirmPayment({
+      elements,
+      redirect: 'if_required',
+      confirmParams: {
+        return_url: `${window.location.origin}/get-started/confirmation`,
+      },
+    });
+
+    if (error) {
+      onError(error.message || 'Payment failed. Please try again.');
+      setIsProcessing(false);
+    } else if (paymentIntent && paymentIntent.status === 'succeeded') {
+      onSuccess(paymentIntent.id);
+    }
+  };
+
+  return (
+    <>
+      <div className="stripe-element-wrapper">
+        <PaymentElement
+          onReady={() => setReady(true)}
+          options={{
+            layout: 'tabs',
+          }}
+        />
+        {!ready && (
+          <div className="stripe-element-loading">
+            <span className="text-body--sm color--tertiary">Loading payment form...</span>
+          </div>
+        )}
+      </div>
+      <div className="payment-actions">
+        <Button
+          variant="primary"
+          size="md"
+          onClick={handleSubmit}
+          disabled={!stripe || !elements || isProcessing || !ready}
+        >
+          {isProcessing ? 'Processing payment...' : 'Complete order →'}
+        </Button>
+        <Link href="/get-started/contract" className="form-back-link">
+          ← Back
+        </Link>
+      </div>
+    </>
+  );
+}
+
+// ── Main payment content ────────────────────────────────────
+
 function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -30,13 +102,15 @@ function PaymentContent() {
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [intentCreating, setIntentCreating] = useState(false);
 
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const isSubscription = tierInfo?.hasFrequencyToggle ?? false;
   const showAutoRenewal = isSubscription && paymentFrequency === 'annual';
 
-  // Check if user returned from Stripe after cancelling
+  // Check if user returned after a cancelled/failed attempt
   const wasCancelled = searchParams.get('cancelled') === 'true';
 
   // Guards
@@ -48,20 +122,9 @@ function PaymentContent() {
     }
   }, [selectedRoles.length, contractAccepted, router]);
 
-  // Animations
-  const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
-  const methodRef = useFadeUp({ delay: 0.15, y: 12 });
-  const cardNoticeRef = useFadeUp({ delay: 0.2, y: 16 });
-  const renewalRef = useFadeUp({ delay: 0.3, y: 12 });
-  const trustRef = useFadeUp({ delay: 0.35, y: 12 });
-  const actionsRef = useFadeUp({ delay: 0.4, y: 16 });
-  const nextStepsRef = useFadeUp({ delay: 0.5, y: 16 });
-
-  if (selectedRoles.length === 0 || !contractAccepted) return null;
-
   // ── Build checkout payload from basket state ──
 
-  function buildPayload(): CheckoutPayload {
+  const buildPayload = useCallback((): CheckoutPayload => {
     return {
       selectedRoles: selectedRoles.map((r) => ({
         roleId: r.roleId,
@@ -72,7 +135,7 @@ function PaymentContent() {
       tier: recommendedTier!,
       paymentFrequency,
       autoRenewal,
-      paymentMethod: payMethod,
+      paymentMethod: 'card',
       contactDetails: {
         firstName: contactDetails.firstName,
         lastName: contactDetails.lastName,
@@ -91,45 +154,77 @@ function PaymentContent() {
         roleDates: contactDetails.roleDates,
       },
     };
-  }
+  }, [selectedRoles, recommendedTier, paymentFrequency, autoRenewal, contactDetails]);
 
-  // ── Handle checkout ──
+  // ── Create Payment Intent when card tab is selected ──
 
-  async function handleCheckout() {
+  useEffect(() => {
+    if (payMethod !== 'card' || clientSecret || intentCreating) return;
+    if (!recommendedTier || selectedRoles.length === 0) return;
+
+    setIntentCreating(true);
+
+    fetch('/api/checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(buildPayload()),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.clientSecret) {
+          setClientSecret(data.clientSecret);
+        } else {
+          setError(data.error || 'Failed to initialize payment');
+        }
+      })
+      .catch(() => {
+        setError('Failed to connect to payment service');
+      })
+      .finally(() => setIntentCreating(false));
+  }, [payMethod, clientSecret, intentCreating, recommendedTier, selectedRoles.length, buildPayload]);
+
+  // ── Handle successful payment ──
+
+  const handlePaymentSuccess = (paymentIntentId: string) => {
+    router.push(`/get-started/confirmation?payment_intent=${paymentIntentId}`);
+  };
+
+  // ── Handle invoice checkout ──
+
+  async function handleInvoiceCheckout() {
     setError(null);
     setIsLoading(true);
 
     try {
-      if (payMethod === 'card') {
-        const res = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(buildPayload()),
-        });
+      const payload = buildPayload();
+      payload.paymentMethod = 'invoice';
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to create checkout session');
+      const res = await fetch('/api/checkout/invoice', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
 
-        // Redirect to Stripe Checkout
-        window.location.href = data.url;
-      } else {
-        // Invoice flow — submit directly, no Stripe
-        const res = await fetch('/api/checkout/invoice', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(buildPayload()),
-        });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to submit order');
 
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed to submit order');
-
-        router.push('/get-started/confirmation?method=invoice');
-      }
+      router.push('/get-started/confirmation?method=invoice');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
       setIsLoading(false);
     }
   }
+
+  // Animations
+  const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
+  const methodRef = useFadeUp({ delay: 0.15, y: 12 });
+  const cardFormRef = useFadeUp({ delay: 0.2, y: 16 });
+  const renewalRef = useFadeUp({ delay: 0.3, y: 12 });
+  const trustRef = useFadeUp({ delay: 0.35, y: 12 });
+  const actionsRef = useFadeUp({ delay: 0.4, y: 16 });
+  const nextStepsRef = useFadeUp({ delay: 0.5, y: 16 });
+
+  if (selectedRoles.length === 0 || !contractAccepted) return null;
 
   return (
     <section className="payment-page">
@@ -207,34 +302,62 @@ function PaymentContent() {
             </div>
 
             {payMethod === 'card' ? (
-              <div ref={cardNoticeRef as React.RefObject<HTMLDivElement>} className="stripe-redirect-notice">
-                <div className="stripe-redirect-notice__icon" aria-hidden="true">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <rect x="3" y="11" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    <circle cx="12" cy="17" r="1.5" fill="currentColor"/>
-                  </svg>
-                </div>
-                <div className="stripe-redirect-notice__text">
-                  <p className="text-body--sm font--medium color--primary">
-                    Secure checkout via Stripe
-                  </p>
-                  <p className="text-body--xs color--tertiary">
-                    You&apos;ll be securely redirected to Stripe to enter your card details.
-                    We never see or store your payment information.
-                  </p>
-                </div>
+              <div ref={cardFormRef as React.RefObject<HTMLDivElement>}>
+                {clientSecret ? (
+                  <Elements
+                    stripe={stripePromise}
+                    options={{
+                      clientSecret,
+                      appearance: {
+                        theme: 'stripe',
+                        variables: {
+                          colorPrimary: '#472d6a',
+                          borderRadius: '4px',
+                          fontFamily: 'Aptos, system-ui, sans-serif',
+                        },
+                      },
+                    }}
+                  >
+                    <StripePaymentForm
+                      onSuccess={handlePaymentSuccess}
+                      onError={(msg) => setError(msg || null)}
+                    />
+                  </Elements>
+                ) : (
+                  <div className="stripe-element-loading">
+                    <span className="text-body--sm color--tertiary">
+                      {intentCreating ? 'Initializing secure payment...' : 'Loading...'}
+                    </span>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="invoice-notice">
-                <p className="text-body--sm color--secondary">
-                  We&apos;ll send an invoice to <strong>{contactDetails.email}</strong> within one
-                  working day. Payment terms are 30 days from invoice date.
-                </p>
-                <p className="text-body--sm color--secondary">
-                  Your account will be activated once payment is received.
-                </p>
-              </div>
+              <>
+                <div className="invoice-notice">
+                  <p className="text-body--sm color--secondary">
+                    We&apos;ll send an invoice to <strong>{contactDetails.email}</strong> within one
+                    working day. Payment terms are 30 days from invoice date.
+                  </p>
+                  <p className="text-body--sm color--secondary">
+                    Your account will be activated once payment is received.
+                  </p>
+                </div>
+
+                {/* Invoice actions */}
+                <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={handleInvoiceCheckout}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Submitting...' : 'Complete order →'}
+                  </Button>
+                  <Link href="/get-started/contract" className="form-back-link">
+                    ← Back
+                  </Link>
+                </div>
+              </>
             )}
 
             {/* Auto-renewal option — annual subscriptions only */}
@@ -311,26 +434,6 @@ function PaymentContent() {
                   <span className="text-body--xs color--tertiary">{label}</span>
                 </div>
               ))}
-            </div>
-
-            {/* Actions */}
-            <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
-              <Button
-                variant="primary"
-                size="md"
-                onClick={handleCheckout}
-                disabled={isLoading}
-              >
-                {isLoading
-                  ? 'Processing...'
-                  : payMethod === 'card'
-                    ? 'Continue to payment →'
-                    : 'Complete order →'
-                }
-              </Button>
-              <Link href="/get-started/contract" className="form-back-link">
-                ← Back
-              </Link>
             </div>
 
             {/* What happens next */}

@@ -4,23 +4,22 @@ import { stripe } from '@/lib/stripe';
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const sessionId = searchParams.get('session_id');
+    const paymentIntentId = searchParams.get('payment_intent');
 
-    if (!sessionId) {
-      return NextResponse.json({ error: 'Missing session_id' }, { status: 400 });
+    if (!paymentIntentId) {
+      return NextResponse.json({ error: 'Missing payment_intent' }, { status: 400 });
     }
 
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
 
     return NextResponse.json({
-      status: session.status,
-      paymentStatus: session.payment_status,
-      customerEmail: session.customer_email,
+      status: paymentIntent.status,
+      customerEmail: paymentIntent.receipt_email,
     });
   } catch (err) {
-    console.error('[Verify] Error retrieving session:', err);
+    console.error('[Verify] Error retrieving payment intent:', err);
     return NextResponse.json(
-      { error: 'Failed to verify session' },
+      { error: 'Failed to verify payment' },
       { status: 500 }
     );
   }

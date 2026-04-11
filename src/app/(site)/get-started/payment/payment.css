@@ -30,30 +30,23 @@
   border-bottom: 1px solid var(--color--border-default);
 }
 
-/* ── Stripe redirect notice ── */
+/* ── Stripe Payment Element ── */
 
-.stripe-redirect-notice {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
+.stripe-element-wrapper {
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
   padding: 1.25rem;
+  background: var(--color--surface-raised);
+}
+
+.stripe-element-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1.25rem;
   background: var(--color--surface-sunken);
   border: 1px solid var(--color--border-default);
   border-radius: var(--radius--md);
-}
-
-.stripe-redirect-notice__icon {
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-  color: var(--color--interactive-primary);
-  padding-top: 0.125rem;
-}
-
-.stripe-redirect-notice__text {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
 }
 
 /* ── Cancelled / error notices ── */
