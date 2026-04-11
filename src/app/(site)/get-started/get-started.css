@@ -467,6 +467,100 @@
   letter-spacing: var(--font--label-ls);
 }
 
+/* "Select all / Deselect all" per-category button (Scale tier only) */
+.role-category__select-all {
+  background: none;
+  border: none;
+  padding: 0.15rem 0.5rem;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: var(--font--label-sm);
+  font-weight: 600;
+  letter-spacing: var(--font--label-ls);
+  text-transform: uppercase;
+  color: var(--color--interactive-primary);
+  border-radius: var(--radius--full);
+  transition: background-color var(--transition--default), color var(--transition--default);
+}
+
+.role-category__select-all:hover {
+  background: var(--color--interactive-secondary-hover-bg);
+}
+
+/* ── Scale tier — Select All banner ── */
+
+.scale-select-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  margin-top: 0.5rem;
+}
+
+.scale-select-banner__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.scale-select-banner__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.scale-select-banner__btn {
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius--md);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: background-color var(--transition--default);
+  white-space: nowrap;
+}
+
+.scale-select-banner__btn--primary {
+  background: var(--color--interactive-primary);
+  color: var(--color--interactive-primary-text);
+}
+
+.scale-select-banner__btn--primary:hover {
+  background: var(--color--interactive-primary-hover);
+}
+
+.scale-select-banner__btn--ghost {
+  background: transparent;
+  color: var(--color--text-tertiary);
+  border: 1px solid var(--color--border-default);
+}
+
+.scale-select-banner__btn--ghost:hover {
+  background: var(--color--surface-raised);
+}
+
+@media (max-width: 640px) {
+  .scale-select-banner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .scale-select-banner__actions {
+    justify-content: stretch;
+  }
+
+  .scale-select-banner__btn {
+    flex: 1;
+    text-align: center;
+  }
+}
+
 .role-category__chevron {
   width: 1.25rem;
   height: 1.25rem;

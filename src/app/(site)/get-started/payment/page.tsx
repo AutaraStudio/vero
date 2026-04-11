@@ -13,9 +13,6 @@ import OrderSummary from '../components/OrderSummary';
 import '../details/details.css';
 import './payment.css';
 
-// ── Session storage key for basket state persistence across Stripe redirect ──
-const STORAGE_KEY = 'vero_checkout_state';
-
 export default function PaymentPage() {
   return (
     <Suspense>
@@ -104,9 +101,6 @@ function PaymentContent() {
 
     try {
       if (payMethod === 'card') {
-        // Save basket state to sessionStorage before Stripe redirect
-        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-
         const res = await fetch('/api/checkout', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },

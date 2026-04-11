@@ -15,12 +15,16 @@ import './details.css';
 
 // ── Helper: user email input ──────────────────────────────────
 
+const EMAIL_COLLAPSE_THRESHOLD = 5;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 function UserEmailInput({
   emails,
   inputValue,
   onInputChange,
   onAdd,
   onRemove,
+  onUpdate,
   onCsvImport,
   maxEmails,
   showCsvImport = true,
@@ -30,6 +34,7 @@ function UserEmailInput({
   onInputChange: (v: string) => void;
   onAdd: (email: string) => void;
   onRemove: (index: number) => void;
+  onUpdate: (index: number, newEmail: string) => void;
   onCsvImport: (file: File) => void;
   maxEmails: number;
   showCsvImport?: boolean;
@@ -37,11 +42,50 @@ function UserEmailInput({
   const csvRef = useRef<HTMLInputElement>(null);
   const atLimit = emails.length >= maxEmails;
 
+  const [showAll, setShowAll] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
       onAdd(inputValue);
     }
+  };
+
+  // Filter emails by search query
+  const filteredEmails = searchQuery
+    ? emails
+        .map((email, i) => ({ email, originalIndex: i }))
+        .filter(({ email }) => email.toLowerCase().includes(searchQuery.toLowerCase()))
+    : emails.map((email, i) => ({ email, originalIndex: i }));
+
+  // Collapse logic: show first N unless expanded or searching
+  const shouldCollapse = emails.length > EMAIL_COLLAPSE_THRESHOLD && !searchQuery;
+  const visibleEmails = shouldCollapse && !showAll
+    ? filteredEmails.slice(0, EMAIL_COLLAPSE_THRESHOLD)
+    : filteredEmails;
+  const hiddenCount = shouldCollapse ? filteredEmails.length - EMAIL_COLLAPSE_THRESHOLD : 0;
+
+  // Inline editing
+  const startEdit = (index: number, email: string) => {
+    setEditingIndex(index);
+    setEditValue(email);
+  };
+
+  const saveEdit = (originalIndex: number) => {
+    const trimmed = editValue.trim().toLowerCase();
+    if (trimmed && EMAIL_RE.test(trimmed) && trimmed !== emails[originalIndex]) {
+      onUpdate(originalIndex, trimmed);
+    }
+    setEditingIndex(null);
+    setEditValue('');
+  };
+
+  const cancelEdit = () => {
+    setEditingIndex(null);
+    setEditValue('');
   };
 
   return (
@@ -96,23 +140,89 @@ function UserEmailInput({
       </span>
 
       {emails.length > 0 && (
-        <div className="user-emails__chips">
-          {emails.map((email, i) => (
-            <div key={email} className="user-email-chip">
-              <span className="text-body--sm color--primary user-email-chip__address">
-                {email}
-              </span>
-              <button
-                type="button"
-                className="user-email-chip__remove"
-                onClick={() => onRemove(i)}
-                aria-label={`Remove ${email}`}
-              >
-                ×
-              </button>
+        <>
+          {/* Search bar — shown when emails exceed threshold */}
+          {emails.length > EMAIL_COLLAPSE_THRESHOLD && (
+            <div className="user-emails__search">
+              <input
+                type="text"
+                className="form-field__input user-emails__search-input"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  if (e.target.value) setShowAll(true);
+                }}
+                placeholder="Search email addresses..."
+                aria-label="Search email addresses"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  className="user-emails__search-clear"
+                  onClick={() => setSearchQuery('')}
+                  aria-label="Clear search"
+                >
+                  ×
+                </button>
+              )}
             </div>
-          ))}
-        </div>
+          )}
+
+          <div className="user-emails__chips">
+            {visibleEmails.map(({ email, originalIndex }) => (
+              <div key={`${originalIndex}-${email}`} className="user-email-chip">
+                {editingIndex === originalIndex ? (
+                  <input
+                    type="email"
+                    className="user-email-chip__edit-input text-body--sm"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') { e.preventDefault(); saveEdit(originalIndex); }
+                      if (e.key === 'Escape') cancelEdit();
+                    }}
+                    onBlur={() => saveEdit(originalIndex)}
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    className="text-body--sm color--primary user-email-chip__address"
+                    onDoubleClick={() => startEdit(originalIndex, email)}
+                    title="Double-click to edit"
+                  >
+                    {email}
+                  </span>
+                )}
+                <button
+                  type="button"
+                  className="user-email-chip__remove"
+                  onClick={() => onRemove(originalIndex)}
+                  aria-label={`Remove ${email}`}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+
+          {/* Show more / Show less toggle */}
+          {shouldCollapse && hiddenCount > 0 && (
+            <button
+              type="button"
+              className="user-emails__toggle text-body--xs"
+              onClick={() => setShowAll(!showAll)}
+            >
+              {showAll ? 'Show less' : `+${hiddenCount} more`}
+            </button>
+          )}
+
+          {/* Search results count */}
+          {searchQuery && (
+            <span className="text-body--xs color--tertiary">
+              {filteredEmails.length} result{filteredEmails.length !== 1 ? 's' : ''} found
+            </span>
+          )}
+        </>
       )}
     </div>
   );
@@ -213,6 +323,13 @@ export default function DetailsPage() {
 
   const removeUserEmail = (index: number) => {
     const next = userEmails.filter((_, i) => i !== index);
+    setUserEmails(next);
+    setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
+  };
+
+  const updateUserEmail = (index: number, newEmail: string) => {
+    const next = [...userEmails];
+    next[index] = newEmail;
     setUserEmails(next);
     setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
   };
@@ -523,6 +640,7 @@ export default function DetailsPage() {
                     onInputChange={setEmailInput}
                     onAdd={addUserEmail}
                     onRemove={removeUserEmail}
+                    onUpdate={updateUserEmail}
                     onCsvImport={handleCsvImport}
                     maxEmails={userLimit}
                     showCsvImport={userLimit >= 5}

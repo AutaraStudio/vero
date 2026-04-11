@@ -147,6 +147,60 @@ export default function RolePicker({ categories }: RolePickerProps) {
     }
   };
 
+  // ── Select All / Clear All (Scale tier) ──
+
+  const totalRoleCount = categories.reduce((sum, c) => sum + c.roles.length, 0);
+  const allSelected = selectedRoles.length === totalRoleCount && totalRoleCount > 0;
+  const isScaleTier = recommendedTier === 'scale';
+
+  const handleSelectAll = () => {
+    for (const category of categories) {
+      for (const role of category.roles) {
+        if (!isSelected(role._id)) {
+          dispatch({
+            type: 'ADD_ROLE',
+            payload: {
+              roleId: role._id,
+              roleName: role.name,
+              categoryName: category.name,
+              categorySlug: category.slug,
+            },
+          });
+        }
+      }
+    }
+  };
+
+  const handleClearAll = () => {
+    for (const role of selectedRoles) {
+      dispatch({ type: 'REMOVE_ROLE', payload: { roleId: role.roleId } });
+    }
+  };
+
+  const handleSelectCategory = (category: Category) => {
+    for (const role of category.roles) {
+      if (!isSelected(role._id)) {
+        dispatch({
+          type: 'ADD_ROLE',
+          payload: {
+            roleId: role._id,
+            roleName: role.name,
+            categoryName: category.name,
+            categorySlug: category.slug,
+          },
+        });
+      }
+    }
+  };
+
+  const handleDeselectCategory = (category: Category) => {
+    for (const role of category.roles) {
+      if (isSelected(role._id)) {
+        dispatch({ type: 'REMOVE_ROLE', payload: { roleId: role._id } });
+      }
+    }
+  };
+
   const handleContinue = () => {
     if (recommendedTier === 'bespoke') {
       router.push('/get-started/bespoke');
@@ -210,6 +264,46 @@ export default function RolePicker({ categories }: RolePickerProps) {
                 })}
               </div>
             </div>
+
+            {/* Scale tier — Select All banner */}
+            {isScaleTier && (
+              <div className="scale-select-banner">
+                <div className="scale-select-banner__text">
+                  <span className="text-body--sm font--medium color--primary">
+                    {allSelected
+                      ? `All ${totalRoleCount} roles selected`
+                      : `Scale includes access to all ${totalRoleCount} roles`
+                    }
+                  </span>
+                  <span className="text-body--xs color--tertiary">
+                    {allSelected
+                      ? 'You can deselect individual roles from the categories below'
+                      : 'Select them all at once, or pick individually from the categories below'
+                    }
+                  </span>
+                </div>
+                <div className="scale-select-banner__actions">
+                  {!allSelected && (
+                    <button
+                      type="button"
+                      className="scale-select-banner__btn scale-select-banner__btn--primary"
+                      onClick={handleSelectAll}
+                    >
+                      Select all roles
+                    </button>
+                  )}
+                  {selectedRoles.length > 0 && (
+                    <button
+                      type="button"
+                      className="scale-select-banner__btn scale-select-banner__btn--ghost"
+                      onClick={handleClearAll}
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="role-picker__categories">
@@ -241,6 +335,22 @@ export default function RolePicker({ categories }: RolePickerProps) {
                           <span className="role-category__selected-pill text-label--sm">
                             {selectedCount} selected
                           </span>
+                        )}
+                        {isScaleTier && (
+                          <button
+                            type="button"
+                            className="role-category__select-all text-label--sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (selectedCount === category.roles.length) {
+                                handleDeselectCategory(category);
+                              } else {
+                                handleSelectCategory(category);
+                              }
+                            }}
+                          >
+                            {selectedCount === category.roles.length ? 'Deselect all' : 'Select all'}
+                          </button>
                         )}
                       </div>
                     </div>

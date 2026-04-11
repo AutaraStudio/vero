@@ -462,6 +462,73 @@
   background: var(--color--accent-orange-bg);
 }
 
+/* ── Email search bar ── */
+
+.user-emails__search {
+  position: relative;
+}
+
+.user-emails__search-input {
+  padding-right: 2rem;
+}
+
+.user-emails__search-clear {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color--text-tertiary);
+  font-size: 1.125rem;
+  line-height: 1;
+  padding: 0.125rem 0.375rem;
+  border-radius: var(--radius--sm);
+  font-family: inherit;
+  transition: color var(--transition--default);
+}
+
+.user-emails__search-clear:hover {
+  color: var(--color--text-primary);
+}
+
+/* ── Email chip edit mode ── */
+
+.user-email-chip__edit-input {
+  flex: 1;
+  min-width: 0;
+  background: transparent;
+  border: none;
+  border-bottom: 1.5px solid var(--color--interactive-primary);
+  color: var(--color--text-primary);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  padding: 0;
+  outline: none;
+}
+
+.user-email-chip__address {
+  cursor: default;
+}
+
+/* ── Email show more/less toggle ── */
+
+.user-emails__toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color--interactive-primary);
+  font-family: inherit;
+  font-weight: 600;
+  padding: 0.25rem 0;
+  transition: color var(--transition--default);
+}
+
+.user-emails__toggle:hover {
+  color: var(--color--interactive-primary-hover);
+}
+
 /* ── Choice cards ── */
 
 .choice-cards {

@@ -9,8 +9,6 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import './confirmation.css';
 
-const STORAGE_KEY = 'vero_checkout_state';
-
 export default function ConfirmationPage() {
   return (
     <Suspense>
@@ -28,26 +26,10 @@ function ConfirmationContent() {
   const [sessionVerified, setSessionVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
 
-  // Restore basket state from sessionStorage after Stripe redirect
+  // Verify Stripe session if returning from checkout
   useEffect(() => {
     const sessionId = searchParams.get('session_id');
-    const isInvoice = searchParams.get('method') === 'invoice';
 
-    // If returning from Stripe and basket is empty, restore from sessionStorage
-    if ((sessionId || isInvoice) && selectedRoles.length === 0) {
-      try {
-        const saved = sessionStorage.getItem(STORAGE_KEY);
-        if (saved) {
-          const parsed = JSON.parse(saved);
-          dispatch({ type: 'RESTORE_STATE', payload: parsed });
-          sessionStorage.removeItem(STORAGE_KEY);
-        }
-      } catch {
-        // Ignore parse errors
-      }
-    }
-
-    // Verify Stripe session
     if (sessionId && !sessionVerified && !verifying) {
       setVerifying(true);
       fetch(`/api/checkout/verify?session_id=${sessionId}`)
@@ -61,11 +43,6 @@ function ConfirmationContent() {
           // Non-critical — the page still shows the receipt
         })
         .finally(() => setVerifying(false));
-    }
-
-    // Clean up sessionStorage for non-Stripe flows
-    if (!sessionId) {
-      sessionStorage.removeItem(STORAGE_KEY);
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);

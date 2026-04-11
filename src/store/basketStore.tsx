@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useReducer, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useReducer, useState, type ReactNode } from 'react';
 import { type TierKey, type PaymentFrequency, recommendTier, isTierAtLeast } from '@/lib/tierRecommendation';
 
 export type { PaymentFrequency };
@@ -170,6 +170,30 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
   }
 }
 
+// ── Session persistence ───────────────────────────────────────
+
+const STORAGE_KEY = 'vero_basket_state';
+
+function loadPersistedState(): InternalState {
+  if (typeof window === 'undefined') return initialState;
+  try {
+    const saved = sessionStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved) as InternalState;
+  } catch {
+    // Ignore parse errors
+  }
+  return initialState;
+}
+
+function persistState(state: InternalState): void {
+  if (typeof window === 'undefined') return;
+  try {
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+  } catch {
+    // Ignore quota errors
+  }
+}
+
 // ── Context ───────────────────────────────────────────────────
 
 interface BasketContextValue {
@@ -181,6 +205,24 @@ const BasketContext = createContext<BasketContextValue | null>(null);
 
 export function BasketProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(basketReducer, initialState);
+  const [hydrated, setHydrated] = useState(false);
+
+  // Restore from sessionStorage on first mount
+  useEffect(() => {
+    const saved = loadPersistedState();
+    if (saved.selectedRoles.length > 0 || saved.contactDetails.email) {
+      dispatch({ type: 'RESTORE_STATE', payload: saved });
+    }
+    setHydrated(true);
+  }, []);
+
+  // Persist to sessionStorage on every state change (after hydration)
+  useEffect(() => {
+    if (hydrated) {
+      persistState(state);
+    }
+  }, [state, hydrated]);
+
   return (
     <BasketContext.Provider value={{ _internal: state, dispatch }}>
       {children}
