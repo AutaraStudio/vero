@@ -35,6 +35,10 @@ export interface TierInfo {
   candidateLimit: string;
   roleLimit: string;
   hasFrequencyToggle: boolean;
+  /** Stripe Price ID for one-off or annual billing */
+  stripePriceAnnual: string | null;
+  /** Stripe Price ID for monthly billing */
+  stripePriceMonthly: string | null;
 }
 
 export function getTierPrice(
@@ -48,6 +52,19 @@ export function getTierPrice(
     price: tier.monthlyPrice ?? tier.annualPrice,
     priceNote: tier.monthlyPriceNote ?? tier.annualPriceNote,
   };
+}
+
+/** Returns the Stripe Price ID for a given tier and billing frequency */
+export function getStripePriceId(
+  tier: TierKey,
+  frequency: PaymentFrequency
+): string | null {
+  const info = TIER_DATA[tier];
+  if (!info) return null;
+  if (frequency === 'monthly' && info.stripePriceMonthly) {
+    return info.stripePriceMonthly;
+  }
+  return info.stripePriceAnnual;
 }
 
 export interface NudgeContent {
@@ -73,6 +90,15 @@ const TIER_MAX_ROLES: Partial<Record<TierKey, number>> = {
   essential: 5,
   growth: 20,
   scale: 50,
+};
+
+/** Maximum number of user email addresses per tier */
+export const TIER_USER_LIMITS: Record<TierKey, number> = {
+  starter: 1,
+  essential: 5,
+  growth: 20,
+  scale: 50,
+  bespoke: 999,
 };
 
 export function getNudgeContent(
@@ -126,6 +152,8 @@ export const TIER_DATA: Record<TierKey, TierInfo> = {
     candidateLimit: 'Up to 250 candidates',
     roleLimit: '1 job role',
     hasFrequencyToggle: false,
+    stripePriceAnnual: 'price_1TKhIsS570ouCoaLQQvueJbp',
+    stripePriceMonthly: null,
   },
   essential: {
     key: 'essential',
@@ -137,6 +165,8 @@ export const TIER_DATA: Record<TierKey, TierInfo> = {
     candidateLimit: 'Up to 1,000 candidates',
     roleLimit: 'Up to 5 job roles',
     hasFrequencyToggle: true,
+    stripePriceAnnual: 'price_1TKhO1S570ouCoaLfntRKzP4',
+    stripePriceMonthly: 'price_1TKhOiS570ouCoaLRMOOVSVw',
   },
   growth: {
     key: 'growth',
@@ -148,6 +178,8 @@ export const TIER_DATA: Record<TierKey, TierInfo> = {
     candidateLimit: 'Up to 2,500 candidates',
     roleLimit: 'Up to 20 job roles',
     hasFrequencyToggle: true,
+    stripePriceAnnual: 'price_1TKhPVS570ouCoaLyXICR6q9',
+    stripePriceMonthly: 'price_1TKhPzS570ouCoaLG72jAY9h',
   },
   scale: {
     key: 'scale',
@@ -159,6 +191,8 @@ export const TIER_DATA: Record<TierKey, TierInfo> = {
     candidateLimit: 'Up to 6,000 candidates',
     roleLimit: 'Access to all 50 roles',
     hasFrequencyToggle: true,
+    stripePriceAnnual: 'price_1TKhQmS570ouCoaLiHE87zb2',
+    stripePriceMonthly: 'price_1TKhRPS570ouCoaLbrSVtwYP',
   },
   bespoke: {
     key: 'bespoke',
@@ -170,5 +204,7 @@ export const TIER_DATA: Record<TierKey, TierInfo> = {
     candidateLimit: 'Unlimited candidates',
     roleLimit: 'Unlimited roles',
     hasFrequencyToggle: false,
+    stripePriceAnnual: null,
+    stripePriceMonthly: null,
   },
 };

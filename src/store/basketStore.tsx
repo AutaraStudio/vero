@@ -57,6 +57,7 @@ interface InternalState {
   contactDetails: ContactDetails;
   contractAccepted: boolean;
   paymentFrequency: PaymentFrequency;
+  autoRenewal: boolean;
   nudgeShown: boolean;
   bespokeDetails: BespokeDetails;
   isBespokeEnquiry: boolean;
@@ -76,9 +77,11 @@ export type BasketAction =
   | { type: 'SET_CONTACT_DETAILS'; payload: ContactDetails }
   | { type: 'ACCEPT_CONTRACT' }
   | { type: 'SET_PAYMENT_FREQUENCY'; payload: PaymentFrequency }
+  | { type: 'SET_AUTO_RENEWAL'; payload: boolean }
   | { type: 'SET_NUDGE_SHOWN' }
   | { type: 'SET_BESPOKE_DETAILS'; payload: BespokeDetails }
   | { type: 'SUBMIT_BESPOKE_ENQUIRY' }
+  | { type: 'RESTORE_STATE'; payload: InternalState }
   | { type: 'CLEAR_BASKET' };
 
 // ── Reducer ───────────────────────────────────────────────────
@@ -120,6 +123,7 @@ const initialState: InternalState = {
   contactDetails: emptyContact,
   contractAccepted: false,
   paymentFrequency: 'annual',
+  autoRenewal: true,
   nudgeShown: false,
   bespokeDetails: emptyBespoke,
   isBespokeEnquiry: false,
@@ -149,12 +153,16 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
       return { ...state, contractAccepted: true };
     case 'SET_PAYMENT_FREQUENCY':
       return { ...state, paymentFrequency: action.payload };
+    case 'SET_AUTO_RENEWAL':
+      return { ...state, autoRenewal: action.payload };
     case 'SET_NUDGE_SHOWN':
       return { ...state, nudgeShown: true };
     case 'SET_BESPOKE_DETAILS':
       return { ...state, bespokeDetails: action.payload };
     case 'SUBMIT_BESPOKE_ENQUIRY':
       return { ...state, isBespokeEnquiry: true };
+    case 'RESTORE_STATE':
+      return { ...action.payload };
     case 'CLEAR_BASKET':
       return initialState;
     default:

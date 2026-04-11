@@ -32,7 +32,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!tierInfo]);
 
-  const HIDDEN_PATHS = ['/get-started/confirmation', '/get-started/bespoke'];
+  const HIDDEN_PATHS = ['/get-started/confirmation', '/get-started/bespoke', '/get-started/payment'];
   if (!tierInfo || selectedRoles.length === 0 || HIDDEN_PATHS.includes(pathname)) return null;
 
   const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);

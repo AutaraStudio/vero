@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
@@ -9,10 +9,66 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import './confirmation.css';
 
+const STORAGE_KEY = 'vero_checkout_state';
+
 export default function ConfirmationPage() {
+  return (
+    <Suspense>
+      <ConfirmationContent />
+    </Suspense>
+  );
+}
+
+function ConfirmationContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
   const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, isBespokeEnquiry, bespokeDetails } = state;
+
+  const [sessionVerified, setSessionVerified] = useState(false);
+  const [verifying, setVerifying] = useState(false);
+
+  // Restore basket state from sessionStorage after Stripe redirect
+  useEffect(() => {
+    const sessionId = searchParams.get('session_id');
+    const isInvoice = searchParams.get('method') === 'invoice';
+
+    // If returning from Stripe and basket is empty, restore from sessionStorage
+    if ((sessionId || isInvoice) && selectedRoles.length === 0) {
+      try {
+        const saved = sessionStorage.getItem(STORAGE_KEY);
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          dispatch({ type: 'RESTORE_STATE', payload: parsed });
+          sessionStorage.removeItem(STORAGE_KEY);
+        }
+      } catch {
+        // Ignore parse errors
+      }
+    }
+
+    // Verify Stripe session
+    if (sessionId && !sessionVerified && !verifying) {
+      setVerifying(true);
+      fetch(`/api/checkout/verify?session_id=${sessionId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.status === 'complete' || data.paymentStatus === 'paid') {
+            setSessionVerified(true);
+          }
+        })
+        .catch(() => {
+          // Non-critical — the page still shows the receipt
+        })
+        .finally(() => setVerifying(false));
+    }
+
+    // Clean up sessionStorage for non-Stripe flows
+    if (!sessionId) {
+      sessionStorage.removeItem(STORAGE_KEY);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const { price: tierPrice } = tierInfo

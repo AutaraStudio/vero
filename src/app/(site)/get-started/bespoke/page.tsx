@@ -27,6 +27,8 @@ export default function BespokePage() {
     requirements: '',
   });
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   useEffect(() => {
     if (selectedRoles.length === 0) {
@@ -62,13 +64,41 @@ export default function BespokePage() {
     (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitAttempted(true);
     if (!valid) return;
-    dispatch({ type: 'SET_BESPOKE_DETAILS', payload: form });
-    dispatch({ type: 'SUBMIT_BESPOKE_ENQUIRY' });
-    router.push('/get-started/confirmation');
+
+    setIsLoading(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch('/api/checkout/bespoke', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          selectedRoles: selectedRoles.map((r) => ({
+            roleId: r.roleId,
+            roleName: r.roleName,
+            categoryName: r.categoryName,
+            categorySlug: r.categorySlug,
+          })),
+          bespokeDetails: form,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to submit enquiry');
+      }
+
+      dispatch({ type: 'SET_BESPOKE_DETAILS', payload: form });
+      dispatch({ type: 'SUBMIT_BESPOKE_ENQUIRY' });
+      router.push('/get-started/confirmation');
+    } catch (err) {
+      setSubmitError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setIsLoading(false);
+    }
   };
 
   const uniqueCategories = [...new Set(selectedRoles.map((r) => r.categoryName))];

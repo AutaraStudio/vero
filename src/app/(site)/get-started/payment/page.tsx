@@ -1,9 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Suspense, useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useBasket } from '@/store/basketStore';
+import { TIER_DATA } from '@/lib/tierRecommendation';
+import type { CheckoutPayload } from '@/lib/checkout-schema';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
@@ -11,12 +13,34 @@ import OrderSummary from '../components/OrderSummary';
 import '../details/details.css';
 import './payment.css';
 
+// ── Session storage key for basket state persistence across Stripe redirect ──
+const STORAGE_KEY = 'vero_checkout_state';
+
 export default function PaymentPage() {
+  return (
+    <Suspense>
+      <PaymentContent />
+    </Suspense>
+  );
+}
+
+function PaymentContent() {
   const router = useRouter();
-  const { state } = useBasket();
-  const { selectedRoles, contractAccepted, contactDetails } = state;
+  const searchParams = useSearchParams();
+  const { state, dispatch } = useBasket();
+  const { selectedRoles, contractAccepted, contactDetails, recommendedTier, paymentFrequency, autoRenewal } = state;
 
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Starter is a one-off payment — no renewal concept
+  const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+  const isSubscription = tierInfo?.hasFrequencyToggle ?? false;
+  const showAutoRenewal = isSubscription && paymentFrequency === 'annual';
+
+  // Check if user returned from Stripe after cancelling
+  const wasCancelled = searchParams.get('cancelled') === 'true';
 
   // Guards
   useEffect(() => {
@@ -30,13 +54,88 @@ export default function PaymentPage() {
   // Animations
   const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
   const methodRef = useFadeUp({ delay: 0.15, y: 12 });
-  const cardGroupRef = useFadeUp({ delay: 0.2, y: 16 });
-  const billingRef = useFadeUp({ delay: 0.3, y: 16 });
+  const cardNoticeRef = useFadeUp({ delay: 0.2, y: 16 });
+  const renewalRef = useFadeUp({ delay: 0.3, y: 12 });
   const trustRef = useFadeUp({ delay: 0.35, y: 12 });
   const actionsRef = useFadeUp({ delay: 0.4, y: 16 });
   const nextStepsRef = useFadeUp({ delay: 0.5, y: 16 });
 
   if (selectedRoles.length === 0 || !contractAccepted) return null;
+
+  // ── Build checkout payload from basket state ──
+
+  function buildPayload(): CheckoutPayload {
+    return {
+      selectedRoles: selectedRoles.map((r) => ({
+        roleId: r.roleId,
+        roleName: r.roleName,
+        categoryName: r.categoryName,
+        categorySlug: r.categorySlug,
+      })),
+      tier: recommendedTier!,
+      paymentFrequency,
+      autoRenewal,
+      paymentMethod: payMethod,
+      contactDetails: {
+        firstName: contactDetails.firstName,
+        lastName: contactDetails.lastName,
+        email: contactDetails.email,
+        company: contactDetails.company,
+        jobTitle: contactDetails.jobTitle,
+        phone: contactDetails.phone,
+        keyContactName: contactDetails.keyContactName,
+        keyContactEmail: contactDetails.keyContactEmail,
+        keyContactSameAsMe: contactDetails.keyContactSameAsMe,
+        usersToAdd: contactDetails.usersToAdd,
+        bespokeUrl: contactDetails.bespokeUrl,
+        sendFeedbackReports: contactDetails.sendFeedbackReports,
+        brandColour1: contactDetails.brandColour1,
+        brandColour2: contactDetails.brandColour2,
+        roleDates: contactDetails.roleDates,
+      },
+    };
+  }
+
+  // ── Handle checkout ──
+
+  async function handleCheckout() {
+    setError(null);
+    setIsLoading(true);
+
+    try {
+      if (payMethod === 'card') {
+        // Save basket state to sessionStorage before Stripe redirect
+        sessionStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+
+        const res = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildPayload()),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to create checkout session');
+
+        // Redirect to Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        // Invoice flow — submit directly, no Stripe
+        const res = await fetch('/api/checkout/invoice', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(buildPayload()),
+        });
+
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || 'Failed to submit order');
+
+        router.push('/get-started/confirmation?method=invoice');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Something went wrong. Please try again.');
+      setIsLoading(false);
+    }
+  }
 
   return (
     <section className="payment-page">
@@ -58,6 +157,30 @@ export default function PaymentPage() {
                 Your order is protected by 256-bit encryption
               </p>
             </div>
+
+            {/* Cancelled notice */}
+            {wasCancelled && (
+              <div className="payment-cancelled-notice">
+                <p className="text-body--sm color--secondary">
+                  Payment was cancelled. You can try again when you&apos;re ready.
+                </p>
+              </div>
+            )}
+
+            {/* Error notice */}
+            {error && (
+              <div className="payment-error-notice">
+                <p className="text-body--sm">{error}</p>
+                <button
+                  type="button"
+                  className="payment-error-notice__dismiss"
+                  onClick={() => setError(null)}
+                  aria-label="Dismiss error"
+                >
+                  &times;
+                </button>
+              </div>
+            )}
 
             {/* Payment method toggle */}
             <div ref={methodRef as React.RefObject<HTMLDivElement>} className="payment-method-tabs">
@@ -90,119 +213,24 @@ export default function PaymentPage() {
             </div>
 
             {payMethod === 'card' ? (
-              <>
-                {/* Card input group */}
-                <div ref={cardGroupRef as React.RefObject<HTMLDivElement>} className="card-input-group">
-                  {/* Card number row */}
-                  <div className="card-number-row">
-                    <span className="card-type-icon" aria-hidden="true">
-                      <svg width="38" height="24" viewBox="0 0 38 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <rect x="0.5" y="0.5" width="37" height="23" rx="3.5" fill="var(--color--surface-sunken)" stroke="var(--color--border-subtle)" />
-                        <rect x="4" y="9" width="30" height="2.5" rx="1" fill="var(--color--border-default)" />
-                        <rect x="4" y="14" width="8" height="2" rx="1" fill="var(--color--border-default)" />
-                      </svg>
-                    </span>
-                    <input
-                      type="text"
-                      className="card-number-input"
-                      placeholder="•••• •••• •••• ••••"
-                      maxLength={19}
-                      inputMode="numeric"
-                      autoComplete="cc-number"
-                      aria-label="Card number"
-                    />
-                  </div>
-
-                  {/* Expiry + CVC */}
-                  <div className="card-secondary-row">
-                    <input
-                      type="text"
-                      className="card-field"
-                      placeholder="MM / YY"
-                      maxLength={7}
-                      inputMode="numeric"
-                      autoComplete="cc-exp"
-                      aria-label="Expiry date"
-                    />
-                    <input
-                      type="text"
-                      className="card-field"
-                      placeholder="CVC"
-                      maxLength={4}
-                      inputMode="numeric"
-                      autoComplete="cc-csc"
-                      aria-label="CVC"
-                    />
-                  </div>
-
-                  {/* Name on card */}
-                  <div className="card-name-row">
-                    <input
-                      type="text"
-                      className="card-field"
-                      placeholder="Name on card"
-                      autoComplete="cc-name"
-                      aria-label="Name on card"
-                    />
-                  </div>
+              <div ref={cardNoticeRef as React.RefObject<HTMLDivElement>} className="stripe-redirect-notice">
+                <div className="stripe-redirect-notice__icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="11" width="18" height="12" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    <circle cx="12" cy="17" r="1.5" fill="currentColor"/>
+                  </svg>
                 </div>
-
-                {/* Billing address */}
-                <div ref={billingRef as React.RefObject<HTMLDivElement>} className="stack--md">
-                  <p className="text-label--sm color--tertiary">Billing address</p>
-                  <div className="form-field">
-                    <label className="form-field__label text-label--sm color--tertiary" htmlFor="billingAddress">
-                      Address line 1
-                    </label>
-                    <input
-                      id="billingAddress"
-                      type="text"
-                      className="form-field__input"
-                      placeholder="123 Example Street"
-                      autoComplete="address-line1"
-                    />
-                  </div>
-                  <div className="form-row">
-                    <div className="form-field">
-                      <label className="form-field__label text-label--sm color--tertiary" htmlFor="billingCity">
-                        City
-                      </label>
-                      <input
-                        id="billingCity"
-                        type="text"
-                        className="form-field__input"
-                        placeholder="London"
-                        autoComplete="address-level2"
-                      />
-                    </div>
-                    <div className="form-field">
-                      <label className="form-field__label text-label--sm color--tertiary" htmlFor="billingPostcode">
-                        Postcode
-                      </label>
-                      <input
-                        id="billingPostcode"
-                        type="text"
-                        className="form-field__input"
-                        placeholder="EC1A 1BB"
-                        autoComplete="postal-code"
-                      />
-                    </div>
-                  </div>
-                  {/* VAT number */}
-                  <div className="form-field">
-                    <label className="form-field__label text-label--sm color--tertiary" htmlFor="vatNumber">
-                      VAT number <span className="text-body--xs color--tertiary">(optional)</span>
-                    </label>
-                    <input
-                      id="vatNumber"
-                      type="text"
-                      className="form-field__input"
-                      placeholder="GB123456789"
-                      autoComplete="off"
-                    />
-                  </div>
+                <div className="stripe-redirect-notice__text">
+                  <p className="text-body--sm font--medium color--primary">
+                    Secure checkout via Stripe
+                  </p>
+                  <p className="text-body--xs color--tertiary">
+                    You&apos;ll be securely redirected to Stripe to enter your card details.
+                    We never see or store your payment information.
+                  </p>
                 </div>
-              </>
+              </div>
             ) : (
               <div className="invoice-notice">
                 <p className="text-body--sm color--secondary">
@@ -212,6 +240,35 @@ export default function PaymentPage() {
                 <p className="text-body--sm color--secondary">
                   Your account will be activated once payment is received.
                 </p>
+              </div>
+            )}
+
+            {/* Auto-renewal option — annual subscriptions only */}
+            {showAutoRenewal && (
+              <div ref={renewalRef as React.RefObject<HTMLDivElement>} className="auto-renewal-option">
+                <div className="auto-renewal-option__content">
+                  <div className="auto-renewal-option__text">
+                    <p className="text-body--sm font--medium color--primary">
+                      Auto-renew in 12 months
+                    </p>
+                    <p className="text-body--xs color--tertiary">
+                      Your licence will automatically renew at the end of your 12-month term.
+                      You can change this at any time before your renewal date.
+                    </p>
+                  </div>
+                  <label className="toggle-switch" htmlFor="autoRenewal">
+                    <input
+                      type="checkbox"
+                      id="autoRenewal"
+                      className="toggle-switch__input"
+                      checked={autoRenewal}
+                      onChange={(e) => dispatch({ type: 'SET_AUTO_RENEWAL', payload: e.target.checked })}
+                    />
+                    <span className="toggle-switch__track" aria-hidden="true">
+                      <span className="toggle-switch__thumb" />
+                    </span>
+                  </label>
+                </div>
               </div>
             )}
 
@@ -267,9 +324,15 @@ export default function PaymentPage() {
               <Button
                 variant="primary"
                 size="md"
-                href="/get-started/confirmation"
+                onClick={handleCheckout}
+                disabled={isLoading}
               >
-                Complete order →
+                {isLoading
+                  ? 'Processing...'
+                  : payMethod === 'card'
+                    ? 'Continue to payment →'
+                    : 'Complete order →'
+                }
               </Button>
               <Link href="/get-started/contract" className="form-back-link">
                 ← Back

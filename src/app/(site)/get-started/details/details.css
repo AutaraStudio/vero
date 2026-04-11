@@ -538,6 +538,14 @@
   gap: 1rem;
 }
 
+.dates-override-hint {
+  padding-top: 0.25rem;
+}
+
+.dates-override-badge {
+  opacity: 0.75;
+}
+
 .dates-categories {
   display: flex;
   flex-direction: column;

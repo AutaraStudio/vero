@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useBasket, type ContactDetails } from '@/store/basketStore';
+import { TIER_USER_LIMITS, type TierKey } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { gsap } from '@/lib/gsap';
@@ -21,6 +22,8 @@ function UserEmailInput({
   onAdd,
   onRemove,
   onCsvImport,
+  maxEmails,
+  showCsvImport = true,
 }: {
   emails: string[];
   inputValue: string;
@@ -28,8 +31,11 @@ function UserEmailInput({
   onAdd: (email: string) => void;
   onRemove: (index: number) => void;
   onCsvImport: (file: File) => void;
+  maxEmails: number;
+  showCsvImport?: boolean;
 }) {
   const csvRef = useRef<HTMLInputElement>(null);
+  const atLimit = emails.length >= maxEmails;
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -40,26 +46,29 @@ function UserEmailInput({
 
   return (
     <div className="user-emails">
-      <div className="user-emails__actions-row">
-        <button
-          type="button"
-          className="user-emails__import-btn"
-          onClick={() => csvRef.current?.click()}
-        >
-          Import from CSV
-        </button>
-        <input
-          ref={csvRef}
-          type="file"
-          accept=".csv,text/csv"
-          className="user-emails__csv-input"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) onCsvImport(file);
-            e.target.value = '';
-          }}
-        />
-      </div>
+      {showCsvImport && (
+        <div className="user-emails__actions-row">
+          <button
+            type="button"
+            className="user-emails__import-btn"
+            onClick={() => csvRef.current?.click()}
+            disabled={atLimit}
+          >
+            Import from CSV
+          </button>
+          <input
+            ref={csvRef}
+            type="file"
+            accept=".csv,text/csv"
+            className="user-emails__csv-input"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) onCsvImport(file);
+              e.target.value = '';
+            }}
+          />
+        </div>
+      )}
 
       <div className="user-emails__add-row">
         <input
@@ -68,18 +77,23 @@ function UserEmailInput({
           value={inputValue}
           onChange={(e) => onInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="jane@company.com"
+          placeholder={atLimit ? 'User limit reached' : 'jane@company.com'}
           aria-label="Add email address"
+          disabled={atLimit}
         />
         <button
           type="button"
           className="user-emails__add-btn"
           onClick={() => onAdd(inputValue)}
-          disabled={!inputValue.trim()}
+          disabled={!inputValue.trim() || atLimit}
         >
           Add
         </button>
       </div>
+
+      <span className="text-body--xs color--tertiary">
+        {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
+      </span>
 
       {emails.length > 0 && (
         <div className="user-emails__chips">
@@ -151,6 +165,7 @@ export default function DetailsPage() {
   const { state, dispatch } = useBasket();
   const { selectedRoles, contactDetails, recommendedTier } = state;
   const isStarter = recommendedTier === 'starter';
+  const userLimit = recommendedTier ? TIER_USER_LIMITS[recommendedTier as TierKey] : 5;
 
   // Guard
   useEffect(() => {
@@ -189,6 +204,7 @@ export default function DetailsPage() {
     const email = raw.trim().toLowerCase();
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
     if (userEmails.includes(email)) { setEmailInput(''); return; }
+    if (userEmails.length >= userLimit) return;
     const next = [...userEmails, email];
     setUserEmails(next);
     setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
@@ -210,7 +226,8 @@ export default function DetailsPage() {
         .split(/[\n,;\r]+/)
         .map((s) => s.trim().toLowerCase().replace(/^["']|["']$/g, ''))
         .filter((s) => emailRegex.test(s));
-      const next = [...new Set([...userEmails, ...found])];
+      const merged = [...new Set([...userEmails, ...found])];
+      const next = merged.slice(0, userLimit);
       setUserEmails(next);
       setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
     };
@@ -223,6 +240,7 @@ export default function DetailsPage() {
   const [globalCloseDate, setGlobalCloseDate] = useState('');
   const [openDateCategories, setOpenDateCategories] = useState<Set<string>>(new Set());
   const datesCategoryAnimatedRef = useRef<Set<string>>(new Set());
+  const [overriddenRoleDates, setOverriddenRoleDates] = useState<Set<string>>(new Set());
 
   // Sync usersToAdd for starter when email changes
   useEffect(() => {
@@ -311,7 +329,7 @@ export default function DetailsPage() {
       roleDates: Object.fromEntries(
         Object.entries(p.roleDates).map(([id, dates]) => [
           id,
-          { ...dates, [field]: value },
+          overriddenRoleDates.has(id) ? dates : { ...dates, [field]: value },
         ])
       ),
     }));
@@ -497,7 +515,7 @@ export default function DetailsPage() {
               ) : (
                 <div className="form-field">
                   <label className="form-field__label text-label--sm color--tertiary">
-                    Email addresses of users who need system access
+                    Email addresses of users who need system access (up to {userLimit})
                   </label>
                   <UserEmailInput
                     emails={userEmails}
@@ -506,6 +524,8 @@ export default function DetailsPage() {
                     onAdd={addUserEmail}
                     onRemove={removeUserEmail}
                     onCsvImport={handleCsvImport}
+                    maxEmails={userLimit}
+                    showCsvImport={userLimit >= 5}
                   />
                 </div>
               )}
@@ -731,7 +751,10 @@ export default function DetailsPage() {
                       id="applyAllDates"
                       className="toggle-switch__input"
                       checked={applyAllDates}
-                      onChange={(e) => setApplyAllDates(e.target.checked)}
+                      onChange={(e) => {
+                        setApplyAllDates(e.target.checked);
+                        if (e.target.checked) setOverriddenRoleDates(new Set());
+                      }}
                     />
                     <span className="toggle-switch__track" aria-hidden="true">
                       <span className="toggle-switch__thumb" />
@@ -778,8 +801,12 @@ export default function DetailsPage() {
                 )}
               </div>
 
-              {/* Per-category accordion */}
-              {!applyAllDates && (
+              {/* Per-category accordion — always visible; override individual roles when apply-all is on */}
+              {applyAllDates && (
+                <p className="text-body--xs color--tertiary dates-override-hint">
+                  Need different dates for some roles? Override them below.
+                </p>
+              )}
                 <div className="dates-categories">
                   {dateRolesByCategory.map((cat) => {
                     const isOpen = openDateCategories.has(cat.slug);
@@ -787,6 +814,9 @@ export default function DetailsPage() {
                       const d = form.roleDates[r.roleId];
                       return d?.openDate && d?.closeDate;
                     }).length;
+                    const overrideCount = applyAllDates
+                      ? cat.roles.filter((r) => overriddenRoleDates.has(r.roleId)).length
+                      : 0;
 
                     return (
                       <div
@@ -811,6 +841,11 @@ export default function DetailsPage() {
                             {datesSetCount > 0 && (
                               <span className="section-label">
                                 {datesSetCount} date{datesSetCount !== 1 ? 's' : ''} set
+                              </span>
+                            )}
+                            {overrideCount > 0 && (
+                              <span className="section-label dates-override-badge">
+                                {overrideCount} override{overrideCount !== 1 ? 's' : ''}
                               </span>
                             )}
                             <span className="role-category__chevron" aria-hidden="true" />
@@ -849,7 +884,10 @@ export default function DetailsPage() {
                                       type="date"
                                       className="form-field__input"
                                       value={dates.openDate}
-                                      onChange={(e) =>
+                                      onChange={(e) => {
+                                        if (applyAllDates) {
+                                          setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));
+                                        }
                                         setForm((p) => ({
                                           ...p,
                                           roleDates: {
@@ -859,8 +897,8 @@ export default function DetailsPage() {
                                               openDate: e.target.value,
                                             },
                                           },
-                                        }))
-                                      }
+                                        }));
+                                      }}
                                     />
                                   </div>
                                   <div className="form-field">
@@ -875,7 +913,10 @@ export default function DetailsPage() {
                                       type="date"
                                       className="form-field__input"
                                       value={dates.closeDate}
-                                      onChange={(e) =>
+                                      onChange={(e) => {
+                                        if (applyAllDates) {
+                                          setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));
+                                        }
                                         setForm((p) => ({
                                           ...p,
                                           roleDates: {
@@ -885,8 +926,8 @@ export default function DetailsPage() {
                                               closeDate: e.target.value,
                                             },
                                           },
-                                        }))
-                                      }
+                                        }));
+                                      }}
                                     />
                                   </div>
                                 </div>
@@ -898,7 +939,6 @@ export default function DetailsPage() {
                     );
                   })}
                 </div>
-              )}
             </div>
 
             {/* Actions */}
