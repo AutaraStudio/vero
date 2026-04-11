@@ -81,8 +81,10 @@ function mapCheckoutToHubSpot(
   // Determine payment frequency label
   const frequencyLabel = tier === 'starter' ? 'One-off' : paymentFrequency === 'annual' ? 'Annual' : 'Monthly';
 
-  // Build role names — one per line for HubSpot multi-line text
-  const roleNames = selectedRoles.map((r) => r.roleName).join('\n');
+  // Build role names
+  const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
+  // Normalize for HubSpot checkbox matching (strip spaces around slashes)
+  const roleNamesCheckbox = selectedRoles.map((r) => r.roleName.replace(/\s*\/\s*/g, '/')).join(';');
 
   const props: Record<string, string> = {
     // Company name (required by HubSpot)
@@ -109,7 +111,8 @@ function mapCheckoutToHubSpot(
     vero_assess_payment_method: paymentMethod === 'card' ? 'Online card payment' : 'Invoice',
     vero_assess_order_value: price.replace(/[^0-9.]/g, ''),
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles_order: roleNames,
+    vero_assess_roles_order: roleNamesText,
+    vero_assess_roles: roleNamesCheckbox,
 
     // Auto-renewal (only meaningful for annual subscriptions)
     vero_assess_autorenewal_annual: (tier !== 'starter' && paymentFrequency === 'annual')
@@ -122,7 +125,11 @@ function mapCheckoutToHubSpot(
 
     // Portal & branding
     vero_assess_url: contactDetails.bespokeUrl,
-    vero_assess_users: contactDetails.usersToAdd,
+    vero_assess_users: contactDetails.usersToAdd
+      .split('\n')
+      .filter(Boolean)
+      .map((email, i) => `${i + 1}. ${email}`)
+      .join('\n'),
     vero_candidate_feedback_reports: contactDetails.sendFeedbackReports === 'yes' ? 'true' : 'false',
     vero_assess_brand_colour_1: contactDetails.brandColour1,
     vero_assess_brand_colour_2: contactDetails.brandColour2,
@@ -145,7 +152,8 @@ function mapBespokeToHubSpot(
   payload: BespokePayload
 ): Record<string, string> {
   const { selectedRoles, bespokeDetails } = payload;
-  const roleNames = selectedRoles.map((r) => r.roleName).join('\n');
+  const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
+  const roleNamesCheckbox = selectedRoles.map((r) => r.roleName.replace(/\s*\/\s*/g, '/')).join(';');
 
   const props: Record<string, string> = {
     name: bespokeDetails.company,
@@ -156,7 +164,8 @@ function mapBespokeToHubSpot(
     vero_assess_buyer_phone: bespokeDetails.phone,
     vero_assess_tier: 'Bespoke',
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles_order: roleNames,
+    vero_assess_roles_order: roleNamesText,
+    vero_assess_roles: roleNamesCheckbox,
     vero_assess_approx_roles: bespokeDetails.approxRoles,
     vero_assess_approx_candidates: bespokeDetails.approxCandidates,
     vero_assess_target_go_live: bespokeDetails.targetGoLive,
