@@ -3,6 +3,7 @@ import { stripe } from '@/lib/stripe';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
 import { getStripePriceId, TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
+import { sendConfirmationEmail } from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -90,9 +91,12 @@ export async function POST(request: Request) {
       intentType = 'subscription';
     }
 
-    // Fire-and-forget HubSpot — don't block the response
+    // Fire-and-forget HubSpot + confirmation email — don't block the response
     submitCheckoutToHubSpot(payload).catch((err) => {
       console.error('[Checkout] HubSpot failed (non-blocking):', err);
+    });
+    sendConfirmationEmail(payload).catch((err) => {
+      console.error('[Checkout] Email failed (non-blocking):', err);
     });
 
     return NextResponse.json({ clientSecret, type: intentType });

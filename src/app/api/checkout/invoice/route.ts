@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
+import { sendConfirmationEmail } from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -13,8 +14,13 @@ export async function POST(request: Request) {
 
     const { payload } = result;
 
-    // Push to HubSpot via Forms API
+    // Push to HubSpot
     await submitCheckoutToHubSpot(payload);
+
+    // Send confirmation email (fire-and-forget)
+    sendConfirmationEmail(payload).catch((err) => {
+      console.error('[Invoice] Email failed (non-blocking):', err);
+    });
 
     return NextResponse.json({ success: true });
   } catch (err) {
