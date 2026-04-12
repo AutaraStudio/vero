@@ -16,7 +16,6 @@ export async function POST(request: Request) {
     const { payload } = result;
     const { tier, paymentFrequency, autoRenewal, contactDetails, selectedRoles } = payload;
 
-    // Get the correct Stripe price
     const priceId = getStripePriceId(tier, paymentFrequency);
     if (!priceId) {
       return NextResponse.json({ error: 'No price configured for this tier' }, { status: 400 });
@@ -24,7 +23,6 @@ export async function POST(request: Request) {
 
     const isOneOff = tier === 'starter';
 
-    // Metadata for Stripe records
     const metadata: Record<string, string> = {
       tier,
       paymentFrequency,
@@ -39,7 +37,7 @@ export async function POST(request: Request) {
     let intentType: 'payment' | 'subscription';
 
     if (isOneOff) {
-      // ── Starter: one-off Payment Intent ──
+      // ── Starter: single PaymentIntent call ──
       const tierInfo = TIER_DATA[tier];
       const { price } = getTierPrice(tierInfo, paymentFrequency);
       const amount = parseInt(price.replace(/[^0-9]/g, '')) * 100;
@@ -54,72 +52,53 @@ export async function POST(request: Request) {
       clientSecret = paymentIntent.client_secret!;
       intentType = 'payment';
     } else {
-      // ── Subscription: create Customer + Subscription ──
+      // ── Subscription: Customer + Subscription (2 calls) + raw invoice fetch ──
       const customer = await stripe.customers.create({
         email: contactDetails.email,
         name: `${contactDetails.firstName} ${contactDetails.lastName}`,
-        metadata: {
-          company: contactDetails.company,
-          tier,
-        },
+        metadata: { company: contactDetails.company, tier },
       });
 
       const subscription = await stripe.subscriptions.create({
         customer: customer.id,
         items: [{ price: priceId }],
         payment_behavior: 'default_incomplete',
-        payment_settings: {
-          save_default_payment_method: 'on_subscription',
-        },
+        payment_settings: { save_default_payment_method: 'on_subscription' },
         metadata,
         cancel_at_period_end: paymentFrequency === 'annual' && !autoRenewal,
       });
 
-      // Get the latest invoice and its payment intent separately
       const invoiceId = typeof subscription.latest_invoice === 'string'
         ? subscription.latest_invoice
         : subscription.latest_invoice?.id;
 
-      if (!invoiceId) {
-        throw new Error('No invoice created for subscription');
-      }
+      if (!invoiceId) throw new Error('No invoice created for subscription');
 
-      // Fetch invoice via raw API — SDK v22 strips payment_intent from response
-      const invoiceRes = await fetch(`https://api.stripe.com/v1/invoices/${invoiceId}`, {
-        headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` },
-      });
-      const invoiceData = await invoiceRes.json();
-      const piId = invoiceData.payment_intent;
+      // Fetch invoice + payment intent client_secret in one raw API call
+      const piRes = await fetch(
+        `https://api.stripe.com/v1/invoices/${invoiceId}?expand[]=payment_intent`,
+        { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
+      );
+      const invoiceData = await piRes.json();
+      const piClientSecret = invoiceData.payment_intent?.client_secret;
 
-      if (!piId) {
-        console.error('[Checkout] No payment_intent on invoice', {
-          subscriptionId: subscription.id,
-          invoiceId,
-          invoiceStatus: invoiceData.status,
-        });
+      if (!piClientSecret) {
         throw new Error('Payment setup failed — please try again');
       }
 
-      // Retrieve the payment intent to get the client_secret
-      const paymentIntent = await stripe.paymentIntents.retrieve(piId);
-      clientSecret = paymentIntent.client_secret!;
+      clientSecret = piClientSecret;
       intentType = 'subscription';
     }
 
-    // Push data to HubSpot (non-blocking)
-    try {
-      await submitCheckoutToHubSpot(payload);
-    } catch (err) {
-      console.error('[Checkout] HubSpot submission failed (non-blocking):', err);
-    }
+    // Fire-and-forget HubSpot — don't block the response
+    submitCheckoutToHubSpot(payload).catch((err) => {
+      console.error('[Checkout] HubSpot failed (non-blocking):', err);
+    });
 
     return NextResponse.json({ clientSecret, type: intentType });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('[Checkout] Error:', message);
-    return NextResponse.json(
-      { error: message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
