@@ -17,10 +17,10 @@
 
 .checkout-fan {
   position: fixed;
-  bottom: clamp(-60px, -4vw, -40px);
   right: clamp(-60px, -4vw, -40px);
   pointer-events: none;
   z-index: 0;
+  transition: bottom 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .checkout-fan__shape {
