@@ -2,9 +2,8 @@
 
 import './category.css';
 import Image from 'next/image';
-import { useRef, useEffect } from 'react';
-import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
+import BrandShapes from '@/components/BrandShapes/BrandShapes';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import type { ThemeVariant } from '@/lib/theme';
@@ -33,54 +32,9 @@ export default function DetailHero({
   const ctaRef    = useFadeUp({ scroll: false, delay: 0.9, duration: 0.5, y: 16 });
   const visualRef = useFadeUp({ delay: 0, duration: 0.8, y: 32 });
 
-  const stripesRef = useRef<HTMLDivElement>(null);
-
   const dimensions = keyDimensionsAssessed
     ? keyDimensionsAssessed.split(',').map((d) => d.trim()).filter(Boolean)
     : [];
-
-  /* ── Stripe entrance animation ────────────────────────────── */
-  useEffect(() => {
-    const grid = stripesRef.current;
-    if (!grid) return;
-
-    const right = Array.from(
-      grid.querySelectorAll<HTMLElement>(
-        '.detail-hero__stripe--r1-right, .detail-hero__stripe--r2-right, .detail-hero__stripe--r3-right',
-      ),
-    );
-    const left = Array.from(
-      grid.querySelectorAll<HTMLElement>(
-        '.detail-hero__stripe--r2-left, .detail-hero__stripe--r3-left',
-      ),
-    );
-
-    gsap.set(right, { x: 200, opacity: 0 });
-    gsap.set(left, { x: -200, opacity: 0 });
-
-    const ra = gsap.to(right, {
-      x: 0,
-      opacity: 1,
-      duration: 0.9,
-      ease: 'power3.out',
-      stagger: 0.1,
-      delay: 0.15,
-    });
-
-    const la = gsap.to(left, {
-      x: 0,
-      opacity: 1,
-      duration: 0.9,
-      ease: 'power3.out',
-      stagger: 0.12,
-      delay: 0.22,
-    });
-
-    return () => {
-      ra.kill();
-      la.kill();
-    };
-  }, []);
 
   return (
     <section className="detail-hero section--flush" data-theme={theme}>
@@ -164,18 +118,8 @@ export default function DetailHero({
         </div>
       </div>
 
-      {/* Decorative stripes — full section width, behind both columns */}
-      <div className="detail-hero__stripes-wrap" aria-hidden="true">
-        <div className="detail-hero__stripes">
-          <div ref={stripesRef} className="detail-hero__stripes-grid">
-            <span className="detail-hero__stripe detail-hero__stripe--r1-right" />
-            <span className="detail-hero__stripe detail-hero__stripe--r2-left" />
-            <span className="detail-hero__stripe detail-hero__stripe--r2-right" />
-            <span className="detail-hero__stripe detail-hero__stripe--r3-left" />
-            <span className="detail-hero__stripe detail-hero__stripe--r3-right" />
-          </div>
-        </div>
-      </div>
+      {/* Decorative brand shapes — full section width, behind both columns */}
+      <BrandShapes />
     </section>
   );
 }

@@ -4,55 +4,7 @@
    Vero Assess pattern: HeroCentred
 ============================================================ */
 
-/* ── Stripe tier colours ──────────────────────────────────── */
-/* --stripe-accent is overridden per data-theme below.        */
-/* --stripe-t1/t2/t3 mix against --color--page-bg so they    */
-/* automatically adapt to both dark and light themes.         */
-.hero-centred {
-  --stripe-accent: var(--swatch--purple-500);
-  --stripe-t1: color-mix(in srgb, var(--stripe-accent) 8%,  var(--color--page-bg));
-  --stripe-t2: color-mix(in srgb, var(--stripe-accent) 18%, var(--color--page-bg));
-  --stripe-t3: var(--stripe-accent);
-  --stripe-h:  3rem;        /* 48px — tablet/desktop default */
-}
-
-/* Per-theme accent — covers all 16 data-theme values in globals.css.
-   Light/dark variants use that theme's own accent colour.
-   Deep variants switch to the CTA contrast colour (bg = accent,
-   so mixing accent into bg would produce nothing visible).        */
-
-.hero-centred[data-theme="dark"],
-.hero-centred[data-theme="dark-purple"],
-.hero-centred[data-theme="brand-purple"]       { --stripe-accent: var(--swatch--purple-500); }
-.hero-centred[data-theme="brand-purple-deep"]  { --stripe-accent: var(--swatch--yellow-500); }
-
-.hero-centred[data-theme="dark-blue"],
-.hero-centred[data-theme="brand-blue"]         { --stripe-accent: var(--swatch--blue-500); }
-.hero-centred[data-theme="brand-blue-deep"]    { --stripe-accent: var(--swatch--purple-500); }
-
-.hero-centred[data-theme="dark-green"],
-.hero-centred[data-theme="brand-green"]        { --stripe-accent: var(--swatch--green-500); }
-.hero-centred[data-theme="brand-green-deep"]   { --stripe-accent: var(--swatch--purple-500); }
-
-.hero-centred[data-theme="dark-orange"],
-.hero-centred[data-theme="brand-orange"]       { --stripe-accent: var(--swatch--orange-500); }
-.hero-centred[data-theme="brand-orange-deep"]  { --stripe-accent: var(--swatch--purple-500); }
-
-.hero-centred[data-theme="dark-yellow"],
-.hero-centred[data-theme="brand-yellow"]       { --stripe-accent: var(--swatch--yellow-500); }
-.hero-centred[data-theme="brand-yellow-deep"]  { --stripe-accent: var(--swatch--purple-500); }
-
-@media (max-width: 767px) {
-  .hero-centred {
-    --stripe-h: 2.125rem;   /* 34px — mobile */
-  }
-}
-
-@media (min-width: 1400px) {
-  .hero-centred {
-    --stripe-h: 4.5rem;     /* 72px — wide desktop */
-  }
-}
+/* (Brand shape theme overrides are in BrandShapes.css) */
 
 /* ── Section wrapper ──────────────────────────────────────── */
 .hero-centred {
@@ -63,6 +15,8 @@
 
 /* ── Content container ────────────────────────────────────── */
 .hero-centred__inner {
+  position: relative;
+  z-index: 1;
   max-width: 80rem;
   margin: 0 auto;
   padding: calc(var(--height--navbar) + var(--space--section)) var(--space--container-padding) 0;
@@ -126,76 +80,11 @@
   }
 }
 
-/* ── Stripe wrapper ───────────────────────────────────────── */
-/* Sits between the CTA and the media.                        */
-/* overflow:hidden clips the skewed ends cleanly.             */
-.hero-centred__stripes-wrap {
-  position: relative;
-  height: calc(var(--stripe-h) * 3 + 6rem);
-  
-  margin-top: 3rem;
-}
-
-/* The skewed container */
-.hero-centred__stripes {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  transform: skewY(-7deg);
-  transform-origin: bottom left;
-}
-
-/* CSS grid: 6 columns, 3 rows — each row = --stripe-h */
-.hero-centred__stripes-grid {
-  display: grid;
-  grid-template-rows: var(--stripe-h) var(--stripe-h) var(--stripe-h);
-  grid-template-columns: 18% 14% 19% 18% 16% 15%;
-  width: 100%;
-}
-
-/* Row 1 — Tier 3 full purple, right side (cols 5–6) */
-.hero-centred__stripe--r1-right {
-  grid-row: 1;
-  grid-column: 5 / -1;
-  background: var(--stripe-t3);
-}
-
-/* Row 2 — Tier 1 light purple, left-center (cols 2–3) */
-.hero-centred__stripe--r2-left {
-  grid-row: 2;
-  grid-column: 2 / 4;
-  background: var(--stripe-t1);
-}
-
-/* Row 2 — Tier 2 mid purple, right side (cols 4–6) */
-.hero-centred__stripe--r2-right {
-  grid-row: 2;
-  grid-column: 4 / -1;
-  background: var(--stripe-t2);
-}
-
-/* Row 3 — Tier 3 full purple, far left (col 1) */
-.hero-centred__stripe--r3-left {
-  grid-row: 3;
-  grid-column: 1 / 2;
-  background: var(--stripe-t3);
-}
-
-/* Row 3 — Tier 1 light purple, far right (col 6) */
-.hero-centred__stripe--r3-right {
-  grid-row: 3;
-  grid-column: 6 / -1;
-  background: var(--stripe-t1);
-}
-
 /* ── Media wrapper ────────────────────────────────────────── */
-/* Negative margin pulls the media up into the stripe zone.   */
-/* z-index ensures it renders on top of the skewed stripes.   */
 .hero-centred__media-wrap {
   position: relative;
   z-index: 1;
-  margin-top: calc(-1 * (var(--stripe-h) * 3 + 6rem));
+  margin-top: 3rem;
   padding: 0 var(--space--container-padding) var(--space--section);
 }
 

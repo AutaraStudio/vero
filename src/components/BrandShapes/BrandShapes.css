@@ -1,0 +1,192 @@
+/* ============================================================
+   BRAND SHAPES — Organic overlapping ovals
+   Viewport-sized sticky container with shapes at the corners.
+   Sits behind all content. Theme-aware via 5 colour slots.
+   Reusable — add to any section.
+============================================================ */
+
+/* ── Container — absolute, fills the hero section ── */
+
+.brand-shapes {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 0;
+
+  /* Default palette (brand-purple) */
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--blue-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--yellow-500);
+}
+
+/* ── Theme palettes ─────────────────────────────────────────── */
+
+[data-theme="dark"] .brand-shapes,
+[data-theme="dark-purple"] .brand-shapes,
+[data-theme="brand-purple"] .brand-shapes {
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--blue-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--yellow-500);
+}
+
+[data-theme="brand-purple-deep"] .brand-shapes {
+  --shape-c1: var(--swatch--yellow-500);
+  --shape-c2: var(--swatch--green-500);
+  --shape-c3: var(--swatch--blue-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--purple-500);
+}
+
+[data-theme="dark-blue"] .brand-shapes,
+[data-theme="brand-blue"] .brand-shapes {
+  --shape-c1: var(--swatch--blue-500);
+  --shape-c2: var(--swatch--purple-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--yellow-500);
+  --shape-c5: var(--swatch--orange-500);
+}
+
+[data-theme="brand-blue-deep"] .brand-shapes {
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--yellow-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--blue-500);
+}
+
+[data-theme="dark-green"] .brand-shapes,
+[data-theme="brand-green"] .brand-shapes {
+  --shape-c1: var(--swatch--green-500);
+  --shape-c2: var(--swatch--blue-500);
+  --shape-c3: var(--swatch--purple-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--yellow-500);
+}
+
+[data-theme="brand-green-deep"] .brand-shapes {
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--blue-500);
+  --shape-c3: var(--swatch--yellow-500);
+  --shape-c4: var(--swatch--orange-500);
+  --shape-c5: var(--swatch--green-500);
+}
+
+[data-theme="dark-orange"] .brand-shapes,
+[data-theme="brand-orange"] .brand-shapes {
+  --shape-c1: var(--swatch--orange-500);
+  --shape-c2: var(--swatch--purple-500);
+  --shape-c3: var(--swatch--blue-500);
+  --shape-c4: var(--swatch--green-500);
+  --shape-c5: var(--swatch--yellow-500);
+}
+
+[data-theme="brand-orange-deep"] .brand-shapes {
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--green-500);
+  --shape-c3: var(--swatch--blue-500);
+  --shape-c4: var(--swatch--yellow-500);
+  --shape-c5: var(--swatch--orange-500);
+}
+
+[data-theme="dark-yellow"] .brand-shapes,
+[data-theme="brand-yellow"] .brand-shapes {
+  --shape-c1: var(--swatch--yellow-500);
+  --shape-c2: var(--swatch--orange-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--purple-500);
+  --shape-c5: var(--swatch--blue-500);
+}
+
+[data-theme="brand-yellow-deep"] .brand-shapes {
+  --shape-c1: var(--swatch--purple-500);
+  --shape-c2: var(--swatch--orange-500);
+  --shape-c3: var(--swatch--green-500);
+  --shape-c4: var(--swatch--blue-500);
+  --shape-c5: var(--swatch--yellow-500);
+}
+
+/* ── Base shape ── */
+
+.brand-shape {
+  position: absolute;
+  will-change: transform, opacity;
+  opacity: var(--shape-opacity, 1);
+}
+
+/* ── Shape positions ────────────────────────────────────────── */
+/* Cluster at bottom-left and bottom-right corners.             */
+/* Shapes overlap and bleed off the viewport edges.             */
+
+/* A — bottom-left corner */
+.brand-shape--a {
+  width: 260px;
+  bottom: 0;
+  left: -60px;
+  transform: rotate(25deg);
+}
+
+/* B — bottom-left, overlapping A */
+.brand-shape--b {
+  width: 180px;
+  bottom: 30px;
+  left: 60px;
+  transform: rotate(-15deg);
+}
+
+/* C — bottom-left, subtle */
+.brand-shape--c {
+  width: 120px;
+  bottom: 130px;
+  left: -15px;
+  transform: rotate(50deg);
+}
+
+/* D — bottom-right corner */
+.brand-shape--d {
+  width: 240px;
+  bottom: 0;
+  right: -50px;
+  transform: rotate(-30deg);
+}
+
+/* E — bottom-right, behind D */
+.brand-shape--e {
+  width: 160px;
+  bottom: 80px;
+  right: 15px;
+  transform: rotate(12deg);
+}
+
+/* F — top-right corner */
+.brand-shape--f {
+  width: 280px;
+  top: 0;
+  right: -50px;
+  transform: rotate(-35deg);
+  transform-origin: center center;
+}
+
+/* ── Responsive ─────────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .brand-shape--a { width: 160px; bottom: 0;    left: -40px; }
+  .brand-shape--b { width: 110px; bottom: 15px; left: 15px;  }
+  .brand-shape--c { width: 75px;  bottom: 80px; left: -10px; }
+  .brand-shape--d { width: 140px; bottom: 0;    right: -35px; }
+  .brand-shape--e { width: 100px; bottom: 50px; right: 8px;  }
+  .brand-shape--f { width: 170px; top: 0;       right: -30px; }
+}
+
+@media (min-width: 1400px) {
+  .brand-shape--a { width: 320px; bottom: 0;     left: -70px; }
+  .brand-shape--b { width: 230px; bottom: 40px;  left: 80px;  }
+  .brand-shape--c { width: 150px; bottom: 160px; left: -10px; }
+  .brand-shape--d { width: 300px; bottom: 0;     right: -60px; }
+  .brand-shape--e { width: 200px; bottom: 100px; right: 20px;  }
+  .brand-shape--f { width: 350px; top: 0;        right: -60px; }
+}

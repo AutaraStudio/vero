@@ -6,26 +6,7 @@
    CATEGORY PAGE — DETAIL HERO
 ============================================================ */
 
-/* ── Stripe colour variables ─────────────────────────────── */
-/* Inherit the three-tier stripe system from HeroCentred.     */
-/* Uses the same swatch variables — adapts to any data-theme. */
-
-.detail-hero {
-  --stripe-h: 3.5rem;
-  --stripe-t1: color-mix(in srgb, var(--swatch--purple-500)  8%, transparent);
-  --stripe-t2: color-mix(in srgb, var(--swatch--purple-500) 20%, transparent);
-  --stripe-t3: var(--swatch--purple-500);
-}
-
-@media (max-width: 767px) {
-  .detail-hero { --stripe-h: 2.125rem; }
-}
-
-@media (min-width: 1400px) {
-  .detail-hero { --stripe-h: 4.5rem; }
-}
-
-/* ── Section wrapper — skew lives here ── */
+/* ── Section wrapper ── */
 
 .detail-hero {
   position: relative;
@@ -84,68 +65,7 @@
   justify-content: center;
 }
 
-/* ── Stripe decoration (full section width, behind both columns) ── */
-
-.detail-hero__stripes-wrap {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: calc(var(--stripe-h) * 3 + 4rem);
-  pointer-events: none;
-  z-index: 0;
-}
-
-.detail-hero__stripes {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  transform: skewY(-7deg);
-  transform-origin: bottom left;
-}
-
-.detail-hero__stripes-grid {
-  display: grid;
-  grid-template-rows: var(--stripe-h) var(--stripe-h) var(--stripe-h);
-  grid-template-columns: 18% 14% 19% 18% 16% 15%;
-  width: 100%;
-}
-
-/* Row 1 — Tier 3 full, right side (cols 5–6) */
-.detail-hero__stripe--r1-right {
-  grid-row: 1;
-  grid-column: 5 / -1;
-  background: var(--stripe-t3);
-}
-
-/* Row 2 — Tier 1 light, left-center (cols 2–3) */
-.detail-hero__stripe--r2-left {
-  grid-row: 2;
-  grid-column: 2 / 4;
-  background: var(--stripe-t1);
-}
-
-/* Row 2 — Tier 2 mid, right side (cols 4–6) */
-.detail-hero__stripe--r2-right {
-  grid-row: 2;
-  grid-column: 4 / -1;
-  background: var(--stripe-t2);
-}
-
-/* Row 3 — Tier 3 full, far left (col 1) */
-.detail-hero__stripe--r3-left {
-  grid-row: 3;
-  grid-column: 1 / 2;
-  background: var(--stripe-t3);
-}
-
-/* Row 3 — Tier 1 light, far right (col 6) */
-.detail-hero__stripe--r3-right {
-  grid-row: 3;
-  grid-column: 6 / -1;
-  background: var(--stripe-t1);
-}
+/* (Brand shape decorations handled by BrandShapes component) */
 
 /* ── Image card ── */
 
