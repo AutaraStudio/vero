@@ -9,6 +9,54 @@
   display: flex;
   flex-direction: column;
   background: var(--color--page-bg);
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Checkout fan — decorative shapes, bottom-right corner ── */
+
+.checkout-fan {
+  position: fixed;
+  bottom: -60px;
+  right: -60px;
+  width: 220px;
+  height: 220px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.checkout-fan__shape {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 200px;
+  transform-origin: bottom right;
+}
+
+@media (max-width: 767px) {
+  .checkout-fan {
+    width: 150px;
+    height: 150px;
+    bottom: -40px;
+    right: -40px;
+  }
+
+  .checkout-fan__shape {
+    width: 140px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .checkout-fan {
+    width: 280px;
+    height: 280px;
+    bottom: -70px;
+    right: -70px;
+  }
+
+  .checkout-fan__shape {
+    width: 250px;
+  }
 }
 
 .get-started-header {
