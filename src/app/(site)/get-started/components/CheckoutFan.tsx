@@ -8,9 +8,9 @@ const OVAL =
 
 // Rotations fan upward/left from the bottom-right pivot
 const SHAPES = [
-  { colour: 'var(--swatch--purple-500)', finalRotation: 50  },
-  { colour: 'var(--swatch--blue-500)',   finalRotation: 75  },
-  { colour: 'var(--swatch--green-500)',  finalRotation: 100 },
+  { colour: 'var(--swatch--purple-500)', finalRotation: 160 },
+  { colour: 'var(--swatch--blue-500)',   finalRotation: 185 },
+  { colour: 'var(--swatch--green-500)',  finalRotation: 210 },
 ];
 
 export default function CheckoutFan() {
