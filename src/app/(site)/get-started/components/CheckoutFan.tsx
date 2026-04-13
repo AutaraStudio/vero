@@ -8,9 +8,9 @@ const OVAL =
 
 // Fan opens left — rotations go counter-clockwise from the bottom-right anchor
 const SHAPES = [
-  { colour: 'var(--swatch--purple-500)', opacity: 0.15, rotation: 20  },
-  { colour: 'var(--swatch--blue-500)',   opacity: 0.20, rotation: 45  },
-  { colour: 'var(--swatch--green-500)',  opacity: 0.12, rotation: 70  },
+  { colour: 'var(--swatch--purple-500)', opacity: 0.85, rotation: 15  },
+  { colour: 'var(--swatch--blue-500)',   opacity: 0.85, rotation: 40  },
+  { colour: 'var(--swatch--green-500)',  opacity: 0.85, rotation: 65  },
 ];
 
 export default function CheckoutFan() {
