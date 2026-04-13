@@ -5,12 +5,15 @@
    Reusable — add to any section.
 ============================================================ */
 
-/* ── Container — absolute, fills the hero section ── */
+/* ── Container — absolute, 100vh tall, anchored to top of section ── */
 
 .brand-shapes {
   position: absolute;
-  inset: 0;
-  overflow: hidden;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: visible;
   pointer-events: none;
   z-index: 0;
 
