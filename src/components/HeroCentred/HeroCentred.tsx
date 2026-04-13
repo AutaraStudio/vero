@@ -10,7 +10,6 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
-import BrandShapes from '@/components/BrandShapes/BrandShapes';
 import type { ThemeVariant } from '@/lib/theme';
 
 interface HeroCentredProps {
@@ -169,9 +168,6 @@ export default function HeroCentred({
           </div>
         </div>
       </div>
-
-      {/* ── Decorative brand shapes ────────────────────────── */}
-      <BrandShapes />
 
       {/* ── Media ─────────────────────────────────────────── */}
       <div className="hero-centred__media-wrap">

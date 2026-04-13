@@ -5,17 +5,17 @@
    Reusable — add to any section.
 ============================================================ */
 
-/* ── Container — absolute, 100vh tall, anchored to top of section ── */
+/* ── Container — fixed, full viewport, behind everything ── */
 
 .brand-shapes {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   overflow: visible;
   pointer-events: none;
-  z-index: 0;
+  z-index: 1;
 
   /* Default palette (brand-purple) */
   --shape-c1: var(--swatch--purple-500);

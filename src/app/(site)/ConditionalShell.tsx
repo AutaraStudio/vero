@@ -3,6 +3,7 @@
 import { usePathname } from 'next/navigation';
 import MegaNav from '@/components/MegaNav';
 import SmoothScroll from '@/components/SmoothScroll';
+import BrandShapes from '@/components/BrandShapes/BrandShapes';
 import type { NavCategory } from '@/components/MegaNav/MegaNav';
 
 interface ConditionalShellProps {
@@ -22,6 +23,7 @@ export default function ConditionalShell({ children, navCtaLabel, navCtaHref, ca
 
   return (
     <>
+      <BrandShapes />
       <MegaNav navCtaLabel={navCtaLabel} navCtaHref={navCtaHref} categories={categories} />
       <SmoothScroll>
         {children}

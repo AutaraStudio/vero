@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useEffect } from 'react';
-import { gsap } from '@/lib/gsap';
+import { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { gsap, ScrollTrigger } from '@/lib/gsap';
 import './BrandShapes.css';
 
 const OVAL =
@@ -22,73 +23,92 @@ const SHAPES: ShapeDef[] = [
   { id: 'f', colourVar: 'var(--shape-c5)', opacity: 0.08 },
 ];
 
+function animateIn(shapes: Element[]) {
+  gsap.fromTo(
+    shapes,
+    { opacity: 0, scale: 0.3 },
+    {
+      opacity: 1,
+      scale: 1,
+      duration: 1.4,
+      ease: 'elastic.out(0.6, 0.4)',
+      stagger: { each: 0.1, from: 'edges' },
+    }
+  );
+}
+
+function animateOut(shapes: Element[]) {
+  gsap.to(shapes, {
+    scale: 0,
+    opacity: 0,
+    duration: 0.6,
+    ease: 'power3.in',
+    stagger: { each: 0.05, from: 'center' },
+  });
+}
+
 export default function BrandShapes() {
   const wrapRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (!wrapRef.current) return;
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted || !wrapRef.current) return;
 
     const shapes = Array.from(wrapRef.current.querySelectorAll('.brand-shape'));
     if (shapes.length === 0) return;
 
-    // ── Entrance: smooth scale + fade in on page load ──
-    const enterTl = gsap.timeline();
+    const triggers: ScrollTrigger[] = [];
 
-    enterTl.fromTo(
-      shapes,
-      { opacity: 0, scale: 0.3 },
-      {
-        opacity: 1,
-        scale: 1,
-        duration: 1.4,
-        ease: 'elastic.out(0.6, 0.4)',
-        stagger: { each: 0.1, from: 'edges' },
-        delay: 0.4,
-      }
-    );
+    // ── 1. Hero entrance — animate in on page load ──
+    animateIn(shapes);
 
-    // ── Exit on scroll down, replay on scroll back to top ──
+    // ── 2. Hero exit/re-enter on scroll ──
     let isVisible = true;
 
     const onScroll = () => {
-      const scrollY = window.scrollY;
-
-      if (scrollY > 100 && isVisible) {
-        // Scrolled down — pop out
+      if (window.scrollY > 100 && isVisible) {
         isVisible = false;
-        gsap.to(shapes, {
-          scale: 0,
-          opacity: 0,
-          duration: 0.6,
-          ease: 'power3.in',
-          stagger: { each: 0.05, from: 'center' },
-        });
-      } else if (scrollY <= 30 && !isVisible) {
-        // Scrolled back to top — replay entrance
+        animateOut(shapes);
+      } else if (window.scrollY <= 30 && !isVisible) {
         isVisible = true;
-        gsap.fromTo(
-          shapes,
-          { opacity: 0, scale: 0.3 },
-          {
-            opacity: 1,
-            scale: 1,
-            duration: 1.4,
-            ease: 'elastic.out(0.6, 0.4)',
-            stagger: { each: 0.1, from: 'edges' },
-          }
-        );
+        animateIn(shapes);
       }
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });
 
-    return () => {
-      enterTl.kill();
-      window.removeEventListener('scroll', onScroll);
-    };
-  }, []);
+    // ── 3. Section triggers via data-shapes-trigger ──
+    const triggerEls = document.querySelectorAll('[data-shapes-trigger]');
 
-  return (
+    triggerEls.forEach((el) => {
+      const start = el.getAttribute('data-shapes-trigger') || 'top 80%';
+
+      const st = ScrollTrigger.create({
+        trigger: el,
+        start,
+        end: 'bottom top',
+        onEnter: () => { isVisible = true; animateIn(shapes); },
+        onLeave: () => { isVisible = false; animateOut(shapes); },
+        onEnterBack: () => { isVisible = true; animateIn(shapes); },
+        onLeaveBack: () => { isVisible = false; animateOut(shapes); },
+      });
+
+      triggers.push(st);
+    });
+
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      triggers.forEach((st) => st.kill());
+    };
+  }, [mounted]);
+
+  if (!mounted) return null;
+
+  return createPortal(
     <div ref={wrapRef} className="brand-shapes" aria-hidden="true">
       {SHAPES.map(({ id, colourVar, opacity }) => (
         <svg
@@ -102,6 +122,7 @@ export default function BrandShapes() {
           <path d={OVAL} fill="currentColor" />
         </svg>
       ))}
-    </div>
+    </div>,
+    document.body
   );
 }

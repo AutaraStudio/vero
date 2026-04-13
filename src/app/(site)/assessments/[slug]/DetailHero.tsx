@@ -3,7 +3,6 @@
 import './category.css';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
-import BrandShapes from '@/components/BrandShapes/BrandShapes';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import type { ThemeVariant } from '@/lib/theme';
@@ -118,8 +117,7 @@ export default function DetailHero({
         </div>
       </div>
 
-      {/* Decorative brand shapes — full section width, behind both columns */}
-      <BrandShapes />
+      {/* Brand shapes handled by fixed global layer */}
     </section>
   );
 }
