@@ -17,8 +17,8 @@
 
 .checkout-fan {
   position: fixed;
-  bottom: -20px;
-  right: 40px;
+  bottom: 0;
+  right: 0;
   pointer-events: none;
   z-index: 0;
 }
@@ -28,7 +28,7 @@
   bottom: 0;
   right: 0;
   width: 160px;
-  transform-origin: 100% 100%;
+  transform-origin: bottom right;
 }
 
 @media (max-width: 767px) {
