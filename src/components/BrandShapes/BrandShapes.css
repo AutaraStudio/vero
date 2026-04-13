@@ -127,69 +127,53 @@
 
 /* A — bottom-left corner */
 .brand-shape--a {
-  width: 260px;
+  width: clamp(160px, 12vw + 60px, 320px);
   bottom: 0;
-  left: -60px;
+  left: clamp(-40px, -3vw, -15px);
   transform: rotate(25deg);
 }
 
 /* B — bottom-left, overlapping A */
 .brand-shape--b {
-  width: 180px;
-  bottom: 30px;
-  left: 60px;
+  width: clamp(110px, 8vw + 40px, 230px);
+  bottom: clamp(15px, 2vw, 40px);
+  left: clamp(15px, 4vw, 80px);
   transform: rotate(-15deg);
 }
 
 /* C — bottom-left, subtle */
 .brand-shape--c {
-  width: 120px;
-  bottom: 130px;
-  left: -15px;
+  width: clamp(75px, 5vw + 30px, 150px);
+  bottom: clamp(80px, 8vw + 20px, 160px);
+  left: clamp(-10px, -1vw, 0px);
   transform: rotate(50deg);
 }
 
 /* D — bottom-right corner */
 .brand-shape--d {
-  width: 240px;
+  width: clamp(140px, 11vw + 50px, 300px);
   bottom: 0;
-  right: -50px;
+  right: clamp(-35px, -3vw, -10px);
   transform: rotate(-30deg);
 }
 
 /* E — bottom-right, behind D */
 .brand-shape--e {
-  width: 160px;
-  bottom: 80px;
-  right: 15px;
+  width: clamp(100px, 7vw + 30px, 200px);
+  bottom: clamp(50px, 5vw + 10px, 100px);
+  right: clamp(8px, 1vw, 20px);
   transform: rotate(12deg);
 }
 
 /* F — top-right corner */
 .brand-shape--f {
-  width: 280px;
+  width: clamp(170px, 13vw + 60px, 350px);
   top: 0;
-  right: -50px;
+  right: clamp(-30px, -3vw, -10px);
   transform: rotate(-35deg);
   transform-origin: center center;
 }
 
 /* ── Responsive ─────────────────────────────────────────────── */
 
-@media (max-width: 767px) {
-  .brand-shape--a { width: 160px; bottom: 0;    left: -40px; }
-  .brand-shape--b { width: 110px; bottom: 15px; left: 15px;  }
-  .brand-shape--c { width: 75px;  bottom: 80px; left: -10px; }
-  .brand-shape--d { width: 140px; bottom: 0;    right: -35px; }
-  .brand-shape--e { width: 100px; bottom: 50px; right: 8px;  }
-  .brand-shape--f { width: 170px; top: 0;       right: -30px; }
-}
-
-@media (min-width: 1400px) {
-  .brand-shape--a { width: 320px; bottom: 0;     left: -70px; }
-  .brand-shape--b { width: 230px; bottom: 40px;  left: 80px;  }
-  .brand-shape--c { width: 150px; bottom: 160px; left: -10px; }
-  .brand-shape--d { width: 300px; bottom: 0;     right: -60px; }
-  .brand-shape--e { width: 200px; bottom: 100px; right: 20px;  }
-  .brand-shape--f { width: 350px; top: 0;        right: -60px; }
-}
+/* Fluid scaling via clamp() — no breakpoints needed */
