@@ -17,10 +17,8 @@
 
 .checkout-fan {
   position: fixed;
-  bottom: -60px;
-  right: -60px;
-  width: 220px;
-  height: 220px;
+  bottom: -30px;
+  right: -30px;
   pointer-events: none;
   z-index: 0;
 }
@@ -29,33 +27,19 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 200px;
+  width: 180px;
   transform-origin: bottom right;
 }
 
 @media (max-width: 767px) {
-  .checkout-fan {
-    width: 150px;
-    height: 150px;
-    bottom: -40px;
-    right: -40px;
-  }
-
   .checkout-fan__shape {
-    width: 140px;
+    width: 120px;
   }
 }
 
 @media (min-width: 1400px) {
-  .checkout-fan {
-    width: 280px;
-    height: 280px;
-    bottom: -70px;
-    right: -70px;
-  }
-
   .checkout-fan__shape {
-    width: 250px;
+    width: 220px;
   }
 }
 

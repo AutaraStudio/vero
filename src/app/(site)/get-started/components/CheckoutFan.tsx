@@ -6,10 +6,11 @@ import { gsap } from '@/lib/gsap';
 const OVAL =
   'M179.706 0C110.336 0 54.198 21.485 23.683 65.807C-48.912 171.251 50.983 366.022 246.806 500.839C360.314 578.987 481.134 619.838 576.794 619.838C646.163 619.838 702.303 598.351 732.818 554.03C805.412 448.586 705.516 253.817 509.694 118.998C396.184 40.851 275.364 0 179.706 0Z';
 
+// Fan opens left — rotations go counter-clockwise from the bottom-right anchor
 const SHAPES = [
-  { colour: 'var(--swatch--purple-500)', opacity: 0.12, rotation: -15 },
-  { colour: 'var(--swatch--blue-500)',   opacity: 0.18, rotation: -35 },
-  { colour: 'var(--swatch--green-500)',  opacity: 0.10, rotation: -55 },
+  { colour: 'var(--swatch--purple-500)', opacity: 0.15, rotation: 20  },
+  { colour: 'var(--swatch--blue-500)',   opacity: 0.20, rotation: 45  },
+  { colour: 'var(--swatch--green-500)',  opacity: 0.12, rotation: 70  },
 ];
 
 export default function CheckoutFan() {
@@ -20,22 +21,22 @@ export default function CheckoutFan() {
 
     const shapes = wrapRef.current.querySelectorAll('.checkout-fan__shape');
 
-    // Start collapsed — all shapes at 0° rotation (stacked), hidden
+    // Start stacked at 0° (hidden behind each other)
     gsap.set(shapes, { rotation: 0, opacity: 0, transformOrigin: 'bottom right' });
 
-    // Fan open — stagger each shape to its final rotation
-    const tl = gsap.timeline({ delay: 0.6 });
+    // Fan open — each shape rotates to its angle
+    const tl = gsap.timeline({ delay: 0.5 });
 
     SHAPES.forEach((shape, i) => {
       tl.to(
         shapes[i],
         {
           rotation: shape.rotation,
-          opacity: 1,
-          duration: 0.8,
+          opacity: shape.opacity,
+          duration: 0.9,
           ease: 'power3.out',
         },
-        i * 0.12
+        i * 0.15
       );
     });
 
@@ -44,18 +45,14 @@ export default function CheckoutFan() {
 
   return (
     <div ref={wrapRef} className="checkout-fan" aria-hidden="true">
-      {SHAPES.map(({ colour, opacity, rotation }, i) => (
+      {SHAPES.map(({ colour }, i) => (
         <svg
           key={i}
           className="checkout-fan__shape"
           viewBox="0 0 757 620"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          style={{
-            color: colour,
-            opacity,
-            transform: `rotate(${rotation}deg)`,
-          }}
+          style={{ color: colour }}
         >
           <path d={OVAL} fill="currentColor" />
         </svg>
