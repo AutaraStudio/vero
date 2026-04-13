@@ -1,0 +1,37 @@
+Internal Name,Label,Type,Flow,Description,Example Value
+vero_assess_tier,Vero Assess Pricing Tier,Dropdown select,Checkout + Bespoke,The pricing plan selected by the customer,Starter / Essential / Growth / Scale / Bespoke
+vero_assess_payment_frequency,Vero Assess Payment Frequency,Dropdown select,Checkout,How often the customer is billed,Annual / Monthly / One-off
+vero_assess_payment_method,Vero Assess Payment Method,Dropdown select,Checkout,How the customer chose to pay,Online card payment / Invoice
+vero_assess_order_value,Vero Assess Order Value,Number,Checkout,Total order value in GBP,9000
+vero_assess_role_count,Vero Assess Number of Roles,Number,Checkout + Bespoke,Total number of assessment roles selected,50
+vero_assess_roles_order,Vero Assess Roles (Order),Multi-line text,Checkout + Bespoke,Full list of selected roles — one per line. Exact names from the website.,"Administrative Assistant
+Office Coordinator
+Document Controller"
+vero_assess_autorenewal_annual,Vero Assess Auto-Renewal (Annual),Single checkbox,Checkout,Whether the annual licence should auto-renew in 12 months. Only set for annual subscription tiers.,true / false
+vero_assess_buyer_first_name,Vero Assess Buyer First Name,Single-line text,Checkout + Bespoke,First name of the person who completed checkout,Jane
+vero_assess_buyer_last_name,Vero Assess Buyer Last Name,Single-line text,Checkout + Bespoke,Last name of the person who completed checkout,Smith
+vero_assess_buyer_email,Vero Assess Buyer Email,Single-line text,Checkout + Bespoke,Email address of the person who completed checkout,jane@company.com
+vero_assess_buyer_job_title,Vero Assess Buyer Job Title,Single-line text,Checkout + Bespoke,Job title of the person who completed checkout,Head of Recruitment
+vero_assess_buyer_phone,Vero Assess Buyer Phone,Single-line text,Checkout + Bespoke,Phone number of the person who completed checkout,+44 7700 900000
+vero_assess_key_contact_name,Vero Assess Key Contact Name,Single-line text,Checkout,Full name of the key project contact. Same as buyer if 'same as me' was ticked.,Jane Smith
+vero_assess_key_contact_email,Vero Assess Key Contact Email,Single-line text,Checkout,Email of the key project contact. Same as buyer if 'same as me' was ticked.,jane@company.com
+vero_assess_url,Vero Assess URL,Single-line text,Checkout,Custom portal subdomain chosen by the customer. Not available for Starter tier.,acme
+vero_assess_users,Vero Assess Users,Multi-line text,Checkout,"Numbered list of email addresses for users who need system access. One per line, numbered.","1. alice@company.com
+2. bob@company.com
+3. carol@company.com"
+vero_candidate_feedback_reports,Vero Assess Candidate Feedback Reports,Single checkbox,Checkout,Whether the company wants to send candidate feedback reports to candidates.,true / false
+vero_assess_brand_colour_1,Vero Assess Brand Colour 1,Single-line text,Checkout,Primary brand hex colour for portal branding. Not available for Starter tier.,#472d6a
+vero_assess_brand_colour_2,Vero Assess Brand Colour 2,Single-line text,Checkout,Secondary brand hex colour for portal branding. Not available for Starter tier.,#fec601
+vero_assess_company_logo,Vero Assess Company Logo,Single-line text (URL),Checkout,Public URL to the uploaded company logo file hosted in HubSpot File Manager. Clickable link to view/download.,https://app.hubspot.com/file-manager/...
+vero_assess_campaign_dates,Vero Assess Campaign Dates,Multi-line text,Checkout,"Readable list of per-role campaign open/close dates. One role per line, formatted as ""Role Name: DD/MM/YYYY – DD/MM/YYYY"".","Administrative Assistant: 01/05/2026 – 01/08/2026
+Office Coordinator: 15/05/2026 – 30/07/2026"
+vero_assess_earliest_campaign_open_date,Vero Assess Earliest Campaign Open Date,Date picker,Checkout,The earliest campaign open date across all selected roles. Useful for HubSpot filters and workflows.,2026-05-01
+vero_assess_latest_close_date,Vero Assess Latest Campaign Close Date,Date picker,Checkout,The latest campaign close date across all selected roles. Useful for HubSpot filters and workflows.,2026-08-01
+vero_assess_contract_accepted,Vero Assess Contract Accepted,Single checkbox,Checkout,Whether the customer accepted the service agreement before payment.,true
+vero_assess_contract_accepted_date,Vero Assess Contract Accepted Date,Date picker,Checkout,The date the customer accepted the service agreement.,2026-04-11
+vero_assess_approx_roles,Vero Assess Approx. Roles (Bespoke),Single-line text,Bespoke only,Approximate number of roles the customer needs. Selected from a dropdown on the bespoke enquiry form.,51-100
+vero_assess_approx_candidates,Vero Assess Approx. Candidates/Year (Bespoke),Single-line text,Bespoke only,Approximate number of candidates per year. Selected from a dropdown on the bespoke enquiry form.,5000-10000
+vero_assess_target_go_live,Vero Assess Target Go-Live Date (Bespoke),Date picker,Bespoke only,The customer's target go-live date for their assessment portal.,2026-07-01
+vero_assess_requirements,Vero Assess Specific Requirements (Bespoke),Multi-line text,Bespoke only,Free-text field where the customer describes any specific requirements for their bespoke plan.,We need multi-language support and custom reporting.
+vero_assess_roles,Vero Assess Roles,Multiple checkbox,NOT USED,Original checkbox property created by client. Not populated by checkout code due to role name mismatches between the website (Sanity CMS) and HubSpot checkbox options. Roles are captured in vero_assess_roles_order instead.,
+key_contract_contact,Key Contract Contact,Single-line text,NOT USED,Original property created by client. Not found in HubSpot export. Key contact data is captured in vero_assess_key_contact_name and vero_assess_key_contact_email instead.,

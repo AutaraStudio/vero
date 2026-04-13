@@ -2,6 +2,77 @@ import type { CheckoutPayload, BespokePayload } from './checkout-schema';
 import { TIER_DATA, getTierPrice } from './tierRecommendation';
 
 const HUBSPOT_API = 'https://api.hubapi.com/crm/v3/objects/companies';
+const HUBSPOT_FILES_API = 'https://api.hubapi.com/files/v3/files';
+
+// ── Upload file to HubSpot File Manager ───────────────────────
+
+export async function uploadFileToHubSpot(
+  base64DataUrl: string,
+  fileName: string,
+  folder: string = 'vero-assess/logos'
+): Promise<string> {
+  const token = process.env.HUBSPOT_ACCESS_TOKEN;
+  if (!token) throw new Error('No HUBSPOT_ACCESS_TOKEN');
+
+  // Convert base64 data URL to buffer
+  const base64Data = base64DataUrl.split(',')[1];
+  if (!base64Data) throw new Error('Invalid base64 data URL');
+
+  const buffer = Buffer.from(base64Data, 'base64');
+
+  // Detect MIME type from data URL
+  const mimeMatch = base64DataUrl.match(/^data:([^;]+);/);
+  const mimeType = mimeMatch?.[1] || 'image/png';
+
+  // Build multipart form data manually
+  const boundary = '----HubSpotUpload' + Date.now();
+  const parts: Buffer[] = [];
+
+  // File part
+  parts.push(Buffer.from(
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="file"; filename="${fileName}"\r\n` +
+    `Content-Type: ${mimeType}\r\n\r\n`
+  ));
+  parts.push(buffer);
+  parts.push(Buffer.from('\r\n'));
+
+  // Options part (JSON)
+  const options = JSON.stringify({
+    access: 'PUBLIC_NOT_INDEXABLE',
+    folderPath: `/${folder}`,
+  });
+  parts.push(Buffer.from(
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="options"\r\n` +
+    `Content-Type: application/json\r\n\r\n` +
+    options + '\r\n'
+  ));
+
+  // End boundary
+  parts.push(Buffer.from(`--${boundary}--\r\n`));
+
+  const body = Buffer.concat(parts);
+
+  const res = await fetch(HUBSPOT_FILES_API, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': `multipart/form-data; boundary=${boundary}`,
+    },
+    body,
+  });
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    console.error('[HubSpot] File upload failed:', err);
+    throw new Error(`HubSpot file upload error: ${res.status}`);
+  }
+
+  const data = await res.json();
+  console.log(`[HubSpot] File uploaded: ${data.url}`);
+  return data.url as string;
+}
 
 // ── Submit to HubSpot CRM API ──────────────────────────────────
 
@@ -40,6 +111,20 @@ export async function submitCheckoutToHubSpot(
   payload: CheckoutPayload
 ): Promise<void> {
   const properties = mapCheckoutToHubSpot(payload);
+
+  // Upload logo if provided
+  if (payload.contactDetails.logoFile && payload.contactDetails.logoFileName) {
+    try {
+      const logoUrl = await uploadFileToHubSpot(
+        payload.contactDetails.logoFile,
+        payload.contactDetails.logoFileName
+      );
+      properties.vero_assess_company_logo = logoUrl;
+    } catch (err) {
+      console.error('[HubSpot] Logo upload failed (non-blocking):', err);
+    }
+  }
+
   await submitCompany(properties);
 }
 

@@ -28,6 +28,8 @@ export interface CheckoutPayload {
     sendFeedbackReports: string;
     brandColour1: string;
     brandColour2: string;
+    logoFile: string;
+    logoFileName: string;
     roleDates: Record<string, { openDate: string; closeDate: string }>;
   };
 }

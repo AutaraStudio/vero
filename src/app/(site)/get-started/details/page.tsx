@@ -334,8 +334,18 @@ export default function DetailsPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof ContactDetails, string>>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
-  // Logo upload state (visual only)
-  const [logoFileName, setLogoFileName] = useState<string>('');
+  // Logo upload state
+  const [logoFileName, setLogoFileName] = useState<string>(() => form.logoFileName || '');
+
+  const handleLogoFile = (file: File) => {
+    setLogoFileName(file.name);
+    const reader = new FileReader();
+    reader.onload = () => {
+      const base64 = reader.result as string;
+      setForm((p) => ({ ...p, logoFile: base64, logoFileName: file.name }));
+    };
+    reader.readAsDataURL(file);
+  };
 
   // User emails state
   const [userEmails, setUserEmails] = useState<string[]>(() =>
@@ -781,7 +791,7 @@ export default function DetailsPage() {
                       e.preventDefault();
                       e.currentTarget.classList.remove('is-dragging');
                       const file = e.dataTransfer.files[0];
-                      if (file) setLogoFileName(file.name);
+                      if (file) handleLogoFile(file);
                     }}
                     onKeyDown={(e) => {
                       if (e.key === 'Enter' || e.key === ' ') {
@@ -800,7 +810,7 @@ export default function DetailsPage() {
                       className="logo-upload__input"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) setLogoFileName(file.name);
+                        if (file) handleLogoFile(file);
                       }}
                     />
                     {logoFileName ? (

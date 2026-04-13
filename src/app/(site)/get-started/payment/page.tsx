@@ -148,6 +148,8 @@ function PaymentContent() {
         sendFeedbackReports: contactDetails.sendFeedbackReports,
         brandColour1: contactDetails.brandColour1,
         brandColour2: contactDetails.brandColour2,
+        logoFile: contactDetails.logoFile,
+        logoFileName: contactDetails.logoFileName,
         roleDates: contactDetails.roleDates,
       },
     };

@@ -17,8 +17,8 @@
 
 .checkout-fan {
   position: fixed;
-  bottom: 0;
-  right: 0;
+  bottom: -80px;
+  right: -80px;
   pointer-events: none;
   z-index: 0;
 }
@@ -27,19 +27,24 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  width: 160px;
+  width: 260px;
   transform-origin: bottom right;
 }
 
 @media (max-width: 767px) {
+  .checkout-fan {
+    bottom: -60px;
+    right: -60px;
+  }
+
   .checkout-fan__shape {
-    width: 120px;
+    width: 180px;
   }
 }
 
 @media (min-width: 1400px) {
   .checkout-fan__shape {
-    width: 220px;
+    width: 320px;
   }
 }
 

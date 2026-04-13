@@ -46,6 +46,8 @@ export interface ContactDetails {
   // Branding
   brandColour1: string;
   brandColour2: string;
+  logoFile: string; // base64 data URL or empty
+  logoFileName: string;
   // Campaign dates keyed by roleId
   roleDates: Record<string, { openDate: string; closeDate: string }>;
 }
@@ -101,6 +103,8 @@ const emptyContact: ContactDetails = {
   sendFeedbackReports: '',
   brandColour1: '',
   brandColour2: '',
+  logoFile: '',
+  logoFileName: '',
   roleDates: {},
 };
 
