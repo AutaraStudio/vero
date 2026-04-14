@@ -5,6 +5,7 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
+import MegaNav from '@/components/MegaNav';
 import './not-found.css';
 
 const OVAL =
@@ -74,6 +75,8 @@ export default function NotFound() {
   }, []);
 
   return (
+    <>
+    <MegaNav />
     <main data-theme="brand-purple" className="not-found">
       {/* Decorative background shapes */}
       <div ref={shapesRef} className="not-found__shapes" aria-hidden="true">
@@ -103,5 +106,6 @@ export default function NotFound() {
         </div>
       </div>
     </main>
+    </>
   );
 }
