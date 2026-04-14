@@ -119,12 +119,19 @@ export async function submitCheckoutToHubSpot(
 ): Promise<void> {
   const properties = mapCheckoutToHubSpot(payload);
 
-  // Upload logo if provided
+  // Upload logo if provided — rename to Company-Name-Logo.ext
   if (payload.contactDetails.logoFile && payload.contactDetails.logoFileName) {
     try {
+      const ext = payload.contactDetails.logoFileName.split('.').pop() || 'png';
+      const sluggedCompany = payload.contactDetails.company
+        .trim()
+        .replace(/[^a-zA-Z0-9\s-]/g, '')
+        .replace(/\s+/g, '-');
+      const logoFileName = `${sluggedCompany}-Logo.${ext}`;
+
       const logoUrl = await uploadFileToHubSpot(
         payload.contactDetails.logoFile,
-        payload.contactDetails.logoFileName
+        logoFileName
       );
       properties.vero_assess_company_logo = logoUrl;
     } catch (err) {
