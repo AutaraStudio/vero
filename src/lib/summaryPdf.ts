@@ -330,45 +330,39 @@ export async function downloadSummaryPdf(opts: {
     sendFeedbackReports: contactDetails.sendFeedbackReports === 'yes',
   });
 
-  // Render into a visible container — html2canvas requires fully visible elements.
-  // We scroll the user to the top and place the container off-screen below
-  // the fold so it's in the DOM and painted but not seen by the user.
-  const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.left = '0';
-  container.style.top = `${document.body.scrollHeight + 100}px`;
-  container.style.width = '650px';
-  container.style.background = '#f3f0f6';
-  container.innerHTML = html;
-  document.body.appendChild(container);
+  // Wrap the email-style HTML in a full document with print styles
+  const fullHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vero Assess — Order Summary</title>
+  <style>
+    @media print {
+      body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      @page { margin: 10mm 0; size: A4; }
+    }
+  </style>
+</head>
+<body>${html}</body>
+</html>`;
 
-  // Wait for browser to lay out and paint the content
-  await new Promise<void>((resolve) => {
-    setTimeout(resolve, 300);
-  });
-
-  try {
-    const html2pdf = (await import('html2pdf.js')).default;
-
-    await html2pdf()
-      .set({
-        margin: [10, 0, 10, 0],
-        filename: `Vero Assess — Order Summary.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          scrollY: 0,
-          windowHeight: container.scrollHeight,
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      })
-      .from(container)
-      .save();
-  } finally {
-    document.body.removeChild(container);
+  // Open in a new window and trigger the browser's Save as PDF
+  const printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('Please allow pop-ups to download the summary.');
+    return;
   }
+
+  printWindow.document.write(fullHtml);
+  printWindow.document.close();
+
+  // Wait for content + images to load, then trigger print
+  printWindow.onload = () => {
+    setTimeout(() => {
+      printWindow.print();
+    }, 400);
+  };
 }
 
 function formatDate(iso: string): string {
