@@ -28,7 +28,7 @@ export default function CTAStatement({
     'Reduce time-to-hire without sacrificing quality',
     'Build fairer, more inclusive hiring processes',
   ],
-  cta = { label: 'Get started free', href: '/get-started' },
+  cta = { label: 'Get started', href: '/get-started' },
   theme = 'brand-purple',
 }: CTAStatementProps) {
   const statementRef = useTextReveal({ delay: 0.1 });
