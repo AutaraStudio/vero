@@ -224,8 +224,8 @@ export default function BasketContent({ categories }: BasketContentProps) {
           {recommendedTier === 'bespoke'
             ? 'Discuss your requirements →'
             : selectedRoles.length > 0
-              ? `Continue to details (${selectedRoles.length}) →`
-              : 'Continue to details →'}
+              ? `Continue to checkout (${selectedRoles.length})`
+              : 'Continue to checkout'}
         </Button>
       </div>
 

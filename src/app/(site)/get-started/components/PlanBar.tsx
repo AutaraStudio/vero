@@ -50,7 +50,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
 
   const step1Cta = recommendedTier === 'bespoke'
     ? { label: 'Discuss your requirements →', onClick: () => router.push('/get-started/bespoke') }
-    : { label: 'Continue to details →', onClick: handleStep1Continue };
+    : { label: 'Continue to checkout', onClick: handleStep1Continue };
 
   const ctaMap: Record<string, { label: string; href?: string; formId?: string; onClick?: () => void }> = {
     '/get-started':          step1Cta,

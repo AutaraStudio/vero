@@ -24,7 +24,7 @@ export async function uploadFileToHubSpot(
   const mimeMatch = base64DataUrl.match(/^data:([^;]+);/);
   const mimeType = mimeMatch?.[1] || 'image/png';
 
-  // Build multipart form data manually
+  // Build multipart form data using FormData-style boundary encoding
   const boundary = '----HubSpotUpload' + Date.now();
   const parts: Buffer[] = [];
 
@@ -37,10 +37,17 @@ export async function uploadFileToHubSpot(
   parts.push(buffer);
   parts.push(Buffer.from('\r\n'));
 
-  // Options part (JSON)
+  // folderPath part (required by HubSpot — must be a separate form field)
+  parts.push(Buffer.from(
+    `--${boundary}\r\n` +
+    `Content-Disposition: form-data; name="folderPath"\r\n\r\n` +
+    `/${folder}\r\n`
+  ));
+
+  // Options part (JSON — access settings)
   const options = JSON.stringify({
     access: 'PUBLIC_NOT_INDEXABLE',
-    folderPath: `/${folder}`,
+    overwrite: true,
   });
   parts.push(Buffer.from(
     `--${boundary}\r\n` +

@@ -4,6 +4,7 @@ import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
+import { downloadSummaryPdf } from '@/lib/summaryPdf';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
@@ -21,7 +22,7 @@ function ConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, isBespokeEnquiry, bespokeDetails } = state;
+  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, autoRenewal, isBespokeEnquiry, bespokeDetails } = state;
 
   const [sessionVerified, setSessionVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -84,6 +85,32 @@ function ConfirmationContent() {
   const handleReturn = () => {
     dispatch({ type: 'CLEAR_BASKET' });
     router.push('/');
+  };
+
+  const [downloading, setDownloading] = useState(false);
+
+  const handleDownloadSummary = async () => {
+    if (!tierInfo || downloading) return;
+    setDownloading(true);
+    try {
+      const method = searchParams.get('method');
+      await downloadSummaryPdf({
+        contactDetails,
+        selectedRoles: selectedRoles.map((r) => ({
+          roleId: r.roleId,
+          roleName: r.roleName,
+          categoryName: r.categoryName,
+        })),
+        tierInfo,
+        price: tierPrice,
+        priceNote: tierInfo ? getTierPrice(tierInfo, paymentFrequency).priceNote : '',
+        paymentFrequency,
+        autoRenewal,
+        paymentMethod: method === 'invoice' ? 'invoice' : 'card',
+      });
+    } finally {
+      setDownloading(false);
+    }
   };
 
   // Animations
@@ -483,8 +510,8 @@ function ConfirmationContent() {
             Return to Vero Assess →
           </Button>
           {!isBespokeEnquiry && (
-            <Button variant="secondary" size="md" href="#">
-              Download summary
+            <Button variant="secondary" size="md" onClick={handleDownloadSummary} disabled={downloading}>
+              {downloading ? 'Generating PDF...' : 'Download summary'}
             </Button>
           )}
         </div>
