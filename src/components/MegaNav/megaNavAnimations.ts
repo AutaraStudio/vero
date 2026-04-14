@@ -170,6 +170,10 @@ export function initMegaNav(root: HTMLElement): () => void {
 
     killDropdown();
 
+    // Immediately disable pointer events on all panels so they can't intercept
+    // clicks on the CTA button while the close animation is still running
+    panels.forEach((p) => { p.style.pointerEvents = 'none'; });
+
     const tl = gsap.timeline({
       onComplete() {
         state.isOpen = false;

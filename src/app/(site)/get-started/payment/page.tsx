@@ -130,8 +130,8 @@ function PaymentContent() {
         categorySlug: r.categorySlug,
       })),
       tier: recommendedTier!,
-      paymentFrequency,
-      autoRenewal,
+      paymentFrequency: isSubscription ? paymentFrequency : 'annual',
+      autoRenewal: isSubscription ? autoRenewal : false,
       paymentMethod: 'card',
       contactDetails: {
         firstName: contactDetails.firstName,

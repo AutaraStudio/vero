@@ -13,6 +13,39 @@ import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import OrderSummary from '../components/OrderSummary';
 import './details.css';
 
+// ── Helper: normalise hex colour input ───────────────────────
+
+function normaliseHex(raw: string): string {
+  const stripped = raw.replace(/^#+/, '');
+  if (/^[0-9A-Fa-f]{1,6}$/.test(stripped)) return '#' + stripped;
+  return raw;
+}
+
+// ── Helper: working-day date constraints ─────────────────────
+
+function addWorkingDays(from: Date, days: number): Date {
+  const result = new Date(from);
+  let added = 0;
+  while (added < days) {
+    result.setDate(result.getDate() + 1);
+    if (result.getDay() !== 0 && result.getDay() !== 6) added++;
+  }
+  return result;
+}
+
+function toDateString(d: Date): string {
+  return d.toISOString().split('T')[0];
+}
+
+const MIN_OPEN_DATE = toDateString(addWorkingDays(new Date(), 2));
+
+function getMaxCloseDate(openDate: string): string {
+  if (!openDate) return '';
+  const d = new Date(openDate);
+  d.setFullYear(d.getFullYear() + 1);
+  return toDateString(d);
+}
+
 // ── Helper: user email input ──────────────────────────────────
 
 const EMAIL_INITIAL_VISIBLE = 5;
@@ -433,10 +466,10 @@ export default function DetailsPage() {
     if (!isStarter && form.bespokeUrl && !/^[a-z0-9-]+$/.test(form.bespokeUrl)) {
       errs.bespokeUrl = 'Only lowercase letters, numbers, and hyphens';
     }
-    if (!isStarter && form.brandColour1 && !/^#[0-9A-Fa-f]{6}$/.test(form.brandColour1)) {
+    if (!isStarter && form.brandColour1 && !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour1)) {
       errs.brandColour1 = 'Enter a valid hex colour (e.g. #ff6600)';
     }
-    if (!isStarter && form.brandColour2 && !/^#[0-9A-Fa-f]{6}$/.test(form.brandColour2)) {
+    if (!isStarter && form.brandColour2 && !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour2)) {
       errs.brandColour2 = 'Enter a valid hex colour (e.g. #ff6600)';
     }
     return errs;
@@ -849,11 +882,11 @@ export default function DetailsPage() {
                         type="text"
                         className={`form-field__input${err.brandColour1 ? ' has-error' : ''}`}
                         value={form.brandColour1}
-                        onChange={(e) => setForm((p) => ({ ...p, brandColour1: e.target.value }))}
+                        onChange={(e) => setForm((p) => ({ ...p, brandColour1: normaliseHex(e.target.value) }))}
                         placeholder="#472d6a"
                         maxLength={7}
                       />
-                      {/^#[0-9A-Fa-f]{6}$/.test(form.brandColour1) && (
+                      {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour1) && (
                         <span
                           className="colour-swatch"
                           style={{ background: form.brandColour1 }}
@@ -879,11 +912,11 @@ export default function DetailsPage() {
                         type="text"
                         className={`form-field__input${err.brandColour2 ? ' has-error' : ''}`}
                         value={form.brandColour2}
-                        onChange={(e) => setForm((p) => ({ ...p, brandColour2: e.target.value }))}
+                        onChange={(e) => setForm((p) => ({ ...p, brandColour2: normaliseHex(e.target.value) }))}
                         placeholder="#fec601"
                         maxLength={7}
                       />
-                      {/^#[0-9A-Fa-f]{6}$/.test(form.brandColour2) && (
+                      {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour2) && (
                         <span
                           className="colour-swatch"
                           style={{ background: form.brandColour2 }}
@@ -940,6 +973,7 @@ export default function DetailsPage() {
                         type="date"
                         className="form-field__input"
                         value={globalOpenDate}
+                        min={MIN_OPEN_DATE}
                         onChange={(e) => handleGlobalDateChange('openDate', e.target.value)}
                       />
                     </div>
@@ -955,6 +989,8 @@ export default function DetailsPage() {
                         type="date"
                         className="form-field__input"
                         value={globalCloseDate}
+                        min={globalOpenDate || MIN_OPEN_DATE}
+                        max={getMaxCloseDate(globalOpenDate)}
                         onChange={(e) => handleGlobalDateChange('closeDate', e.target.value)}
                       />
                     </div>
@@ -1045,6 +1081,7 @@ export default function DetailsPage() {
                                       type="date"
                                       className="form-field__input"
                                       value={dates.openDate}
+                                      min={MIN_OPEN_DATE}
                                       onChange={(e) => {
                                         if (applyAllDates) {
                                           setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));
@@ -1074,6 +1111,8 @@ export default function DetailsPage() {
                                       type="date"
                                       className="form-field__input"
                                       value={dates.closeDate}
+                                      min={dates.openDate || MIN_OPEN_DATE}
+                                      max={getMaxCloseDate(dates.openDate)}
                                       onChange={(e) => {
                                         if (applyAllDates) {
                                           setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));

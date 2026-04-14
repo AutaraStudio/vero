@@ -4,12 +4,17 @@ import { TIER_DATA, getTierPrice } from './tierRecommendation';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = 'Vero Assess <onboarding@resend.dev>';
-// TODO: Switch to 'orders@veroassess.com' once domain is verified on Resend
+const FROM_EMAIL = 'Vero Assess <automation@autara.studio>';
+// TODO: Switch to 'orders@veroassess.com' once production domain is verified on Resend
 
 // ── Send order confirmation email ─────────────────────────────
 
 export async function sendConfirmationEmail(payload: CheckoutPayload): Promise<void> {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[Email] RESEND_API_KEY not set — skipping confirmation email');
+    return;
+  }
+
   const { contactDetails, selectedRoles, tier, paymentFrequency, autoRenewal, paymentMethod } = payload;
   const tierInfo = TIER_DATA[tier];
   const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);
@@ -68,14 +73,19 @@ export async function sendConfirmationEmail(payload: CheckoutPayload): Promise<v
     sendFeedbackReports: contactDetails.sendFeedbackReports === 'yes',
   });
 
-  await resend.emails.send({
+  const { data, error: sendError } = await resend.emails.send({
     from: FROM_EMAIL,
     to: contactDetails.email,
     subject: `Order confirmed — ${tierInfo.name} plan | Vero Assess`,
     html,
   });
 
-  console.log(`[Email] Confirmation sent to ${contactDetails.email}`);
+  if (sendError) {
+    console.error(`[Email] Resend API error:`, sendError);
+    throw new Error(`Email send failed: ${sendError.message}`);
+  }
+
+  console.log(`[Email] Confirmation sent to ${contactDetails.email} (id: ${data?.id})`);
 }
 
 // ── HTML template ──────────────────────────────────────────────
