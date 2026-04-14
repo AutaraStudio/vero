@@ -1,0 +1,142 @@
+/* ============================================================
+   404 — Not Found Page
+   Full viewport dark page with floating decorative shapes
+   and centred content.
+============================================================ */
+
+.not-found {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: var(--color--page-bg);
+}
+
+/* ── Decorative shapes container ─────────────────────────── */
+
+.not-found__shapes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.not-found__shape {
+  position: absolute;
+  will-change: transform;
+}
+
+/* Shape positions — scattered around the viewport */
+.not-found__shape--a {
+  width: clamp(120px, 10vw + 40px, 260px);
+  top: 8%;
+  left: -3%;
+  transform: rotate(25deg);
+}
+
+.not-found__shape--b {
+  width: clamp(80px, 6vw + 30px, 180px);
+  top: 15%;
+  right: 5%;
+  transform: rotate(-40deg);
+}
+
+.not-found__shape--c {
+  width: clamp(100px, 8vw + 30px, 200px);
+  bottom: 12%;
+  left: 8%;
+  transform: rotate(55deg);
+}
+
+.not-found__shape--d {
+  width: clamp(140px, 11vw + 40px, 280px);
+  bottom: 5%;
+  right: -2%;
+  transform: rotate(-20deg);
+}
+
+.not-found__shape--e {
+  width: clamp(60px, 4vw + 20px, 120px);
+  top: 45%;
+  left: -4%;
+  transform: rotate(70deg);
+}
+
+/* ── Content ─────────────────────────────────────────────── */
+
+.not-found__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  max-width: 36rem;
+}
+
+.not-found__code {
+  font-size: clamp(6rem, 14vw, 12rem);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.04em;
+  color: var(--color--text-primary);
+  margin: 0;
+  visibility: hidden;
+}
+
+.not-found__heading {
+  font-size: clamp(1.5rem, 3vw, 2.25rem);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--color--text-primary);
+  margin: 0.75rem 0 0;
+  visibility: hidden;
+}
+
+.not-found__body {
+  font-size: 1rem;
+  line-height: 1.65;
+  color: var(--color--text-secondary);
+  margin: 1rem 0 0;
+  max-width: 30ch;
+}
+
+.not-found__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 2rem;
+  padding: 0.75rem 1.75rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color--interactive-primary-text);
+  background: var(--color--interactive-primary);
+  border: none;
+  border-radius: var(--radius--lg);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color var(--transition--default);
+}
+
+.not-found__cta:hover {
+  background: var(--color--interactive-primary-hover);
+}
+
+.not-found__cta:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 2px;
+}
+
+/* Arrow icon */
+.not-found__cta svg {
+  width: 1rem;
+  height: 1rem;
+  transition: transform var(--transition--default);
+}
+
+.not-found__cta:hover svg {
+  transform: translateX(-2px);
+}

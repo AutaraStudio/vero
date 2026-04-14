@@ -16,6 +16,7 @@ interface ConditionalShellProps {
 export default function ConditionalShell({ children, navCtaLabel, navCtaHref, categories = [] }: ConditionalShellProps) {
   const pathname = usePathname();
   const isCheckout = pathname.startsWith('/get-started');
+  const isHome = pathname === '/';
 
   if (isCheckout) {
     return <>{children}</>;
@@ -23,7 +24,7 @@ export default function ConditionalShell({ children, navCtaLabel, navCtaHref, ca
 
   return (
     <>
-      <BrandShapes />
+      {isHome && <BrandShapes />}
       <MegaNav navCtaLabel={navCtaLabel} navCtaHref={navCtaHref} categories={categories} />
       <SmoothScroll>
         {children}
