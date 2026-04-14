@@ -9,7 +9,7 @@ const HUBSPOT_FILES_API = 'https://api.hubapi.com/files/v3/files';
 export async function uploadFileToHubSpot(
   base64DataUrl: string,
   fileName: string,
-  folder: string = 'vero-assess/logos'
+  folder: string = '/Vero Assess/Logos'
 ): Promise<string> {
   const token = process.env.HUBSPOT_ACCESS_TOKEN;
   if (!token) throw new Error('No HUBSPOT_ACCESS_TOKEN');
@@ -41,7 +41,7 @@ export async function uploadFileToHubSpot(
   parts.push(Buffer.from(
     `--${boundary}\r\n` +
     `Content-Disposition: form-data; name="folderPath"\r\n\r\n` +
-    `/${folder}\r\n`
+    `${folder}\r\n`
   ));
 
   // Options part (JSON — access settings)
