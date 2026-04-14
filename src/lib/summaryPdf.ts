@@ -330,14 +330,23 @@ export async function downloadSummaryPdf(opts: {
     sendFeedbackReports: contactDetails.sendFeedbackReports === 'yes',
   });
 
-  // Render into a hidden container
+  // Render into a container that html2canvas can capture.
+  // It must be in the DOM and technically "visible" for html2canvas to render it,
+  // but we hide it visually by placing it behind everything with opacity 0.
   const container = document.createElement('div');
-  container.style.position = 'fixed';
-  container.style.left = '-9999px';
+  container.style.position = 'absolute';
+  container.style.left = '0';
   container.style.top = '0';
   container.style.width = '650px';
+  container.style.zIndex = '-1';
+  container.style.opacity = '0';
+  container.style.pointerEvents = 'none';
+  container.style.overflow = 'visible';
   container.innerHTML = html;
   document.body.appendChild(container);
+
+  // Allow a paint frame so the browser lays out the content
+  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
 
   try {
     // Dynamic import — only loaded when user clicks download
@@ -348,7 +357,16 @@ export async function downloadSummaryPdf(opts: {
         margin: 0,
         filename: `Vero Assess — Order Summary.pdf`,
         image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: { scale: 2, useCORS: true, logging: false },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          // Override opacity so html2canvas sees the content
+          onclone: (clonedDoc: Document) => {
+            const el = clonedDoc.body.lastElementChild as HTMLElement;
+            if (el) el.style.opacity = '1';
+          },
+        },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       })
       .from(container)
