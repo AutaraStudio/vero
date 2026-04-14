@@ -330,44 +330,40 @@ export async function downloadSummaryPdf(opts: {
     sendFeedbackReports: contactDetails.sendFeedbackReports === 'yes',
   });
 
-  // Render into a container that html2canvas can capture.
-  // It must be in the DOM and technically "visible" for html2canvas to render it,
-  // but we hide it visually by placing it behind everything with opacity 0.
+  // Render into a visible container — html2canvas requires fully visible elements.
+  // We scroll the user to the top and place the container off-screen below
+  // the fold so it's in the DOM and painted but not seen by the user.
   const container = document.createElement('div');
   container.style.position = 'absolute';
   container.style.left = '0';
-  container.style.top = '0';
+  container.style.top = `${document.body.scrollHeight + 100}px`;
   container.style.width = '650px';
-  container.style.zIndex = '-1';
-  container.style.opacity = '0';
-  container.style.pointerEvents = 'none';
-  container.style.overflow = 'visible';
+  container.style.background = '#f3f0f6';
   container.innerHTML = html;
   document.body.appendChild(container);
 
-  // Allow a paint frame so the browser lays out the content
-  await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+  // Wait for browser to lay out and paint the content
+  await new Promise<void>((resolve) => {
+    setTimeout(resolve, 300);
+  });
 
   try {
-    // Dynamic import — only loaded when user clicks download
     const html2pdf = (await import('html2pdf.js')).default;
 
     await html2pdf()
       .set({
-        margin: 0,
+        margin: [10, 0, 10, 0],
         filename: `Vero Assess — Order Summary.pdf`,
-        image: { type: 'jpeg', quality: 0.95 },
+        image: { type: 'jpeg', quality: 0.98 },
         html2canvas: {
           scale: 2,
           useCORS: true,
           logging: false,
-          // Override opacity so html2canvas sees the content
-          onclone: (clonedDoc: Document) => {
-            const el = clonedDoc.body.lastElementChild as HTMLElement;
-            if (el) el.style.opacity = '1';
-          },
+          scrollY: 0,
+          windowHeight: container.scrollHeight,
         },
         jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
       })
       .from(container)
       .save();
