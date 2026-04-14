@@ -5,7 +5,7 @@ declare module 'html2pdf.js' {
     image?: { type?: string; quality?: number };
     html2canvas?: Record<string, unknown>;
     jsPDF?: { unit?: string; format?: string; orientation?: string };
-    pagebreak?: { mode?: string | string[] };
+    pagebreak?: { mode?: string | string[]; before?: string | string[]; after?: string | string[]; avoid?: string | string[] };
   }
 
   interface Html2PdfInstance {
