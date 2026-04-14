@@ -93,8 +93,8 @@ export default function NotFound() {
 
       {/* Content */}
       <div className="not-found__content">
-        <h1 ref={codeRef} className="not-found__code">404</h1>
-        <h2 ref={headingRef} className="not-found__heading">Page not found</h2>
+        <h1 ref={codeRef as React.RefObject<HTMLHeadingElement>} className="not-found__code">404</h1>
+        <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} className="not-found__heading">Page not found</h2>
         <p ref={bodyRef as React.RefObject<HTMLParagraphElement>} className="not-found__body">
           The page you're looking for doesn't exist or has been moved.
         </p>
