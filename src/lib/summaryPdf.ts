@@ -24,6 +24,7 @@ interface SummaryData {
   portalUrl: string;
   campaignLines: string[];
   sendFeedbackReports: boolean;
+  isInvoice: boolean;
 }
 
 // ── Build summary HTML (mirrors the email template exactly) ──
@@ -60,7 +61,7 @@ function buildSummaryHtml(data: SummaryData): string {
     frequencyLabel, paymentMethodLabel, autoRenewal,
     roleCount, rolesByCategory, candidateLimit,
     keyContactName, keyContactEmail, userEmails,
-    portalUrl, campaignLines, sendFeedbackReports,
+    portalUrl, campaignLines, sendFeedbackReports, isInvoice,
   } = data;
 
   // Build roles HTML
@@ -121,16 +122,29 @@ function buildSummaryHtml(data: SummaryData): string {
           <tr>
             <td style="background-color: #472d6a; border-radius: 8px 8px 0 0; padding: 40px 40px 32px 40px; text-align: center;">
               <div style="width: 56px; height: 56px; background-color: rgba(255,255,255,0.15); border-radius: 50%; margin: 0 auto 20px auto; line-height: 56px; font-size: 28px; color: #ffffff;">
-                ✓
+                ${isInvoice ? '⏱' : '✓'}
               </div>
               <h1 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3;">
-                Order summary
+                ${isInvoice ? 'Order received' : 'Order confirmed'}
               </h1>
               <p style="margin: 0; font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.5;">
-                ${firstName} — ${tierName} plan
+                Thanks ${firstName} — ${isInvoice ? `we've received your order for the ${tierName} plan.` : `your ${tierName} plan is being set up.`}
               </p>
             </td>
           </tr>
+
+          ${isInvoice ? `
+          <!-- Invoice notice -->
+          <tr>
+            <td style="background-color: #faf8fc; padding: 24px 40px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed;">
+              <p style="margin: 0; font-size: 14px; color: #472d6a; line-height: 1.6; font-weight: 500;">
+                You've selected to pay by invoice. Our team will send an invoice to
+                <strong>${data.email}</strong> within one working day. Payment terms are
+                30 days from invoice date.
+              </p>
+            </td>
+          </tr>
+          ` : ''}
 
           <!-- Order summary card -->
           <tr>
@@ -219,9 +233,15 @@ function buildSummaryHtml(data: SummaryData): string {
             <td style="background-color: #faf8fc; padding: 32px 40px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed;">
               <p style="margin: 0 0 20px 0; font-size: 15px; font-weight: 600; color: #201530;">What happens next</p>
 
-              ${stepRow('1', 'Order confirmed', 'You\'ll receive a confirmation email with your order details.')}
-              ${stepRow('2', 'Account set up', 'Our team will build your assessment portal based on the roles and settings you\'ve selected.')}
-              ${stepRow('3', 'You\'re live', 'You\'ll receive your portal link and access instructions within 2 working days.')}
+              ${isInvoice
+                ? `${stepRow('1', 'Invoice sent', 'Our team will send you an invoice within one working day.')}
+                   ${stepRow('2', 'Our team will be in touch', 'A member of our team will reach out to confirm your requirements and answer any questions.')}
+                   ${stepRow('3', 'Account set up', 'Once payment is received, we\'ll build your assessment portal based on the roles and settings you\'ve selected.')}
+                   ${stepRow('4', 'You\'re live', 'You\'ll receive your portal link and access instructions within 2 working days of payment.')}`
+                : `${stepRow('1', 'Order confirmed', 'You\'ll receive this confirmation email with your order details.')}
+                   ${stepRow('2', 'Account set up', 'Our team will build your assessment portal based on the roles and settings you\'ve selected.')}
+                   ${stepRow('3', 'You\'re live', 'You\'ll receive your portal link and access instructions within 2 working days.')}`
+              }
             </td>
           </tr>
 
@@ -239,7 +259,7 @@ function buildSummaryHtml(data: SummaryData): string {
               <p style="margin: 0; font-size: 12px; color: #9b8dab; line-height: 1.6;">
                 Vero Assess Ltd · support@veroassess.com
                 <br>
-                Generated on ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' })}
+                ${isInvoice ? 'This confirms we\'ve received your order. An invoice will follow shortly.' : 'This email confirms your order. Please keep it for your records.'}
               </p>
             </td>
           </tr>
@@ -328,9 +348,10 @@ export async function downloadSummaryPdf(opts: {
     portalUrl: contactDetails.bespokeUrl,
     campaignLines,
     sendFeedbackReports: contactDetails.sendFeedbackReports === 'yes',
+    isInvoice: paymentMethod === 'invoice',
   });
 
-  // Wrap the email-style HTML in a full document with print styles
+  // Wrap the email-style HTML in a full document
   const fullHtml = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -338,31 +359,85 @@ export async function downloadSummaryPdf(opts: {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Vero Assess — Order Summary</title>
   <style>
-    @media print {
-      body { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-      @page { margin: 10mm 0; size: A4; }
-    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; background: #f3f0f6; }
   </style>
 </head>
 <body>${html}</body>
 </html>`;
 
-  // Open in a new window and trigger the browser's Save as PDF
-  const printWindow = window.open('', '_blank');
-  if (!printWindow) {
-    alert('Please allow pop-ups to download the summary.');
+  // Render in a hidden iframe — iframes have their own rendering context
+  // so the content is fully painted regardless of visibility on the main page
+  const iframe = document.createElement('iframe');
+  iframe.style.position = 'fixed';
+  iframe.style.left = '0';
+  iframe.style.top = '0';
+  iframe.style.width = '660px';
+  iframe.style.height = '900px';
+  iframe.style.opacity = '0.01';       // near-invisible but still painted
+  iframe.style.pointerEvents = 'none';
+  iframe.style.zIndex = '-9999';
+  document.body.appendChild(iframe);
+
+  const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+  if (!iframeDoc) {
+    document.body.removeChild(iframe);
     return;
   }
 
-  printWindow.document.write(fullHtml);
-  printWindow.document.close();
+  iframeDoc.open();
+  iframeDoc.write(fullHtml);
+  iframeDoc.close();
 
-  // Wait for content + images to load, then trigger print
-  printWindow.onload = () => {
-    setTimeout(() => {
-      printWindow.print();
-    }, 400);
-  };
+  // Wait for iframe content to fully render (images, layout, paint)
+  await new Promise<void>((resolve) => {
+    iframe.onload = () => resolve();
+    // Fallback in case onload already fired
+    setTimeout(resolve, 1500);
+  });
+
+  // Extra paint frame
+  await new Promise<void>((r) => setTimeout(r, 500));
+
+  try {
+    const html2canvas = (await import('html2canvas')).default;
+    const { jsPDF } = await import('jspdf');
+
+    // Capture the iframe body as a canvas
+    const canvas = await html2canvas(iframeDoc.body, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      width: 650,
+      windowWidth: 650,
+      backgroundColor: '#f3f0f6',
+    });
+
+    // Convert canvas to PDF (A4 proportions)
+    const imgData = canvas.toDataURL('image/jpeg', 0.95);
+    const pdfWidth = 210; // A4 width in mm
+    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+
+    const pdf = new jsPDF({
+      orientation: pdfHeight > pdfWidth ? 'portrait' : 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
+
+    const pageHeight = 297; // A4 height in mm
+    let yOffset = 0;
+
+    // Add image across multiple pages if needed
+    while (yOffset < pdfHeight) {
+      if (yOffset > 0) pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, -yOffset, pdfWidth, pdfHeight);
+      yOffset += pageHeight;
+    }
+
+    pdf.save('Vero Assess — Order Summary.pdf');
+  } finally {
+    document.body.removeChild(iframe);
+  }
 }
 
 function formatDate(iso: string): string {
