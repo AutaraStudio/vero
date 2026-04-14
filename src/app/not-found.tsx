@@ -1,10 +1,10 @@
 'use client';
 
 import { useRef, useEffect } from 'react';
-import Link from 'next/link';
 import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
+import Button from '@/components/ui/Button';
 import './not-found.css';
 
 const OVAL =
@@ -17,11 +17,11 @@ interface ShapeDef {
 }
 
 const SHAPES: ShapeDef[] = [
-  { id: 'a', color: 'var(--swatch--purple-500)', opacity: 0.35 },
-  { id: 'b', color: 'var(--swatch--blue-500)',   opacity: 0.25 },
-  { id: 'c', color: 'var(--swatch--green-500)',  opacity: 0.2  },
-  { id: 'd', color: 'var(--swatch--orange-500)', opacity: 0.3  },
-  { id: 'e', color: 'var(--swatch--yellow-500)', opacity: 0.15 },
+  { id: 'a', color: 'var(--swatch--purple-500)', opacity: 1 },
+  { id: 'b', color: 'var(--swatch--blue-500)',   opacity: 1 },
+  { id: 'c', color: 'var(--swatch--green-500)',  opacity: 1 },
+  { id: 'd', color: 'var(--swatch--orange-500)', opacity: 1 },
+  { id: 'e', color: 'var(--swatch--yellow-500)', opacity: 1 },
 ];
 
 export default function NotFound() {
@@ -74,7 +74,7 @@ export default function NotFound() {
   }, []);
 
   return (
-    <main data-theme="dark" className="not-found">
+    <main data-theme="brand-purple" className="not-found">
       {/* Decorative background shapes */}
       <div ref={shapesRef} className="not-found__shapes" aria-hidden="true">
         {SHAPES.map(({ id, color, opacity }) => (
@@ -98,22 +98,9 @@ export default function NotFound() {
         <p ref={bodyRef as React.RefObject<HTMLParagraphElement>} className="not-found__body">
           The page you're looking for doesn't exist or has been moved.
         </p>
-        <Link
-          href="/"
-          ref={ctaRef as React.RefObject<HTMLAnchorElement>}
-          className="not-found__cta"
-        >
-          <svg viewBox="0 0 16 16" fill="none" aria-hidden="true">
-            <path
-              d="M10 12L6 8l4-4"
-              stroke="currentColor"
-              strokeWidth="1.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          Back to home
-        </Link>
+        <div ref={ctaRef as React.RefObject<HTMLDivElement>} className="not-found__cta-wrap">
+          <Button variant="primary" href="/">Back to home</Button>
+        </div>
       </div>
     </main>
   );

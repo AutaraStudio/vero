@@ -1,3 +1,4 @@
+import { notFound } from 'next/navigation';
 import { client } from '@/sanity/lib/client';
 import { sanityFetch } from '@/sanity/lib/live';
 import {
@@ -29,7 +30,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
   const { slug } = await params;
   const { data } = await sanityFetch({ query: JOB_CATEGORY_BY_SLUG_QUERY, params: { slug } });
 
-  if (!data) return <main></main>;
+  if (!data) notFound();
 
   const {
     heroHeadline,

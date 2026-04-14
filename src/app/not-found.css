@@ -104,39 +104,7 @@
   max-width: 30ch;
 }
 
-.not-found__cta {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
+.not-found__cta-wrap {
   margin-top: 2rem;
-  padding: 0.75rem 1.75rem;
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: var(--color--interactive-primary-text);
-  background: var(--color--interactive-primary);
-  border: none;
-  border-radius: var(--radius--lg);
-  cursor: pointer;
-  text-decoration: none;
-  transition: background-color var(--transition--default);
 }
 
-.not-found__cta:hover {
-  background: var(--color--interactive-primary-hover);
-}
-
-.not-found__cta:focus-visible {
-  outline: 2px solid var(--color--interactive-primary);
-  outline-offset: 2px;
-}
-
-/* Arrow icon */
-.not-found__cta svg {
-  width: 1rem;
-  height: 1rem;
-  transition: transform var(--transition--default);
-}
-
-.not-found__cta:hover svg {
-  transform: translateX(-2px);
-}
