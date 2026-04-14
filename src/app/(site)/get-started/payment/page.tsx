@@ -184,6 +184,16 @@ function PaymentContent() {
   // ── Handle successful payment ──
 
   const handlePaymentSuccess = () => {
+    // Send confirmation email now that payment has actually succeeded
+    const payload = buildPayload();
+    fetch('/api/checkout/confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    }).catch(() => {
+      // Non-blocking — don't prevent navigation to confirmation page
+    });
+
     router.push('/get-started/confirmation');
   };
 
