@@ -2,8 +2,6 @@ import { NextResponse } from 'next/server';
 import { stripe } from '@/lib/stripe';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
 import { getStripePriceId, TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
-import { submitCheckoutToHubSpot } from '@/lib/hubspot';
-
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -90,12 +88,8 @@ export async function POST(request: Request) {
       intentType = 'subscription';
     }
 
-    // Fire-and-forget HubSpot — don't block the response
-    // NOTE: Confirmation email is NOT sent here — it's triggered by the Stripe
-    // webhook (payment_intent.succeeded / invoice.paid) after successful payment.
-    submitCheckoutToHubSpot(payload).catch((err) => {
-      console.error('[Checkout] HubSpot failed (non-blocking):', err);
-    });
+    // NOTE: HubSpot + confirmation email are NOT sent here — they're triggered
+    // by /api/checkout/confirm after successful payment on the client.
 
     return NextResponse.json({ clientSecret, type: intentType });
   } catch (err) {

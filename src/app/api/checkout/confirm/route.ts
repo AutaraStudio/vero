@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
 import { sendConfirmationEmail } from '@/lib/email';
+import { submitCheckoutToHubSpot } from '@/lib/hubspot';
 
 /**
  * POST /api/checkout/confirm
  * Called by the client AFTER Stripe payment succeeds.
- * Sends the order confirmation email.
+ * Sends the order confirmation email and pushes to HubSpot.
  */
 export async function POST(request: Request) {
   try {
@@ -18,7 +19,10 @@ export async function POST(request: Request) {
 
     const { payload } = result;
 
-    // Send confirmation email (fire-and-forget)
+    // Fire-and-forget — don't block the response
+    submitCheckoutToHubSpot(payload).catch((err) => {
+      console.error('[Confirm] HubSpot failed (non-blocking):', err);
+    });
     sendConfirmationEmail(payload).catch((err) => {
       console.error('[Confirm] Email failed (non-blocking):', err);
     });
