@@ -47,6 +47,32 @@ export const role = defineType({
       options: { accept: '.json' },
       description: 'Lottie JSON animation file',
     }),
+    defineField({
+      name: 'hubspotLabel',
+      title: 'HubSpot Label',
+      type: 'string',
+      description:
+        'How this role appears in the HubSpot "Vero Assess Roles" dropdown. Leave blank to use the Role Name.',
+      group: 'hubspot',
+    }),
+    defineField({
+      name: 'hubspotValue',
+      title: 'HubSpot Internal Value',
+      type: 'string',
+      description:
+        'Stable identifier sent to HubSpot (lowercase letters, numbers, hyphens, underscores). Leave blank to use the slug.',
+      validation: (Rule) =>
+        Rule.regex(/^[a-z0-9_-]+$/, {
+          name: 'lowercase letters, numbers, hyphens, underscores only',
+        }).custom((value) => {
+          if (value && value.length > 100) return 'Max 100 characters';
+          return true;
+        }),
+      group: 'hubspot',
+    }),
+  ],
+  groups: [
+    { name: 'hubspot', title: 'HubSpot Sync', default: false },
   ],
   preview: {
     select: {

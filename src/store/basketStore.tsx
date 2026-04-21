@@ -23,6 +23,8 @@ export interface BespokeDetails {
 export interface SelectedRole {
   roleId: string;
   roleName: string;
+  roleSlug: string;
+  roleHubspotValue?: string;
   categoryName: string;
   categorySlug: string;
 }

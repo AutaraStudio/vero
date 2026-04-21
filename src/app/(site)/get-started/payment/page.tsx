@@ -133,6 +133,8 @@ function PaymentContent() {
       selectedRoles: selectedRoles.map((r) => ({
         roleId: r.roleId,
         roleName: r.roleName,
+        roleSlug: r.roleSlug,
+        roleHubspotValue: r.roleHubspotValue,
         categoryName: r.categoryName,
         categorySlug: r.categorySlug,
       })),

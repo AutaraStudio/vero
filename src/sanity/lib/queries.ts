@@ -184,6 +184,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
       _id,
       name,
       "slug": slug.current,
+      hubspotValue,
       tasks,
       strengths,
       "lottieUrl": lottieFile.asset->url
@@ -222,6 +223,7 @@ export const ROLES_BY_CATEGORY_QUERY = `
       _id,
       name,
       "slug": slug.current,
+      hubspotValue,
       strengths
     }
   }

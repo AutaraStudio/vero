@@ -315,10 +315,16 @@ function mapCheckoutToHubSpot(
   // Determine payment frequency label
   const frequencyLabel = tier === 'starter' ? 'One-off' : paymentFrequency === 'annual' ? 'Annual' : 'Monthly';
 
-  // Build role names
+  // Build role names (text column, human-readable)
   const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
-  // Normalize for HubSpot checkbox matching (strip spaces around slashes)
-  const roleNamesCheckbox = selectedRoles.map((r) => r.roleName.replace(/\s*\/\s*/g, '/')).join(';');
+
+  // Build multi-checkbox values — use hubspotValue override if set, else slug.
+  // These must match option internal names on the HubSpot `vero_assess_roles`
+  // property, which is kept in sync by /api/hubspot/sync-roles from Sanity.
+  const roleCheckboxValues = selectedRoles
+    .map((r) => r.roleHubspotValue || r.roleSlug)
+    .filter(Boolean)
+    .join(';');
 
   const props: Record<string, string> = {
     // Company name (required by HubSpot)
@@ -351,7 +357,7 @@ function mapCheckoutToHubSpot(
     vero_assess_order_value: price.replace(/[^0-9.]/g, ''),
     vero_assess_role_count: String(selectedRoles.length),
     vero_assess_roles_order: roleNamesText,
-    // vero_assess_roles checkbox skipped — name mismatches between Sanity and HubSpot options
+    vero_assess_roles: roleCheckboxValues,
 
     // Auto-renewal (only meaningful for annual subscriptions)
     vero_assess_autorenewal_annual: (tier !== 'starter' && paymentFrequency === 'annual')
@@ -408,7 +414,10 @@ function mapBespokeToHubSpot(
 ): Record<string, string> {
   const { selectedRoles, bespokeDetails } = payload;
   const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
-  const roleNamesCheckbox = selectedRoles.map((r) => r.roleName.replace(/\s*\/\s*/g, '/')).join(';');
+  const roleCheckboxValues = selectedRoles
+    .map((r) => r.roleHubspotValue || r.roleSlug)
+    .filter(Boolean)
+    .join(';');
 
   const props: Record<string, string> = {
     name: bespokeDetails.company,
@@ -421,7 +430,7 @@ function mapBespokeToHubSpot(
     vero_assess_tier: 'Bespoke',
     vero_assess_role_count: String(selectedRoles.length),
     vero_assess_roles_order: roleNamesText,
-    // vero_assess_roles checkbox skipped — name mismatches between Sanity and HubSpot options
+    vero_assess_roles: roleCheckboxValues,
     vero_assess_approx_roles: bespokeDetails.approxRoles,
     vero_assess_approx_candidates: bespokeDetails.approxCandidates,
     vero_assess_target_go_live: bespokeDetails.targetGoLive,

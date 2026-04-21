@@ -6,6 +6,8 @@ export interface CheckoutPayload {
   selectedRoles: {
     roleId: string;
     roleName: string;
+    roleSlug: string;
+    roleHubspotValue?: string;
     categoryName: string;
     categorySlug: string;
   }[];
@@ -48,6 +50,8 @@ export interface BespokePayload {
   selectedRoles: {
     roleId: string;
     roleName: string;
+    roleSlug: string;
+    roleHubspotValue?: string;
     categoryName: string;
     categorySlug: string;
   }[];

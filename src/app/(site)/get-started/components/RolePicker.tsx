@@ -23,6 +23,7 @@ interface Role {
   _id: string;
   name: string;
   slug: string;
+  hubspotValue?: string;
   strengths?: string;
 }
 
@@ -140,6 +141,8 @@ export default function RolePicker({ categories }: RolePickerProps) {
         payload: {
           roleId: role._id,
           roleName: role.name,
+          roleSlug: role.slug,
+          roleHubspotValue: role.hubspotValue,
           categoryName: category.name,
           categorySlug: category.slug,
         },
@@ -162,6 +165,8 @@ export default function RolePicker({ categories }: RolePickerProps) {
             payload: {
               roleId: role._id,
               roleName: role.name,
+              roleSlug: role.slug,
+              roleHubspotValue: role.hubspotValue,
               categoryName: category.name,
               categorySlug: category.slug,
             },
@@ -185,6 +190,8 @@ export default function RolePicker({ categories }: RolePickerProps) {
           payload: {
             roleId: role._id,
             roleName: role.name,
+            roleSlug: role.slug,
+            roleHubspotValue: role.hubspotValue,
             categoryName: category.name,
             categorySlug: category.slug,
           },

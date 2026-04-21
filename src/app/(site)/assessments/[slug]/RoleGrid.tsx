@@ -15,6 +15,7 @@ interface Role {
   _id: string;
   name: string;
   slug: string;
+  hubspotValue?: string;
   tasks?: string;
   strengths?: string;
   lottieUrl?: string;
@@ -126,6 +127,8 @@ export default function RoleGrid({
         payload: {
           roleId: role._id,
           roleName: role.name,
+          roleSlug: role.slug,
+          roleHubspotValue: role.hubspotValue,
           categoryName,
           categorySlug,
         },
