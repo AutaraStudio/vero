@@ -315,9 +315,6 @@ function mapCheckoutToHubSpot(
   // Determine payment frequency label
   const frequencyLabel = tier === 'starter' ? 'One-off' : paymentFrequency === 'annual' ? 'Annual' : 'Monthly';
 
-  // Build role names (text column, human-readable)
-  const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
-
   // Build multi-checkbox values — use hubspotValue override if set, else slug.
   // These must match option internal names on the HubSpot `vero_assess_roles`
   // property, which is kept in sync by /api/hubspot/sync-roles from Sanity.
@@ -356,7 +353,6 @@ function mapCheckoutToHubSpot(
     vero_assess_payment_method: paymentMethod === 'card' ? 'Online card payment' : 'Invoice',
     vero_assess_order_value: price.replace(/[^0-9.]/g, ''),
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles_order: roleNamesText,
     vero_assess_roles: roleCheckboxValues,
 
     // Auto-renewal (only meaningful for annual subscriptions)
@@ -413,7 +409,6 @@ function mapBespokeToHubSpot(
   payload: BespokePayload
 ): Record<string, string> {
   const { selectedRoles, bespokeDetails } = payload;
-  const roleNamesText = selectedRoles.map((r) => r.roleName).join('\n');
   const roleCheckboxValues = selectedRoles
     .map((r) => r.roleHubspotValue || r.roleSlug)
     .filter(Boolean)
@@ -429,7 +424,6 @@ function mapBespokeToHubSpot(
     vero_assess_buyer_phone: bespokeDetails.phone,
     vero_assess_tier: 'Bespoke',
     vero_assess_role_count: String(selectedRoles.length),
-    vero_assess_roles_order: roleNamesText,
     vero_assess_roles: roleCheckboxValues,
     vero_assess_approx_roles: bespokeDetails.approxRoles,
     vero_assess_approx_candidates: bespokeDetails.approxCandidates,
