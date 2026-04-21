@@ -102,6 +102,13 @@ function PaymentContent() {
   const [error, setError] = useState<string | null>(null);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentCreated, setIntentCreated] = useState(false);
+  const [stripeIds, setStripeIds] = useState<{
+    customerId?: string;
+    subscriptionId?: string;
+    paymentIntentId?: string;
+  }>({});
+  const [invoiceEmail, setInvoiceEmail] = useState('');
+  const [invoiceEmailError, setInvoiceEmailError] = useState<string | null>(null);
 
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
@@ -172,6 +179,11 @@ function PaymentContent() {
       .then((data) => {
         if (data.clientSecret) {
           setClientSecret(data.clientSecret);
+          setStripeIds({
+            customerId: data.customerId,
+            subscriptionId: data.subscriptionId,
+            paymentIntentId: data.paymentIntentId,
+          });
         } else {
           setError(data.error || 'Failed to initialize payment');
         }
@@ -185,7 +197,13 @@ function PaymentContent() {
 
   const handlePaymentSuccess = () => {
     // Send confirmation email now that payment has actually succeeded
-    const payload = buildPayload();
+    const payload: CheckoutPayload = {
+      ...buildPayload(),
+      stripeCustomerId: stripeIds.customerId,
+      stripeSubscriptionId: stripeIds.subscriptionId,
+      stripePaymentIntentId: stripeIds.paymentIntentId,
+      submittedAt: new Date().toISOString(),
+    };
     fetch('/api/checkout/confirm', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -201,11 +219,24 @@ function PaymentContent() {
 
   async function handleInvoiceCheckout() {
     setError(null);
+    setInvoiceEmailError(null);
+
+    // Validate invoice email if provided (optional override)
+    const trimmedInvoiceEmail = invoiceEmail.trim();
+    if (trimmedInvoiceEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedInvoiceEmail)) {
+      setInvoiceEmailError('Please enter a valid email address');
+      return;
+    }
+
     setIsLoading(true);
 
     try {
       const payload = buildPayload();
       payload.paymentMethod = 'invoice';
+      payload.submittedAt = new Date().toISOString();
+      if (trimmedInvoiceEmail) {
+        payload.contactDetails.invoiceEmail = trimmedInvoiceEmail;
+      }
 
       const res = await fetch('/api/checkout/invoice', {
         method: 'POST',
@@ -426,11 +457,33 @@ function PaymentContent() {
               <>
                 <div className="invoice-notice">
                   <p className="text-body--sm color--secondary">
-                    We&apos;ll send an invoice to <strong>{contactDetails.email}</strong> within one
+                    We&apos;ll send an invoice to{' '}
+                    <strong>{invoiceEmail.trim() || contactDetails.email}</strong> within one
                     working day. Payment terms are 30 days from invoice date.
                   </p>
                   <p className="text-body--sm color--secondary">
                     Your account will be activated once payment is received.
+                  </p>
+                </div>
+
+                <div className="form-field invoice-email-override">
+                  <label htmlFor="invoiceEmail" className="form-field__label">
+                    Send invoice to a different email? <span className="color--tertiary">(optional)</span>
+                  </label>
+                  <input
+                    id="invoiceEmail"
+                    type="email"
+                    className={`form-field__input${invoiceEmailError ? ' has-error' : ''}`}
+                    placeholder={contactDetails.email}
+                    value={invoiceEmail}
+                    onChange={(e) => { setInvoiceEmail(e.target.value); setInvoiceEmailError(null); }}
+                    aria-invalid={invoiceEmailError ? 'true' : 'false'}
+                  />
+                  {invoiceEmailError && (
+                    <p className="form-field__error">{invoiceEmailError}</p>
+                  )}
+                  <p className="text-body--xs color--tertiary">
+                    Leave blank to send to your buyer email. Use this to route invoices to your finance/AP team.
                   </p>
                 </div>
 

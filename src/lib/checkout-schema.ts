@@ -13,6 +13,12 @@ export interface CheckoutPayload {
   paymentFrequency: PaymentFrequency;
   autoRenewal: boolean;
   paymentMethod: 'card' | 'invoice';
+  // Payment traceability — populated after Stripe calls (card only)
+  stripeCustomerId?: string;
+  stripeSubscriptionId?: string;
+  stripePaymentIntentId?: string;
+  // ISO datetime when the order was submitted (client-stamped; server will fallback)
+  submittedAt?: string;
   contactDetails: {
     firstName: string;
     lastName: string;
@@ -31,6 +37,8 @@ export interface CheckoutPayload {
     logoFile: string;
     logoFileName: string;
     roleDates: Record<string, { openDate: string; closeDate: string }>;
+    // Optional alternate invoice recipient — only used when paymentMethod === 'invoice'
+    invoiceEmail?: string;
   };
 }
 
@@ -43,6 +51,7 @@ export interface BespokePayload {
     categoryName: string;
     categorySlug: string;
   }[];
+  submittedAt?: string;
   bespokeDetails: {
     firstName: string;
     lastName: string;

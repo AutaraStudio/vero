@@ -33,6 +33,9 @@ export async function POST(request: Request) {
 
     let clientSecret: string;
     let intentType: 'payment' | 'subscription';
+    let customerId: string | undefined;
+    let subscriptionId: string | undefined;
+    let paymentIntentId: string | undefined;
 
     if (isOneOff) {
       // ── Starter: single PaymentIntent call ──
@@ -49,6 +52,7 @@ export async function POST(request: Request) {
 
       clientSecret = paymentIntent.client_secret!;
       intentType = 'payment';
+      paymentIntentId = paymentIntent.id;
     } else {
       // ── Subscription: Customer + Subscription (2 calls) + raw invoice fetch ──
       const customer = await stripe.customers.create({
@@ -86,12 +90,21 @@ export async function POST(request: Request) {
 
       clientSecret = piClientSecret;
       intentType = 'subscription';
+      customerId = customer.id;
+      subscriptionId = subscription.id;
+      paymentIntentId = invoiceData.payment_intent?.id;
     }
 
     // NOTE: HubSpot + confirmation email are NOT sent here — they're triggered
     // by /api/checkout/confirm after successful payment on the client.
 
-    return NextResponse.json({ clientSecret, type: intentType });
+    return NextResponse.json({
+      clientSecret,
+      type: intentType,
+      customerId,
+      subscriptionId,
+      paymentIntentId,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Unknown error';
     console.error('[Checkout] Error:', message);

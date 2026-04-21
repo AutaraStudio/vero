@@ -84,6 +84,7 @@ export default function BespokePage() {
             categorySlug: r.categorySlug,
           })),
           bespokeDetails: form,
+          submittedAt: new Date().toISOString(),
         }),
       });
 
