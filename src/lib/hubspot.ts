@@ -324,6 +324,11 @@ function mapCheckoutToHubSpot(
     // Company name (required by HubSpot)
     name: contactDetails.company,
 
+    // Domain — enables HubSpot auto-association to find this record by the
+    // buyer email's domain instead of spawning a duplicate company. Skipped
+    // for personal email providers (gmail, outlook, etc.) to avoid pollution.
+    domain: getCompanyDomainFromEmail(contactDetails.email),
+
     // Buyer details
     vero_assess_buyer_first_name: contactDetails.firstName,
     vero_assess_buyer_last_name: contactDetails.lastName,
@@ -407,6 +412,7 @@ function mapBespokeToHubSpot(
 
   const props: Record<string, string> = {
     name: bespokeDetails.company,
+    domain: getCompanyDomainFromEmail(bespokeDetails.email),
     vero_assess_buyer_first_name: bespokeDetails.firstName,
     vero_assess_buyer_last_name: bespokeDetails.lastName,
     vero_assess_buyer_email: bespokeDetails.email,
@@ -434,4 +440,24 @@ function formatDate(iso: string): string {
   if (!iso) return '';
   const [y, m, d] = iso.split('-');
   return `${d}/${m}/${y}`;
+}
+
+// Personal / free-mail providers — never set as a company domain, or every
+// Gmail user gets linked to the same phantom company.
+const PERSONAL_EMAIL_DOMAINS = new Set([
+  'gmail.com', 'googlemail.com',
+  'outlook.com', 'hotmail.com', 'hotmail.co.uk', 'live.com', 'live.co.uk', 'msn.com',
+  'yahoo.com', 'yahoo.co.uk', 'ymail.com',
+  'icloud.com', 'me.com', 'mac.com',
+  'aol.com',
+  'protonmail.com', 'proton.me', 'pm.me',
+  'mail.com', 'gmx.com', 'gmx.co.uk',
+  'zoho.com', 'yandex.com', 'tutanota.com', 'fastmail.com', 'hey.com',
+]);
+
+function getCompanyDomainFromEmail(email: string): string {
+  const domain = email.split('@')[1]?.trim().toLowerCase();
+  if (!domain) return '';
+  if (PERSONAL_EMAIL_DOMAINS.has(domain)) return '';
+  return domain;
 }
