@@ -280,6 +280,87 @@
   opacity: 0.75;
 }
 
+/* ── Candidate feedback card ── */
+
+.feedback-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+}
+
+.feedback-card__info {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.5rem;
+}
+
+.feedback-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius--md);
+  background: var(--color--surface-sunken);
+  color: var(--color--text-brand);
+}
+
+.feedback-card__info-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.feedback-card__example {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  align-self: flex-start;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  background: var(--color--surface-sunken);
+  color: var(--color--text-brand);
+  font-size: var(--font--body-sm);
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color var(--transition--default), background-color var(--transition--default);
+}
+
+.feedback-card__example:hover {
+  border-color: var(--color--border-strong);
+  background: var(--color--surface-raised);
+}
+
+.feedback-card__action {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color--border-subtle);
+  background: var(--color--surface-sunken);
+}
+
+.feedback-card__action-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .feedback-card__action {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
 .details-actions {
   display: flex;
   align-items: center;

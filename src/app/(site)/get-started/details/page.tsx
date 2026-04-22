@@ -766,38 +766,60 @@ export default function DetailsPage() {
             {/* Section 5 — Candidate feedback reports */}
             <div ref={s5Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
               <p className="details-section__label">Candidate feedback reports</p>
-              <p className="text-body--sm color--secondary">
-                When a candidate completes all 4 sections of Vero Assess, a combined feedback
-                report is automatically generated and sent to the candidate.
-              </p>
-              <a href="#" className="form-link">
-                View an example report →
-              </a>
-              <p className="text-label--sm color--tertiary">
-                Send feedback reports to candidates?
-              </p>
-              <div className="choice-cards">
-                {(['yes', 'no'] as const).map((val) => (
-                  <label
-                    key={val}
-                    className={`choice-card${form.sendFeedbackReports === val ? ' is-selected' : ''}`}
-                    htmlFor={`feedback-${val}`}
-                  >
+
+              <div className="feedback-card">
+                <div className="feedback-card__info">
+                  <span className="feedback-card__icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
+                      <path d="M14 2v6h6M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+                    </svg>
+                  </span>
+                  <div className="feedback-card__info-text">
+                    <p className="text-body--sm color--secondary">
+                      When a candidate completes all 4 sections of Vero Assess, a combined feedback
+                      report is automatically generated and sent to the candidate.
+                    </p>
+                    <a
+                      href="#"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="feedback-card__example"
+                    >
+                      <span>View an example report</span>
+                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                        <path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </a>
+                  </div>
+                </div>
+
+                <div className="feedback-card__action">
+                  <div className="feedback-card__action-text">
+                    <p className="text-body--sm font--medium color--primary">
+                      Send feedback reports to candidates
+                    </p>
+                    <p className="text-body--xs color--tertiary">
+                      {form.sendFeedbackReports === 'yes'
+                        ? 'Reports will be sent automatically on completion.'
+                        : 'Reports will not be shared with candidates.'}
+                    </p>
+                  </div>
+                  <label className="toggle-switch" htmlFor="sendFeedbackReports">
                     <input
-                      type="radio"
-                      id={`feedback-${val}`}
-                      name="sendFeedbackReports"
-                      value={val}
-                      checked={form.sendFeedbackReports === val}
-                      onChange={() => setForm((p) => ({ ...p, sendFeedbackReports: val }))}
-                      className="choice-card__input"
+                      type="checkbox"
+                      id="sendFeedbackReports"
+                      className="toggle-switch__input"
+                      checked={form.sendFeedbackReports === 'yes'}
+                      onChange={(e) =>
+                        setForm((p) => ({ ...p, sendFeedbackReports: e.target.checked ? 'yes' : 'no' }))
+                      }
                     />
-                    <span className="choice-card__indicator" aria-hidden="true" />
-                    <span className="text-body--sm font--medium color--primary">
-                      {val === 'yes' ? 'Yes' : 'No'}
+                    <span className="toggle-switch__track" aria-hidden="true">
+                      <span className="toggle-switch__thumb" />
                     </span>
                   </label>
-                ))}
+                </div>
               </div>
             </div>
 
