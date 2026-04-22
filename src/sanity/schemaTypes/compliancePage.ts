@@ -1,0 +1,161 @@
+import { defineField, defineType } from 'sanity'
+import { CheckmarkCircleIcon } from '@sanity/icons'
+
+export const compliancePage = defineType({
+  name: 'compliancePage',
+  title: 'Compliance Page',
+  type: 'document',
+  icon: CheckmarkCircleIcon,
+  groups: [
+    { name: 'hero', title: 'Hero' },
+    { name: 'security', title: 'Data Security' },
+    { name: 'quality', title: 'Quality Assurance' },
+    { name: 'ai', title: 'Our Approach to AI' },
+    { name: 'accessibility', title: 'Accessibility' },
+  ],
+  fields: [
+    /* ── Hero ── */
+    defineField({
+      name: 'heroHeadline',
+      title: 'Headline',
+      type: 'string',
+      group: 'hero',
+    }),
+    defineField({
+      name: 'heroBody',
+      title: 'Body',
+      type: 'text',
+      rows: 3,
+      group: 'hero',
+    }),
+
+    /* ── Data Security ── */
+    defineField({
+      name: 'securityHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'security',
+    }),
+    defineField({
+      name: 'securityBody',
+      title: 'Body',
+      type: 'text',
+      rows: 3,
+      group: 'security',
+    }),
+    defineField({
+      name: 'securityBadgesImage',
+      title: 'Security Badges Graphic',
+      type: 'image',
+      group: 'security',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
+    defineField({
+      name: 'securityCredentials',
+      title: 'Credentials',
+      type: 'array',
+      group: 'security',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'label', subtitle: 'description' } },
+          fields: [
+            defineField({ name: 'label', title: 'Label', type: 'string' }),
+            defineField({ name: 'description', title: 'Description', type: 'text', rows: 2 }),
+          ],
+        },
+      ],
+    }),
+
+    /* ── Quality Assurance ── */
+    defineField({
+      name: 'qualityHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'quality',
+    }),
+    defineField({
+      name: 'qualityBody',
+      title: 'Body',
+      type: 'text',
+      rows: 3,
+      group: 'quality',
+    }),
+    defineField({
+      name: 'qualityItems',
+      title: 'Items',
+      type: 'array',
+      group: 'quality',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'label', subtitle: 'description' } },
+          fields: [
+            defineField({ name: 'label', title: 'Label', type: 'string' }),
+            defineField({ name: 'description', title: 'Description', type: 'text', rows: 2 }),
+          ],
+        },
+      ],
+    }),
+
+    /* ── Our Approach to AI ── */
+    defineField({
+      name: 'aiHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'ai',
+    }),
+    defineField({
+      name: 'aiBody',
+      title: 'Body',
+      type: 'array',
+      group: 'ai',
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+    }),
+    defineField({
+      name: 'aiImage',
+      title: 'Image',
+      type: 'image',
+      group: 'ai',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
+
+    /* ── Accessibility ── */
+    defineField({
+      name: 'accessibilityHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'accessibility',
+    }),
+    defineField({
+      name: 'accessibilityBody',
+      title: 'Body',
+      type: 'text',
+      rows: 4,
+      group: 'accessibility',
+    }),
+    defineField({
+      name: 'accessibilityItems',
+      title: 'Accessibility Features',
+      type: 'array',
+      group: 'accessibility',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'label', subtitle: 'description' } },
+          fields: [
+            defineField({ name: 'label', title: 'Label', type: 'string' }),
+            defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+          ],
+        },
+      ],
+    }),
+  ],
+  preview: {
+    prepare() {
+      return { title: 'Compliance Page' }
+    },
+  },
+})

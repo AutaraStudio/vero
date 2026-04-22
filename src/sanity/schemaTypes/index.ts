@@ -7,6 +7,7 @@ import { howItWorksPage } from './howItWorksPage'
 import { aboutPage } from './aboutPage'
 import { contactPage } from './contactPage'
 import { sciencePage } from './sciencePage'
+import { compliancePage } from './compliancePage'
 import { pricingTier } from './pricingTier'
 import { jobCategory } from './jobCategory'
 import { role } from './role'
@@ -21,6 +22,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     aboutPage,
     contactPage,
     sciencePage,
+    compliancePage,
     pricingTier,
     jobCategory,
     role,
