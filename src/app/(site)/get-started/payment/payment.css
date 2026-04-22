@@ -40,7 +40,7 @@
 }
 
 .stripe-element-wrapper + .payment-actions {
-  padding-top: 0.25rem;
+  padding-top: 1.5rem;
 }
 
 .stripe-element-loading {
