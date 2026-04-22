@@ -29,12 +29,6 @@ export const jobCategory = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
-      name: 'keyDimensionsAssessed',
-      title: 'Key Dimensions Assessed',
-      type: 'string',
-      description: 'Comma-separated, e.g. "Customer excellence, stability, trust, structure"',
-    }),
-    defineField({
       name: 'heroHeadline',
       title: 'Hero Headline',
       type: 'string',
@@ -186,6 +180,13 @@ export const jobCategory = defineType({
       group: 'bespoke',
     }),
     defineField({
+      name: 'bespokeCTAHref',
+      title: 'Bespoke CTA Href',
+      type: 'string',
+      group: 'bespoke',
+      description: 'Where the bespoke CTA links to (e.g. "/contact").',
+    }),
+    defineField({
       name: 'bespokeSectionImage',
       title: 'Bespoke Section Image',
       type: 'image',
@@ -196,13 +197,13 @@ export const jobCategory = defineType({
   preview: {
     select: {
       title: 'name',
-      subtitle: 'keyDimensionsAssessed',
+      subtitle: 'heroIntroCopy',
       media: 'heroImage',
     },
     prepare({ title, subtitle, media }) {
       return {
         title,
-        subtitle: subtitle || 'No dimensions set',
+        subtitle: subtitle ? subtitle.slice(0, 80) : 'No intro',
         media,
       }
     },
