@@ -144,12 +144,14 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
       return {
         ...state,
         selectedRoles: [...state.selectedRoles, action.payload],
+        nudgeShown: false,
       };
     }
     case 'REMOVE_ROLE':
       return {
         ...state,
         selectedRoles: state.selectedRoles.filter((r) => r.roleId !== action.payload.roleId),
+        nudgeShown: false,
       };
     case 'SET_TIER_OVERRIDE':
       return { ...state, tierOverride: action.payload };

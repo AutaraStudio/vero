@@ -813,6 +813,33 @@
 }
 
 
+.order-summary__tier {
+  border-top: 1px solid var(--color--border-default);
+  padding-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.order-summary__tier-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.order-summary__tier-price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.order-summary__tier-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
 .order-summary__contact {
   border-top: 1px solid var(--color--border-default);
   padding-top: 1rem;

@@ -867,6 +867,9 @@ export default function DetailsPage() {
                     )}
                   </div>
                 </div>
+                <p className="text-body--xs color--tertiary">
+                  Please use hex codes for the colours you want used.
+                </p>
                 <div className="form-row">
                   {/* Brand colour 1 */}
                   <div className="form-field">
@@ -932,9 +935,14 @@ export default function DetailsPage() {
               </div>
             )}
 
-            {/* Section 7 — Campaign dates */}
+            {/* Section 7 — Campaign dates (Starter / Essential only; CS handles Growth & Scale) */}
+            {(recommendedTier === 'starter' || recommendedTier === 'essential') && (
             <div ref={s7Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
               <p className="details-section__label">Campaign dates</p>
+
+              <p className="text-body--sm color--secondary">
+                If you aren&apos;t sure of when you want your start and end dates to be, just leave them blank. You will be able to start inviting candidates once your link is live and can let us know an end date at a later stage. If you wish to amend these dates later, simply email <a href="mailto:support@veroassess.com" className="color--brand">support@veroassess.com</a>.
+              </p>
 
               {/* Apply to all toggle */}
               <div className="dates-apply-all">
@@ -1140,6 +1148,7 @@ export default function DetailsPage() {
                   })}
                 </div>
             </div>
+            )}
 
             {/* Actions */}
             <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">

@@ -7,6 +7,8 @@ import { useBasket } from '@/store/basketStore';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
+import OrderSummary from '../components/OrderSummary';
+import '../details/details.css';
 import './contract.css';
 
 const CONTRACT_PDF_URL = 'https://example.com';
@@ -14,9 +16,7 @@ const CONTRACT_PDF_URL = 'https://example.com';
 export default function ContractPage() {
   const router = useRouter();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails, recommendedTier } = state;
-  const isStarter = recommendedTier === 'starter';
-  const contractTitle = isStarter ? 'Starter Agreement' : 'Licence Agreement';
+  const { selectedRoles, contactDetails } = state;
 
   // Guard
   useEffect(() => {
@@ -48,7 +48,8 @@ export default function ContractPage() {
 
   return (
     <section className="contract-page">
-      <div className="contract-inner">
+      <div className="contract-layout">
+        <div className="contract-inner">
 
         {/* Header */}
         <div className="contract-header">
@@ -56,7 +57,7 @@ export default function ContractPage() {
             ref={headingRef as React.RefObject<HTMLHeadingElement>}
             className="text-h3 color--primary"
           >
-            Review and accept your agreement
+            Review and accept our Terms and Conditions
           </h2>
         </div>
 
@@ -66,7 +67,7 @@ export default function ContractPage() {
           className="contract-prompt"
         >
           <p className="text-body--sm color--secondary contract-prompt__text">
-            Before proceeding, please review the full {contractTitle} between
+            Before proceeding, please review the full Terms and Conditions between
             Tazio Ltd and {contactDetails.company || 'your organisation'}. The
             document covers the terms of service, data protection, fees, and your
             rights under the agreement.
@@ -78,11 +79,11 @@ export default function ContractPage() {
               size="md"
               onClick={handleOpenContract}
             >
-              {hasOpenedContract ? 'Open contract again ↗' : 'View contract ↗'}
+              {hasOpenedContract ? 'Open Terms and Conditions again ↗' : 'View Terms and Conditions ↗'}
             </Button>
             {hasOpenedContract && (
               <span className="contract-prompt__status text-body--xs">
-                Contract opened ✓
+                Terms and Conditions opened ✓
               </span>
             )}
           </div>
@@ -100,15 +101,15 @@ export default function ContractPage() {
               onChange={(e) => setAccepted(e.target.checked)}
             />
             <label htmlFor="contract-accept" className="contract-checkbox-label">
-              I have read and agree to the terms of this agreement
+              I have read and agree to the Terms and Conditions
             </label>
           </div>
           <p className="contract-hint">
             {hasOpenedContract
               ? accepted
-                ? 'Agreement accepted ✓'
+                ? 'Terms and Conditions accepted ✓'
                 : 'Please tick the box above to accept.'
-              : 'You must open and review the contract before accepting.'}
+              : 'You must open and review the Terms and Conditions before accepting.'}
           </p>
         </div>
 
@@ -127,6 +128,9 @@ export default function ContractPage() {
           </Link>
         </div>
 
+        </div>
+
+        <OrderSummary showContact={true} />
       </div>
     </section>
   );

@@ -113,7 +113,7 @@ function PaymentContent() {
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const isSubscription = tierInfo?.hasFrequencyToggle ?? false;
-  const showAutoRenewal = isSubscription && paymentFrequency === 'annual';
+  const showAutoRenewal = isSubscription;
 
   const wasCancelled = searchParams.get('cancelled') === 'true';
 
@@ -312,6 +312,35 @@ function PaymentContent() {
               </div>
             )}
 
+            {/* Auto-renewal option — subscription tiers only, shown above payment method */}
+            {showAutoRenewal && (
+              <div ref={renewalRef as React.RefObject<HTMLDivElement>} className="auto-renewal-option">
+                <div className="auto-renewal-option__content">
+                  <div className="auto-renewal-option__text">
+                    <p className="text-body--sm font--medium color--primary">
+                      Auto-renew at the end of your term
+                    </p>
+                    <p className="text-body--xs color--tertiary">
+                      Your licence will automatically renew at the end of your current term.
+                      You can change this at any time before your renewal date.
+                    </p>
+                  </div>
+                  <label className="toggle-switch" htmlFor="autoRenewal">
+                    <input
+                      type="checkbox"
+                      id="autoRenewal"
+                      className="toggle-switch__input"
+                      checked={autoRenewal}
+                      onChange={(e) => dispatch({ type: 'SET_AUTO_RENEWAL', payload: e.target.checked })}
+                    />
+                    <span className="toggle-switch__track" aria-hidden="true">
+                      <span className="toggle-switch__thumb" />
+                    </span>
+                  </label>
+                </div>
+              </div>
+            )}
+
             {/* Payment method toggle */}
             <div ref={methodRef as React.RefObject<HTMLDivElement>} className="payment-method-tabs">
               <button
@@ -504,35 +533,6 @@ function PaymentContent() {
                   </Link>
                 </div>
               </>
-            )}
-
-            {/* Auto-renewal option — annual subscriptions only */}
-            {showAutoRenewal && (
-              <div ref={renewalRef as React.RefObject<HTMLDivElement>} className="auto-renewal-option">
-                <div className="auto-renewal-option__content">
-                  <div className="auto-renewal-option__text">
-                    <p className="text-body--sm font--medium color--primary">
-                      Auto-renew in 12 months
-                    </p>
-                    <p className="text-body--xs color--tertiary">
-                      Your licence will automatically renew at the end of your 12-month term.
-                      You can change this at any time before your renewal date.
-                    </p>
-                  </div>
-                  <label className="toggle-switch" htmlFor="autoRenewal">
-                    <input
-                      type="checkbox"
-                      id="autoRenewal"
-                      className="toggle-switch__input"
-                      checked={autoRenewal}
-                      onChange={(e) => dispatch({ type: 'SET_AUTO_RENEWAL', payload: e.target.checked })}
-                    />
-                    <span className="toggle-switch__track" aria-hidden="true">
-                      <span className="toggle-switch__thumb" />
-                    </span>
-                  </label>
-                </div>
-              </div>
             )}
 
             {/* Trust strip */}

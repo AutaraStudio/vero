@@ -7,13 +7,34 @@
   border-bottom: 1px solid var(--color--border-default);
 }
 
-.contract-inner {
-  max-width: 40rem;
+.contract-layout {
+  max-width: 72rem;
   margin: 0 auto;
   padding: 0 var(--space--container-padding);
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 4rem;
+  align-items: start;
+}
+
+.contract-inner {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .contract-layout {
+    grid-template-columns: 1fr 320px;
+    gap: 2.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contract-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
 .contract-header {

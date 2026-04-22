@@ -9,6 +9,7 @@ import { useBasket } from '@/store/basketStore';
 import {
   TIER_DATA,
   getNudgeContent,
+  getTierPrice,
   SELECTABLE_TIERS,
   recommendTier,
   isTierAtLeast,
@@ -108,8 +109,9 @@ export default function RolePicker({ categories }: RolePickerProps) {
     }
   }, [searchParams, dispatch]);
 
-  const { selectedRoles, recommendedTier, tierOverride, nudgeShown } = state;
+  const { selectedRoles, recommendedTier, tierOverride, nudgeShown, paymentFrequency } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+  const mobilePrice = tierInfo ? getTierPrice(tierInfo, paymentFrequency) : null;
 
   // The minimum tier required by the current role count
   const autoTier = selectedRoles.length > 0 ? recommendTier(selectedRoles.length) : null;
@@ -381,11 +383,18 @@ export default function RolePicker({ categories }: RolePickerProps) {
         <div className="basket-mobile-bar show--mobile-only">
           <div className="basket-mobile-bar__inner">
             <div className="basket-mobile-bar__info">
-              <span className="text-body--sm font--medium color--primary">
-                {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} selected
-              </span>
-              {tierInfo && (
-                <span className="section-label">{tierInfo.name}</span>
+              <div className="basket-mobile-bar__info-row">
+                <span className="text-body--sm font--medium color--primary">
+                  {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''}
+                </span>
+                {tierInfo && (
+                  <span className="section-label">{tierInfo.name}</span>
+                )}
+              </div>
+              {tierInfo && mobilePrice && (
+                <span className="text-body--xs color--tertiary">
+                  {mobilePrice.price} · {mobilePrice.priceNote}
+                </span>
               )}
             </div>
             <div className="basket-mobile-bar__actions">

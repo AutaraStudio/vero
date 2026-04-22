@@ -3,6 +3,7 @@
 import { useState, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 import { useBasket } from '@/store/basketStore';
+import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 
 interface OrderSummaryProps {
   showContact?: boolean;
@@ -13,7 +14,11 @@ const VISIBLE_COUNT = 2;
 
 export default function OrderSummary({ showContact = false }: OrderSummaryProps) {
   const { state } = useBasket();
-  const { selectedRoles, contactDetails } = state;
+  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, autoRenewal } = state;
+  const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+  const { price, priceNote } = tierInfo
+    ? getTierPrice(tierInfo, paymentFrequency)
+    : { price: '', priceNote: '' };
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
   const hasAnimatedRef = useRef<Set<string>>(new Set());
@@ -113,6 +118,33 @@ export default function OrderSummary({ showContact = false }: OrderSummaryProps)
               </div>
             );
           })}
+        </div>
+      )}
+
+      {/* Pricing block */}
+      {tierInfo && selectedRoles.length > 0 && (
+        <div className="order-summary__tier">
+          <div className="order-summary__tier-head">
+            <span className="text-body--sm font--semibold color--primary">{tierInfo.name}</span>
+            {tierInfo.hasFrequencyToggle && (
+              <span className="section-label">
+                {paymentFrequency === 'monthly' ? 'Monthly' : 'Annual'}
+              </span>
+            )}
+          </div>
+          <div className="order-summary__tier-price-row">
+            <span className="text-h4 color--primary">{price}</span>
+            <span className="text-body--xs color--tertiary">{priceNote}</span>
+          </div>
+          <div className="order-summary__tier-meta">
+            <span className="text-body--xs color--tertiary">{tierInfo.candidateLimit}</span>
+            <span className="text-body--xs color--tertiary">{tierInfo.roleLimit}</span>
+            {tierInfo.hasFrequencyToggle && (
+              <span className="text-body--xs color--tertiary">
+                {autoRenewal ? 'Auto-renewal on' : 'Auto-renewal off'}
+              </span>
+            )}
+          </div>
         </div>
       )}
 
