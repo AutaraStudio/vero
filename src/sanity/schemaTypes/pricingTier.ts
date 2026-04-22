@@ -115,6 +115,44 @@ export const pricingTier = defineType({
       rows: 3,
       description: 'Only used on the Bespoke tier card',
     }),
+    defineField({
+      name: 'features',
+      title: 'Features',
+      type: 'array',
+      description: 'Features included in this tier. Leave value blank for checkmark-only features.',
+      of: [
+        {
+          type: 'object',
+          preview: {
+            select: { title: 'label', subtitle: 'value' },
+            prepare({ title, subtitle }) {
+              return { title, subtitle: subtitle || 'Included ✓' }
+            },
+          },
+          fields: [
+            defineField({
+              name: 'label',
+              title: 'Label',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'value',
+              title: 'Value',
+              type: 'string',
+              description: 'e.g. "5", "Unlimited". Leave blank for a simple included-checkmark feature.',
+            }),
+            defineField({
+              name: 'footnote',
+              title: 'Footnote',
+              type: 'text',
+              rows: 2,
+              description: 'Optional footnote shown beneath the comparison table (e.g. ATS integration caveats).',
+            }),
+          ],
+        },
+      ],
+    }),
   ],
   preview: {
     select: {
