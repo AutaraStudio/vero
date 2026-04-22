@@ -1,5 +1,5 @@
 import { StructureBuilder } from 'sanity/structure'
-import { HomeIcon, TagIcon, UsersIcon, UserIcon, CogIcon, SearchIcon, PlayIcon, InfoOutlineIcon, EnvelopeIcon } from '@sanity/icons'
+import { HomeIcon, TagIcon, UsersIcon, UserIcon, CogIcon, SearchIcon, PlayIcon, InfoOutlineIcon, EnvelopeIcon, SparklesIcon } from '@sanity/icons'
 
 export const structure = (S: StructureBuilder) =>
   S.list()
@@ -64,6 +64,14 @@ export const structure = (S: StructureBuilder) =>
           S.document()
             .schemaType('contactPage')
             .documentId('contactPage')
+        ),
+      S.listItem()
+        .title('The Science Page')
+        .icon(SparklesIcon)
+        .child(
+          S.document()
+            .schemaType('sciencePage')
+            .documentId('sciencePage')
         ),
       S.divider(),
 
