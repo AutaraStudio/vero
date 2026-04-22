@@ -8,33 +8,79 @@ export const contactPage = defineType({
   icon: EnvelopeIcon,
   groups: [
     { name: 'hero', title: 'Hero' },
+    { name: 'faq', title: 'FAQ' },
   ],
   fields: [
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',
-      title: 'Hero Headline',
+      title: 'Headline',
       type: 'string',
       group: 'hero',
     }),
     defineField({
       name: 'heroIntro',
-      title: 'Hero Intro',
+      title: 'Intro',
       type: 'text',
       rows: 3,
       group: 'hero',
     }),
     defineField({
-      name: 'heroEmailLabel',
-      title: 'Hero Email Label',
+      name: 'contactInstructions',
+      title: 'Contact Instructions',
+      type: 'text',
+      rows: 2,
+      group: 'hero',
+      description: 'Short line shown above phone / email (e.g. "Fill out our contact form and we\'ll get back to you...").',
+    }),
+    defineField({
+      name: 'phone',
+      title: 'Phone',
       type: 'string',
       group: 'hero',
     }),
     defineField({
-      name: 'heroEmail',
-      title: 'Hero Email',
+      name: 'email',
+      title: 'Email',
       type: 'string',
       group: 'hero',
+    }),
+
+    /* ── FAQ ── */
+    defineField({
+      name: 'faqHeading',
+      title: 'FAQ Heading',
+      type: 'string',
+      group: 'faq',
+    }),
+    defineField({
+      name: 'faqs',
+      title: 'FAQs',
+      type: 'array',
+      group: 'faq',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'question' } },
+          fields: [
+            defineField({ name: 'question', title: 'Question', type: 'string' }),
+            defineField({
+              name: 'answer',
+              title: 'Answer',
+              type: 'array',
+              of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+            }),
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: 'faqFooter',
+      title: 'FAQ Footer',
+      type: 'text',
+      rows: 2,
+      group: 'faq',
+      description: 'Short sign-off below the FAQ list (e.g. "Still have questions? Just get in touch.").',
     }),
   ],
   preview: {
