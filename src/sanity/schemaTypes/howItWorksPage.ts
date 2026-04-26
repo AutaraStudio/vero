@@ -8,45 +8,189 @@ export const howItWorksPage = defineType({
   icon: PlayIcon,
   groups: [
     { name: 'hero', title: 'Hero' },
+    { name: 'gettingStarted', title: 'Getting Started' },
+    { name: 'steps', title: 'Steps' },
+    { name: 'candidateExperience', title: 'Candidate Experience' },
+    { name: 'benefits', title: 'Benefits' },
   ],
   fields: [
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',
-      title: 'Hero Headline',
+      title: 'Headline',
       type: 'string',
       group: 'hero',
     }),
     defineField({
       name: 'heroIntro',
-      title: 'Hero Intro',
+      title: 'Intro',
       type: 'text',
       rows: 3,
       group: 'hero',
     }),
     defineField({
       name: 'heroCTALabel',
-      title: 'Hero CTA Label',
+      title: 'Primary CTA Label',
       type: 'string',
       group: 'hero',
     }),
     defineField({
       name: 'heroCTAHref',
-      title: 'Hero CTA Href',
+      title: 'Primary CTA Href',
       type: 'string',
       group: 'hero',
     }),
     defineField({
       name: 'heroSecondaryCTALabel',
-      title: 'Hero Secondary CTA Label',
+      title: 'Secondary CTA Label',
       type: 'string',
       group: 'hero',
     }),
     defineField({
       name: 'heroSecondaryCTAHref',
-      title: 'Hero Secondary CTA Href',
+      title: 'Secondary CTA Href',
       type: 'string',
       group: 'hero',
+    }),
+
+    /* ── Getting Started ── */
+    defineField({
+      name: 'gettingStartedHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'gettingStarted',
+    }),
+    defineField({
+      name: 'gettingStartedBody',
+      title: 'Body',
+      type: 'array',
+      group: 'gettingStarted',
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+    }),
+    defineField({
+      name: 'gettingStartedImage',
+      title: 'Image',
+      type: 'image',
+      group: 'gettingStarted',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
+    defineField({
+      name: 'gettingStartedLinkLabel',
+      title: 'Pricing Link Label',
+      type: 'string',
+      group: 'gettingStarted',
+      description: 'Inline call-out, e.g. "Read more about your options on our pricing page".',
+    }),
+    defineField({
+      name: 'gettingStartedLinkHref',
+      title: 'Pricing Link Href',
+      type: 'string',
+      group: 'gettingStarted',
+    }),
+
+    /* ── Steps ── */
+    defineField({
+      name: 'stepsHeading',
+      title: 'Section Heading',
+      type: 'string',
+      group: 'steps',
+    }),
+    defineField({
+      name: 'stepsIntro',
+      title: 'Section Intro',
+      type: 'text',
+      rows: 3,
+      group: 'steps',
+    }),
+    defineField({
+      name: 'steps',
+      title: 'Steps',
+      type: 'array',
+      group: 'steps',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'body' }, prepare({ title }) { return { title: title ? `${title.slice(0, 60)}…` : 'Step' } } },
+          fields: [
+            defineField({ name: 'body', title: 'Body', type: 'text', rows: 4 }),
+            defineField({
+              name: 'image',
+              title: 'Step Image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+            }),
+          ],
+        },
+      ],
+    }),
+
+    /* ── Candidate Experience ── */
+    defineField({
+      name: 'candidateExpHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'candidateExperience',
+    }),
+    defineField({
+      name: 'candidateExpBody',
+      title: 'Body',
+      type: 'array',
+      group: 'candidateExperience',
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+    }),
+    defineField({
+      name: 'candidateExpImage',
+      title: 'Image',
+      type: 'image',
+      group: 'candidateExperience',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
+
+    /* ── Benefits ── */
+    defineField({
+      name: 'benefitsHeading',
+      title: 'Heading',
+      type: 'string',
+      group: 'benefits',
+    }),
+    defineField({
+      name: 'benefits',
+      title: 'Benefits',
+      type: 'array',
+      group: 'benefits',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'label', subtitle: 'body' } },
+          fields: [
+            defineField({ name: 'label', title: 'Label', type: 'string' }),
+            defineField({ name: 'body', title: 'Body', type: 'text', rows: 3 }),
+            defineField({
+              name: 'image',
+              title: 'Icon / Screenshot',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+            }),
+          ],
+        },
+      ],
+    }),
+    defineField({
+      name: 'benefitsLinkLabel',
+      title: 'Read More Link Label',
+      type: 'string',
+      group: 'benefits',
+      description: 'e.g. "Read more about Vero Assess".',
+    }),
+    defineField({
+      name: 'benefitsLinkHref',
+      title: 'Read More Link Href',
+      type: 'string',
+      group: 'benefits',
     }),
   ],
   preview: {
