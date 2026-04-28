@@ -103,3 +103,13 @@
     width: clamp(130px, 30vw, 200px);
   }
 }
+
+@media (max-width: 600px) {
+  .pricing-bespoke {
+    padding-block: 3rem;
+  }
+
+  .pricing-bespoke__inner {
+    padding: 2rem 1.25rem 8rem;
+  }
+}

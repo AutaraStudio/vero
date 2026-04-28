@@ -4,7 +4,7 @@
 ============================================================ */
 
 .pricing-faq {
-  padding-block: 5rem;
+  padding-block: clamp(3rem, 6vw, 5rem);
 }
 
 .pricing-faq__head {
