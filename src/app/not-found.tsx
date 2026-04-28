@@ -6,6 +6,7 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import MegaNav from '@/components/MegaNav';
+import { BasketProvider } from '@/store/basketStore';
 import './not-found.css';
 
 const OVAL =
@@ -75,7 +76,10 @@ export default function NotFound() {
   }, []);
 
   return (
-    <>
+    /* not-found.tsx lives at the app root, OUTSIDE the (site) route group,
+       so it does not inherit (site)/layout.tsx's BasketProvider. MegaNav
+       depends on useBasket(), so we wrap the page here too. */
+    <BasketProvider>
     <MegaNav />
     <main data-theme="brand-purple" className="not-found">
       {/* Decorative background shapes */}
@@ -106,6 +110,6 @@ export default function NotFound() {
         </div>
       </div>
     </main>
-    </>
+    </BasketProvider>
   );
 }
