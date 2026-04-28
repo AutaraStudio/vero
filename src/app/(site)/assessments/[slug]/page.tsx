@@ -5,12 +5,13 @@ import {
   JOB_CATEGORY_BY_SLUG_QUERY,
   JOB_CATEGORY_SLUGS_QUERY,
 } from '@/sanity/lib/queries';
-import DetailHero from './DetailHero';
+import HeroSplit from '@/components/HeroSplit';
 import DimensionsSection from './DimensionsSection';
-
+import FeatureCardsSection from './FeatureCardsSection';
 import StatsSection from './StatsSection';
 import RoleGrid from './RoleGrid';
-import BespokeSection from './BespokeSection';
+import BespokeStrip from '@/components/BespokeStrip';
+import PricingShowcase from '@/components/PricingShowcase/PricingShowcase';
 
 type Params = Promise<{ slug: string }>;
 
@@ -40,12 +41,20 @@ export default async function CategoryPage({ params }: { params: Params }) {
     dimensionsSectionHeading,
     dimensionsSectionBody,
     dimensionsSectionImage,
+    inActionLabel,
+    inActionHeading,
+    inActionIntro,
+    featureCardsHeading,
+    featureCardsSubheading,
+    featureCards,
     stat1Heading,
     stat1Body,
     stat2Heading,
     stat2Body,
     stat3Heading,
     stat3Body,
+    stat4Heading,
+    stat4Body,
     roles,
     name,
     roleRosterHeading,
@@ -53,6 +62,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     bespokeSectionHeading,
     bespokeSectionBody,
     bespokeCTALabel,
+    bespokeCTAHref,
     bespokeSectionImage,
   } = data;
 
@@ -72,14 +82,29 @@ export default async function CategoryPage({ params }: { params: Params }) {
       )
     : [];
 
+  const dimensionBadges = keyDimensionsAssessed
+    ? keyDimensionsAssessed
+        .split(',')
+        .map((d: string) => d.trim())
+        .filter(Boolean)
+    : [];
+
   return (
     <main>
-      <DetailHero
-        heroHeadline={heroHeadline}
-        heroIntroCopy={heroIntroCopy}
-        keyDimensionsAssessed={keyDimensionsAssessed}
-        slug={slug}
-        heroImageUrl={heroImageUrl}
+      <HeroSplit
+        theme="brand-purple"
+        eyebrow="Assessment"
+        headline={heroHeadline}
+        intro={heroIntroCopy}
+        badges={dimensionBadges}
+        primaryCTA={{ label: 'Get started', href: `/get-started?category=${slug}` }}
+        image={
+          heroImageUrl
+            ? { src: heroImageUrl, alt: heroHeadline }
+            : undefined
+        }
+        imageHeight="viewport"
+        textAlign="bottom"
       />
 
       {dimensionsSectionHeading && (
@@ -87,6 +112,17 @@ export default async function CategoryPage({ params }: { params: Params }) {
           heading={dimensionsSectionHeading}
           body={dimensionsSectionBody}
           imageUrl={dimensionsSectionImage?.asset?.url}
+        />
+      )}
+
+      {((featureCards && featureCards.length > 0) || featureCardsHeading) && (
+        <FeatureCardsSection
+          sectionLabel={inActionLabel}
+          sectionHeading={inActionHeading}
+          sectionIntro={inActionIntro}
+          leadHeading={featureCardsHeading}
+          leadBody={featureCardsSubheading}
+          cards={featureCards ?? []}
         />
       )}
 
@@ -98,6 +134,8 @@ export default async function CategoryPage({ params }: { params: Params }) {
           stat2Body={stat2Body}
           stat3Heading={stat3Heading}
           stat3Body={stat3Body}
+          stat4Heading={stat4Heading}
+          stat4Body={stat4Body}
         />
       )}
 
@@ -111,12 +149,23 @@ export default async function CategoryPage({ params }: { params: Params }) {
         />
       )}
 
+      {/* Pricing tiers + collapsible comparison table — same on every assessment page */}
+      <PricingShowcase collapsible />
+
       {bespokeSectionHeading && (
-        <BespokeSection
+        <BespokeStrip
           heading={bespokeSectionHeading}
           body={bespokeSectionBody}
           ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
-          imageUrl={bespokeSectionImage?.asset?.url}
+          ctaHref={bespokeCTAHref || '/contact'}
+          image={
+            bespokeSectionImage?.asset?.url
+              ? {
+                  src: bespokeSectionImage.asset.url,
+                  alt: 'Vero Assess platform preview',
+                }
+              : undefined
+          }
         />
       )}
     </main>

@@ -182,15 +182,15 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
 
 const STORAGE_KEY = 'vero_basket_state';
 
-function loadPersistedState(): InternalState {
-  if (typeof window === 'undefined') return initialState;
+function loadPersistedState(): InternalState | null {
+  if (typeof window === 'undefined') return null;
   try {
     const saved = sessionStorage.getItem(STORAGE_KEY);
     if (saved) return JSON.parse(saved) as InternalState;
   } catch {
     // Ignore parse errors
   }
-  return initialState;
+  return null;
 }
 
 function persistState(state: InternalState): void {
@@ -215,10 +215,13 @@ export function BasketProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(basketReducer, initialState);
   const [hydrated, setHydrated] = useState(false);
 
-  // Restore from sessionStorage on first mount
+  // Restore from sessionStorage on first mount.
+  // Always restore if anything is persisted — otherwise non-role state (e.g. a
+  // paymentFrequency picked on the pricing page before any roles are added)
+  // gets clobbered by the initialState on the next page mount.
   useEffect(() => {
     const saved = loadPersistedState();
-    if (saved.selectedRoles.length > 0 || saved.contactDetails.email) {
+    if (saved) {
       dispatch({ type: 'RESTORE_STATE', payload: saved });
     }
     setHydrated(true);

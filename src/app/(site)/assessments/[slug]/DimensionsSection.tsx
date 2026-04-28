@@ -40,7 +40,7 @@ export default function DimensionsSection({
             <h2
               ref={headingRef as React.RefObject<HTMLHeadingElement>}
               data-animate=""
-              className="text-h2 text-balance"
+              className="text-h2 text-balance max-ch-30"
             >
               {heading}
             </h2>

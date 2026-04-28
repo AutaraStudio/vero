@@ -109,6 +109,15 @@ function PaymentContent() {
   }>({});
   const [invoiceEmail, setInvoiceEmail] = useState('');
   const [invoiceEmailError, setInvoiceEmailError] = useState<string | null>(null);
+  const [invoiceEmailTouched, setInvoiceEmailTouched] = useState(false);
+
+  const validateInvoiceEmail = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (!trimmed) return null; // optional field
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
+      ? null
+      : 'Please enter a valid email address';
+  };
 
   // Starter is a one-off payment — no renewal concept
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
@@ -225,8 +234,10 @@ function PaymentContent() {
 
     // Validate invoice email if provided (optional override)
     const trimmedInvoiceEmail = invoiceEmail.trim();
-    if (trimmedInvoiceEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedInvoiceEmail)) {
-      setInvoiceEmailError('Please enter a valid email address');
+    const emailErr = validateInvoiceEmail(trimmedInvoiceEmail);
+    if (emailErr) {
+      setInvoiceEmailTouched(true);
+      setInvoiceEmailError(emailErr);
       return;
     }
 
@@ -507,11 +518,22 @@ function PaymentContent() {
                     className={`form-field__input${invoiceEmailError ? ' has-error' : ''}`}
                     placeholder={contactDetails.email}
                     value={invoiceEmail}
-                    onChange={(e) => { setInvoiceEmail(e.target.value); setInvoiceEmailError(null); }}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setInvoiceEmail(v);
+                      if (invoiceEmailTouched) setInvoiceEmailError(validateInvoiceEmail(v));
+                    }}
+                    onBlur={() => {
+                      setInvoiceEmailTouched(true);
+                      setInvoiceEmailError(validateInvoiceEmail(invoiceEmail));
+                    }}
                     aria-invalid={invoiceEmailError ? 'true' : 'false'}
+                    aria-describedby={invoiceEmailError ? 'invoiceEmail-error' : undefined}
                   />
                   {invoiceEmailError && (
-                    <p className="form-field__error">{invoiceEmailError}</p>
+                    <p id="invoiceEmail-error" className="form-field__error" role="alert">
+                      {invoiceEmailError}
+                    </p>
                   )}
                   <p className="text-body--xs color--tertiary">
                     Leave blank to send to your buyer email. Use this to route invoices to your finance/AP team.

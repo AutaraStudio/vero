@@ -1,82 +1,116 @@
 /* ============================================================
-   STICKY STEPS — OSMO-01
-   Scroll-driven feature section with sticky visual panels.
+   STICKY STEPS — verbatim Webflow pattern with our visual tweaks.
+
+   Key structural piece: .sticky-steps__collection is the
+   `position: relative` containing block. Every item's
+   .sticky-steps__media is `position: absolute` and pinned to the
+   right half of the COLLECTION (not its parent item) — so all
+   medias overlay each other in the same slot. Opacity transitions
+   on `data-sticky-steps-status` swap which one is visible.
 ============================================================ */
 
 .sticky-steps {
   background-color: var(--color--page-bg);
-  padding-block: var(--space--section);
+  min-height: 100vh;
+  position: relative;
+  overflow: clip;
 }
 
 .sticky-steps__container {
-  max-width: var(--space--container-max);
+  max-width: 74rem;
   margin-inline: auto;
-  padding-inline: var(--space--container-padding);
+  padding-inline: 1.5rem;
+}
+
+.sticky-steps__collection {
+  min-height: 100vh;
+  display: flex;
+  position: relative;       /* ← absolute medias pin to THIS */
 }
 
 .sticky-steps__list {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  /* Generous gap between items + top/bottom padding so each step has
+     real scroll-stick distance for the visual. */
+  gap: 30vh;
+  padding-top: calc(50vh - 7.5rem);
+  padding-bottom: calc(50vh - 7.5rem);
 }
 
-/* ── Item ── */
-
-.sticky-steps__item {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: start;
-  min-height: 100vh;
-  padding-block: 3rem;
-}
-
-/* ── Text panel ── */
+/* ── Text panel — left half, normal flow, anchor for ScrollTrigger ── */
 
 .sticky-steps__text {
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
-  padding-block: 2rem;
-  padding-top: calc(50vh - 6rem);
-  opacity: 0.3;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-[data-sticky-steps-status="active"] .sticky-steps__text {
+  align-items: flex-start;   /* don't stretch the pill / headline / cta */
+  gap: 2rem;
+  width: 50%;
+  padding-right: 6rem;
+  /* Text always reads at full opacity — only the visual swaps based on
+     scroll position. Keeps headings + body fully legible regardless of
+     which step is "active". */
   opacity: 1;
 }
 
-[data-sticky-steps-status="before"] .sticky-steps__text {
-  opacity: 0.3;
+.sticky-steps__eyebrow { margin: 0; }
+.sticky-steps__headline { margin: 0; }
+.sticky-steps__body {
+  margin: 0;
+  color: var(--color--text-secondary);
 }
 
+.sticky-steps__cta { margin-top: 0.5rem; }
 
-
-/* ── Media / sticky panel ── */
+/* ── Media — absolutely positioned over the right half of the COLLECTION ── */
 
 .sticky-steps__media {
-  position: relative;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 50%;
+  height: 100%;
+  padding-left: 3rem;
+  pointer-events: none;
 }
+
+.sticky-steps__media > * { pointer-events: auto; }
 
 .sticky-steps__sticky {
   position: sticky;
-  top: calc(50vh - 18rem);
+  top: 0;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sticky-steps__visual {
   position: relative;
   width: 100%;
+  /* Slight border — NOT a pill / circle. */
   aspect-ratio: 4 / 3;
-  border-radius: var(--radius--md);
+  border-radius: var(--radius--lg);
   border: 1px solid var(--color--border-default);
-  border-top: 2px solid var(--sticky-steps-accent);
   overflow: hidden;
   background-color: var(--color--surface-raised);
+  /* Crossfade between active and inactive visuals. */
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.5s ease-in-out,
+    visibility 0.5s ease-in-out;
 }
 
-.sticky-steps__image {
-  object-fit: cover;
+[data-sticky-steps-status="active"] .sticky-steps__visual,
+[data-sticky-steps-status="before"] .sticky-steps__visual {
+  opacity: 1;
+  visibility: visible;
 }
+
+.sticky-steps__image { object-fit: cover; }
 
 .sticky-steps__placeholder {
   position: absolute;
@@ -84,48 +118,83 @@
   background-color: var(--color--surface-sunken);
 }
 
-/* ── Mobile — disable all sticky logic ── */
+/* Per-item placeholder tinting so the crossfade between steps is visible
+   even before real images are uploaded. Cycles through the brand swatches
+   at low opacity so it stays on-brand but each step reads as distinct. */
+.sticky-steps__item:nth-child(5n + 1) .sticky-steps__placeholder {
+  background-color: color-mix(in srgb, var(--swatch--purple-500) 14%, var(--color--surface-raised));
+}
+.sticky-steps__item:nth-child(5n + 2) .sticky-steps__placeholder {
+  background-color: color-mix(in srgb, var(--swatch--blue-500) 14%, var(--color--surface-raised));
+}
+.sticky-steps__item:nth-child(5n + 3) .sticky-steps__placeholder {
+  background-color: color-mix(in srgb, var(--swatch--green-500) 14%, var(--color--surface-raised));
+}
+.sticky-steps__item:nth-child(5n + 4) .sticky-steps__placeholder {
+  background-color: color-mix(in srgb, var(--swatch--orange-500) 14%, var(--color--surface-raised));
+}
+.sticky-steps__item:nth-child(5n + 5) .sticky-steps__placeholder {
+  background-color: color-mix(in srgb, var(--swatch--yellow-500) 18%, var(--color--surface-raised));
+}
+
+/* ── Mobile — disable sticky, stack vertically ───────────── */
 
 @media (max-width: 991px) {
   .sticky-steps {
-    padding-block: var(--space--section-mobile);
+    min-height: auto;
   }
 
-  .sticky-steps__item {
-    grid-template-columns: 1fr;
-    min-height: unset;
-    padding-block: 2rem;
-    gap: 2rem;
+  .sticky-steps__collection {
+    min-height: auto;
   }
 
-  .sticky-steps__text {
+  .sticky-steps__list {
+    gap: 5rem;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  /* Reset all status-based opacity overrides — everything stays visible. */
+  .sticky-steps__text,
+  [data-sticky-steps-status="before"] .sticky-steps__text,
+  [data-sticky-steps-status="after"]  .sticky-steps__text {
+    width: 100%;
+    padding-right: 0;
     opacity: 1;
-    padding-top: 0;
     transition: none;
   }
 
-  [data-sticky-steps-status="before"] .sticky-steps__text,
-  [data-sticky-steps-status="after"] .sticky-steps__text {
+  .sticky-steps__visual,
+  [data-sticky-steps-status="before"] .sticky-steps__visual,
+  [data-sticky-steps-status="after"]  .sticky-steps__visual {
     opacity: 1;
+    visibility: visible;
+    transition: none;
   }
 
   .sticky-steps__media {
-    order: -1;
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding-left: 0;
+    margin-bottom: 1.5rem;
   }
 
   .sticky-steps__sticky {
     position: static;
+    min-height: auto;
   }
 
   .sticky-steps__visual {
-    aspect-ratio: 16 / 9;
+    aspect-ratio: 16 / 10;
   }
 }
 
 /* ── Reduced motion ── */
 
 @media (prefers-reduced-motion: reduce) {
-  .sticky-steps__text {
+  .sticky-steps__text,
+  .sticky-steps__visual {
     transition: none;
   }
 }

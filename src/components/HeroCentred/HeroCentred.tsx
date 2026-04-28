@@ -17,11 +17,13 @@ interface HeroCentredProps {
   badge?: { label: string; href: string };
   headline: string;
   intro?: string;
-  primaryCTA: { label: string; href: string };
+  primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
-  media:
+  media?:
     | { type: 'image'; src: string; alt: string }
     | { type: 'video'; thumbnailSrc: string; videoSrc: string };
+  /** Optional content rendered between the CTAs and the media (e.g. a logo strip) */
+  belowCta?: React.ReactNode;
 }
 
 export default function HeroCentred({
@@ -32,6 +34,7 @@ export default function HeroCentred({
   primaryCTA,
   secondaryCTA,
   media,
+  belowCta,
 }: HeroCentredProps) {
   const badgeRef    = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const headingRef  = useTextReveal({ scroll: false, delay: 0.3 });
@@ -98,7 +101,7 @@ export default function HeroCentred({
     if (!overlay || !modal) return;
 
     document.body.style.overflow = 'hidden';
-    if (video && media.type === 'video') video.src = media.videoSrc;
+    if (video && media?.type === 'video') video.src = media.videoSrc;
 
     gsap.fromTo(overlay,
       { opacity: 0 },
@@ -116,8 +119,16 @@ export default function HeroCentred({
     return () => window.removeEventListener('keydown', handleKey);
   }, [modalOpen, media, closeModal]);
 
+  /* When there's no media slot, render in compact mode — smaller headline
+     and proper bottom padding so the hero ends cleanly instead of dropping
+     off into the next section. */
+  const isCompact = !media;
+
   return (
-    <section className="hero-centred" data-theme={theme}>
+    <section
+      className={`hero-centred${isCompact ? ' hero-centred--compact' : ''}`}
+      data-theme={theme}
+    >
 
       {/* ── Content ───────────────────────────────────────── */}
       <div className="hero-centred__inner">
@@ -137,7 +148,7 @@ export default function HeroCentred({
           <h1
             ref={headingRef as React.Ref<HTMLHeadingElement>}
             data-animate=""
-            className="hero-centred__title text-display--xl max-ch-25"
+            className={`hero-centred__title max-ch-25 ${isCompact ? 'text-h1' : 'text-display--xl'}`}
           >
             {headline}
           </h1>
@@ -152,65 +163,77 @@ export default function HeroCentred({
             </p>
           )}
 
-          <div
-            ref={ctaRef as React.Ref<HTMLDivElement>}
-            data-animate=""
-            className="hero-centred__cta"
-          >
-            <Button variant="cta" href={primaryCTA.href}>
-              {primaryCTA.label}
-            </Button>
-            {secondaryCTA && (
-              <Button variant="secondary" href={secondaryCTA.href}>
-                {secondaryCTA.label}
-              </Button>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Media ─────────────────────────────────────────── */}
-      <div className="hero-centred__media-wrap">
-        <div
-          ref={mediaRef as React.Ref<HTMLDivElement>}
-          data-animate=""
-          className="hero-centred__media"
-        >
-          {media.type === 'image' ? (
-            <img
-              src={media.src}
-              alt={media.alt}
-              className="hero-centred__media-img"
-            />
-          ) : (
-            <div className="hero-centred__thumbnail">
-              {media.thumbnailSrc && (
-                <img
-                  src={media.thumbnailSrc}
-                  alt="Video preview"
-                  className="hero-centred__media-img"
-                />
+          {(primaryCTA || secondaryCTA) && (
+            <div
+              ref={ctaRef as React.Ref<HTMLDivElement>}
+              data-animate=""
+              className="hero-centred__cta"
+            >
+              {primaryCTA && (
+                <Button variant="cta" href={primaryCTA.href}>
+                  {primaryCTA.label}
+                </Button>
               )}
-              <button
-                ref={playBtnRef}
-                className="hero-centred__play"
-                aria-label="Play video"
-                onClick={() => setModalOpen(true)}
-              >
-                <svg
-                  width="20"
-                  height="20"
-                  viewBox="0 0 16 16"
-                  fill="currentColor"
-                  aria-hidden="true"
-                >
-                  <path d="M2.2 2.863C2.2 1.612 3.572.845 4.638 1.5l8.347 5.137c1.016.625 1.016 2.1 0 2.725L4.638 14.5c-1.066.656-2.438-.11-2.438-1.363V2.863Z" />
-                </svg>
-              </button>
+              {secondaryCTA && (
+                <Button variant="secondary" href={secondaryCTA.href}>
+                  {secondaryCTA.label}
+                </Button>
+              )}
+            </div>
+          )}
+
+          {belowCta && (
+            <div className="hero-centred__below-cta">
+              {belowCta}
             </div>
           )}
         </div>
       </div>
+
+      {/* ── Media (optional) ──────────────────────────────── */}
+      {media && (
+        <div className="hero-centred__media-wrap">
+          <div
+            ref={mediaRef as React.Ref<HTMLDivElement>}
+            data-animate=""
+            className="hero-centred__media"
+          >
+            {media.type === 'image' ? (
+              <img
+                src={media.src}
+                alt={media.alt}
+                className="hero-centred__media-img"
+              />
+            ) : (
+              <div className="hero-centred__thumbnail">
+                {media.thumbnailSrc && (
+                  <img
+                    src={media.thumbnailSrc}
+                    alt="Video preview"
+                    className="hero-centred__media-img"
+                  />
+                )}
+                <button
+                  ref={playBtnRef}
+                  className="hero-centred__play"
+                  aria-label="Play video"
+                  onClick={() => setModalOpen(true)}
+                >
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 16 16"
+                    fill="currentColor"
+                    aria-hidden="true"
+                  >
+                    <path d="M2.2 2.863C2.2 1.612 3.572.845 4.638 1.5l8.347 5.137c1.016.625 1.016 2.1 0 2.725L4.638 14.5c-1.066.656-2.438-.11-2.438-1.363V2.863Z" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* ── Video modal portal ────────────────────────────── */}
       {mounted && modalOpen &&

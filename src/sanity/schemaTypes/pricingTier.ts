@@ -65,6 +65,24 @@ export const pricingTier = defineType({
       description: 'e.g. "Pay monthly or annually", "Pay in full"',
     }),
     defineField({
+      name: 'monthlyPriceDisplay',
+      title: 'Monthly Price Display',
+      type: 'string',
+      description: 'Shown when the Monthly toggle is active. Leave blank for tiers with no monthly option (e.g. Starter one-off).',
+    }),
+    defineField({
+      name: 'monthlyPriceNote',
+      title: 'Monthly Price Note',
+      type: 'string',
+      description: 'e.g. "per month, billed monthly"',
+    }),
+    defineField({
+      name: 'monthlyPrice',
+      title: 'Monthly Price (numeric)',
+      type: 'number',
+      description: 'Raw monthly number for logic/calculations',
+    }),
+    defineField({
       name: 'duration',
       title: 'Duration',
       type: 'string',

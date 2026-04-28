@@ -81,10 +81,18 @@ export const sciencePage = defineType({
       of: [
         {
           type: 'object',
-          preview: { select: { title: 'name', subtitle: 'description' } },
+          preview: { select: { title: 'name', subtitle: 'description', media: 'image' } },
           fields: [
             defineField({ name: 'name', title: 'Name', type: 'string' }),
             defineField({ name: 'description', title: 'Description', type: 'text', rows: 2 }),
+            defineField({
+              name: 'image',
+              title: 'Supporting image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              description: 'Shown as the sticky visual in the scroll-driven section.',
+            }),
           ],
         },
       ],
@@ -103,6 +111,15 @@ export const sciencePage = defineType({
       type: 'array',
       group: 'theory',
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+    }),
+    defineField({
+      name: 'dimensionsImage',
+      title: 'Dimensions — Optional Graphic / Image',
+      type: 'image',
+      group: 'theory',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Optional graphic or image shown alongside the 16-dimensions section.',
     }),
     defineField({
       name: 'dimensionCategories',

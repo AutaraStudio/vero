@@ -13,7 +13,9 @@
       "Bash(npx tsx:*)",
       "Bash(npm run:*)",
       "Bash(grep -rn \"rgba\\\\|rgb\\(\\\\|#[0-9A-Fa-f]\\\\{3,6\\\\}\\\\b\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/details/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/contract/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/payment/page.tsx\" \"C:/Users/mattc/Documents/Autara Studio/vero-assess/src/app/\\(site\\)/get-started/confirmation/page.tsx\")",
-      "mcp__ide__getDiagnostics"
+      "mcp__ide__getDiagnostics",
+      "mcp__Claude_Preview__preview_start",
+      "mcp__bcc51624-867c-460c-ad16-b871ab51d860__search_files"
     ]
   }
 }

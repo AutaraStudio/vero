@@ -90,10 +90,18 @@ export const compliancePage = defineType({
       of: [
         {
           type: 'object',
-          preview: { select: { title: 'label', subtitle: 'description' } },
+          preview: { select: { title: 'label', subtitle: 'description', media: 'image' } },
           fields: [
             defineField({ name: 'label', title: 'Label', type: 'string' }),
             defineField({ name: 'description', title: 'Description', type: 'text', rows: 2 }),
+            defineField({
+              name: 'image',
+              title: 'Supporting image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              description: 'Shown as the sticky visual in the scroll-driven Quality Assurance section.',
+            }),
           ],
         },
       ],
@@ -144,10 +152,18 @@ export const compliancePage = defineType({
       of: [
         {
           type: 'object',
-          preview: { select: { title: 'label', subtitle: 'description' } },
+          preview: { select: { title: 'label', subtitle: 'description', media: 'image' } },
           fields: [
             defineField({ name: 'label', title: 'Label', type: 'string' }),
             defineField({ name: 'description', title: 'Description', type: 'text', rows: 3 }),
+            defineField({
+              name: 'image',
+              title: 'Supporting image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              description: 'Shown as the sticky visual in the scroll-driven section (e.g. screenshot of accessibility feature in action).',
+            }),
           ],
         },
       ],

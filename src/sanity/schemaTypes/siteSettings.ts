@@ -7,8 +7,9 @@ export const siteSettings = defineType({
   type: 'document',
   icon: CogIcon,
   groups: [
-    { name: 'footer', title: 'Footer' },
-    { name: 'nav', title: 'Nav' },
+    { name: 'footer',        title: 'Footer' },
+    { name: 'nav',           title: 'Nav' },
+    { name: 'partnerLogos',  title: 'Partner Logos' },
   ],
   fields: [
     /* ── Footer ── */
@@ -50,6 +51,47 @@ export const siteSettings = defineType({
       title: 'Nav CTA Href',
       type: 'string',
       group: 'nav',
+    }),
+
+    /* ── Partner Logos (global — used wherever the LogoMarquee renders) ── */
+    defineField({
+      name: 'partnerLogosLabel',
+      title: 'Default Section Label',
+      type: 'string',
+      group: 'partnerLogos',
+      description: 'Default eyebrow shown above the marquee (e.g. "Trusted by hiring teams at"). Pages can still override this.',
+    }),
+    defineField({
+      name: 'partnerLogos',
+      title: 'Partner Logos',
+      type: 'array',
+      group: 'partnerLogos',
+      description: 'Logos shown in the marquee. SVG strongly preferred — uploaded as raw file assets so they render crisply and recolour cleanly.',
+      of: [
+        {
+          type: 'object',
+          preview: {
+            select: { title: 'name', media: 'logo' },
+          },
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Company name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'logo',
+              title: 'Logo (SVG, PNG, or WebP)',
+              type: 'file',
+              options: {
+                accept: 'image/svg+xml,image/png,image/webp',
+              },
+              description: 'SVGs upload as files (no transformations) so they keep their full vector fidelity.',
+            }),
+          ],
+        },
+      ],
     }),
   ],
   preview: {

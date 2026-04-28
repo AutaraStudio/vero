@@ -10,6 +10,8 @@ interface StatsSectionProps {
   stat2Body: string;
   stat3Heading: string;
   stat3Body: string;
+  stat4Heading?: string;
+  stat4Body?: string;
   theme?: ThemeVariant;
 }
 
@@ -20,11 +22,13 @@ export default function StatsSection({
   stat2Body,
   stat3Heading,
   stat3Body,
+  stat4Heading,
+  stat4Body,
   theme = 'brand-purple',
 }: StatsSectionProps) {
   const gridRef = useFadeUp({
     selector: '.stats-section__stat',
-    stagger: 0.1,
+    stagger: 0.08,
     y: 20,
   });
 
@@ -32,6 +36,7 @@ export default function StatsSection({
     { heading: stat1Heading, body: stat1Body },
     { heading: stat2Heading, body: stat2Body },
     { heading: stat3Heading, body: stat3Body },
+    ...(stat4Heading ? [{ heading: stat4Heading, body: stat4Body ?? '' }] : []),
   ];
 
   return (
@@ -40,12 +45,20 @@ export default function StatsSection({
         <div
           ref={gridRef as React.RefObject<HTMLDivElement>}
           className="stats-section__grid"
+          style={{ ['--stats-count' as string]: stats.length }}
         >
           {stats.map((stat, i) => (
-            <div key={i} className="stats-section__stat" data-animate="">
-              <span className="text-h2 font--semibold color--primary">{stat.heading}</span>
-              <span className="text-body--sm color--secondary">{stat.body}</span>
-            </div>
+            <article key={i} className="stats-section__stat" data-animate="">
+              <span className="stats-section__index text-label--sm color--brand">
+                0{i + 1}
+              </span>
+              <h3 className="stats-section__heading text-h3 text-balance color--primary">
+                {stat.heading}
+              </h3>
+              <p className="stats-section__body text-body--md leading--snug color--secondary">
+                {stat.body}
+              </p>
+            </article>
           ))}
         </div>
       </div>

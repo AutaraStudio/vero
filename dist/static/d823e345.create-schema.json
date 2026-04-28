@@ -1,0 +1,1196 @@
+[
+  {
+    "fields": [
+      {
+        "description": "Optional announcement pill above the headline. Leave blank to hide.",
+        "name": "heroBadgeLabel",
+        "type": "string",
+        "title": "Badge Label"
+      },
+      {
+        "name": "heroBadgeHref",
+        "type": "string",
+        "title": "Badge Link"
+      },
+      {
+        "name": "heroTitle",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text"
+      },
+      {
+        "name": "heroCTALabel",
+        "type": "string"
+      },
+      {
+        "name": "heroCTAHref",
+        "type": "string"
+      },
+      {
+        "name": "heroSecondaryCTALabel",
+        "type": "string"
+      },
+      {
+        "name": "heroSecondaryCTAHref",
+        "type": "string"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Image",
+              "value": "image"
+            },
+            {
+              "title": "Video",
+              "value": "video"
+            }
+          ],
+          "layout": "radio"
+        },
+        "initialValue": "image",
+        "name": "heroMediaType",
+        "type": "string",
+        "title": "Media Type"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Shown when Media Type is \"Image\".",
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alt text"
+          }
+        ],
+        "name": "heroImage",
+        "type": "image"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "description": "Shown when Media Type is \"Video\".",
+        "name": "heroVideoThumbnail",
+        "type": "image",
+        "title": "Video Thumbnail"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Direct MP4 URL. Loaded lazily — only when the modal opens.",
+        "name": "heroVideoUrl",
+        "type": "url",
+        "title": "Video URL"
+      },
+      {
+        "name": "howItWorksHeading",
+        "type": "string",
+        "title": "Heading"
+      },
+      {
+        "rows": 2,
+        "name": "howItWorksIntro",
+        "type": "text",
+        "title": "Intro"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "title",
+                "type": "string"
+              },
+              {
+                "rows": 3,
+                "name": "body",
+                "type": "text"
+              },
+              {
+                "name": "ctaLabel",
+                "type": "string",
+                "title": "CTA Label"
+              },
+              {
+                "name": "ctaHref",
+                "type": "string",
+                "title": "CTA Href"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "steps",
+        "type": "array"
+      },
+      {
+        "description": "Optional small label above the heading (e.g. \"Why Vero Assess\"). Leave blank to hide.",
+        "name": "uspsSectionLabel",
+        "type": "string",
+        "title": "Section Eyebrow Label"
+      },
+      {
+        "name": "uspsSectionHeading",
+        "type": "string",
+        "title": "Section Heading"
+      },
+      {
+        "rows": 2,
+        "name": "uspsSectionSubheading",
+        "type": "text",
+        "title": "Section Subheading"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "validation": [
+                  {
+                    "rules": [
+                      {
+                        "flag": "presence",
+                        "constraint": "required"
+                      }
+                    ],
+                    "level": "error"
+                  }
+                ],
+                "name": "label",
+                "type": "string"
+              },
+              {
+                "rows": 3,
+                "name": "body",
+                "type": "text"
+              },
+              {
+                "options": {
+                  "hotspot": true
+                },
+                "description": "Optional image shown in the card header.",
+                "fields": [
+                  {
+                    "name": "alt",
+                    "type": "string",
+                    "title": "Alt text"
+                  }
+                ],
+                "name": "image",
+                "type": "image",
+                "title": "Card Image"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "usps",
+        "type": "array",
+        "title": "USPs"
+      },
+      {
+        "name": "pricingSectionHeading",
+        "type": "string",
+        "title": "Section Heading"
+      },
+      {
+        "rows": 2,
+        "name": "pricingSectionSubheading",
+        "type": "text",
+        "title": "Section Subheading"
+      },
+      {
+        "name": "pricingCtaLabel",
+        "type": "string",
+        "title": "Pricing CTA Label"
+      }
+    ],
+    "name": "homePage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "footerCtaHeading",
+        "type": "string",
+        "title": "Footer CTA Heading"
+      },
+      {
+        "rows": 2,
+        "name": "footerCtaBody",
+        "type": "text",
+        "title": "Footer CTA Body"
+      },
+      {
+        "name": "footerCtaButtonLabel",
+        "type": "string",
+        "title": "Footer CTA Button Label"
+      },
+      {
+        "name": "footerCtaButtonHref",
+        "type": "string",
+        "title": "Footer CTA Button Href"
+      },
+      {
+        "name": "navCtaLabel",
+        "type": "string",
+        "title": "Nav CTA Label"
+      },
+      {
+        "name": "navCtaHref",
+        "type": "string",
+        "title": "Nav CTA Href"
+      }
+    ],
+    "name": "siteSettings",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "heroHeadline",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text"
+      },
+      {
+        "name": "bespokeHeading",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "bespokeBody",
+        "type": "text"
+      },
+      {
+        "name": "bespokeCtaLabel",
+        "type": "string",
+        "title": "Bespoke CTA Label"
+      },
+      {
+        "name": "bespokeCtaHref",
+        "type": "string",
+        "title": "Bespoke CTA Href"
+      }
+    ],
+    "name": "pricingPage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "heroHeadline",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text"
+      },
+      {
+        "name": "heroCTALabel",
+        "type": "string"
+      },
+      {
+        "name": "heroCTAHref",
+        "type": "string"
+      }
+    ],
+    "name": "assessmentsPage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "heroHeadline",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text"
+      },
+      {
+        "name": "heroCTALabel",
+        "type": "string"
+      },
+      {
+        "name": "heroCTAHref",
+        "type": "string"
+      },
+      {
+        "name": "heroSecondaryCTALabel",
+        "type": "string"
+      },
+      {
+        "name": "heroSecondaryCTAHref",
+        "type": "string"
+      }
+    ],
+    "name": "howItWorksPage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "heroHeadline",
+        "type": "string",
+        "title": "Headline"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text",
+        "title": "Intro"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alt text"
+          }
+        ],
+        "name": "heroImage",
+        "type": "image",
+        "title": "Hero Image (Tazio)"
+      },
+      {
+        "name": "tazioEvolutionHeading",
+        "type": "string",
+        "title": "Heading"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "tazioEvolutionBody",
+        "type": "array",
+        "title": "Body"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alt text"
+          }
+        ],
+        "name": "tazioEvolutionImage",
+        "type": "image",
+        "title": "Image (Tazio Platform)"
+      },
+      {
+        "name": "tazioEvolutionCTALabel",
+        "type": "string",
+        "title": "CTA Label"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "uri",
+                "constraint": {
+                  "options": {
+                    "scheme": [
+                      "/^http$/",
+                      "/^https$/"
+                    ],
+                    "allowRelative": false,
+                    "relativeOnly": false,
+                    "allowCredentials": false
+                  }
+                }
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "tazioEvolutionCTAHref",
+        "type": "url",
+        "title": "CTA Href"
+      },
+      {
+        "name": "candidateExperiencesHeading",
+        "type": "string",
+        "title": "Heading"
+      },
+      {
+        "of": [
+          {
+            "marks": {
+              "annotations": [
+                {
+                  "i18nTitleKey": "inputs.portable-text.annotation.link",
+                  "options": {
+                    "modal": {
+                      "type": "popover"
+                    }
+                  },
+                  "fields": [
+                    {
+                      "validation": [
+                        {
+                          "rules": [
+                            {
+                              "flag": "uri",
+                              "constraint": {
+                                "options": {
+                                  "scheme": [
+                                    "/^http$/",
+                                    "/^https$/",
+                                    "/^tel$/",
+                                    "/^mailto$/"
+                                  ],
+                                  "allowRelative": true,
+                                  "relativeOnly": false,
+                                  "allowCredentials": false
+                                }
+                              }
+                            }
+                          ],
+                          "level": "error"
+                        }
+                      ],
+                      "description": "A valid web, email, phone, or relative link.",
+                      "name": "href",
+                      "type": "url",
+                      "title": "Link"
+                    }
+                  ],
+                  "name": "link",
+                  "type": "object"
+                }
+              ]
+            },
+            "lists": [
+              {
+                "value": "bullet",
+                "title": "Bulleted list"
+              },
+              {
+                "value": "number",
+                "title": "Numbered list"
+              }
+            ],
+            "styles": [
+              {
+                "value": "normal",
+                "title": "Normal"
+              }
+            ],
+            "of": [],
+            "type": "block"
+          }
+        ],
+        "name": "candidateExperiencesBody",
+        "type": "array",
+        "title": "Body"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "fields": [
+          {
+            "name": "alt",
+            "type": "string",
+            "title": "Alt text"
+          }
+        ],
+        "name": "candidateExperiencesImage",
+        "type": "image",
+        "title": "Image"
+      },
+      {
+        "name": "clientsHeading",
+        "type": "string",
+        "title": "Heading"
+      },
+      {
+        "rows": 2,
+        "name": "clientsIntro",
+        "type": "text",
+        "title": "Client Sectors Intro"
+      },
+      {
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "name": "alt",
+                "type": "string",
+                "title": "Alt text"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "clientLogos",
+        "type": "array"
+      },
+      {
+        "rows": 2,
+        "name": "rpoIntro",
+        "type": "text",
+        "title": "RPO Partners Intro"
+      },
+      {
+        "of": [
+          {
+            "options": {
+              "hotspot": true
+            },
+            "fields": [
+              {
+                "name": "alt",
+                "type": "string",
+                "title": "Alt text"
+              }
+            ],
+            "type": "image"
+          }
+        ],
+        "name": "rpoLogos",
+        "type": "array",
+        "title": "RPO Logos"
+      },
+      {
+        "name": "teamHeading",
+        "type": "string",
+        "title": "Heading"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "name",
+                "type": "string"
+              },
+              {
+                "name": "role",
+                "type": "string"
+              },
+              {
+                "options": {
+                  "hotspot": true
+                },
+                "fields": [
+                  {
+                    "name": "alt",
+                    "type": "string",
+                    "title": "Alt text"
+                  }
+                ],
+                "name": "headshot",
+                "type": "image"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "teamMembers",
+        "type": "array"
+      }
+    ],
+    "name": "aboutPage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "name": "heroHeadline",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntro",
+        "type": "text"
+      },
+      {
+        "name": "heroEmailLabel",
+        "type": "string"
+      },
+      {
+        "name": "heroEmail",
+        "type": "string"
+      }
+    ],
+    "name": "contactPage",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string"
+      },
+      {
+        "options": {
+          "source": "name"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              },
+              {
+                "flag": "min",
+                "constraint": 1
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Controls the order cards appear (1 = first)",
+        "name": "order",
+        "type": "number",
+        "title": "Display Order"
+      },
+      {
+        "initialValue": false,
+        "description": "Shows the \"Most popular\" badge and uses the brand-purple-deep theme",
+        "name": "isFeatured",
+        "type": "boolean",
+        "title": "Featured (Most Popular)"
+      },
+      {
+        "description": "e.g. \"Annual subscription\", \"Single edition\", \"Bespoke\"",
+        "name": "tierLabel",
+        "type": "string"
+      },
+      {
+        "rows": 2,
+        "name": "tagline",
+        "type": "text"
+      },
+      {
+        "description": "Formatted price string shown on card, e.g. \"£9,000\"",
+        "name": "priceDisplay",
+        "type": "string"
+      },
+      {
+        "description": "Raw number for logic/calculations",
+        "name": "annualPrice",
+        "type": "number",
+        "title": "Annual Price (numeric)"
+      },
+      {
+        "description": "e.g. \"Pay monthly or annually\", \"Pay in full\"",
+        "name": "paymentOptions",
+        "type": "string"
+      },
+      {
+        "description": "e.g. \"Annual\", \"Available to use for 12 months or until credits used\"",
+        "name": "duration",
+        "type": "string"
+      },
+      {
+        "description": "Leave empty for Bespoke (unlimited)",
+        "name": "candidateLimit",
+        "type": "number"
+      },
+      {
+        "description": "Leave empty for Bespoke (unlimited)",
+        "name": "roleLimit",
+        "type": "number"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "ctaLabel",
+        "type": "string",
+        "title": "CTA Label"
+      },
+      {
+        "options": {
+          "list": [
+            {
+              "title": "Buy (goes to purchase flow)",
+              "value": "buy"
+            },
+            {
+              "title": "Contact (goes to contact page)",
+              "value": "contact"
+            }
+          ],
+          "layout": "radio"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "valid",
+                "constraint": [
+                  "buy",
+                  "contact"
+                ]
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "ctaType",
+        "type": "string",
+        "title": "CTA Type"
+      },
+      {
+        "rows": 2,
+        "description": "Optional note shown on Starter tier about upgrading",
+        "name": "upgradeNote",
+        "type": "text"
+      },
+      {
+        "rows": 3,
+        "description": "Only used on the Bespoke tier card",
+        "name": "bespokeDescription",
+        "type": "text"
+      }
+    ],
+    "name": "pricingTier",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Category Name"
+      },
+      {
+        "options": {
+          "source": "name"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "description": "Comma-separated, e.g. \"Customer excellence, stability, trust, structure\"",
+        "name": "keyDimensionsAssessed",
+        "type": "string"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "heroHeadline",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "heroIntroCopy",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "heroImage",
+        "type": "image"
+      },
+      {
+        "name": "dimensionsSectionHeading",
+        "type": "string"
+      },
+      {
+        "rows": 4,
+        "name": "dimensionsSectionBody",
+        "type": "text"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "dimensionsSectionImage",
+        "type": "image"
+      },
+      {
+        "name": "featureCardsHeading",
+        "type": "string",
+        "title": "Feature Cards Section Heading"
+      },
+      {
+        "rows": 2,
+        "name": "featureCardsSubheading",
+        "type": "text",
+        "title": "Feature Cards Section Subheading"
+      },
+      {
+        "of": [
+          {
+            "fields": [
+              {
+                "name": "heading",
+                "type": "string"
+              },
+              {
+                "rows": 3,
+                "name": "body",
+                "type": "text"
+              }
+            ],
+            "type": "object"
+          }
+        ],
+        "name": "featureCards",
+        "type": "array"
+      },
+      {
+        "name": "stat1Heading",
+        "type": "string"
+      },
+      {
+        "name": "stat1Body",
+        "type": "string"
+      },
+      {
+        "name": "stat2Heading",
+        "type": "string"
+      },
+      {
+        "name": "stat2Body",
+        "type": "string"
+      },
+      {
+        "name": "stat3Heading",
+        "type": "string"
+      },
+      {
+        "name": "stat3Body",
+        "type": "string"
+      },
+      {
+        "name": "stat4Heading",
+        "type": "string"
+      },
+      {
+        "name": "stat4Body",
+        "type": "string"
+      },
+      {
+        "name": "roleRosterHeading",
+        "type": "string"
+      },
+      {
+        "name": "roleRosterSubheading",
+        "type": "string"
+      },
+      {
+        "name": "bespokeSectionHeading",
+        "type": "string"
+      },
+      {
+        "rows": 3,
+        "name": "bespokeSectionBody",
+        "type": "text"
+      },
+      {
+        "name": "bespokeCTALabel",
+        "type": "string"
+      },
+      {
+        "options": {
+          "hotspot": true
+        },
+        "name": "bespokeSectionImage",
+        "type": "image"
+      }
+    ],
+    "name": "jobCategory",
+    "type": "document"
+  },
+  {
+    "fields": [
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "name",
+        "type": "string",
+        "title": "Role Name"
+      },
+      {
+        "options": {
+          "source": "name"
+        },
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "custom"
+              },
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "name": "slug",
+        "type": "slug"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "presence",
+                "constraint": "required"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "to": [
+          {
+            "type": "jobCategory"
+          }
+        ],
+        "name": "parentCategory",
+        "type": "reference",
+        "title": "Job Category"
+      },
+      {
+        "rows": 2,
+        "description": "A one-line summary of what this role does",
+        "name": "tasks",
+        "type": "text"
+      },
+      {
+        "description": "Comma-separated strengths, e.g. \"Organisation, attention to detail, clear communication\"",
+        "name": "strengths",
+        "type": "string"
+      },
+      {
+        "options": {
+          "accept": ".json"
+        },
+        "description": "Lottie JSON animation file",
+        "name": "lottieFile",
+        "type": "file",
+        "title": "Lottie Animation"
+      },
+      {
+        "description": "How this role appears in the HubSpot \"Vero Assess Roles\" dropdown. Leave blank to use the Role Name.",
+        "name": "hubspotLabel",
+        "type": "string",
+        "title": "HubSpot Label"
+      },
+      {
+        "validation": [
+          {
+            "rules": [
+              {
+                "flag": "regex",
+                "constraint": {
+                  "pattern": "/^[a-z0-9_-]+$/",
+                  "name": "lowercase letters, numbers, hyphens, underscores only",
+                  "invert": false
+                }
+              },
+              {
+                "flag": "custom"
+              }
+            ],
+            "level": "error"
+          }
+        ],
+        "description": "Stable identifier sent to HubSpot (lowercase letters, numbers, hyphens, underscores). Leave blank to use the slug.",
+        "name": "hubspotValue",
+        "type": "string",
+        "title": "HubSpot Internal Value"
+      }
+    ],
+    "name": "role",
+    "type": "document"
+  }
+]

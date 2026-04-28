@@ -27,8 +27,34 @@ export default function BespokePage() {
     requirements: '',
   });
   const [submitAttempted, setSubmitAttempted] = useState(false);
+  const [touched, setTouched] = useState<Partial<Record<keyof BespokeDetails, boolean>>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof BespokeDetails, string>>>({});
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const PHONE_RE = /^[+()\d\s-]{7,}$/;
+
+  const validateField = (
+    field: keyof BespokeDetails,
+    value: string,
+  ): string | undefined => {
+    switch (field) {
+      case 'firstName': return value.trim() ? undefined : 'First name is required';
+      case 'lastName':  return value.trim() ? undefined : 'Last name is required';
+      case 'email':
+        if (!value.trim()) return 'Email is required';
+        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email';
+        return undefined;
+      case 'company':   return value.trim() ? undefined : 'Company is required';
+      case 'jobTitle':  return value.trim() ? undefined : 'Job title is required';
+      case 'phone':
+        if (!value.trim()) return 'Phone number is required';
+        if (!PHONE_RE.test(value.trim())) return 'Enter a valid phone number';
+        return undefined;
+      default: return undefined;
+    }
+  };
 
   useEffect(() => {
     if (selectedRoles.length === 0) {
@@ -46,28 +72,39 @@ export default function BespokePage() {
     'firstName', 'lastName', 'email', 'company', 'jobTitle', 'phone',
   ];
 
-  const errors: Partial<Record<keyof BespokeDetails, string>> = {};
-  if (submitAttempted) {
-    if (!form.firstName.trim()) errors.firstName = 'First name is required';
-    if (!form.lastName.trim()) errors.lastName = 'Last name is required';
-    if (!form.email.trim()) errors.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Enter a valid email';
-    if (!form.company.trim()) errors.company = 'Company is required';
-    if (!form.jobTitle.trim()) errors.jobTitle = 'Job title is required';
-    if (!form.phone.trim()) errors.phone = 'Phone number is required';
-  }
+  const runFullValidation = (): Partial<Record<keyof BespokeDetails, string>> => {
+    const errs: Partial<Record<keyof BespokeDetails, string>> = {};
+    requiredFields.forEach((f) => {
+      const msg = validateField(f, String(form[f] ?? ''));
+      if (msg) errs[f] = msg;
+    });
+    return errs;
+  };
 
   const requiredFilled = requiredFields.every((f) => form[f].trim().length > 0);
-  const valid = Object.keys(errors).length === 0 && requiredFilled;
 
   const set = (field: keyof BespokeDetails) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) =>
-      setForm((prev) => ({ ...prev, [field]: e.target.value }));
+    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+      const value = e.target.value;
+      setForm((prev) => ({ ...prev, [field]: value }));
+      if (touched[field] || submitAttempted) {
+        const msg = validateField(field, value);
+        setErrors((prev) => ({ ...prev, [field]: msg }));
+      }
+    };
+
+  const handleBlur = (field: keyof BespokeDetails) => () => {
+    setTouched((t) => ({ ...t, [field]: true }));
+    const msg = validateField(field, String(form[field] ?? ''));
+    setErrors((prev) => ({ ...prev, [field]: msg }));
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitAttempted(true);
-    if (!valid) return;
+    const errs = runFullValidation();
+    setErrors(errs);
+    if (Object.keys(errs).length > 0 || !requiredFilled) return;
 
     setIsLoading(true);
     setSubmitError(null);
@@ -140,10 +177,17 @@ export default function BespokePage() {
                       type="text"
                       value={form.firstName}
                       onChange={set('firstName')}
+                      onBlur={handleBlur('firstName')}
                       required
                       autoComplete="given-name"
+                      aria-invalid={!!errors.firstName}
+                      aria-describedby={errors.firstName ? 'bespoke-firstName-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.firstName ?? ''}</span>
+                    {errors.firstName && (
+                      <span id="bespoke-firstName-error" className="form-field__error" role="alert">
+                        {errors.firstName}
+                      </span>
+                    )}
                   </div>
                   <div className="form-field">
                     <label htmlFor="bespoke-lastName" className="form-field__label text-label--sm color--tertiary">
@@ -155,10 +199,17 @@ export default function BespokePage() {
                       type="text"
                       value={form.lastName}
                       onChange={set('lastName')}
+                      onBlur={handleBlur('lastName')}
                       required
                       autoComplete="family-name"
+                      aria-invalid={!!errors.lastName}
+                      aria-describedby={errors.lastName ? 'bespoke-lastName-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.lastName ?? ''}</span>
+                    {errors.lastName && (
+                      <span id="bespoke-lastName-error" className="form-field__error" role="alert">
+                        {errors.lastName}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -173,10 +224,17 @@ export default function BespokePage() {
                       type="email"
                       value={form.email}
                       onChange={set('email')}
+                      onBlur={handleBlur('email')}
                       required
                       autoComplete="email"
+                      aria-invalid={!!errors.email}
+                      aria-describedby={errors.email ? 'bespoke-email-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.email ?? ''}</span>
+                    {errors.email && (
+                      <span id="bespoke-email-error" className="form-field__error" role="alert">
+                        {errors.email}
+                      </span>
+                    )}
                   </div>
                   <div className="form-field">
                     <label htmlFor="bespoke-company" className="form-field__label text-label--sm color--tertiary">
@@ -188,10 +246,17 @@ export default function BespokePage() {
                       type="text"
                       value={form.company}
                       onChange={set('company')}
+                      onBlur={handleBlur('company')}
                       required
                       autoComplete="organization"
+                      aria-invalid={!!errors.company}
+                      aria-describedby={errors.company ? 'bespoke-company-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.company ?? ''}</span>
+                    {errors.company && (
+                      <span id="bespoke-company-error" className="form-field__error" role="alert">
+                        {errors.company}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -206,10 +271,17 @@ export default function BespokePage() {
                       type="text"
                       value={form.jobTitle}
                       onChange={set('jobTitle')}
+                      onBlur={handleBlur('jobTitle')}
                       required
                       autoComplete="organization-title"
+                      aria-invalid={!!errors.jobTitle}
+                      aria-describedby={errors.jobTitle ? 'bespoke-jobTitle-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.jobTitle ?? ''}</span>
+                    {errors.jobTitle && (
+                      <span id="bespoke-jobTitle-error" className="form-field__error" role="alert">
+                        {errors.jobTitle}
+                      </span>
+                    )}
                   </div>
                   <div className="form-field">
                     <label htmlFor="bespoke-phone" className="form-field__label text-label--sm color--tertiary">
@@ -221,10 +293,17 @@ export default function BespokePage() {
                       type="tel"
                       value={form.phone}
                       onChange={set('phone')}
+                      onBlur={handleBlur('phone')}
                       required
                       autoComplete="tel"
+                      aria-invalid={!!errors.phone}
+                      aria-describedby={errors.phone ? 'bespoke-phone-error' : undefined}
                     />
-                    <span className="form-field__error">{errors.phone ?? ''}</span>
+                    {errors.phone && (
+                      <span id="bespoke-phone-error" className="form-field__error" role="alert">
+                        {errors.phone}
+                      </span>
+                    )}
                   </div>
                 </div>
               </div>

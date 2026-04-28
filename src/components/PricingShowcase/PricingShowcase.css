@@ -1,0 +1,27 @@
+/* ── Pricing showcase header (reusable on assessment pages) ── */
+
+.pricing-showcase-header {
+  padding-block: 5rem 1rem;
+  /* Override the .section utility's default bottom border — the pricing
+     showcase reads as one continuous block (header → tier cards → table). */
+  border-bottom: none;
+}
+
+.pricing-showcase-header__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 1.25rem;
+  margin-inline: auto;
+  max-width: 60ch;
+}
+
+@media (max-width: 768px) {
+  .pricing-showcase-header {
+    padding-block: 3rem 0.5rem;
+  }
+  .pricing-showcase-header__inner {
+    gap: 1rem;
+  }
+}

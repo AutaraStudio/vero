@@ -16,10 +16,11 @@
   }
 }
 
-/* ── Inner box ── */
+/* ── Inner box (transparent — sits directly on the section bg) ── */
 
 .cta-statement__box {
-  background-color: var(--color--surface-raised);
+  background-color: transparent;
+  border: 1px solid var(--color--border-default);
   border-radius: var(--radius--xl);
   padding: 5rem 2rem 4rem;
   overflow: hidden;
@@ -29,6 +30,13 @@
   .cta-statement__box {
     padding: 3rem 1.5rem;
   }
+}
+
+/* The dot indicator overlays the horizontal divider line, so its background
+   has to match whatever the section is rendering — use the page-bg token so
+   it adapts to whichever theme the section is set to. */
+.cta-statement__dot {
+  background-color: var(--color--page-bg);
 }
 
 /* ── Header ── */
@@ -142,6 +150,9 @@
 .cta-statement__cta {
   display: flex;
   justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.875rem;
   padding-top: 3rem;
 }
 

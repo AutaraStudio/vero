@@ -52,6 +52,14 @@ export const howItWorksPage = defineType({
       type: 'string',
       group: 'hero',
     }),
+    defineField({
+      name: 'heroImage',
+      title: 'Hero Image',
+      type: 'image',
+      group: 'hero',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+    }),
 
     /* ── Getting Started ── */
     defineField({

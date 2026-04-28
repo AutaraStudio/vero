@@ -303,6 +303,7 @@ function FormField({
   placeholder = '',
   value,
   onChange,
+  onBlur,
   error,
   readOnly = false,
 }: {
@@ -312,9 +313,11 @@ function FormField({
   placeholder?: string;
   value: string;
   onChange: (v: string) => void;
+  onBlur?: () => void;
   error?: string;
   readOnly?: boolean;
 }) {
+  const errorId = `${id}-error`;
   return (
     <div className="form-field">
       <label className="form-field__label text-label--sm color--tertiary" htmlFor={id}>
@@ -326,10 +329,13 @@ function FormField({
         className={`form-field__input${error ? ' has-error' : ''}`}
         value={value}
         onChange={(e) => onChange(e.target.value)}
+        onBlur={onBlur}
         placeholder={placeholder}
         readOnly={readOnly}
+        aria-invalid={!!error}
+        aria-describedby={error ? errorId : undefined}
       />
-      {error && <span className="form-field__error">{error}</span>}
+      {error && <span id={errorId} className="form-field__error" role="alert">{error}</span>}
     </div>
   );
 }
@@ -365,6 +371,7 @@ export default function DetailsPage() {
   }));
 
   const [errors, setErrors] = useState<Partial<Record<keyof ContactDetails, string>>>({});
+  const [touched, setTouched] = useState<Partial<Record<keyof ContactDetails, boolean>>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
 
   // Logo upload state
@@ -455,24 +462,76 @@ export default function DetailsPage() {
 
   // ── Validation ─────────────────────────────────────────────
 
+  const HEX_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
+  const SLUG_RE = /^[a-z0-9-]+$/;
+  const PHONE_RE = /^[+()\d\s-]{7,}$/;
+
+  const validateField = (
+    field: keyof ContactDetails,
+    value: string,
+    full: ContactDetails,
+  ): string | undefined => {
+    switch (field) {
+      case 'firstName':       return value.trim() ? undefined : 'First name is required';
+      case 'lastName':        return value.trim() ? undefined : 'Last name is required';
+      case 'email':
+        if (!value.trim()) return 'Email is required';
+        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        return undefined;
+      case 'company':         return value.trim() ? undefined : 'Company is required';
+      case 'jobTitle':        return value.trim() ? undefined : 'Job title is required';
+      case 'phone':
+        if (!value.trim()) return 'Phone is required';
+        if (!PHONE_RE.test(value.trim())) return 'Enter a valid phone number';
+        return undefined;
+      case 'keyContactName':
+        if (full.keyContactSameAsMe) return undefined;
+        return value.trim() ? undefined : 'Key contact name is required';
+      case 'keyContactEmail':
+        if (full.keyContactSameAsMe) return undefined;
+        if (!value.trim()) return 'Key contact email is required';
+        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        return undefined;
+      case 'bespokeUrl':
+        if (isStarter || !value) return undefined;
+        return SLUG_RE.test(value) ? undefined : 'Only lowercase letters, numbers, and hyphens';
+      case 'brandColour1':
+      case 'brandColour2':
+        if (isStarter || !value) return undefined;
+        return HEX_RE.test(value) ? undefined : 'Enter a valid hex colour (e.g. #ff6600)';
+      default:                return undefined;
+    }
+  };
+
   const validate = () => {
+    const fields: (keyof ContactDetails)[] = [
+      'firstName', 'lastName', 'email', 'company', 'jobTitle', 'phone',
+      'keyContactName', 'keyContactEmail',
+      'bespokeUrl', 'brandColour1', 'brandColour2',
+    ];
     const errs: Partial<Record<keyof ContactDetails, string>> = {};
-    if (!form.firstName.trim()) errs.firstName = 'First name is required';
-    if (!form.lastName.trim()) errs.lastName = 'Last name is required';
-    if (!form.email.trim()) errs.email = 'Email is required';
-    if (!form.company.trim()) errs.company = 'Company is required';
-    if (!form.jobTitle.trim()) errs.jobTitle = 'Job title is required';
-    if (!form.phone.trim()) errs.phone = 'Phone is required';
-    if (!isStarter && form.bespokeUrl && !/^[a-z0-9-]+$/.test(form.bespokeUrl)) {
-      errs.bespokeUrl = 'Only lowercase letters, numbers, and hyphens';
-    }
-    if (!isStarter && form.brandColour1 && !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour1)) {
-      errs.brandColour1 = 'Enter a valid hex colour (e.g. #ff6600)';
-    }
-    if (!isStarter && form.brandColour2 && !/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour2)) {
-      errs.brandColour2 = 'Enter a valid hex colour (e.g. #ff6600)';
-    }
+    fields.forEach((f) => {
+      const msg = validateField(f, String(form[f] ?? ''), form);
+      if (msg) errs[f] = msg;
+    });
     return errs;
+  };
+
+  const setField = (field: keyof ContactDetails, value: string) => {
+    setForm((p) => {
+      const next = { ...p, [field]: value };
+      if (touched[field] || submitAttempted) {
+        const msg = validateField(field, value, next);
+        setErrors((e) => ({ ...e, [field]: msg }));
+      }
+      return next;
+    });
+  };
+
+  const handleBlur = (field: keyof ContactDetails) => {
+    setTouched((t) => ({ ...t, [field]: true }));
+    const msg = validateField(field, String(form[field] ?? ''), form);
+    setErrors((e) => ({ ...e, [field]: msg }));
   };
 
   const requiredFilled = !!(
@@ -566,7 +625,7 @@ export default function DetailsPage() {
 
   if (selectedRoles.length === 0) return null;
 
-  const err = submitAttempted ? errors : {};
+  const err = errors;
 
   return (
     <section className="details-page">
@@ -596,7 +655,8 @@ export default function DetailsPage() {
                   id="firstName"
                   label="First name"
                   value={form.firstName}
-                  onChange={(v) => setForm((p) => ({ ...p, firstName: v }))}
+                  onChange={(v) => setField('firstName', v)}
+                  onBlur={() => handleBlur('firstName')}
                   placeholder="Jane"
                   error={err.firstName}
                 />
@@ -604,7 +664,8 @@ export default function DetailsPage() {
                   id="lastName"
                   label="Last name"
                   value={form.lastName}
-                  onChange={(v) => setForm((p) => ({ ...p, lastName: v }))}
+                  onChange={(v) => setField('lastName', v)}
+                  onBlur={() => handleBlur('lastName')}
                   placeholder="Smith"
                   error={err.lastName}
                 />
@@ -615,7 +676,8 @@ export default function DetailsPage() {
                   label="Email"
                   type="email"
                   value={form.email}
-                  onChange={(v) => setForm((p) => ({ ...p, email: v }))}
+                  onChange={(v) => setField('email', v)}
+                  onBlur={() => handleBlur('email')}
                   placeholder="jane@company.com"
                   error={err.email}
                 />
@@ -623,7 +685,8 @@ export default function DetailsPage() {
                   id="company"
                   label="Company name"
                   value={form.company}
-                  onChange={(v) => setForm((p) => ({ ...p, company: v }))}
+                  onChange={(v) => setField('company', v)}
+                  onBlur={() => handleBlur('company')}
                   placeholder="Acme Ltd"
                   error={err.company}
                 />
@@ -633,7 +696,8 @@ export default function DetailsPage() {
                   id="jobTitle"
                   label="Job title"
                   value={form.jobTitle}
-                  onChange={(v) => setForm((p) => ({ ...p, jobTitle: v }))}
+                  onChange={(v) => setField('jobTitle', v)}
+                  onBlur={() => handleBlur('jobTitle')}
                   placeholder="Head of Talent"
                   error={err.jobTitle}
                 />
@@ -642,7 +706,8 @@ export default function DetailsPage() {
                   label="Phone"
                   type="tel"
                   value={form.phone}
-                  onChange={(v) => setForm((p) => ({ ...p, phone: v }))}
+                  onChange={(v) => setField('phone', v)}
+                  onBlur={() => handleBlur('phone')}
                   placeholder="+44 7700 000000"
                   error={err.phone}
                 />
@@ -669,7 +734,9 @@ export default function DetailsPage() {
                   id="keyContactName"
                   label="Key contact name"
                   value={form.keyContactName}
-                  onChange={(v) => setForm((p) => ({ ...p, keyContactName: v }))}
+                  onChange={(v) => setField('keyContactName', v)}
+                  onBlur={() => handleBlur('keyContactName')}
+                  error={err.keyContactName}
                   readOnly={form.keyContactSameAsMe}
                 />
                 <FormField
@@ -677,7 +744,9 @@ export default function DetailsPage() {
                   label="Key contact email"
                   type="email"
                   value={form.keyContactEmail}
-                  onChange={(v) => setForm((p) => ({ ...p, keyContactEmail: v }))}
+                  onChange={(v) => setField('keyContactEmail', v)}
+                  onBlur={() => handleBlur('keyContactEmail')}
+                  error={err.keyContactEmail}
                   readOnly={form.keyContactSameAsMe}
                 />
               </div>
@@ -749,15 +818,18 @@ export default function DetailsPage() {
                       type="text"
                       className={`form-field__input${err.bespokeUrl ? ' has-error' : ''}`}
                       value={form.bespokeUrl}
-                      onChange={(e) => setForm((p) => ({ ...p, bespokeUrl: e.target.value }))}
+                      onChange={(e) => setField('bespokeUrl', e.target.value)}
+                      onBlur={() => handleBlur('bespokeUrl')}
                       placeholder="your-company"
+                      aria-invalid={!!err.bespokeUrl}
+                      aria-describedby={err.bespokeUrl ? 'bespokeUrl-error' : undefined}
                     />
                     <span className="url-input-suffix text-body--sm color--tertiary">
                       .veroassess.com
                     </span>
                   </div>
                   {err.bespokeUrl && (
-                    <span className="form-field__error">{err.bespokeUrl}</span>
+                    <span id="bespokeUrl-error" className="form-field__error" role="alert">{err.bespokeUrl}</span>
                   )}
                 </div>
               </div>
@@ -780,17 +852,14 @@ export default function DetailsPage() {
                       When a candidate completes all 4 sections of Vero Assess, a combined feedback
                       report is automatically generated and sent to the candidate.
                     </p>
-                    <a
-                      href="#"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="feedback-card__example"
-                    >
-                      <span>View an example report</span>
-                      <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                        <path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </a>
+                    {/* TODO: re-enable once an example report PDF is available.
+                       <a href="/path/to/example-report.pdf" target="_blank" rel="noopener noreferrer" className="feedback-card__example">
+                         <span>View an example report</span>
+                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
+                           <path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
+                         </svg>
+                       </a>
+                    */}
                   </div>
                 </div>
 
@@ -907,9 +976,12 @@ export default function DetailsPage() {
                         type="text"
                         className={`form-field__input${err.brandColour1 ? ' has-error' : ''}`}
                         value={form.brandColour1}
-                        onChange={(e) => setForm((p) => ({ ...p, brandColour1: normaliseHex(e.target.value) }))}
+                        onChange={(e) => setField('brandColour1', normaliseHex(e.target.value))}
+                        onBlur={() => handleBlur('brandColour1')}
                         placeholder="#472d6a"
                         maxLength={7}
+                        aria-invalid={!!err.brandColour1}
+                        aria-describedby={err.brandColour1 ? 'brandColour1-error' : undefined}
                       />
                       {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour1) && (
                         <span
@@ -920,7 +992,7 @@ export default function DetailsPage() {
                       )}
                     </div>
                     {err.brandColour1 && (
-                      <span className="form-field__error">{err.brandColour1}</span>
+                      <span id="brandColour1-error" className="form-field__error" role="alert">{err.brandColour1}</span>
                     )}
                   </div>
                   {/* Brand colour 2 */}
@@ -937,9 +1009,12 @@ export default function DetailsPage() {
                         type="text"
                         className={`form-field__input${err.brandColour2 ? ' has-error' : ''}`}
                         value={form.brandColour2}
-                        onChange={(e) => setForm((p) => ({ ...p, brandColour2: normaliseHex(e.target.value) }))}
+                        onChange={(e) => setField('brandColour2', normaliseHex(e.target.value))}
+                        onBlur={() => handleBlur('brandColour2')}
                         placeholder="#fec601"
                         maxLength={7}
+                        aria-invalid={!!err.brandColour2}
+                        aria-describedby={err.brandColour2 ? 'brandColour2-error' : undefined}
                       />
                       {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour2) && (
                         <span
@@ -950,7 +1025,7 @@ export default function DetailsPage() {
                       )}
                     </div>
                     {err.brandColour2 && (
-                      <span className="form-field__error">{err.brandColour2}</span>
+                      <span id="brandColour2-error" className="form-field__error" role="alert">{err.brandColour2}</span>
                     )}
                   </div>
                 </div>

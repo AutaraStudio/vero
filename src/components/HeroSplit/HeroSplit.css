@@ -1,0 +1,228 @@
+/* ============================================================
+   HeroSplit
+   Subpage hero — text on the left, image on the right.
+   Use HeroCentred for the home / centred hero pattern.
+============================================================ */
+
+.hero-split {
+  position: relative;
+  background: var(--color--page-bg);
+  overflow: hidden;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+.hero-split__inner {
+  position: relative;
+  z-index: 1;
+  /* Matches the site-wide .container max-width so the hero aligns with the
+     content blocks below it. */
+  max-width: 72rem;
+  margin: 0 auto;
+  padding:
+    calc(var(--height--navbar) + var(--space--section))
+    var(--space--container-padding)
+    var(--space--section);
+}
+
+@media (max-width: 767px) {
+  .hero-split__inner {
+    padding-top: calc(var(--height--navbar) + var(--space--section-mobile));
+    padding-bottom: var(--space--section-mobile);
+  }
+}
+
+/* ── Grid ─────────────────────────────────────────────────── */
+.hero-split__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+}
+
+.hero-split.is-reverse .hero-split__grid {
+  direction: rtl;
+}
+
+.hero-split.is-reverse .hero-split__text,
+.hero-split.is-reverse .hero-split__media {
+  direction: ltr;
+}
+
+@media (max-width: 900px) {
+  .hero-split__grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+  .hero-split.is-reverse .hero-split__grid {
+    direction: ltr;
+  }
+}
+
+/* ── Text column ──────────────────────────────────────────── */
+.hero-split__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero-split__badge {
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  transition: var(--transition--default);
+}
+a.hero-split__badge:hover {
+  color: var(--color--text-primary);
+}
+
+.hero-split__title {
+  margin: 0 0 1.25rem;
+  color: var(--color--text-primary);
+}
+
+.hero-split__intro {
+  margin: 0 0 2rem;
+  color: var(--color--text-secondary);
+}
+
+/* ── Badges row (renders between headline and intro) ──────── */
+.hero-split__badges {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hero-split__badges-item {
+  display: inline-flex;
+}
+
+.hero-split__pill {
+  /* Reuses .section-label visual treatment + adds zero-margin override
+     since section-label has its own margin-bottom intended for solo use. */
+  margin-bottom: 0;
+  text-decoration: none;
+  transition: var(--transition--default);
+}
+
+a.hero-split__pill:hover {
+  color: var(--color--text-primary);
+}
+
+/* When the text column is centred, centre the badges row too */
+.hero-split--text-h-center .hero-split__badges {
+  justify-content: center;
+}
+
+.hero-split__cta {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 479px) {
+  .hero-split__cta {
+    flex-direction: column-reverse;
+    align-items: stretch;
+    width: 100%;
+  }
+  .hero-split__cta > * {
+    width: 100%;
+  }
+}
+
+/* ── Media column ─────────────────────────────────────────── */
+.hero-split__media {
+  position: relative;
+  width: 100%;
+}
+
+.hero-split__image,
+.hero-split__image-placeholder {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius--lg);
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+}
+
+/* ============================================================
+   VARIANTS
+============================================================ */
+
+/* ── Image height — viewport fill ─────────────────────────
+   Image stretches from just below the nav to just above the
+   bottom of the viewport, with breathing room top + bottom. */
+.hero-split--image-viewport .hero-split__inner {
+  /* Section becomes ~viewport-tall */
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  /* Padded so the image fills most of the viewport but doesn't kiss the
+     edges. Top respects the nav offset, bottom matches the top gap. */
+  padding-top: calc(var(--height--navbar) + 3rem);
+  padding-bottom: 3rem;
+}
+
+.hero-split--image-viewport .hero-split__grid {
+  flex: 1;
+  align-items: stretch;
+}
+
+.hero-split--image-viewport .hero-split__media {
+  height: 100%;
+}
+
+.hero-split--image-viewport .hero-split__image,
+.hero-split--image-viewport .hero-split__image-placeholder {
+  height: 100%;
+  aspect-ratio: auto;
+  object-fit: cover;
+}
+
+@media (max-width: 900px) {
+  /* On stacked layouts, viewport-fill makes less sense — fall back
+     to a tall but bounded image height so it doesn't dominate the page. */
+  .hero-split--image-viewport .hero-split__inner {
+    min-height: 0;
+  }
+  .hero-split--image-viewport .hero-split__media {
+    height: auto;
+  }
+  .hero-split--image-viewport .hero-split__image,
+  .hero-split--image-viewport .hero-split__image-placeholder {
+    aspect-ratio: 4 / 3;
+    height: auto;
+  }
+}
+
+/* ── Text vertical alignment within column ───────────────── */
+.hero-split--text-v-top    .hero-split__text { align-self: start;  }
+.hero-split--text-v-center .hero-split__text { align-self: center; }
+.hero-split--text-v-bottom .hero-split__text { align-self: end;    }
+
+/* ── Text horizontal alignment within column ─────────────── */
+.hero-split--text-h-left .hero-split__text {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.hero-split--text-h-center .hero-split__text {
+  align-items: center;
+  text-align: center;
+}
+
+/* When the text column is centred, also centre its CTA row + cap measures */
+.hero-split--text-h-center .hero-split__cta {
+  justify-content: center;
+}
+.hero-split--text-h-center .hero-split__title,
+.hero-split--text-h-center .hero-split__intro {
+  margin-inline: auto;
+}

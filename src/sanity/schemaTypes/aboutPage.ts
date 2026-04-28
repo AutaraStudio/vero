@@ -116,9 +116,22 @@ export const aboutPage = defineType({
       group: 'clients',
       of: [
         {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+          type: 'object',
+          preview: { select: { title: 'name', media: 'logo' } },
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Company name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'logo',
+              title: 'Logo (SVG, PNG, or WebP)',
+              type: 'file',
+              options: { accept: 'image/svg+xml,image/png,image/webp' },
+            }),
+          ],
         },
       ],
     }),
@@ -136,9 +149,22 @@ export const aboutPage = defineType({
       group: 'clients',
       of: [
         {
-          type: 'image',
-          options: { hotspot: true },
-          fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+          type: 'object',
+          preview: { select: { title: 'name', media: 'logo' } },
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Company name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'logo',
+              title: 'Logo (SVG, PNG, or WebP)',
+              type: 'file',
+              options: { accept: 'image/svg+xml,image/png,image/webp' },
+            }),
+          ],
         },
       ],
     }),
@@ -149,6 +175,14 @@ export const aboutPage = defineType({
       title: 'Heading',
       type: 'string',
       group: 'team',
+    }),
+    defineField({
+      name: 'teamIntro',
+      title: 'Intro',
+      type: 'text',
+      rows: 3,
+      group: 'team',
+      description: 'Sticky intro paragraph shown next to the team list.',
     }),
     defineField({
       name: 'teamMembers',
@@ -162,6 +196,23 @@ export const aboutPage = defineType({
           fields: [
             defineField({ name: 'name', title: 'Name', type: 'string' }),
             defineField({ name: 'role', title: 'Role', type: 'string' }),
+            defineField({
+              name: 'category',
+              title: 'Category',
+              type: 'string',
+              options: {
+                list: [
+                  { title: 'Leadership',          value: 'leadership' },
+                  { title: 'Sales & Commercial',  value: 'sales' },
+                  { title: 'Marketing',           value: 'marketing' },
+                  { title: 'Customer Success',    value: 'customerSuccess' },
+                  { title: 'People & Operations', value: 'peopleOps' },
+                  { title: 'Science & Research',  value: 'science' },
+                ],
+                layout: 'dropdown',
+              },
+              description: 'Used to group members under category headings on the about page.',
+            }),
             defineField({
               name: 'headshot',
               title: 'Headshot',

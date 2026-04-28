@@ -1,0 +1,105 @@
+/* ============================================================
+   BespokeStrip
+   Deep-purple peak CTA strip with a three-shape fan anchored
+   to the bottom-right corner. Used on /pricing and on assessment
+   detail pages as the bespoke-solutions handoff.
+============================================================ */
+
+.pricing-bespoke {
+  padding-block: 6rem;
+}
+
+/* The inner card IS the peak-emphasis block — deep purple bg, rounded,
+   overflow-clipped so the fan stays inside it. */
+.pricing-bespoke__card {
+  position: relative;
+  overflow: hidden;
+  background: var(--color--page-bg); /* resolves to deep purple via data-theme on the card */
+  border-radius: var(--radius--xl);
+}
+
+.pricing-bespoke__inner {
+  position: relative;
+  z-index: 1;
+  padding: 3.5rem 3rem;
+  max-width: 60ch;
+}
+
+/* ── With-image variant — 2-col layout, image on the right ──── */
+
+/* Side-by-side variant — tighten the heading cap so it fits the
+   narrower text column instead of using the centred-mode 30ch. */
+.pricing-bespoke__card--with-image .pricing-bespoke__text > h2 {
+  max-width: 18ch;
+}
+
+.pricing-bespoke__card--with-image .pricing-bespoke__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  max-width: none;
+}
+
+@media (max-width: 900px) {
+  .pricing-bespoke__card--with-image .pricing-bespoke__inner {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pricing-bespoke__visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--swatch--neutral-0) 8%, transparent);
+}
+
+.pricing-bespoke__image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pricing-bespoke__cta {
+  margin-top: 1.5rem;
+}
+
+/* Three-shape fan anchored to the bottom-right of the CARD.
+   Same anchoring + rotation pattern as CheckoutFan. */
+.bespoke-fan {
+  position: absolute;
+  right: clamp(-40px, -2vw, -24px);
+  bottom: clamp(-40px, -2vw, -24px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.bespoke-fan__shape {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: clamp(160px, 10vw + 60px, 280px);
+  transform-origin: bottom right;
+}
+
+@media (max-width: 768px) {
+  .pricing-bespoke {
+    padding-block: 4rem;
+  }
+
+  .pricing-bespoke__inner {
+    padding: 2.5rem 1.75rem 9rem;
+  }
+
+  .bespoke-fan {
+    right: -2rem;
+    bottom: -2rem;
+  }
+
+  .bespoke-fan__shape {
+    width: clamp(130px, 30vw, 200px);
+  }
+}

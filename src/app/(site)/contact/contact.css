@@ -1,0 +1,142 @@
+/* ============================================================
+   /contact page — section layouts
+============================================================ */
+
+.contact-section {
+  background: var(--color--page-bg);
+  padding-top: 0;
+}
+
+.contact-section__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 3.5rem);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .contact-section__grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* ── Form column ──────────────────────────────────────────── */
+
+.contact-section__form {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: clamp(2rem, 4vw, 2.5rem);
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+}
+
+.contact-section__form-header h2 {
+  margin: 0;
+}
+
+.contact-section__form-header p {
+  margin: 0;
+}
+
+/* ============================================================
+   ContactMethods — sidebar card
+============================================================ */
+
+.contact-methods {
+  position: sticky;
+  top: calc(var(--height--navbar, 4rem) + 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(1.75rem, 3vw, 2rem);
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-top: 2px solid var(--swatch--purple-500);
+  border-radius: var(--radius--lg);
+}
+
+@media (max-width: 900px) {
+  .contact-methods {
+    position: static;
+    top: auto;
+  }
+}
+
+.contact-methods__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-methods__header h3 {
+  margin: 0;
+}
+
+.contact-methods__header p {
+  margin: 0;
+}
+
+.contact-methods__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+/* ── Method row ───────────────────────────────────────────── */
+
+.contact-methods__item {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--md);
+  text-decoration: none;
+  transition:
+    border-color var(--transition--default),
+    transform var(--transition--spring);
+}
+
+a.contact-methods__item:hover {
+  border-color: var(--color--border-default);
+  transform: translateY(-1px);
+}
+
+.contact-methods__item--static {
+  cursor: default;
+}
+
+.contact-methods__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--purple-500) 15%, transparent);
+  color: var(--swatch--purple-500);
+}
+
+.contact-methods__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.contact-methods__label {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+}
+
+.contact-methods__value {
+  word-break: break-word;
+}

@@ -1,0 +1,87 @@
+/* ============================================================
+   FAQSection
+   Click-to-expand FAQ accordion. Reused on /pricing and /contact.
+============================================================ */
+
+.pricing-faq {
+  padding-block: 5rem;
+}
+
+.pricing-faq__head {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
+  margin-inline: auto;
+  margin-bottom: 3rem;
+}
+
+.pricing-faq__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.pricing-faq-item {
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+  transition: border-color var(--transition--default);
+}
+
+.pricing-faq-item:hover { border-color: var(--color--border-strong); }
+.pricing-faq-item.is-open { border-color: var(--color--border-strong); }
+
+.pricing-faq-item__question {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 1.25rem 1.5rem;
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font-family: inherit;
+}
+
+.pricing-faq-item__question:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: -2px;
+}
+
+.pricing-faq-item__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--color--text-secondary);
+  transition: transform var(--transition--default);
+}
+
+.pricing-faq-item.is-open .pricing-faq-item__icon {
+  transform: rotate(180deg);
+}
+
+.pricing-faq-item__panel {
+  padding: 0 1.5rem 1.25rem;
+}
+
+.pricing-faq-item__answer {
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--color--border-subtle);
+  padding-block: 1rem 0.25rem;
+}
+
+.pricing-faq-item__answer p {
+  margin: 0;
+}
+
+.pricing-faq__footer {
+  margin-top: 2rem;
+  text-align: center;
+}

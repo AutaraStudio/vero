@@ -1,0 +1,143 @@
+/* ============================================================
+   TeamGrid
+   Two-column layout. Left column is a sticky header (eyebrow +
+   heading + intro). Right column is categorised member groups,
+   each with a category heading and a 2-up grid of headshot cards.
+============================================================ */
+
+.team-grid {
+  background: var(--color--page-bg);
+}
+
+.team-grid__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr);
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .team-grid__layout {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* ── Left column — sticky intro ───────────────────────────── */
+
+.team-grid__intro {
+  /* The aside itself stretches to the full layout height so position: sticky
+     on the inner element has room to "stick" within it. */
+  align-self: stretch;
+}
+
+.team-grid__intro-sticky {
+  position: sticky;
+  /* Offset for the fixed nav (~4rem) plus a bit of breathing room. */
+  top: calc(var(--height--navbar, 4rem) + 2rem);
+  align-items: flex-start;
+}
+
+@media (max-width: 900px) {
+  /* On stacked layouts the sticky behaviour is meaningless — let it scroll
+     normally above the member groups. */
+  .team-grid__intro-sticky {
+    position: static;
+    top: auto;
+  }
+}
+
+/* ── Right column — categorised groups ────────────────────── */
+
+.team-grid__groups {
+  display: flex;
+  flex-direction: column;
+  gap: 3.5rem;
+}
+
+.team-grid__group {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.team-grid__group-heading {
+  margin: 0;
+  padding-bottom: 0.875rem;
+  border-bottom: 1px solid var(--color--border-subtle);
+  text-wrap: balance;
+}
+
+.team-grid__group-members {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .team-grid__group-members {
+    grid-template-columns: 1fr;
+  }
+}
+
+.team-grid__empty {
+  margin: 0;
+}
+
+/* ── Member card ──────────────────────────────────────────── */
+
+.team-grid__member {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+  transition:
+    border-color var(--transition--default),
+    transform var(--transition--spring);
+}
+
+.team-grid__member:hover {
+  border-color: var(--color--border-strong);
+  transform: translateY(-2px);
+}
+
+/* ── Headshot ─────────────────────────────────────────────── */
+
+.team-grid__headshot {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: var(--color--surface-sunken);
+  overflow: hidden;
+}
+
+.team-grid__headshot-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.team-grid__headshot-placeholder {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Info ─────────────────────────────────────────────────── */
+
+.team-grid__info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 1.125rem 1.25rem 1.375rem;
+}
+
+.team-grid__name {
+  margin: 0;
+}
+
+.team-grid__role {
+  margin: 0;
+}

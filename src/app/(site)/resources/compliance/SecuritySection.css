@@ -1,0 +1,173 @@
+/* ============================================================
+   Compliance — SecuritySection
+   Split layout: text + checklist on the left, badges on the right.
+============================================================ */
+
+.security-section {
+  background: var(--color--page-bg);
+}
+
+.security-section__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .security-section__grid {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+}
+
+/* ── Left — text + checklist ──────────────────────────────── */
+
+.security-section__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1.25rem;
+}
+
+.security-section__text .section-intro {
+  margin-bottom: 0.5rem;
+}
+
+.security-section__list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  width: 100%;
+}
+
+.security-section__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1.25rem 1.25rem 1.25rem 1rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  transition:
+    border-color var(--transition--default),
+    transform var(--transition--spring);
+}
+
+.security-section__item:hover {
+  border-color: var(--color--border-strong);
+  transform: translateX(2px);
+}
+
+.security-section__item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--purple-500) 15%, transparent);
+  color: var(--swatch--purple-500);
+  margin-top: 0.125rem;
+}
+
+.security-section__item-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.security-section__item-label {
+  margin: 0;
+}
+
+.security-section__item-description {
+  margin: 0;
+}
+
+/* ── Right — sticky badges visual ─────────────────────────── */
+
+.security-section__visual {
+  position: relative;
+  width: 100%;
+  /* Push the initial position down so the badges grid starts vertically
+     aligned with the first checklist card on the left (after the
+     eyebrow / heading / body block). Once the user scrolls past, the
+     inner sticky child detaches and pins to top of viewport. */
+  padding-top: clamp(11rem, 14vw, 14rem);
+}
+
+.security-section__visual-sticky {
+  position: sticky;
+  top: calc(var(--height--navbar, 4rem) + 2rem);
+}
+
+@media (max-width: 900px) {
+  .security-section__visual {
+    padding-top: 0;
+  }
+  .security-section__visual-sticky {
+    position: static;
+    top: auto;
+  }
+}
+
+.security-section__badges-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius--lg);
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+}
+
+/* ── Placeholder badges grid (used until the graphic is uploaded) ── */
+
+.security-section__badges-placeholder {
+  width: 100%;
+  padding: 1.5rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+}
+
+.security-section__placeholder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+}
+
+.security-section__placeholder-badge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.625rem;
+  padding: 1.25rem 0.75rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--md);
+  text-align: center;
+}
+
+.security-section__placeholder-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--purple-500) 18%, transparent);
+  color: var(--swatch--purple-500);
+}
+
+.security-section__placeholder-label {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  text-wrap: balance;
+}

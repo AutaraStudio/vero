@@ -8,6 +8,7 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
+import CheckIcon from '@/components/ui/CheckIcon';
 import type { ThemeVariant } from '@/lib/theme';
 import './CTAStatement.css';
 
@@ -16,11 +17,12 @@ interface CTAStatementProps {
   eyebrow?: string;
   benefits?: string[];
   cta?: { label: string; href: string };
+  secondaryCta?: { label: string; href: string };
   theme?: ThemeVariant;
 }
 
 export default function CTAStatement({
-  statement = 'Siloed assessment data gives you fragments, not the full picture of candidate potential.',
+  statement = 'A CV tells you what someone has done. Not who they really are.',
   eyebrow = 'with Vero Assess you can',
   benefits = [
     'Assess every candidate consistently, at any volume',
@@ -29,6 +31,7 @@ export default function CTAStatement({
     'Build fairer, more inclusive hiring processes',
   ],
   cta = { label: 'Get started', href: '/get-started' },
+  secondaryCta,
   theme = 'brand-purple',
 }: CTAStatementProps) {
   const statementRef = useTextReveal({ delay: 0.1 });
@@ -139,6 +142,11 @@ export default function CTAStatement({
             <Button variant="cta" href={cta.href}>
               {cta.label}
             </Button>
+            {secondaryCta && (
+              <Button variant="secondary" href={secondaryCta.href}>
+                {secondaryCta.label}
+              </Button>
+            )}
           </div>
 
         </div>
@@ -147,13 +155,3 @@ export default function CTAStatement({
   );
 }
 
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 30 30" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
-      <path
-        d="M3.60209 10.4454L1.05312e-06 14.0337L10.0627 26.5459C10.4479 27.0249 11.1774 27.0244 11.562 26.545L30 3.56306L28.4255 1.98742L13.1243 14.3556C11.7762 15.438 9.81813 15.438 8.46955 14.3556L3.60209 10.4454Z"
-        fill="currentColor"
-      />
-    </svg>
-  );
-}

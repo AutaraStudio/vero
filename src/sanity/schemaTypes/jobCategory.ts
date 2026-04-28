@@ -9,6 +9,7 @@ export const jobCategory = defineType({
   groups: [
     { name: 'hero', title: 'Hero' },
     { name: 'dimensions', title: 'Dimensions' },
+    { name: 'inAction', title: 'In Action (Section Header)' },
     { name: 'featureCards', title: 'Feature Cards' },
     { name: 'stats', title: 'Stats' },
     { name: 'roster', title: 'Role Roster' },
@@ -69,18 +70,44 @@ export const jobCategory = defineType({
       options: { hotspot: true },
       group: 'dimensions',
     }),
+    /* ── In Action — section header above the FeatureCards carousel ── */
+    defineField({
+      name: 'inActionLabel',
+      title: 'Eyebrow Label',
+      type: 'string',
+      group: 'inAction',
+      description: 'Small uppercase label above the heading. Defaults to "In action".',
+    }),
+    defineField({
+      name: 'inActionHeading',
+      title: 'Section Heading',
+      type: 'string',
+      group: 'inAction',
+      description: 'Heading shown above the carousel.',
+    }),
+    defineField({
+      name: 'inActionIntro',
+      title: 'Section Intro',
+      type: 'text',
+      rows: 3,
+      group: 'inAction',
+      description: 'Short description shown under the heading.',
+    }),
+
     defineField({
       name: 'featureCardsHeading',
-      title: 'Feature Cards Section Heading',
+      title: 'Feature Cards Lead-Card Heading',
       type: 'string',
       group: 'featureCards',
+      description: 'Heading of the FIRST card in the carousel (e.g. "Keeping your team on track").',
     }),
     defineField({
       name: 'featureCardsSubheading',
-      title: 'Feature Cards Section Subheading',
+      title: 'Feature Cards Lead-Card Body',
       type: 'text',
       rows: 2,
       group: 'featureCards',
+      description: 'Body of the FIRST card in the carousel.',
     }),
     defineField({
       name: 'featureCards',
@@ -93,9 +120,17 @@ export const jobCategory = defineType({
           fields: [
             defineField({ name: 'heading', title: 'Heading', type: 'string' }),
             defineField({ name: 'body', title: 'Body', type: 'text', rows: 3 }),
+            defineField({
+              name: 'image',
+              title: 'Card Image',
+              type: 'image',
+              options: { hotspot: true },
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              description: 'Shown at the top of the card in the In Action carousel.',
+            }),
           ],
           preview: {
-            select: { title: 'heading' },
+            select: { title: 'heading', media: 'image' },
           },
         },
       ],

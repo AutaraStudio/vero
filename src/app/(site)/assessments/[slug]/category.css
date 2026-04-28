@@ -2,289 +2,7 @@
    CATEGORY PAGE — /assessments/[slug]
 ============================================================ */
 
-/* ============================================================
-   CATEGORY PAGE — DETAIL HERO
-============================================================ */
-
-/* ── Section wrapper ── */
-
-.detail-hero {
-  position: relative;
-  overflow: hidden;
-  border-bottom: 1px solid var(--color--border-default);
-  background-color: var(--color--page-bg);
-}
-
-/* ── Two-column inner grid ── */
-
-.detail-hero__inner {
-  position: relative;
-  z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  padding-top: calc(var(--height--navbar) + 4rem);
-  padding-bottom: 5rem;
-}
-
-/* ── Text column ── */
-
-.detail-hero__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25rem;
-}
-
-.detail-hero__intro {
-  color: var(--color--text-secondary);
-  max-width: 50ch;
-}
-
-.detail-hero__tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.detail-hero__tags .section-label {
-  margin-bottom: 0;
-}
-
-.detail-hero__cta {
-  margin-top: 0.25rem;
-}
-
-/* ── Visual column ── */
-
-.detail-hero__visual {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* (Brand shape decorations handled by BrandShapes component) */
-
-/* ── Image card ── */
-
-.detail-hero__image-card {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius--xl);
-  overflow: hidden;
-  border: 1px solid var(--color--border-default);
-  background: var(--color--surface-sunken);
-}
-
-.detail-hero__image {
-  object-fit: cover;
-}
-
-.detail-hero__image-placeholder {
-  width: 100%;
-  height: 100%;
-  background: var(--color--accent-purple-bg);
-}
-
-/* ── Features section ── */
-
-.features-section {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  border-bottom: 1px solid var(--color--border-default);
-  background-color: var(--color--page-bg);
-}
-
-.features-section__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25rem;
-}
-
-.features-section__placeholder {
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius--lg);
-  background: var(--color--accent-purple-bg);
-  border: 1px solid var(--color--accent-purple-border);
-}
-
-/* ── Examples section ── */
-
-.examples-section {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  background-color: var(--color--page-bg);
-  border-bottom: 1px solid var(--color--border-default);
-}
-
-.examples-section__header {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding-bottom: 3rem;
-}
-
-.example-card__badge {
-  margin-bottom: 0.75rem;
-}
-
-/* ── Metrics bar ── */
-
-.metrics-bar {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  border-bottom: 1px solid var(--color--border-default);
-  background-color: var(--color--page-bg);
-}
-
-.metrics-bar__inner {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.metrics-bar__stat {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 0.75rem;
-  padding: 0 3rem;
-}
-
-.metrics-bar__stat + .metrics-bar__stat {
-  border-left: 1px solid var(--color--border-default);
-}
-
-/* ── Item roster ── */
-
-.item-roster {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  border-bottom: 1px solid var(--color--border-default);
-}
-
-.item-roster__header {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  padding-bottom: 2.5rem;
-}
-
-.item-roster__list {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--lg);
-  overflow: hidden;
-}
-
-.item-roster__item {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--color--border-subtle);
-  text-decoration: none;
-  color: inherit;
-  transition: var(--transition--default);
-}
-
-.item-roster__item:last-child {
-  border-bottom: none;
-}
-
-.item-roster__item:hover {
-  background: var(--color--surface-sunken);
-}
-
-.item-roster__footer {
-  padding-top: 2rem;
-}
-
-/* ── Contact CTA ── */
-
-.contact-cta-section {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  border-bottom: 1px solid var(--color--border-default);
-}
-
-.contact-cta-card {
-  background: var(--color--surface-sunken);
-  border-top: none;
-}
-
-.contact-cta-card__inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 3rem;
-  padding: 3rem;
-}
-
-/* ── Responsive ── */
-
-@media (max-width: 1024px) {
-  .metrics-bar__stat {
-    padding: 0 1.5rem;
-  }
-}
-
-@media (max-width: 900px) {
-  .detail-hero__inner {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    padding-bottom: 3.5rem;
-  }
-
-  .detail-hero__visual {
-    order: -1;
-  }
-}
-
-@media (max-width: 767px) {
-  .detail-hero__inner {
-    padding-top: calc(var(--height--navbar) + var(--space--section-mobile));
-  }
-}
-
-@media (max-width: 768px) {
-  .features-section,
-  .examples-section,
-  .metrics-bar,
-  .item-roster,
-  .contact-cta-section {
-    padding-top: var(--space--section-mobile);
-    padding-bottom: var(--space--section-mobile);
-  }
-
-  .metrics-bar__inner {
-    grid-template-columns: 1fr;
-  }
-
-  .metrics-bar__stat {
-    padding: 1.5rem 0;
-    border-left: none !important;
-    border-bottom: 1px solid var(--color--border-default);
-  }
-
-  .metrics-bar__stat:last-child {
-    border-bottom: none;
-  }
-
-  .contact-cta-card__inner {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 2rem 1.5rem;
-  }
-}
-
+/* (DetailHero removed — page now uses the shared HeroSplit component) */
 
 /* ============================================================
    DIMENSIONS SECTION
@@ -332,52 +50,62 @@
 }
 
 
-/* ============================================================
-   IN ACTION SECTION — HEADER
-============================================================ */
-
-.in-action-header {
-  padding-top: var(--space--section);
-  padding-bottom: 3rem;
-  background-color: var(--color--page-bg);
-}
-
-.in-action-header__inner {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-  max-width: 42rem;
-}
-
-@media (max-width: 768px) {
-  .in-action-header {
-    padding-top: var(--space--section-mobile);
-    padding-bottom: 2rem;
-  }
-}
-
+/* (FeatureCardsSection now delegates to FeatureSlider — its CSS lives there) */
 
 /* ============================================================
-   STATS SECTION
+   STATS SECTION — card-based layout (3 or 4 cards)
 ============================================================ */
 
 .stats-section__grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(var(--stats-count, 3), minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .stats-section__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .stats-section__grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .stats-section__stat {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  text-align: center;
+  align-items: flex-start;
   gap: 0.75rem;
-  padding: 0 3rem;
+  padding: 1.75rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-top: 2px solid var(--swatch--purple-500);
+  border-radius: var(--radius--lg);
+  transition:
+    border-color var(--transition--default),
+    transform var(--transition--spring);
 }
 
-.stats-section__stat + .stats-section__stat {
-  border-left: 1px solid var(--color--border-default);
+.stats-section__stat:hover {
+  border-color: var(--color--border-strong);
+  transform: translateY(-2px);
+}
+
+.stats-section__index {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  font-variant-numeric: tabular-nums;
+}
+
+.stats-section__heading {
+  margin: 0;
+}
+
+.stats-section__body {
+  margin: 0;
 }
 
 @media (max-width: 1024px) {
@@ -402,51 +130,4 @@
 }
 
 
-/* ============================================================
-   BESPOKE SECTION
-============================================================ */
-
-.bespoke-section__inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 5rem;
-  align-items: center;
-}
-
-.bespoke-section__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.5rem;
-}
-
-.bespoke-section__visual {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  border-radius: var(--radius--xl);
-  overflow: hidden;
-  border: 1px solid var(--color--border-default);
-  background: var(--color--surface-sunken);
-}
-
-.bespoke-section__placeholder {
-  position: absolute;
-  inset: 0;
-  background: var(--color--surface-sunken);
-}
-
-.bespoke-section__image {
-  object-fit: cover;
-}
-
-@media (max-width: 768px) {
-  .bespoke-section__inner {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-  }
-
-  .bespoke-section__visual {
-    order: -1;
-  }
-}
+/* (BespokeSection removed — page now uses the shared BespokeStrip component) */

@@ -1,0 +1,107 @@
+/* ============================================================
+   USPGrid
+   3-column card grid for unique selling points / value props.
+============================================================ */
+
+.usp-grid {
+  background: var(--color--page-bg);
+}
+
+/* ── Header ───────────────────────────────────────────────── */
+.usp-grid__header {
+  margin-bottom: 3rem;
+}
+
+@media (max-width: 700px) {
+  .usp-grid__header { margin-bottom: 2rem; }
+}
+
+/* ── Card grid ────────────────────────────────────────────── */
+.usp-grid__cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+@media (max-width: 1024px) {
+  .usp-grid__cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 600px) {
+  .usp-grid__cards { grid-template-columns: 1fr; }
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.usp-grid__card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+  transition:
+    border-color var(--transition--default),
+    transform var(--transition--spring);
+}
+
+.usp-grid__card:hover {
+  border-color: var(--color--border-strong);
+  transform: translateY(-2px);
+}
+
+/* ── Card visual (image or placeholder) ───────────────────── */
+.usp-grid__card-visual {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: var(--color--surface-sunken);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.usp-grid__card-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.usp-grid__card-visual--placeholder {
+  background: var(--color--surface-sunken);
+}
+
+.usp-grid__card-index {
+  font-size: clamp(2.5rem, 6vw, 3.75rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--color--text-tertiary);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+}
+
+/* ── Card body ────────────────────────────────────────────── */
+.usp-grid__card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.usp-grid__card-title {
+  margin: 0;
+  text-wrap: balance;
+}
+
+.usp-grid__card-text {
+  margin: 0;
+}
+
+/* ── Optional CTA below the grid ──────────────────────────── */
+.usp-grid__cta {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+}

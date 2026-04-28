@@ -1,0 +1,146 @@
+/* ============================================================
+   LogoMarquee
+   Auto-scrolling, scroll-direction-aware partner-logo strip.
+============================================================ */
+
+.logo-marquee {
+  background: var(--color--page-bg);
+  position: relative;
+  overflow: hidden;
+  /* Tight top padding — enough to give the eyebrow label breathing room
+     from the section divider above (hero / preceding section's border)
+     without re-introducing the full .section padding stack. */
+  padding-top: clamp(2.5rem, 4vw, 3.5rem);
+}
+
+/* ── Inline variant — fits inside a parent container ─────── */
+.logo-marquee--inline {
+  width: 100%;
+  background: transparent;
+  /* Reset the section bg so it doesn't paint over the parent (e.g. the hero) */
+}
+
+.logo-marquee--inline .logo-marquee__track {
+  width: 100%;
+}
+
+.logo-marquee--inline .logo-marquee__label {
+  margin-bottom: 1.25rem;
+}
+
+.logo-marquee__label {
+  display: block;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  margin-bottom: 2.5rem;
+}
+
+/* ── Marquee track (full-bleed, clipped) ──────────────────── */
+.logo-marquee__track {
+  position: relative;
+  width: 100vw;
+  overflow: hidden;
+  /* Soft fade at the edges so logos appear to travel into / out of view */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 6%,
+    #000 94%,
+    transparent 100%
+  );
+}
+
+.logo-marquee__scroll {
+  display: flex;
+  position: relative;
+  will-change: transform;
+}
+
+.logo-marquee__collection {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  will-change: transform;
+}
+
+/* ── Item — white card-like wrapper around each logo ─────── */
+.logo-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 5.5rem;
+  min-width: 12rem;
+  /* Generous vertical padding so the logo never touches the top/bottom
+     edges. Combined with the max-height on the logo itself, every logo
+     gets breathing room and reads at a consistent visual size. */
+  padding: 1.25rem 1.75rem;
+  margin: 0 0.5rem;
+  flex-shrink: 0;
+  background: var(--swatch--neutral-0);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--md);
+  transition: border-color var(--transition--default);
+}
+
+.logo-marquee__item:hover {
+  border-color: var(--color--border-default);
+}
+
+.logo-marquee__logo {
+  display: block;
+  /* max-height (not height) so tall-aspect logos don't stretch; combined
+     with the item's vertical padding, this caps the logo to a sensible
+     visual size that fits inside any card without clipping. */
+  max-height: 100%;
+  width: auto;
+  max-width: 11rem;
+  object-fit: contain;
+  /* Tone all logos to a single muted shade so the row reads as one rhythm.
+     Hover lifts each logo back to full colour. */
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition:
+    opacity var(--transition--default),
+    filter   var(--transition--default);
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.logo-marquee__item:hover .logo-marquee__logo {
+  opacity: 1;
+  filter: grayscale(0);
+}
+
+/* Text-name fallback (when an entry has no uploaded logo file).
+   Tones to a single muted shade like the logos do, lifts on hover. */
+.logo-marquee__name {
+  white-space: nowrap;
+  letter-spacing: -0.01em;
+  opacity: 0.7;
+  transition: opacity var(--transition--default), color var(--transition--default);
+}
+
+.logo-marquee__item:hover .logo-marquee__name {
+  opacity: 1;
+  color: var(--color--text-primary);
+}
+
+@media (max-width: 600px) {
+  .logo-marquee__item {
+    height: 4.25rem;
+    min-width: 9rem;
+    padding: 0.875rem 1.25rem;
+    margin: 0 0.375rem;
+  }
+  .logo-marquee__logo {
+    max-width: 8rem;
+  }
+}

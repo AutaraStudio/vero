@@ -1,0 +1,156 @@
+/* ============================================================
+   Science page — Dimensions section
+   Quiet typographic layout: centred header with comfortably-wide
+   body, then four columns of dimensions on the page background
+   separated by light vertical hairlines. No cards, no surfaces.
+============================================================ */
+
+.science-dimensions {
+  background: var(--color--page-bg);
+}
+
+/* ── Centred intro ────────────────────────────────────────── */
+
+.science-dimensions__intro {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.25rem;
+  text-align: center;
+  margin-inline: auto;
+  margin-bottom: clamp(3rem, 5vw, 4.5rem);
+  /* Wider cap so long body paragraphs flow horizontally instead of
+     stacking into narrow strips that eat vertical space. */
+  max-width: 78ch;
+}
+
+.science-dimensions__intro .section-heading {
+  margin-inline: auto;
+}
+
+.science-dimensions__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-inline: auto;
+  /* Slightly narrower than the parent intro so the heading can stretch
+     wider without the body trailing too far across the viewport. */
+  max-width: 70ch;
+}
+
+.science-dimensions__body-paragraph {
+  margin: 0;
+}
+
+/* ── 4 typographic columns ────────────────────────────────── */
+
+.science-dimensions__cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  /* Single hairline between columns, drawn via vertical borders below.
+     Uses gap for visual breathing room around the rule. */
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+@media (max-width: 1024px) {
+  .science-dimensions__cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 2rem 2.25rem;
+  }
+}
+
+@media (max-width: 560px) {
+  .science-dimensions__cols {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+/* ── Column ───────────────────────────────────────────────── */
+
+.science-dimensions__col {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  /* Vertical hairline on the left of every column except the first in
+     each row — creates clean separators without painting the section. */
+  padding-left: clamp(1rem, 1.8vw, 1.5rem);
+  border-left: 1px solid var(--color--border-default);
+}
+
+.science-dimensions__col:nth-child(4n + 1) {
+  padding-left: 0;
+  border-left: none;
+}
+
+@media (max-width: 1024px) {
+  /* In a 2-col layout, reset every odd column instead of every 4th */
+  .science-dimensions__col:nth-child(4n + 1) {
+    padding-left: clamp(1rem, 1.8vw, 1.5rem);
+    border-left: 1px solid var(--color--border-default);
+  }
+  .science-dimensions__col:nth-child(2n + 1) {
+    padding-left: 0;
+    border-left: none;
+  }
+}
+
+@media (max-width: 560px) {
+  /* In a 1-col layout, no left rules — use top hairlines instead */
+  .science-dimensions__col {
+    padding-left: 0;
+    border-left: none;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color--border-default);
+  }
+  .science-dimensions__col:first-child {
+    padding-top: 0;
+    border-top: none;
+  }
+}
+
+/* ── Category name ────────────────────────────────────────── */
+
+.science-dimensions__col-name {
+  margin: 0;
+  font-size: clamp(1rem, 1.2vw, 1.125rem);
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--color--text-primary);
+  text-wrap: balance;
+}
+
+/* ── Dimension list ───────────────────────────────────────── */
+
+.science-dimensions__col-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.science-dimensions__col-item {
+  font-size: 0.9375rem;
+  font-weight: 400;
+  line-height: 1.45;
+  color: var(--color--text-secondary);
+}
+
+/* ── Optional supporting graphic ──────────────────────────── */
+
+.science-dimensions__visual {
+  margin-top: clamp(2.5rem, 5vw, 4rem);
+  border-radius: var(--radius--lg);
+  border: 1px solid var(--color--border-default);
+  background: var(--color--surface-raised);
+  overflow: hidden;
+}
+
+.science-dimensions__visual-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}

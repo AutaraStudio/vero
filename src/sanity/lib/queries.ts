@@ -9,18 +9,19 @@ export const HOME_PAGE_QUERY = `
     heroSecondaryCTALabel,
     heroSecondaryCTAHref,
     heroMediaType,
-    "heroImageUrl": heroImage.asset->url,
-    "heroImageAlt": heroImage.alt,
+    "heroImageUrl":          heroImage.asset->url,
+    "heroImageAlt":          heroImage.alt,
     "heroVideoThumbnailUrl": heroVideoThumbnail.asset->url,
+    "heroVideoThumbnailAlt": heroVideoThumbnail.alt,
     heroVideoUrl,
-    howItWorksHeading,
-    howItWorksIntro,
-    steps[] {
-      title,
-      body,
-      ctaLabel,
-      ctaHref
-    },
+    introBlockEyebrow,
+    introBlockHeading,
+    introBlockBody,
+    introBlockCtaLabel,
+    introBlockCtaHref,
+    "introBlockVideoThumbnailUrl": introBlockVideoThumbnail.asset->url,
+    "introBlockVideoThumbnailAlt": introBlockVideoThumbnail.alt,
+    introBlockVideoUrl,
     uspsSectionLabel,
     uspsSectionHeading,
     uspsSectionSubheading,
@@ -30,9 +31,28 @@ export const HOME_PAGE_QUERY = `
       "imageUrl": image.asset->url,
       "imageAlt": image.alt
     },
+    uspsCtaLabel,
+    uspsCtaHref,
+    stepsSectionLabel,
+    stepsSectionHeading,
+    stepsSectionIntro,
+    steps[] {
+      title,
+      body,
+      ctaLabel,
+      ctaHref
+    },
+    pricingSectionLabel,
     pricingSectionHeading,
     pricingSectionSubheading,
-    pricingCtaLabel
+    pricingHighlights,
+    pricingCtaLabel,
+    pricingCtaHref,
+    closingStatement,
+    closingEyebrow,
+    closingBenefits,
+    closingCtaLabel,
+    closingCtaHref
   }
 `
 
@@ -43,7 +63,13 @@ export const SITE_SETTINGS_QUERY = `
     footerCtaButtonLabel,
     footerCtaButtonHref,
     navCtaLabel,
-    navCtaHref
+    navCtaHref,
+    partnerLogosLabel,
+    partnerLogos[] {
+      name,
+      "logoUrl":      logo.asset->url,
+      "logoMimeType": logo.asset->mimeType
+    }
   }
 `
 
@@ -51,10 +77,17 @@ export const PRICING_PAGE_QUERY = `
   *[_type == "pricingPage"][0] {
     heroHeadline,
     heroIntro,
+    starterCallout,
     bespokeHeading,
     bespokeBody,
     bespokeCtaLabel,
-    bespokeCtaHref
+    bespokeCtaHref,
+    faqHeading,
+    faqs[] {
+      question,
+      answer
+    },
+    faqFooter
   }
 `
 
@@ -74,7 +107,39 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     heroCTALabel,
     heroCTAHref,
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref
+    heroSecondaryCTAHref,
+    "heroImageUrl": heroImage.asset->url,
+    "heroImageAlt": heroImage.alt,
+
+    gettingStartedHeading,
+    gettingStartedBody,
+    "gettingStartedImageUrl": gettingStartedImage.asset->url,
+    "gettingStartedImageAlt": gettingStartedImage.alt,
+    gettingStartedLinkLabel,
+    gettingStartedLinkHref,
+
+    stepsHeading,
+    stepsIntro,
+    steps[] {
+      body,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+
+    candidateExpHeading,
+    candidateExpBody,
+    "candidateExpImageUrl": candidateExpImage.asset->url,
+    "candidateExpImageAlt": candidateExpImage.alt,
+
+    benefitsHeading,
+    benefits[] {
+      label,
+      body,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+    benefitsLinkLabel,
+    benefitsLinkHref
   }
 `
 
@@ -82,8 +147,128 @@ export const ABOUT_PAGE_QUERY = `
   *[_type == "aboutPage"][0] {
     heroHeadline,
     heroIntro,
-    heroCTALabel,
-    heroCTAHref
+    "heroImageUrl": heroImage.asset->url,
+    "heroImageAlt": heroImage.alt,
+
+    tazioEvolutionHeading,
+    tazioEvolutionBody,
+    "tazioEvolutionImageUrl": tazioEvolutionImage.asset->url,
+    "tazioEvolutionImageAlt": tazioEvolutionImage.alt,
+    tazioEvolutionCTALabel,
+    tazioEvolutionCTAHref,
+
+    candidateExperiencesHeading,
+    candidateExperiencesBody,
+    "candidateExperiencesImageUrl": candidateExperiencesImage.asset->url,
+    "candidateExperiencesImageAlt": candidateExperiencesImage.alt,
+
+    clientsHeading,
+    clientsIntro,
+    "clientLogos": clientLogos[] {
+      name,
+      "url": logo.asset->url
+    },
+    rpoIntro,
+    "rpoLogos": rpoLogos[] {
+      name,
+      "url": logo.asset->url
+    },
+
+    teamHeading,
+    teamIntro,
+    teamMembers[] {
+      name,
+      role,
+      category,
+      "headshotUrl": headshot.asset->url,
+      "headshotAlt": headshot.alt
+    }
+  }
+`
+
+export const SCIENCE_PAGE_QUERY = `
+  *[_type == "sciencePage"][0] {
+    heroHeadline,
+    heroBody,
+
+    authenticHeading,
+    authenticBody,
+
+    theoryHeading,
+    theoryIntro,
+
+    perspectivesHeading,
+    perspectivesIntro,
+    perspectives[] {
+      name,
+      description,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+
+    dimensionsHeading,
+    dimensionsBody,
+    "dimensionsImageUrl": dimensionsImage.asset->url,
+    "dimensionsImageAlt": dimensionsImage.alt,
+    dimensionCategories[] {
+      name,
+      dimensions
+    },
+
+    insightsHeading,
+    insightsBody,
+    "insightsImageUrl": insightsImage.asset->url,
+    "insightsImageAlt": insightsImage.alt,
+
+    dataBackedHeading,
+    dataBackedIntro,
+    dataBackedPoints[] {
+      heading,
+      body
+    },
+
+    ctaBody,
+    ctaLabel,
+    ctaHref
+  }
+`
+
+export const COMPLIANCE_PAGE_QUERY = `
+  *[_type == "compliancePage"][0] {
+    heroHeadline,
+    heroBody,
+
+    securityHeading,
+    securityBody,
+    "securityBadgesImageUrl": securityBadgesImage.asset->url,
+    "securityBadgesImageAlt": securityBadgesImage.alt,
+    securityCredentials[] {
+      label,
+      description
+    },
+
+    qualityHeading,
+    qualityBody,
+    qualityItems[] {
+      label,
+      description,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+
+    aiHeading,
+    aiBody,
+    "aiImageUrl": aiImage.asset->url,
+    "aiImageAlt": aiImage.alt,
+
+    accessibilityHeading,
+    accessibilityBody,
+    accessibilityItems[] {
+      label,
+      description,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    }
   }
 `
 
@@ -91,8 +276,16 @@ export const CONTACT_PAGE_QUERY = `
   *[_type == "contactPage"][0] {
     heroHeadline,
     heroIntro,
-    heroEmailLabel,
-    heroEmail
+    contactInstructions,
+    phone,
+    email,
+
+    faqHeading,
+    faqs[] {
+      question,
+      answer
+    },
+    faqFooter
   }
 `
 
@@ -107,6 +300,9 @@ export const PRICING_TIERS_QUERY = `
     tagline,
     priceDisplay,
     annualPrice,
+    monthlyPriceDisplay,
+    monthlyPriceNote,
+    monthlyPrice,
     paymentOptions,
     duration,
     candidateLimit,
@@ -114,7 +310,12 @@ export const PRICING_TIERS_QUERY = `
     ctaLabel,
     ctaType,
     upgradeNote,
-    bespokeDescription
+    bespokeDescription,
+    features[] {
+      label,
+      value,
+      footnote
+    }
   }
 `
 
@@ -163,9 +364,17 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     dimensionsSectionHeading,
     dimensionsSectionBody,
     "dimensionsSectionImage": dimensionsSectionImage { asset->, ... },
+    inActionLabel,
+    inActionHeading,
+    inActionIntro,
     featureCardsHeading,
     featureCardsSubheading,
-    featureCards,
+    featureCards[] {
+      heading,
+      body,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
     stat1Heading,
     stat1Body,
     stat2Heading,
@@ -179,6 +388,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     bespokeSectionHeading,
     bespokeSectionBody,
     bespokeCTALabel,
+    bespokeCTAHref,
     "bespokeSectionImage": bespokeSectionImage { asset->, ... },
     "roles": *[_type == "role" && parentCategory._ref == ^._id] | order(name asc) {
       _id,

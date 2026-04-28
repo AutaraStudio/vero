@@ -43,56 +43,70 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
   const handleMouseEnter = () => lottieRef.current?.play();
   const handleMouseLeave = () => lottieRef.current?.goToAndStop(0, true);
 
+  /* Format strengths as title-case comma-separated text (no pills) */
+  const strengths = role.strengths
+    ?.split(',')
+    .map((s) => {
+      const t = s.trim();
+      return t.charAt(0).toUpperCase() + t.slice(1).toLowerCase();
+    })
+    .filter(Boolean)
+    .join(' · ');
+
   return (
-    <div
-      className={`role-grid__card rounded--lg${selected ? ' is-selected' : ''}`}
+    <article
+      className={`role-grid__card${selected ? ' is-selected' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div className="role-grid__card-info">
-        {/* Top row: icon + title */}
-        <div className="role-grid__card-top">
-          {role.lottieData && (
-            <div className="role-grid__card-lottie">
-              <Lottie
-                lottieRef={lottieRef}
-                animationData={role.lottieData}
-                loop
-                autoplay={false}
-              />
-            </div>
+      {/* Top — branded icon panel with corner select action */}
+      <div className="role-grid__card-visual">
+        <div className="role-grid__card-icon">
+          {role.lottieData ? (
+            <Lottie
+              lottieRef={lottieRef}
+              animationData={role.lottieData}
+              loop
+              autoplay={false}
+            />
+          ) : (
+            <div className="role-grid__card-icon-placeholder" aria-hidden="true" />
           )}
-          <h3 className="text-body--sm font--medium color--primary">{role.name}</h3>
         </div>
 
-        {/* Description */}
+        <div className="role-grid__card-action">
+          <ActionButton
+            selected={selected}
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
+            label={selected ? `Remove ${role.name} from basket` : `Add ${role.name} to basket`}
+          />
+        </div>
+      </div>
+
+      {/* Body — name + tasks + strengths */}
+      <div className="role-grid__card-body">
+        <h3 className="role-grid__card-name text-h5 color--primary">
+          {role.name}
+        </h3>
+
         {role.tasks && (
-          <p className="text-body--xs color--secondary">{role.tasks}</p>
+          <p className="role-grid__card-tasks text-body--sm leading--snug color--secondary">
+            {role.tasks}
+          </p>
         )}
 
-        {/* Strength tags */}
-        {role.strengths && (
-          <div className="role-grid__card-tags">
-            {role.strengths.split(',').map((s) => {
-              const tag = s.trim();
-              const label = tag.charAt(0).toUpperCase() + tag.slice(1).toLowerCase();
-              return (
-                <span key={tag} className="pill">
-                  {label}
-                </span>
-              );
-            })}
+        {strengths && (
+          <div className="role-grid__card-strengths">
+            <span className="role-grid__card-strengths-label text-label--sm color--tertiary">
+              Strengths
+            </span>
+            <p className="role-grid__card-strengths-value text-body--sm font--medium color--primary">
+              {strengths}
+            </p>
           </div>
         )}
       </div>
-
-      {/* Action button */}
-      <ActionButton
-        selected={selected}
-        onClick={(e) => { e.stopPropagation(); onToggle(); }}
-        label={selected ? `Remove ${role.name} from basket` : `Add ${role.name} to basket`}
-      />
-    </div>
+    </article>
   );
 }
 
@@ -144,7 +158,7 @@ export default function RoleGrid({
         <div className="container">
           {(heading || subheading) && (
             <div className="role-grid__header">
-              {heading && <h2 className="text-h2 color--primary">{heading}</h2>}
+              {heading && <h2 className="text-h2 text-balance max-ch-30 color--primary">{heading}</h2>}
               {subheading && (
                 <p className="text-body--lg color--secondary leading--snug">
                   {subheading}

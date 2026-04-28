@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import { initMegaNav } from './megaNavAnimations';
+import NavBasket from './NavBasket';
 import './MegaNav.css';
 
 /* ── Inline SVG helpers ── */
@@ -108,6 +109,9 @@ export default function MegaNav({
               {/* Actions */}
               <ul data-nav-list-item="" className="mega-nav__bar-list is--actions flex gap--sm">
                 <li className="mega-nav__bar-action">
+                  <NavBasket categories={categories} />
+                </li>
+                <li className="mega-nav__bar-action">
                   <Button variant="secondary" size="sm" href="https://app.tazio.io" external>
                     Log in
                   </Button>
@@ -183,7 +187,6 @@ export default function MegaNav({
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Company</span>
                 <ul className="mega-nav__panel-list stack--xs">
                   <li data-menu-fade=""><Link href="/about" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">About Vero Assess</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our mission and approach</span></Link></li>
-                  <li data-menu-fade=""><Link href="/about/tazio" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Powered by Tazio</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">The platform behind Vero</span></Link></li>
                   <li data-menu-fade=""><Link href="/contact" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Contact</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Get in touch</span></Link></li>
                 </ul>
               </div>

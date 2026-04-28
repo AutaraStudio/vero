@@ -16,6 +16,7 @@ export interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   form?: string;
   external?: boolean;
+  'aria-label'?: string;
 }
 
 export default function Button({
@@ -29,6 +30,7 @@ export default function Button({
   type = 'button',
   form,
   external = false,
+  'aria-label': ariaLabel,
 }: ButtonProps) {
 
   const classes = [
@@ -68,13 +70,13 @@ export default function Button({
   if (href && !disabled) {
     if (external) {
       return (
-        <a href={href} className={classes} target="_blank" rel="noopener noreferrer">
+        <a href={href} className={classes} target="_blank" rel="noopener noreferrer" aria-label={ariaLabel}>
           {inner}
         </a>
       );
     }
     return (
-      <Link href={href} className={classes}>
+      <Link href={href} className={classes} aria-label={ariaLabel}>
         {inner}
       </Link>
     );
@@ -88,6 +90,7 @@ export default function Button({
       disabled={disabled}
       aria-disabled={disabled}
       onClick={onClick}
+      aria-label={ariaLabel}
     >
       {inner}
     </button>

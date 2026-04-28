@@ -11,6 +11,20 @@
   position: relative;
   background: var(--color--page-bg);
   overflow: hidden;
+  border-bottom: 1px solid var(--color--border-default);
+}
+
+/* Compact mode (no media) — give the inner its own bottom padding since
+   .hero-centred__media-wrap normally provides it. Smaller heading set
+   inline via a different text-size class. */
+.hero-centred--compact .hero-centred__inner {
+  padding-bottom: var(--space--section);
+}
+
+@media (max-width: 767px) {
+  .hero-centred--compact .hero-centred__inner {
+    padding-bottom: var(--space--section-mobile);
+  }
 }
 
 /* ── Content container ────────────────────────────────────── */
@@ -78,6 +92,12 @@
   .hero-centred__cta > * {
     width: 100%;
   }
+}
+
+/* ── Below-CTA slot (for inline logo strip etc.) ──────────── */
+.hero-centred__below-cta {
+  width: 100%;
+  margin-top: 3rem;
 }
 
 /* ── Media wrapper ────────────────────────────────────────── */
@@ -184,5 +204,6 @@
   width: 100%;
   height: 100%;
   display: block;
+  /* Intentional: video player bg is always dark — not theme-dependent */
   background: var(--swatch--neutral-900);
 }

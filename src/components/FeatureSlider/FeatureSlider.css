@@ -16,6 +16,12 @@
   padding-bottom: 3rem;
 }
 
+.feature-slider__cta {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+}
+
 /* ── Slider setup variables ── */
 
 [data-gsap-slider-init] {
@@ -110,29 +116,74 @@
   border-bottom: 1px solid var(--color--border-subtle);
 }
 
+/* Photo variant — same frame, but renders an actual <img> */
+.slider-card__image--photo {
+  display: block;
+  object-fit: cover;
+}
+
 .slider-card__content {
   padding: 1.5rem;
 }
 
-/* ── Active / inactive states ── */
+/* ── Link variant ── */
+.slider-card--link {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+.slider-card--link:hover {
+  border-color: var(--color--border-strong);
+}
+.slider-card--link .slider-card__image--photo {
+  transition: transform var(--transition--spring);
+}
+.slider-card--link:hover .slider-card__image--photo {
+  transform: scale(1.03);
+}
+
+.slider-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  /* Inherit from the card's text colour so the CTA automatically follows
+     the active-state inversion (regular: text-primary; active: text-inverse). */
+  color: inherit;
+  transition: color 0.5s ease;
+}
+.slider-card__cta svg {
+  transition: transform var(--transition--spring);
+}
+.slider-card--link:hover .slider-card__cta svg {
+  transform: translateX(3px);
+}
+
+/* ── Active / inactive states ──
+   Active card uses surface-brand (the parent theme's brand surface) so it
+   adapts when this component is dropped in a non-purple section. The text
+   colour overrides target inverse since the brand surface is dark.        */
 
 [data-gsap-slider-item-status="active"] .slider-card {
-  background-color: var(--swatch--purple-500);
-  border-color: var(--swatch--purple-600);
-  color: var(--swatch--neutral-0);
+  background-color: var(--color--surface-brand);
+  border-color: var(--color--surface-brand);
+  color: var(--color--text-inverse);
 }
 
 [data-gsap-slider-item-status="active"] .slider-card .color--primary {
-  color: var(--swatch--neutral-0);
+  color: var(--color--text-inverse);
 }
 
 [data-gsap-slider-item-status="active"] .slider-card .color--secondary {
-  color: var(--swatch--neutral-0-o70);
+  color: var(--color--text-inverse-secondary);
 }
 
 [data-gsap-slider-item-status="active"] .slider-card__image {
-  background: var(--swatch--purple-600);
-  border-bottom-color: var(--swatch--purple-700);
+  background: var(--color--surface-brand);
+  border-bottom-color: var(--color--border-brand);
 }
 
 /* ── Controls ── */

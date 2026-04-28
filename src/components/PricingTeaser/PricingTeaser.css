@@ -1,0 +1,64 @@
+/* ============================================================
+   PricingTeaser
+   Compact two-column block: copy + CTA on the left, highlight
+   bullets on the right. Points users to /pricing for the full grid.
+============================================================ */
+
+.pricing-teaser {
+  background: var(--color--page-bg);
+}
+
+.pricing-teaser__card {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(2rem, 5vw, 4rem);
+  align-items: center;
+  padding: clamp(2rem, 5vw, 3.5rem);
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-top: 2px solid var(--swatch--purple-500);
+  border-radius: var(--radius--lg);
+}
+
+@media (max-width: 900px) {
+  .pricing-teaser__card {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.pricing-teaser__text {
+  align-items: flex-start;
+}
+
+.pricing-teaser__cta {
+  margin-top: 1rem;
+}
+
+/* ── Highlights list ──────────────────────────────────────── */
+.pricing-teaser__highlights {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+}
+
+.pricing-teaser__highlight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.pricing-teaser__highlight-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--purple-500) 18%, transparent);
+  color: var(--swatch--purple-500);
+  flex-shrink: 0;
+}

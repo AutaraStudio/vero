@@ -1,0 +1,138 @@
+/* ============================================================
+   ContactForm
+   Reusable contact form. Visual language matches the
+   .form-field utilities used in the get-started checkout.
+============================================================ */
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.contact-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 600px) {
+  .contact-form__row {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Field primitives (mirrors .form-field from checkout) ─ */
+
+.contact-form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.contact-form .form-field__label {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+}
+
+.contact-form .form-field__input {
+  width: 100%;
+  padding: 0.75rem 0.875rem;
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+  font-family: inherit;
+  font-size: var(--font--body-md);
+  line-height: 1.5;
+  appearance: none;
+  transition:
+    border-color var(--transition--default),
+    box-shadow var(--transition--default);
+}
+
+.contact-form .form-field__input::placeholder {
+  color: var(--color--text-tertiary);
+}
+
+.contact-form .form-field__input:focus {
+  outline: none;
+  border-color: var(--color--interactive-primary);
+  box-shadow: 0 0 0 3px var(--color--border-brand-subtle);
+}
+
+.contact-form .form-field__input.has-error {
+  border-color: var(--color--accent-orange-border);
+}
+
+.contact-form .form-field__input.has-error:focus {
+  box-shadow: 0 0 0 3px var(--color--accent-orange-bg);
+}
+
+.contact-form .form-field__textarea {
+  resize: vertical;
+  min-height: 8rem;
+  font-family: inherit;
+}
+
+.contact-form .form-field__error {
+  margin: 0;
+  color: var(--color--text-accent-orange);
+  font-size: var(--font--label-sm);
+  line-height: 1.4;
+}
+
+/* ── Form-level error (network etc.) ─────────────────────── */
+
+.contact-form__form-error {
+  margin: 0;
+  padding: 0.75rem 0.875rem;
+  background: var(--color--accent-orange-bg);
+  border: 1px solid var(--color--accent-orange-border);
+  border-radius: var(--radius--md);
+  color: var(--color--text-accent-orange);
+  font-size: var(--font--body-sm);
+}
+
+/* ── Actions row ──────────────────────────────────────────── */
+
+.contact-form__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
+
+/* ── Success state ────────────────────────────────────────── */
+
+.contact-form--success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 2rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+}
+
+.contact-form__success-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: var(--radius--full);
+  background: color-mix(in srgb, var(--swatch--green-500) 20%, transparent);
+  color: var(--swatch--green-500);
+}
+
+.contact-form--success h3 {
+  margin: 0;
+}
+
+.contact-form--success p {
+  margin: 0;
+  max-width: 40ch;
+}

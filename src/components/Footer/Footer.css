@@ -1,148 +1,341 @@
 /* ============================================================
    FOOTER
-   Uses brand-purple-deep theme via data-theme on the footer element.
-   All colours reference theme tokens.
+   data-theme="brand-purple-deep" cascades all colour tokens.
+   Layout: asymmetric hero (statement + CTA on left, link nav on
+   right) above a centered brand close. Generous whitespace, no
+   table-frame chrome.
 ============================================================ */
 
 .footer {
+  position: relative;
+  overflow: hidden;
   background-color: var(--color--page-bg);
   color: var(--color--text-primary);
 }
 
-/* ── Logo — force white ── */
+/* Closing CTA — sits above the footer__inner, brings its own section padding */
+.footer__cta {
+  position: relative;
+  z-index: 2;
+}
 
+.footer__inner {
+  position: relative;
+  z-index: 2;
+  /* Override the .container max-width — footer goes wider so contact + nav can breathe */
+  max-width: min(1600px, calc(100vw - 4rem));
+  /* Top padding handled by CTAStatement's own section padding-bottom */
+  padding-block: 0 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 5rem;
+}
+
+/* Logo SVG: invert to render white against the deep purple */
 .footer__logo-img {
   filter: brightness(0) invert(1);
 }
 
-/* ── CTA banner ── */
+/* ── Hero statement (centered at top of footer) ────────── */
 
-.footer__cta-banner {
-  padding-top: var(--space--section);
-  padding-bottom: var(--space--section);
-  border-top: 1px solid var(--color--border-default);
-}
-
-.footer__cta-inner {
-  padding: 3rem;
+.footer__statement {
   display: flex;
   flex-direction: column;
-  gap: 6rem;
-  border-top: none;
+  align-items: center;
+  gap: 1.75rem;
+  max-width: 60ch;
+  margin-inline: auto;
+  text-align: center;
 }
 
-/* Hide sparkle icons */
-.footer__cta-inner::before,
-.footer__cta-inner::after {
-  display: none;
+.footer__statement-sub {
+  margin: 0;
 }
 
-.footer__cta-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 4rem;
+.footer__statement-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
 }
 
-.footer__cta-text {
-  flex: 1;
-  max-width: 24rem;
+.footer__statement-secondary {
+  text-decoration: none;
+  transition: color var(--transition--default);
 }
 
-.footer__cta-action {
-  flex-shrink: 0;
-  max-width: 22rem;
+.footer__statement-secondary:hover {
+  color: var(--color--text-brand);
 }
 
-.footer__cta-btn {
-  padding-top: 1.5rem;
-}
+/* ── Unified nav — single 6-col row, left-aligned ───────── */
 
-/* ── Link columns ── */
-
-.footer__links {
-  padding-top: 2.5rem;
-  padding-bottom: 2.5rem;
-  border-top: 1px solid var(--color--border-default);
-}
-
-.footer__links-grid {
+.footer__nav {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 1.5rem;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 2rem;
+  padding-top: 3rem;
+  border-top: 1px solid var(--color--border-subtle);
 }
 
-.footer__col {
+.footer__nav-col {
   display: flex;
   flex-direction: column;
   gap: 1rem;
 }
 
-.footer__col-title {
-  padding-bottom: 0.25rem;
+.footer__nav-title {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
 }
 
-.footer__col-list {
+.footer__nav-list {
   list-style: none;
-  padding: 0;
   margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.75rem;
 }
 
-.footer__link {
+.footer__nav-link {
   text-decoration: none;
-  transition: var(--transition--default);
+  transition: color var(--transition--default);
   display: inline-block;
-  padding: 0.125rem 0;
 }
 
-.footer__link:hover {
+.footer__nav-link:hover {
   color: var(--color--text-primary);
-  opacity: 1;
 }
 
-/* ── Bottom bar ── */
+/* ── Contact strip — Phone / Email / Address, centered ─── */
 
-.footer__bottom {
-  padding-top: 1.25rem;
-  padding-bottom: 1.25rem;
-  border-top: 1px solid var(--color--border-default);
+.footer__contact {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  padding-block: 2.5rem;
+  border-top: 1px solid var(--color--border-subtle);
+  border-bottom: 1px solid var(--color--border-subtle);
+  justify-items: center;
+  text-align: left;
 }
 
-/* ── Responsive ── */
+.footer__contact-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.125rem;
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition--default);
+}
 
-@media (max-width: 1024px) {
-  .footer__links-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
+.footer__contact-item[href]:hover {
+  color: var(--color--text-brand);
+}
+
+.footer__contact-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius--full);
+  background: var(--color--surface-sunken);
+  color: var(--color--text-secondary);
+  flex-shrink: 0;
+}
+
+.footer__contact-icon svg {
+  width: 24px;
+  height: 24px;
+}
+
+.footer__contact-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.footer__contact-label {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+}
+
+.footer__contact-text > span:last-child {
+  font-size: var(--font--body-lg);
 }
 
 @media (max-width: 768px) {
-  .footer__cta-banner {
-    padding-top: var(--space--section-mobile);
-    padding-bottom: var(--space--section-mobile);
+  .footer__contact {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding-block: 2rem;
   }
-
-  .footer__cta-inner {
-    padding: 2rem 1.5rem;
-    gap: 3rem;
-  }
-
-  .footer__cta-content {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2rem;
-  }
-
-  .footer__links-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .footer__contact-item {
+    justify-self: center;
   }
 }
 
-@media (max-width: 479px) {
-  .footer__links-grid {
-    grid-template-columns: 1fr;
+/* ── Close: centered brand block ────────────────────────── */
+
+.footer__close {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+  text-align: center;
+}
+
+/* Social icons row */
+.footer__social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+.footer__social-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: var(--radius--full);
+  border: 1px solid var(--color--border-default);
+  color: var(--color--text-secondary);
+  text-decoration: none;
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.footer__social-link:hover {
+  /* Use the current theme's CTA pair (bg + readable text) so this stays
+     theme-aware — yellow/dark in brand-purple-deep, but adapts elsewhere */
+  background: var(--color--interactive-cta);
+  border-color: var(--color--interactive-cta);
+  color: var(--color--interactive-cta-text);
+}
+
+/* Partner / "in partnership with" badge — ISE logo */
+.footer__partner {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  margin-top: 1rem;
+  padding: 1rem 1.5rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--lg);
+}
+
+.footer__partner-logo {
+  height: auto;
+  max-width: 100%;
+  /* The ISE logo is dark — keep its native colors for brand fidelity */
+}
+
+.footer__close-logo {
+  display: inline-flex;
+}
+
+.footer__close-meta {
+  display: inline-flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0;
+}
+
+.footer__close-legal-link {
+  text-decoration: none;
+  color: inherit;
+  transition: color var(--transition--default);
+}
+
+.footer__close-legal-link:hover {
+  color: var(--color--text-primary);
+}
+
+/* ── Decorative shape fan ─────────────────────────────
+   Two variants: bottom-right (closes the page) and top-left
+   (welcomes the footer). Both animate in via FooterFan.tsx. */
+
+.footer-fan {
+  position: absolute;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.footer-fan__shape {
+  position: absolute;
+  width: clamp(160px, 11vw + 40px, 240px);
+}
+
+/* Bottom-right anchor — fan opens up + left */
+.footer-fan--bottom-right {
+  right: clamp(-30px, -1.5vw, -16px);
+  bottom: clamp(-30px, -1.5vw, -16px);
+}
+.footer-fan--bottom-right .footer-fan__shape {
+  bottom: 0;
+  right: 0;
+  transform-origin: bottom right;
+}
+
+/* Top-left anchor — fan opens down + right */
+.footer-fan--top-left {
+  left: clamp(-30px, -1.5vw, -16px);
+  top: clamp(-30px, -1.5vw, -16px);
+}
+.footer-fan--top-left .footer-fan__shape {
+  top: 0;
+  left: 0;
+  transform-origin: top left;
+  /* The actual flip + rotation are applied by GSAP in FooterFan.tsx so they
+     compose cleanly into a single transform matrix. */
+}
+
+/* ── Responsive ───────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .footer__inner {
+    padding-block: 4rem 2.5rem;
+    gap: 3.5rem;
+  }
+  .footer__statement {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .footer__inner {
+    padding-block: 3rem 2rem;
+    gap: 3rem;
+  }
+  .footer__nav {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 1.5rem;
+    row-gap: 2rem;
+    padding-top: 2.5rem;
+  }
+  /* Reset the second-row divider — at 2 cols the rows don't align by 4 */
+  .footer__nav-col:nth-child(n + 4) {
+    padding-top: 0;
+    border-top: none;
+  }
+  .footer-fan {
+    right: -1rem;
+    bottom: -1rem;
+  }
+  .footer-fan__shape {
+    width: clamp(90px, 18vw, 140px);
   }
 }

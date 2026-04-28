@@ -1,0 +1,443 @@
+/* ============================================================
+   NAV BASKET — top icon button + slide-in side drawer
+============================================================ */
+
+/* ── Trigger — uses the global Button (btn-blob) with icon + count inline ── */
+
+/* Inner — fixed-width inline-block slot with height matching the icon. Aligned
+   to the visual middle of the text line-box so the icon sits optically centred
+   in the button. Height (18px) fits inside the existing button line-box, so
+   the button's overall height matches a plain-text btn-blob. */
+.nav-basket-btn__inner {
+  position: relative;
+  display: inline-block;
+  width: 26px;          /* visual icon + room for the badge to tuck right */
+  height: 18px;         /* line-box-safe height — keeps button at text height */
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Icon — visually 22px but allowed to overflow the 18px line-box-safe slot.
+   Centred on the slot's vertical middle via absolute positioning. */
+.nav-basket-btn__icon {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 22px;
+  height: 22px;
+  transform: translateY(-50%);
+  display: block;
+}
+
+.nav-basket-btn__icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Count badge — small pill tucked into the icon's top-right corner */
+.nav-basket-btn__count {
+  position: absolute;
+  /* icon visually spans (50% ± 11px); raise badge to overlap the top-right
+     corner with the classic notification-badge offset */
+  top: calc(50% - 14px);
+  /* icon right edge is at 22px; pull badge in so it overlaps the corner */
+  left: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12px;
+  height: 12px;
+  padding: 0 3px;
+  background: var(--swatch--orange-500);
+  color: var(--swatch--neutral-0);
+  border: 1.5px solid var(--swatch--neutral-0); /* halo separates badge from icon */
+  border-radius: var(--radius--full);
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  box-sizing: content-box;
+}
+
+/* ── Drawer (portaled to body) ──────────────────────────── */
+
+.nav-basket-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  justify-content: flex-end;
+  pointer-events: auto;
+}
+
+.nav-basket-drawer__backdrop {
+  position: absolute;
+  inset: 0;
+  background: color-mix(in srgb, var(--swatch--neutral-900) 50%, transparent);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.nav-basket-drawer.is-open .nav-basket-drawer__backdrop {
+  opacity: 1;
+}
+
+.nav-basket-drawer__panel {
+  position: relative;
+  width: min(440px, 100vw);
+  height: 100vh;
+  background: var(--swatch--neutral-0);
+  display: flex;
+  flex-direction: column;
+  box-shadow: var(--shadow--overlay-lg);
+  /* Initial off-screen position; .is-open slides it back to 0 */
+  transform: translateX(100%);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-basket-drawer.is-open .nav-basket-drawer__panel {
+  transform: translateX(0);
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+
+.nav-basket-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 1px solid var(--color--border-subtle);
+  flex-shrink: 0;
+}
+
+.nav-basket-drawer__close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius--full);
+  color: var(--color--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.nav-basket-drawer__close:hover {
+  background: var(--color--surface-sunken);
+  color: var(--color--text-primary);
+}
+
+/* ── Top summary: tier eyebrow + price + freq + capacity ── */
+
+.nav-basket-drawer__summary {
+  flex-shrink: 0;
+  padding: 1.5rem 1.5rem 1.75rem;
+  border-bottom: 1px solid var(--color--border-subtle);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.nav-basket-drawer__tier-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  color: var(--color--text-brand);
+  font-weight: 600;
+}
+
+.nav-basket-drawer__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-top: -0.25rem;
+}
+
+.nav-basket-drawer__price {
+  font-size: clamp(2rem, 5vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--color--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.nav-basket-drawer__price-note {
+  white-space: nowrap;
+}
+
+/* Frequency toggle — pill segmented control */
+.nav-basket-drawer__freq {
+  display: inline-flex;
+  padding: 0.25rem;
+  background: var(--color--surface-sunken);
+  border-radius: var(--radius--full);
+  gap: 0.125rem;
+  align-self: flex-start;
+}
+
+.nav-basket-drawer__freq-btn {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0.4375rem 1rem;
+  border-radius: var(--radius--full);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  font-weight: 500;
+  color: var(--color--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--transition--default),
+    color var(--transition--default),
+    box-shadow var(--transition--default);
+}
+
+.nav-basket-drawer__freq-btn:hover { color: var(--color--text-primary); }
+
+.nav-basket-drawer__freq-btn.is-active {
+  background: var(--swatch--neutral-0);
+  color: var(--color--text-primary);
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--swatch--neutral-900) 8%, transparent);
+}
+
+/* Plan capacity — bullet list with check icons */
+.nav-basket-drawer__capacity {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.nav-basket-drawer__capacity li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nav-basket-drawer__capacity-icon {
+  color: var(--color--text-brand);
+  flex-shrink: 0;
+}
+
+/* ── Scrollable middle: roles list ──────────────────────── */
+
+.nav-basket-drawer__body {
+  flex: 1;
+  min-height: 0;             /* lets the flex child actually scroll */
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.25rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.nav-basket-drawer__body-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.nav-basket-drawer__body-head > span:first-child {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+}
+
+.nav-basket-drawer__count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 0.4375rem;
+  background: var(--color--surface-sunken);
+  border-radius: var(--radius--full);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.nav-basket-drawer__group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-basket-drawer__group-label {
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  font-weight: 600;
+}
+
+.nav-basket-drawer__roles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+}
+
+.nav-basket-drawer__role {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.6875rem 0.875rem;
+  background: var(--swatch--neutral-0);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--md);
+  transition:
+    border-color var(--transition--default),
+    background-color var(--transition--default);
+}
+
+.nav-basket-drawer__role:hover {
+  border-color: var(--color--border-default);
+  background: var(--color--surface-sunken);
+}
+
+.nav-basket-drawer__role-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius--full);
+  background: var(--color--text-brand);
+  flex-shrink: 0;
+}
+
+.nav-basket-drawer__role-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.nav-basket-drawer__role-remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius--full);
+  color: var(--color--text-tertiary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.nav-basket-drawer__role-remove:hover {
+  background: var(--color--surface-sunken);
+  color: var(--color--text-primary);
+}
+
+/* ── Sticky bottom: clear basket + continue to checkout ─── */
+
+.nav-basket-drawer__footer {
+  flex-shrink: 0;
+  padding: 1.25rem 1.5rem 1.5rem;
+  border-top: 1px solid var(--color--border-subtle);
+  background: var(--swatch--neutral-0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.875rem;
+}
+
+.nav-basket-drawer__footer .btn-blob {
+  width: 100%;
+  justify-content: center;
+}
+
+/* Clear basket — subtle text link in the footer */
+.nav-basket-drawer__clear {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem 0.5rem;
+  font-family: inherit;
+  color: var(--color--text-tertiary);
+  cursor: pointer;
+  transition: color var(--transition--default);
+}
+
+.nav-basket-drawer__clear:hover {
+  color: var(--color--text-accent-orange);
+}
+
+/* Inline confirm — replaces the footer contents when triggered */
+.nav-basket-drawer__confirm {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  padding: 0.875rem 1rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+}
+
+.nav-basket-drawer__confirm-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: flex-end;
+}
+
+.nav-basket-drawer__confirm-btn {
+  appearance: none;
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 0.5rem 0.875rem;
+  border-radius: var(--radius--md);
+  font-family: inherit;
+  font-size: var(--font--body-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.nav-basket-drawer__confirm-btn--cancel {
+  color: var(--color--text-secondary);
+}
+
+.nav-basket-drawer__confirm-btn--cancel:hover {
+  background: var(--swatch--neutral-0);
+  color: var(--color--text-primary);
+}
+
+.nav-basket-drawer__confirm-btn--destructive {
+  color: var(--swatch--neutral-0);
+  background: var(--swatch--orange-500);
+  border-color: var(--swatch--orange-500);
+}
+
+.nav-basket-drawer__confirm-btn--destructive:hover {
+  background: color-mix(in srgb, var(--swatch--orange-500) 88%, var(--swatch--neutral-900));
+  border-color: color-mix(in srgb, var(--swatch--orange-500) 88%, var(--swatch--neutral-900));
+}
+
+.nav-basket-drawer__confirm-btn:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 2px;
+}
+
+/* ── Mobile ─────────────────────────────────────────────── */
+
+@media (max-width: 480px) {
+  .nav-basket-drawer__panel {
+    width: 100vw;
+  }
+}

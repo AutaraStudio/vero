@@ -7,13 +7,17 @@ export const homePage = defineType({
   type: 'document',
   icon: HomeIcon,
   groups: [
-    { name: 'hero', title: 'Hero' },
-    { name: 'introBlock', title: 'Intro Block' },
-    { name: 'usps', title: 'USPs' },
-    { name: 'pricing', title: 'Pricing Section' },
+    { name: 'hero',         title: 'Hero' },
+    { name: 'introBlock',   title: 'Intro Block' },
+    { name: 'usps',         title: 'USPs' },
+    { name: 'steps',        title: 'How It Works' },
+    { name: 'pricing',      title: 'Pricing Teaser' },
+    { name: 'closingCta',   title: 'Closing CTA' },
   ],
   fields: [
-    /* ── Hero ── */
+    /* ════════════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'heroBadgeLabel',
       title: 'Badge Label',
@@ -31,6 +35,14 @@ export const homePage = defineType({
       name: 'heroTitle',
       title: 'Hero Title',
       type: 'string',
+      group: 'hero',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'heroIntro',
+      title: 'Hero Intro',
+      type: 'text',
+      rows: 3,
       group: 'hero',
     }),
     defineField({
@@ -58,15 +70,55 @@ export const homePage = defineType({
       group: 'hero',
     }),
     defineField({
+      name: 'heroMediaType',
+      title: 'Hero Media Type',
+      type: 'string',
+      group: 'hero',
+      options: {
+        list: [
+          { title: 'Image', value: 'image' },
+          { title: 'Video', value: 'video' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'image',
+    }),
+    defineField({
       name: 'heroImage',
       title: 'Hero Image',
       type: 'image',
       group: 'hero',
       options: { hotspot: true },
       fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      hidden: ({ parent }) => parent?.heroMediaType === 'video',
+    }),
+    defineField({
+      name: 'heroVideoThumbnail',
+      title: 'Hero Video Thumbnail',
+      type: 'image',
+      group: 'hero',
+      options: { hotspot: true },
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      hidden: ({ parent }) => parent?.heroMediaType !== 'video',
+    }),
+    defineField({
+      name: 'heroVideoUrl',
+      title: 'Hero Video URL',
+      type: 'url',
+      group: 'hero',
+      description: 'Direct MP4 or HLS URL. Loaded lazily when the modal opens.',
+      hidden: ({ parent }) => parent?.heroMediaType !== 'video',
     }),
 
-    /* ── Intro Block (Ready-to-go assessment solution) ── */
+    /* ════════════════════════════════════════════════════════
+       INTRO BLOCK — split: text + demo video
+    ════════════════════════════════════════════════════════ */
+    defineField({
+      name: 'introBlockEyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      group: 'introBlock',
+    }),
     defineField({
       name: 'introBlockHeading',
       title: 'Heading',
@@ -78,7 +130,19 @@ export const homePage = defineType({
       title: 'Body',
       type: 'array',
       group: 'introBlock',
-      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
+      of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [{ title: 'Bold', value: 'strong' }] } }],
+    }),
+    defineField({
+      name: 'introBlockCtaLabel',
+      title: 'CTA Label',
+      type: 'string',
+      group: 'introBlock',
+    }),
+    defineField({
+      name: 'introBlockCtaHref',
+      title: 'CTA Href',
+      type: 'string',
+      group: 'introBlock',
     }),
     defineField({
       name: 'introBlockVideoThumbnail',
@@ -96,13 +160,14 @@ export const homePage = defineType({
       description: 'Direct MP4 or HLS URL. Loaded lazily — only when the modal opens.',
     }),
 
-    /* ── USPs ── */
+    /* ════════════════════════════════════════════════════════
+       USPs
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'uspsSectionLabel',
-      title: 'Section Eyebrow Label',
+      title: 'Eyebrow Label',
       type: 'string',
       group: 'usps',
-      description: 'Optional small label above the heading. Leave blank to hide.',
     }),
     defineField({
       name: 'uspsSectionHeading',
@@ -153,19 +218,77 @@ export const homePage = defineType({
     }),
     defineField({
       name: 'uspsCtaLabel',
-      title: 'USPs CTA Label',
+      title: 'CTA Label',
       type: 'string',
       group: 'usps',
-      description: 'Button shown below the USPs (e.g. "How Vero Assess works").',
     }),
     defineField({
       name: 'uspsCtaHref',
-      title: 'USPs CTA Href',
+      title: 'CTA Href',
       type: 'string',
       group: 'usps',
     }),
 
-    /* ── Pricing Section ── */
+    /* ════════════════════════════════════════════════════════
+       HOW IT WORKS — Steps
+    ════════════════════════════════════════════════════════ */
+    defineField({
+      name: 'stepsSectionLabel',
+      title: 'Eyebrow Label',
+      type: 'string',
+      group: 'steps',
+    }),
+    defineField({
+      name: 'stepsSectionHeading',
+      title: 'Section Heading',
+      type: 'string',
+      group: 'steps',
+    }),
+    defineField({
+      name: 'stepsSectionIntro',
+      title: 'Section Intro',
+      type: 'text',
+      rows: 2,
+      group: 'steps',
+    }),
+    defineField({
+      name: 'steps',
+      title: 'Steps',
+      type: 'array',
+      group: 'steps',
+      of: [
+        {
+          type: 'object',
+          preview: { select: { title: 'title' } },
+          fields: [
+            defineField({
+              name: 'title',
+              title: 'Step Title',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'body',
+              title: 'Body',
+              type: 'text',
+              rows: 4,
+            }),
+            defineField({ name: 'ctaLabel', title: 'CTA Label', type: 'string' }),
+            defineField({ name: 'ctaHref',  title: 'CTA Href',  type: 'string' }),
+          ],
+        },
+      ],
+    }),
+
+    /* ════════════════════════════════════════════════════════
+       PRICING TEASER
+    ════════════════════════════════════════════════════════ */
+    defineField({
+      name: 'pricingSectionLabel',
+      title: 'Eyebrow Label',
+      type: 'string',
+      group: 'pricing',
+    }),
     defineField({
       name: 'pricingSectionHeading',
       title: 'Section Heading',
@@ -180,10 +303,62 @@ export const homePage = defineType({
       group: 'pricing',
     }),
     defineField({
+      name: 'pricingHighlights',
+      title: 'Highlight Bullets',
+      type: 'array',
+      group: 'pricing',
+      of: [{ type: 'string' }],
+      description: 'Short bullet-point claims shown beside the CTA (e.g. "From £49 per candidate").',
+    }),
+    defineField({
       name: 'pricingCtaLabel',
-      title: 'Pricing CTA Label',
+      title: 'CTA Label',
       type: 'string',
       group: 'pricing',
+    }),
+    defineField({
+      name: 'pricingCtaHref',
+      title: 'CTA Href',
+      type: 'string',
+      group: 'pricing',
+    }),
+
+    /* ════════════════════════════════════════════════════════
+       CLOSING CTA — peak brand-purple-deep statement block
+    ════════════════════════════════════════════════════════ */
+    defineField({
+      name: 'closingStatement',
+      title: 'Statement',
+      type: 'string',
+      group: 'closingCta',
+      description: 'Big headline statement — max ~10 words.',
+    }),
+    defineField({
+      name: 'closingEyebrow',
+      title: 'Eyebrow',
+      type: 'string',
+      group: 'closingCta',
+      description: 'e.g. "with Vero Assess you can"',
+    }),
+    defineField({
+      name: 'closingBenefits',
+      title: 'Rotating Benefits',
+      type: 'array',
+      group: 'closingCta',
+      of: [{ type: 'string' }],
+      description: 'Short benefit claims that rotate one-by-one.',
+    }),
+    defineField({
+      name: 'closingCtaLabel',
+      title: 'CTA Label',
+      type: 'string',
+      group: 'closingCta',
+    }),
+    defineField({
+      name: 'closingCtaHref',
+      title: 'CTA Href',
+      type: 'string',
+      group: 'closingCta',
     }),
   ],
   preview: {
