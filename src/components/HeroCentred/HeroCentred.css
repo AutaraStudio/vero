@@ -86,12 +86,10 @@
 @media (max-width: 479px) {
   .hero-centred__cta {
     flex-direction: column-reverse;
-    width: 100%;
+    align-items: center;
   }
-
-  .hero-centred__cta > * {
-    width: 100%;
-  }
+  /* Buttons keep their natural inline size — the decorative blob
+     extension on touch devices needs room and shouldn't be stretched. */
 }
 
 /* ── Below-CTA slot (for inline logo strip etc.) ──────────── */

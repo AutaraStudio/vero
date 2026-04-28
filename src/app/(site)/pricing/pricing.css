@@ -181,12 +181,8 @@
 .pricing-tier-card__cta {
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   margin-top: auto;
-}
-
-.pricing-tier-card__cta .btn-blob {
-  width: 100%;
-  justify-content: center;
 }
 
 
@@ -616,10 +612,8 @@
     margin-top: 0.5rem;
   }
 
-  .pricing-compare-grid__footer-cell .btn-blob {
-    width: 100%;
-    justify-content: center;
-  }
+  /* Footer CTAs keep their natural inline size on mobile — the touch
+     device hover-mimic styles need horizontal room to breathe. */
 }
 
 /* (BespokeStrip moved to src/components/BespokeStrip/ — its CSS lives there) */
