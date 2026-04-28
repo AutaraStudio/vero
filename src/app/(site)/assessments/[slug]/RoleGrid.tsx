@@ -1,12 +1,9 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
-import Button from '@/components/ui/Button';
-import FixedBar from '@/components/ui/FixedBar';
 import ActionButton from '@/components/ui/ActionButton';
 import type { ThemeVariant } from '@/lib/theme';
 import './role-grid.css';
@@ -118,7 +115,6 @@ export default function RoleGrid({
   subheading,
   theme = 'brand-purple',
 }: RoleGridProps) {
-  const router = useRouter();
   const { state, dispatch } = useBasket();
   const { selectedRoles } = state;
 
@@ -149,8 +145,6 @@ export default function RoleGrid({
       });
     }
   };
-
-  const selectedCount = selectedRoles.length;
 
   return (
     <>
@@ -183,43 +177,10 @@ export default function RoleGrid({
         </div>
       </section>
 
-      {/* Fixed bottom bar — visible when roles are selected */}
-      {selectedCount > 0 && (
-        <FixedBar theme={theme}>
-
-          {/* Left — count */}
-          <span className="text-label--sm font--medium color--primary role-bar__count">
-            {selectedCount} {selectedCount === 1 ? 'role' : 'roles'} selected
-          </span>
-
-          {/* Divider */}
-          <span className="divider--vertical role-bar__hide-tablet" aria-hidden="true" />
-
-          {/* Centre — scrollable role badges */}
-          <div className="role-bar__centre">
-            <div className="role-bar__scroll">
-              {selectedRoles.map((r) => (
-                <span key={r.roleId} className="pill role-bar__badge">
-                  {r.roleName}
-                </span>
-              ))}
-            </div>
-          </div>
-
-          {/* Divider */}
-          <span className="divider--vertical role-bar__hide-tablet" aria-hidden="true" />
-
-          {/* Right — CTA */}
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => router.push('/get-started')}
-          >
-            Get started →
-          </Button>
-
-        </FixedBar>
-      )}
+      {/* Sticky bottom-of-screen FixedBar removed — per spec, sticky basket
+         bars are only shown inside the get-started/checkout flow. Selection
+         feedback on the category page comes from the cards themselves and
+         the persistent basket button in the nav. */}
     </>
   );
 }

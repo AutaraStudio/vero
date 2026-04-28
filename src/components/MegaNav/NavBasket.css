@@ -355,10 +355,8 @@
   gap: 0.875rem;
 }
 
-.nav-basket-drawer__footer .btn-blob {
-  width: 100%;
-  justify-content: center;
-}
+/* Buttons keep their natural inline size — the touch-device decorative
+   blob extension needs horizontal room and shouldn't be stretched. */
 
 /* Clear basket — subtle text link in the footer */
 .nav-basket-drawer__clear {

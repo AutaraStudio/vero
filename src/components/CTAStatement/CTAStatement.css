@@ -201,22 +201,37 @@
   }
 }
 
-/* ── Mobile: left-align the headline + CTAs ───────────────────
-   The feature box stays centred (its connector lines + dot are a
-   structural element), but the surrounding text reads better
-   left-aligned at narrow widths. */
+/* ── Mobile: simplify CTA to just headline + buttons ─────────
+   Hide the eyebrow pill, the dividers, the looping benefits feature
+   box, and the card border. Centre everything that's left so the
+   close reads as a clean simple statement on phones. */
 @media (max-width: 600px) {
+  .cta-statement__box {
+    border: none;
+    padding: 2rem 0 0;
+  }
+
   .cta-statement__header {
-    align-items: flex-start;
+    align-items: center;
+    text-align: center;
   }
 
   .cta-statement__statement,
   .cta-statement__statement.text-centre {
-    text-align: left;
-    margin-inline: 0;
+    text-align: center;
+    margin-inline: auto;
+  }
+
+  /* Hide the yellow eyebrow pill, the connecting dividers, and the
+     bordered animated benefits box — overkill on a small screen. */
+  .cta-statement__header > .section-label,
+  .cta-statement__divider,
+  .cta-statement__feature {
+    display: none;
   }
 
   .cta-statement__cta {
-    justify-content: flex-start;
+    justify-content: center;
+    padding-top: 2rem;
   }
 }

@@ -307,8 +307,9 @@
   .mega-nav__bar-list.is--actions {
     gap: 1rem;
     flex-flow: row;
-    justify-content: space-between;
-    align-items: stretch;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
   }
 
   .mega-nav__bar-link {
@@ -403,7 +404,13 @@
   }
 
   .mega-nav__bar-action {
-    flex: 1;
+    /* Natural inline size — no longer flex:1 stretch (which pushed buttons
+       to the right edges of their cells). The parent's justify-content:
+       center now centres the whole action group. */
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 
