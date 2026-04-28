@@ -285,6 +285,15 @@
   padding-block: 6rem;
 }
 
+/* Comparison table is hidden on smaller devices — the per-tier cards
+   above already give the full feature picture, and the table never
+   condenses cleanly into a single column. */
+@media (max-width: 880px) {
+  .pricing-compare {
+    display: none;
+  }
+}
+
 .pricing-compare__head {
   /* Flex column so align-items: center actually centres the heading + intro
      boxes (which have their own max-widths from .section-heading + .section-intro)

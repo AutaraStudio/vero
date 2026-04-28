@@ -154,6 +154,15 @@
     padding-bottom: 4rem;
   }
 
+  /* Stack text + media vertically inside each step with proper breathing
+     room. On desktop the media is absolute-positioned and overlaps; on
+     mobile it falls into normal flow below the text and needs a real gap. */
+  .sticky-steps__item {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
   /* Reset all status-based opacity overrides — everything stays visible. */
   .sticky-steps__text,
   [data-sticky-steps-status="before"] .sticky-steps__text,
@@ -177,7 +186,7 @@
     width: 100%;
     height: auto;
     padding-left: 0;
-    margin-bottom: 1.5rem;
+    /* Spacing handled by .sticky-steps__item's flex gap above. */
   }
 
   .sticky-steps__sticky {
