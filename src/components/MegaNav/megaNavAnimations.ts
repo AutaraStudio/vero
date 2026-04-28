@@ -572,6 +572,29 @@ export function initMegaNav(root: HTMLElement): () => void {
 
   window.addEventListener('resize', handleResize);
 
+  /* ── Close menu when any nav link is clicked ──
+     Next.js client-side navigation doesn't unmount the nav, so without this
+     the dropdown / mobile drawer stays open after navigating. We close on
+     any anchor click inside the nav, regardless of which panel it lives in. */
+  function handleLinkClick(e: MouseEvent) {
+    const target = e.target as HTMLElement | null;
+    const link = target?.closest('a');
+    if (!link || !root.contains(link)) return;
+
+    /* Skip new-tab / modifier-key clicks — those don't change the current
+       page so the open menu would actually be useful to keep around. */
+    if (link.target === '_blank') return;
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+
+    if (state.isMobile) {
+      if (state.mobilePanelActive) closeMobilePanel();
+      if (state.mobileMenuOpen)    closeMobileMenu();
+    } else if (state.isOpen) {
+      closeDropdown();
+    }
+  }
+  root.addEventListener('click', handleLinkClick);
+
   /* ── Init ── */
   state.isMobile ? setupMobile() : resetDesktop();
 
@@ -591,6 +614,7 @@ export function initMegaNav(root: HTMLElement): () => void {
     document.removeEventListener('click', handleDocClick);
     burger.removeEventListener('click', burgerHandler);
     backBtn.removeEventListener('click', backHandler);
+    root.removeEventListener('click', handleLinkClick);
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('scroll', handleNavScroll);
     menuObserver.disconnect();
