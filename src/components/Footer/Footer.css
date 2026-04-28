@@ -320,17 +320,45 @@
     padding-block: 3rem 2rem;
     gap: 3rem;
   }
+
+  /* ── Nav: stack every column vertically, full-width left-aligned ── */
   .footer__nav {
-    grid-template-columns: repeat(2, 1fr);
-    column-gap: 1.5rem;
-    row-gap: 2rem;
+    grid-template-columns: 1fr;
+    gap: 2rem;
     padding-top: 2.5rem;
   }
-  /* Reset the second-row divider — at 2 cols the rows don't align by 4 */
-  .footer__nav-col:nth-child(n + 4) {
-    padding-top: 0;
-    border-top: none;
+
+  /* ── Contact strip: left-align items (was centered) ── */
+  .footer__contact {
+    justify-items: start;
   }
+  .footer__contact-item {
+    justify-self: start;
+  }
+
+  /* ── Close block: left-align by default; logo + social stay centred ── */
+  .footer__close {
+    align-items: flex-start;
+    text-align: left;
+  }
+  .footer__close-logo,
+  .footer__social {
+    align-self: center;
+  }
+
+  /* Legal / copyright meta line — left-align and stack the items */
+  .footer__close-meta {
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    gap: 0.875rem 1.25rem;
+  }
+
+  /* Partner badge — left edge of the column */
+  .footer__partner {
+    align-self: flex-start;
+  }
+
   .footer-fan {
     right: -1rem;
     bottom: -1rem;

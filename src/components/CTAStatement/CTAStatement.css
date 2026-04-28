@@ -170,3 +170,23 @@
     gap: 0.875rem;
   }
 }
+
+/* ── Mobile: left-align the headline + CTAs ───────────────────
+   The feature box stays centred (its connector lines + dot are a
+   structural element), but the surrounding text reads better
+   left-aligned at narrow widths. */
+@media (max-width: 600px) {
+  .cta-statement__header {
+    align-items: flex-start;
+  }
+
+  .cta-statement__statement,
+  .cta-statement__statement.text-centre {
+    text-align: left;
+    margin-inline: 0;
+  }
+
+  .cta-statement__cta {
+    justify-content: flex-start;
+  }
+}
