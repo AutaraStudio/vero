@@ -98,7 +98,7 @@ export function StickySteps({
                     className="sticky-steps__text"
                   >
                     <span className="sticky-steps__eyebrow section-label">{step.eyebrow}</span>
-                    <h2 className="sticky-steps__headline text-h2 text-balance max-ch-20 font--bold">
+                    <h2 className="sticky-steps__headline text-h2 text-balance max-ch-15">
                       {step.headline}
                     </h2>
                     <p className="sticky-steps__body text-body--lg max-ch-40 leading--snug">
