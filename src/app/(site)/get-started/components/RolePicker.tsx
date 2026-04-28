@@ -9,6 +9,7 @@ import { useBasket } from '@/store/basketStore';
 import {
   TIER_DATA,
   getNudgeContent,
+  getTierPrice,
   SELECTABLE_TIERS,
   recommendTier,
   isTierAtLeast,
@@ -108,7 +109,9 @@ export default function RolePicker({ categories }: RolePickerProps) {
     }
   }, [searchParams, dispatch]);
 
-  const { selectedRoles, recommendedTier, tierOverride, nudgeShown } = state;
+  const { selectedRoles, recommendedTier, tierOverride, nudgeShown, paymentFrequency } = state;
+  const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
+  const mobilePrice = tierInfo ? getTierPrice(tierInfo, paymentFrequency) : null;
 
   // The minimum tier required by the current role count
   const autoTier = selectedRoles.length > 0 ? recommendTier(selectedRoles.length) : null;
@@ -376,9 +379,45 @@ export default function RolePicker({ categories }: RolePickerProps) {
           </div>
         </div>
 
-        {/* Mobile sticky basket bar removed per design spec — the floating
-           basket button + drawer is enough on mobile without a persistent
-           bottom-of-screen bar. */}
+        {/* ── Mobile: sticky basket bar (only when at least one role is
+           selected — otherwise it's just dead space at the bottom of the
+           screen). Lives only inside the get-started flow. ── */}
+        {selectedRoles.length > 0 && (
+          <div className="basket-mobile-bar show--mobile-only">
+            <div className="basket-mobile-bar__inner">
+              <div className="basket-mobile-bar__info">
+                <div className="basket-mobile-bar__info-row">
+                  <span className="text-body--sm font--medium color--primary">
+                    {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''}
+                  </span>
+                  {tierInfo && (
+                    <span className="section-label">{tierInfo.name}</span>
+                  )}
+                </div>
+                {tierInfo && mobilePrice && (
+                  <span className="text-body--xs color--tertiary">
+                    {mobilePrice.price} · {mobilePrice.priceNote}
+                  </span>
+                )}
+              </div>
+              <div className="basket-mobile-bar__actions">
+                <button
+                  className="basket-mobile-bar__view"
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  View basket
+                </button>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={handleContinue}
+                >
+                  {recommendedTier === 'bespoke' ? 'Discuss requirements →' : 'Continue →'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* ── Mobile: basket drawer ── */}
         {drawerOpen && (

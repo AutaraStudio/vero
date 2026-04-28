@@ -10,7 +10,10 @@
   flex-direction: column;
   background: var(--color--page-bg);
   position: relative;
-  overflow: hidden;
+  /* overflow-x only — overflow:hidden was clipping vertical scroll on
+     mobile (CheckoutFan was the only thing that needed x-clip and is
+     now hidden on ≤768px anyway). */
+  overflow-x: hidden;
 }
 
 /* ── Checkout fan — decorative shapes, bottom-right corner ── */
