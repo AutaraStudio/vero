@@ -232,19 +232,12 @@
 
 @media (hover: none) or (pointer: coarse) {
 
-  .btn-blob {
-    margin-right: 1.75rem;
-  }
-
-  .btn-blob__bg {
-    width: calc(100% + 1.5rem);
-    border-top-right-radius: 1.75rem;
-    border-bottom-right-radius: 1.75rem;
-  }
-
-  .btn-blob--secondary .btn-blob__bg {
-    background-color: var(--color--interactive-secondary-hover-bg);
-  }
+  /* Touch devices: keep the button at its natural size (no permanent
+     hover-extension margin-right or background overflow). Previously this
+     block mimicked the hover state always-on, which pushed full-width
+     buttons past their parent's right edge in column-stacked mobile CTA
+     layouts. The decorative blob extension is a hover affordance — touch
+     users get tap feedback via :active instead. */
 
   .btn-blob__dot:is(.is-first, .is-second, .is-third) {
     scale: 1;

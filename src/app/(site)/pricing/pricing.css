@@ -114,94 +114,84 @@
   outline-offset: 2px;
 }
 
-/* Tier cards grid */
-
-/* Tier cards grid — single bordered table where every section is its own row.
-   All cells share row positions, so horizontal dividers between sections
-   automatically span the full table width across all 4 tier columns. */
+/* Tier cards grid — N self-contained per-tier cards in a responsive grid.
+   Each card stacks: name → tagline → price → features → CTA. Cards have
+   their own bordered surface so the layout collapses cleanly from 4-col
+   (desktop) to 2-col (tablet) to 1-col (mobile). */
 .pricing-tiers-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  background: var(--color--surface-raised);
-  border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--xl);
-  overflow: hidden;
+  gap: 1rem;
 }
 
 @media (max-width: 1024px) {
-  .pricing-tiers-grid { grid-template-columns: repeat(2, 1fr); }
+  .pricing-tiers-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 600px) {
   .pricing-tiers-grid { grid-template-columns: 1fr; }
 }
 
-/* Base cell — vertical column divider (border-left) and horizontal row divider (border-bottom) */
-.pricing-tier-cell {
-  position: relative;
-  border-left: 1px solid var(--color--border-subtle);
-  border-bottom: 1px solid var(--color--border-subtle);
+/* ── Card ─────────────────────────────────────────────────── */
+
+.pricing-tier-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--xl);
+  overflow: hidden;
+}
+
+.pricing-tier-card--featured {
+  border-color: var(--color--border-strong);
+}
+
+/* Name bar — deep-purple via inline data-theme cascade */
+.pricing-tier-card__name-bar {
+  background: var(--color--page-bg);
+  text-align: center;
   padding: 1.25rem 1.5rem;
 }
 
-/* No left border on the first column (handled by the wrap's left border) */
-.pricing-tier-cell[style*="grid-column: 1"] {
-  border-left: none;
+/* Body — vertical stack of tagline/price/features/CTA */
+.pricing-tier-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  flex: 1;
 }
 
-/* Last row (CTA) needs no bottom border — wrap's bottom closes it */
-.pricing-tier-cell--cta {
-  border-bottom: none;
+.pricing-tier-card__tagline {
+  margin: 0;
 }
 
-/* ── Per-row styles ─────────────────────────────────────── */
-
-/* Name bar — purple bg via data-theme cascade, edge-to-edge, centred text */
-.pricing-tier-cell--name {
-  background: var(--color--page-bg);
-  text-align: center;
-  padding-block: 1.25rem;
+.pricing-tier-card__price {
+  margin: 0;
 }
 
-/* Tagline — fixed bottom padding so all taglines align to a row baseline */
-.pricing-tier-cell--tagline {
-  padding-top: 1.5rem;
-}
-
-/* Price row — bigger vertical padding to give the price headroom */
-.pricing-tier-cell--price {
-  padding-block: 1.5rem;
-}
-
-/* Features row — fills the available vertical space so CTAs align at the bottom */
-.pricing-tier-cell--features {
+.pricing-tier-card__features {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding-top: 1.5rem;
-  padding-bottom: 2rem;
+  flex: 1;
 }
 
-/* CTA cell — button stretches to the full cell width */
-.pricing-tier-cell--cta {
-  padding: 1.5rem;
+.pricing-tier-card__cta {
   display: flex;
   align-items: center;
+  margin-top: auto;
 }
 
-.pricing-tier-cell--cta .btn-blob {
+.pricing-tier-card__cta .btn-blob {
   width: 100%;
   justify-content: center;
 }
 
 
-.pricing-tier-card__price {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  padding-block: 0.875rem;
-  border-block: 1px solid var(--color--border-subtle);
-}
+/* (Earlier .pricing-tier-card__price rule already defines layout — these
+   rules below add the price-row + supporting elements specifically.) */
 
 .pricing-tier-card__price-value {
   line-height: 1.05;
@@ -541,58 +531,94 @@
   display: none;
 }
 
-/* ── Mobile: collapse to per-tier stacked cards ───────────── */
+/* ── Mobile: flatten to a single-column stacked list ──────────
+   The desktop layout uses inline grid-column / grid-row styles to
+   position cells in a 5-col table. Those inline positions break on
+   mobile (cells try to occupy columns that don't exist). We:
+   1. Drop grid entirely → block layout, cells flow in document order
+   2. Hide the spacer / corner cells
+   3. Prefix each value cell with its tier name via `data-tier-mobile-label`
+      so the user can identify which tier each value belongs to
+   4. Style the tier-head rows as section dividers between feature groups
+*/
 
 @media (max-width: 880px) {
   .pricing-compare-grid {
-    grid-template-columns: 1fr;
-    gap: 1.5rem;
+    display: block;
   }
 
+  /* `display: contents` flattens the wrapper structure so cells become
+     direct children of the block container and flow naturally. */
   .pricing-compare-grid__header,
   .pricing-compare-grid__body,
   .pricing-compare-grid__row,
   .pricing-compare-grid__footer { display: contents; }
 
+  /* Override the desktop inline grid positions — they're meaningless
+     in a non-grid container and only cause layout glitches. */
+  .pricing-compare-grid__feature-head,
+  .pricing-compare-grid__feature-cell,
+  .pricing-compare-grid__tier-head,
+  .pricing-compare-grid__cell,
+  .pricing-compare-grid__footer-cell {
+    grid-column: auto !important;
+    grid-row: auto !important;
+  }
+
   /* Hide the empty feature-name corner cells on mobile */
   .pricing-compare-grid__feature-head { display: none; }
 
-  /* Each tier head becomes a stacked card header */
+  /* Tier-name rows act as section headers between groups of features */
   .pricing-compare-grid__tier-head {
+    display: block;
     border: 1px solid var(--color--border-default);
-    border-radius: var(--radius--xl);
-    padding: 1.5rem;
-    margin-top: 1rem;
+    border-radius: var(--radius--lg);
+    padding: 1rem 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+    text-align: left;
   }
   .pricing-compare-grid__tier-head.is-featured {
     border-color: var(--color--border-strong);
   }
 
-  /* Feature label rows: prepend label, render as small card row */
+  /* Feature label — small heading above its tier values */
   .pricing-compare-grid__feature-cell {
-    padding: 0.875rem 0;
-    border-bottom: 1px solid var(--color--border-subtle);
+    display: block;
+    padding: 0.875rem 0 0.5rem;
+    border-bottom: none;
   }
 
+  /* Each value cell — left/right layout with tier name prefix */
   .pricing-compare-grid__cell {
-    border-left: none;
+    display: flex;
+    align-items: center;
     justify-content: space-between;
+    border: none;
     padding: 0.5rem 0;
     border-bottom: 1px solid var(--color--border-subtle);
   }
 
   .pricing-compare-grid__cell::before {
     content: attr(data-tier-mobile-label);
-    font-size: var(--font--label);
-    letter-spacing: var(--font--label-ls);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: var(--font--label-ls, 0.05em);
     color: var(--color--text-tertiary);
     text-transform: uppercase;
   }
 
+  /* Footer CTA cells — full-width stacked buttons */
   .pricing-compare-grid__footer-cell {
-    border-left: none;
-    border-radius: var(--radius--lg);
+    display: block;
+    border: none;
+    padding: 0.75rem 0 0;
     margin-top: 0.5rem;
+  }
+
+  .pricing-compare-grid__footer-cell .btn-blob {
+    width: 100%;
+    justify-content: center;
   }
 }
 

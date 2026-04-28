@@ -16,7 +16,7 @@
    clones, and works the same regardless of `direction`.
 ============================================================ */
 
-import { gsap, ScrollTrigger } from '@/lib/gsap';
+import { gsap } from '@/lib/gsap';
 
 interface MarqueeOptions {
   /** Pixels per second. Default: 60 (slow, premium feel). */
@@ -60,16 +60,13 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
   const originalHTML = collectionEl.outerHTML;
 
   let mainAnimation: gsap.core.Tween | null = null;
-  let invertTrigger: ScrollTrigger | null = null;
   let resizeRaf = 0;
 
   const directionMul = direction === 'right' ? 1 : -1;
 
   function teardown() {
     mainAnimation?.kill();
-    invertTrigger?.kill();
     mainAnimation = null;
-    invertTrigger = null;
     /* Reset transforms so a re-build starts from a clean slate */
     gsap.set(scrollEl!, { clearProps: 'transform,x' });
   }
@@ -133,24 +130,13 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
       },
     });
 
-    /* Direction control: -1 for left (default), +1 for right */
+    /* Direction control: -1 for left (default), +1 for right.
+       The marquee always scrolls in the direction set by the prop —
+       no scroll-direction inversion. Was previously flipping based on
+       page scroll direction, which felt unsettled / made it hard to
+       read logos as you scrolled past. */
     mainAnimation.timeScale(directionMul === -1 ? 1 : -1);
     root.setAttribute('data-marquee-status', 'normal');
-
-    /* Scroll-direction inversion — flip the marquee's direction depending
-       on whether the user is scrolling down or up. */
-    invertTrigger = ScrollTrigger.create({
-      trigger: root,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: (self) => {
-        if (!mainAnimation) return;
-        const isScrollingDown = self.direction === 1;
-        const baseScale = directionMul === -1 ? 1 : -1;
-        mainAnimation.timeScale(isScrollingDown ? baseScale : -baseScale);
-        root.setAttribute('data-marquee-status', isScrollingDown ? 'normal' : 'inverted');
-      },
-    });
 
     /* (Scroll-tied parallax intentionally omitted — combining it with the
        main x loop on the same element causes drift and breaks seamlessness.

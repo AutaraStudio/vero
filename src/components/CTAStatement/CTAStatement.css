@@ -137,12 +137,42 @@
   display: grid;
   height: 1.5em; /* one line height at text-h5 */
   overflow: hidden;
+  /* Cap to the available row width so long benefit strings don't push
+     the loop wider than the parent feature box on mobile (where the
+     box is constrained by the viewport). */
+  min-width: 0;
+  max-width: 100%;
 }
 
-/* All items in the same grid cell — grid auto-sizes to widest */
+/* All items in the same grid cell — grid auto-sizes to widest. On wide
+   viewports this expands to fit the longest line; on mobile we let
+   text wrap to a second line so the loop never overflows its box. */
 .cta-statement__loop-item {
   grid-area: 1 / 1;
   white-space: nowrap;
+  min-width: 0;
+}
+
+@media (max-width: 600px) {
+  /* Allow the loop items to wrap on mobile and grow the loop height
+     accordingly so the longest benefit fits inside the feature box. */
+  .cta-statement__loop {
+    height: auto;
+    min-height: 1.5em;
+  }
+  .cta-statement__loop-item {
+    white-space: normal;
+    text-wrap: balance;
+  }
+  /* Tighten the benefit row so the icon doesn't push the text against
+     the right edge */
+  .cta-statement__benefit-row {
+    align-items: flex-start;
+    gap: 0.625rem;
+  }
+  .cta-statement__check {
+    margin-top: 0.25rem;
+  }
 }
 
 /* ── CTA ── */

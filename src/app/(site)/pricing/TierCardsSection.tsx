@@ -19,6 +19,15 @@ function tierHref(tier: PricingTier): string {
   return tier.ctaType === 'contact' ? '/contact' : `/get-started?tier=${tier.slug}`;
 }
 
+/**
+ * Pricing tier cards — grid of self-contained per-tier cards.
+ *
+ * Each card stacks vertically: name → tagline → price → feature highlights
+ * → CTA. The grid is 4-col on desktop, 2-col on tablet, 1-col on mobile.
+ * Per-card structure (vs the old "single table grid" approach) ensures
+ * the layout works at every breakpoint — cells can never end up in a
+ * grid column that doesn't exist.
+ */
 export default function TierCardsSection({
   tiers,
   starterCallout,
@@ -26,7 +35,7 @@ export default function TierCardsSection({
 }: Props) {
   const { state } = useBasket();
   const frequency = state.paymentFrequency;
-  const cardsRef   = useFadeUp({ selector: '.pricing-tier-cell', stagger: 0.08, y: 24 });
+  const cardsRef   = useFadeUp({ selector: '.pricing-tier-card', stagger: 0.08, y: 24 });
 
   return (
     <section id="pricing-tiers" data-theme={theme} className="pricing-tiers-section section">
@@ -48,153 +57,124 @@ export default function TierCardsSection({
         </div>
 
         <div ref={cardsRef as React.RefObject<HTMLDivElement>} className="pricing-tiers-grid">
-
-          {/* ── Row 1: Name bars (purple) — Starter gets a hover tooltip ── */}
           {tiers.map((tier, ti) => {
             const showTooltip = tier.slug === 'starter' && !!starterCallout;
-            return (
-              <div
-                key={`name-${tier._id}`}
-                data-theme="brand-purple-deep"
-                className="pricing-tier-cell pricing-tier-cell--name"
-                style={{ gridColumn: ti + 1, gridRow: 1 }}
-              >
-                <span className="pricing-tier-cell__name-inner">
-                  <span className="text-h3 color--primary">{tier.name}</span>
-                  {showTooltip && (
-                    <span className="pricing-tier-cell__name-tooltip">
-                      <Tooltip
-                        y="bottom"
-                        content={<TooltipContent body={starterCallout!} />}
-                      >
-                        {''}
-                      </Tooltip>
-                    </span>
-                  )}
-                </span>
-              </div>
-            );
-          })}
-
-          {/* ── Row 2: Taglines ──────────────────────────── */}
-          {tiers.map((tier, ti) => (
-            <div
-              key={`tagline-${tier._id}`}
-              className="pricing-tier-cell pricing-tier-cell--tagline"
-              style={{ gridColumn: ti + 1, gridRow: 2 }}
-            >
-              {tier.tagline && (
-                <p className="text-body--sm color--secondary leading--snug">
-                  {tier.tagline}
-                </p>
-              )}
-            </div>
-          ))}
-
-          {/* ── Row 3: Prices ────────────────────────────── */}
-          {tiers.map((tier, ti) => {
+            const previousTier = ti > 0 ? tiers[ti - 1] : null;
             const { display, suffix } = getDisplayedPrice(tier, frequency);
+
             return (
-              <div
-                key={`price-${tier._id}`}
-                className="pricing-tier-cell pricing-tier-cell--price"
-                style={{ gridColumn: ti + 1, gridRow: 3 }}
+              <article
+                key={tier._id}
+                className={`pricing-tier-card${tier.isFeatured ? ' pricing-tier-card--featured' : ''}`}
               >
-                {display && (
-                  <span className="pricing-tier-card__price-row">
-                    <span className="pricing-tier-card__price-value text-h2 color--primary">
-                      {display}
-                    </span>
-                    {suffix && (
-                      <span className="pricing-tier-card__price-suffix text-body--md color--tertiary">
-                        {suffix}
+                {/* ── Name bar ── */}
+                <div
+                  data-theme="brand-purple-deep"
+                  className="pricing-tier-card__name-bar"
+                >
+                  <span className="pricing-tier-cell__name-inner">
+                    <span className="text-h3 color--primary">{tier.name}</span>
+                    {showTooltip && (
+                      <span className="pricing-tier-cell__name-tooltip">
+                        <Tooltip
+                          y="bottom"
+                          content={<TooltipContent body={starterCallout!} />}
+                        >
+                          {''}
+                        </Tooltip>
                       </span>
                     )}
                   </span>
-                )}
-              </div>
+                </div>
+
+                {/* ── Body: tagline → price → features → CTA ── */}
+                <div className="pricing-tier-card__body">
+                  {tier.tagline && (
+                    <p className="pricing-tier-card__tagline text-body--sm color--secondary leading--snug">
+                      {tier.tagline}
+                    </p>
+                  )}
+
+                  {display && (
+                    <div className="pricing-tier-card__price">
+                      <span className="pricing-tier-card__price-row">
+                        <span className="pricing-tier-card__price-value text-h2 color--primary">
+                          {display}
+                        </span>
+                        {suffix && (
+                          <span className="pricing-tier-card__price-suffix text-body--md color--tertiary">
+                            {suffix}
+                          </span>
+                        )}
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="pricing-tier-card__features">
+                    {previousTier && (
+                      <p className="pricing-tier-card__includes text-body--sm color--secondary">
+                        <span className="pricing-tier-card__includes-arrow" aria-hidden="true">
+                          <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="M5 12h14M13 6l6 6-6 6"
+                              stroke="currentColor"
+                              strokeWidth="1.75"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            />
+                          </svg>
+                        </span>
+                        <span>
+                          Everything in <strong className="color--primary">{previousTier.name}</strong>, plus:
+                        </span>
+                      </p>
+                    )}
+
+                    <ul className="pricing-tier-card__highlights">
+                      {tier.candidateLimit !== undefined && tier.candidateLimit !== null && (
+                        <li className="pricing-tier-card__highlight text-body--sm color--secondary">
+                          <CheckIcon />
+                          Up to {tier.candidateLimit.toLocaleString()} candidates
+                        </li>
+                      )}
+                      {tier.roleLimit !== undefined && tier.roleLimit !== null && (
+                        <li className="pricing-tier-card__highlight text-body--sm color--secondary">
+                          <CheckIcon />
+                          {tier.roleLimit === 1
+                            ? '1 job role'
+                            : tier.name === 'Scale'
+                              ? `Access to all ${tier.roleLimit} roles`
+                              : `Up to ${tier.roleLimit} job roles`}
+                        </li>
+                      )}
+                      {tier.duration && (
+                        <li className="pricing-tier-card__highlight text-body--sm color--secondary">
+                          <CheckIcon />
+                          {tier.duration}
+                        </li>
+                      )}
+                    </ul>
+
+                    {tier.upgradeNote && (
+                      <p className="pricing-tier-card__note text-body--xs color--tertiary">
+                        {tier.upgradeNote}
+                      </p>
+                    )}
+                  </div>
+
+                  <div className="pricing-tier-card__cta">
+                    <Button
+                      variant={tier.isFeatured ? 'cta' : 'primary'}
+                      size="md"
+                      href={tierHref(tier)}
+                    >
+                      Get started
+                    </Button>
+                  </div>
+                </div>
+              </article>
             );
           })}
-
-          {/* ── Row 4: Features (includes line + highlights + upgrade note) ── */}
-          {tiers.map((tier, ti) => {
-            const previousTier = ti > 0 ? tiers[ti - 1] : null;
-            return (
-              <div
-                key={`features-${tier._id}`}
-                className="pricing-tier-cell pricing-tier-cell--features"
-                style={{ gridColumn: ti + 1, gridRow: 4 }}
-              >
-                {previousTier && (
-                  <p className="pricing-tier-card__includes text-body--sm color--secondary">
-                    <span className="pricing-tier-card__includes-arrow" aria-hidden="true">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-                        <path
-                          d="M5 12h14M13 6l6 6-6 6"
-                          stroke="currentColor"
-                          strokeWidth="1.75"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </span>
-                    <span>
-                      Everything in <strong className="color--primary">{previousTier.name}</strong>, plus:
-                    </span>
-                  </p>
-                )}
-
-                <ul className="pricing-tier-card__highlights">
-                  {tier.candidateLimit !== undefined && tier.candidateLimit !== null && (
-                    <li className="pricing-tier-card__highlight text-body--sm color--secondary">
-                      <CheckIcon />
-                      Up to {tier.candidateLimit.toLocaleString()} candidates
-                    </li>
-                  )}
-                  {tier.roleLimit !== undefined && tier.roleLimit !== null && (
-                    <li className="pricing-tier-card__highlight text-body--sm color--secondary">
-                      <CheckIcon />
-                      {tier.roleLimit === 1
-                        ? '1 job role'
-                        : tier.name === 'Scale'
-                          ? `Access to all ${tier.roleLimit} roles`
-                          : `Up to ${tier.roleLimit} job roles`}
-                    </li>
-                  )}
-                  {tier.duration && (
-                    <li className="pricing-tier-card__highlight text-body--sm color--secondary">
-                      <CheckIcon />
-                      {tier.duration}
-                    </li>
-                  )}
-                </ul>
-
-                {tier.upgradeNote && (
-                  <p className="pricing-tier-card__note text-body--xs color--tertiary">
-                    {tier.upgradeNote}
-                  </p>
-                )}
-              </div>
-            );
-          })}
-
-          {/* ── Row 5: CTAs ──────────────────────────────── */}
-          {tiers.map((tier, ti) => (
-            <div
-              key={`cta-${tier._id}`}
-              className="pricing-tier-cell pricing-tier-cell--cta"
-              style={{ gridColumn: ti + 1, gridRow: 5 }}
-            >
-              <Button
-                variant={tier.isFeatured ? 'cta' : 'primary'}
-                size="md"
-                href={tierHref(tier)}
-              >
-                Get started
-              </Button>
-            </div>
-          ))}
-
         </div>
 
       </div>
