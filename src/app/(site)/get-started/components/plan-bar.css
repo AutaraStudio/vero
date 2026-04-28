@@ -73,7 +73,26 @@
 }
 
 @media (max-width: 600px) {
-  .plan-bar__centre {
+  /* Mobile: just the price + the CTA button. Hide tier name, billing
+     label, and any extra meta — the bar's job on small screens is to
+     get the user to the next step quickly. */
+  .plan-bar__left,
+  .plan-bar__freq-label,
+  .plan-bar__limits-row {
     display: none;
+  }
+
+  .plan-bar__centre {
+    flex: 0 0 auto;
+  }
+
+  .plan-bar__price-row {
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  /* Bigger, more confident price */
+  .plan-bar__price {
+    font-size: var(--font--h3);
   }
 }

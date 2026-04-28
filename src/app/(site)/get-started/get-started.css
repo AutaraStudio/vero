@@ -737,6 +737,24 @@
   padding: 0;
 }
 
+/* Mobile simplification: just the price + the Continue button. Hide
+   the role count, tier name pill, and the "View basket" link — they
+   add noise without driving the user forward. The drawer is still
+   reachable via the persistent basket button in the nav. */
+.basket-mobile-bar .basket-mobile-bar__info-row,
+.basket-mobile-bar .basket-mobile-bar__view {
+  display: none;
+}
+
+/* Bump the price line to a more confident size so it reads at a glance. */
+.basket-mobile-bar__info > span:not(.basket-mobile-bar__info-row) {
+  font-size: var(--font--h4);
+  font-weight: 700;
+  color: var(--color--text-primary);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
 /* ── Mobile drawer ── */
 
 .basket-drawer {
