@@ -9,10 +9,19 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
   const pathname = usePathname();
 
   useEffect(() => {
+    /* Lerp-based config — simpler than duration+easing, scales naturally
+       with frame rate, and avoids the small overshoot/jitter that the
+       custom expo easing could produce on long pages with many sticky
+       elements + ScrollTriggers. lerp: 0.1 is the Lenis default and
+       feels smooth without dragging. */
     const lenis = new Lenis({
-      duration: 1.2,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      lerp: 0.1,
       smoothWheel: true,
+      /* Don't smooth touch — native iOS / Android momentum is better than
+         anything we can synthesise, and forcing smooth touch is a common
+         source of jitter on mobile. */
+      syncTouch: false,
+      touchMultiplier: 1.5,
     });
     lenisRef.current = lenis;
 

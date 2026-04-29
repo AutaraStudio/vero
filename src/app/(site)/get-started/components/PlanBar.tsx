@@ -28,7 +28,15 @@ export default function PlanBar({ theme }: PlanBarProps) {
 
   useEffect(() => {
     if (!barRef.current || !tierInfo) return;
-    gsap.from(barRef.current, { y: '100%', duration: 0.45, ease: 'power3.out', delay: 0.1 });
+    /* fromTo (not from) — explicit start + end states so the bar always
+       lands at y: 0 even if the animation gets interrupted or the dep
+       array doesn't re-fire across navigations. Was disappearing on
+       desktop because `from` could leave the bar stuck at y: 100%. */
+    gsap.fromTo(
+      barRef.current,
+      { y: '100%' },
+      { y: 0, duration: 0.45, ease: 'power3.out', delay: 0.1, clearProps: 'transform' },
+    );
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!tierInfo]);
 
