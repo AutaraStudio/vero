@@ -101,6 +101,11 @@ export default function NavBasket({ categories = [] }: Props) {
     router.push('/get-started/details');
   }, [close, recommendedTier, nudgeShown, selectedRoles.length, router]);
 
+  const handleAddMore = useCallback(() => {
+    close();
+    router.push('/get-started');
+  }, [close, router]);
+
   const handleClear = useCallback(() => {
     dispatch({ type: 'CLEAR_BASKET' });
     setConfirmClear(false);
@@ -296,6 +301,13 @@ export default function NavBasket({ categories = [] }: Props) {
                     {recommendedTier === 'bespoke'
                       ? 'Discuss requirements →'
                       : `Continue to checkout (${selectedRoles.length})`}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    onClick={handleAddMore}
+                  >
+                    Add more roles
                   </Button>
                   <button
                     type="button"
