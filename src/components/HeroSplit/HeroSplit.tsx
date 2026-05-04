@@ -4,6 +4,7 @@ import Button from '@/components/ui/Button';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import type { ThemeVariant } from '@/lib/theme';
+import MediaBlock, { type MediaBlockData } from '@/components/MediaBlock';
 import './HeroSplit.css';
 
 interface HeroSplitProps {
@@ -17,7 +18,9 @@ interface HeroSplitProps {
   intro?: string;
   primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
-  /** Optional supporting image rendered in the right column */
+  /** Preferred way to pass hero media — image OR clickable video modal. */
+  media?: MediaBlockData | null;
+  /** Legacy: simple image-only prop. Kept for backward compatibility. */
   image?: { src: string; alt: string };
   /** Reverse the columns so image sits left, text right. Default false. */
   reverse?: boolean;
@@ -71,6 +74,7 @@ export default function HeroSplit({
   intro,
   primaryCTA,
   secondaryCTA,
+  media,
   image,
   reverse = false,
   imageHeight = 'auto',
@@ -191,13 +195,26 @@ export default function HeroSplit({
             )}
           </div>
 
-          {/* ── Image column ────────────────────────────── */}
+          {/* ── Media column ─────────────────────────────
+             Three rendering paths, in priority order:
+             1. New `media` prop (full mediaBlock from Sanity) → MediaBlock
+                handles image / video-modal / placeholder
+             2. Legacy `image` prop → static <img>
+             3. Nothing → coloured placeholder card                       */}
           <div
             ref={mediaRef as React.Ref<HTMLDivElement>}
             data-animate=""
             className="hero-split__media"
           >
-            {image?.src ? (
+            {media ? (
+              <MediaBlock
+                media={media}
+                aspectRatio="auto"
+                borderRadius="0"
+                className="hero-split__media-block"
+                placeholderAccent="var(--swatch--purple-500)"
+              />
+            ) : image?.src ? (
               /* eslint-disable-next-line @next/next/no-img-element */
               <img
                 src={image.src}

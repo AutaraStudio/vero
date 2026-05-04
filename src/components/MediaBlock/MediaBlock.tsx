@@ -1,0 +1,239 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { gsap } from '@/lib/gsap';
+import './MediaBlock.css';
+
+/**
+ * Resolved shape of a `mediaBlock` field once it's been pulled through the
+ * `mediaProjection()` GROQ helper (see queries.ts).
+ *
+ * Every field is optional — when nothing is uploaded the component renders
+ * a coloured placeholder card so the layout never collapses.
+ */
+export interface MediaBlockData {
+  type?: 'image' | 'video' | null;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+  videoUrl?: string | null;
+  videoThumbnailUrl?: string | null;
+  videoThumbnailAlt?: string | null;
+}
+
+interface MediaBlockProps {
+  /** The projected mediaBlock data from Sanity */
+  media?: MediaBlockData | null;
+
+  /** Aspect ratio for both the image and the placeholder. Default '16 / 10'. */
+  aspectRatio?: string;
+
+  /** Optional accent CSS variable used to tint the placeholder card. */
+  placeholderAccent?: string;
+
+  /** Border radius — accepts a CSS var or value. Default `var(--radius--lg)`. */
+  borderRadius?: string;
+
+  /** Object-fit on the rendered image / thumbnail. Default 'cover'. */
+  objectFit?: 'cover' | 'contain';
+
+  /** Extra className to merge with the wrapper. */
+  className?: string;
+
+  /** Pass-through alt text override (used when the field-level alt is blank). */
+  fallbackAlt?: string;
+}
+
+/**
+ * Renders an image, a clickable video thumbnail (opens a modal player),
+ * or a coloured placeholder card — based on the media block's `type`.
+ *
+ * Visuals match the existing IntroBlock / HeroCentred placeholder + modal
+ * patterns so this drops in anywhere on the site without looking foreign.
+ */
+export default function MediaBlock({
+  media,
+  aspectRatio = '16 / 10',
+  placeholderAccent,
+  borderRadius = 'var(--radius--lg)',
+  objectFit = 'cover',
+  className = '',
+}: MediaBlockProps) {
+  const [open, setOpen]   = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const modalRef   = useRef<HTMLDivElement>(null);
+  const videoRef   = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => setMounted(true), []);
+
+  /* Open animation */
+  useEffect(() => {
+    if (!open) return;
+    const overlay = overlayRef.current;
+    const modal = modalRef.current;
+    const video = videoRef.current;
+    if (!overlay || !modal) return;
+
+    document.body.style.overflow = 'hidden';
+    gsap.fromTo(overlay, { opacity: 0 }, { opacity: 1, duration: 0.3, ease: 'power2.out' });
+    gsap.fromTo(
+      modal,
+      { scale: 0.92, opacity: 0 },
+      { scale: 1, opacity: 1, duration: 0.4, ease: 'power3.out' },
+    );
+
+    /* Lazy-set the video src so the file isn't fetched until the modal opens */
+    if (video && media?.videoUrl) {
+      video.src = media.videoUrl;
+      void video.play().catch(() => { /* user gesture required on some browsers */ });
+    }
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') close();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  function close() {
+    const overlay = overlayRef.current;
+    const modal = modalRef.current;
+    const video = videoRef.current;
+    if (!overlay || !modal) {
+      setOpen(false);
+      document.body.style.overflow = '';
+      return;
+    }
+    gsap.to(modal, { scale: 0.95, opacity: 0, duration: 0.25, ease: 'power2.in' });
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: 0.25,
+      ease: 'power2.in',
+      onComplete: () => {
+        if (video) {
+          video.pause();
+          video.removeAttribute('src');
+          video.load();
+        }
+        document.body.style.overflow = '';
+        setOpen(false);
+      },
+    });
+  }
+
+  /* ── Render ─────────────────────────────────────────────── */
+
+  const wrapperStyle = {
+    aspectRatio,
+    borderRadius,
+    ...(placeholderAccent ? { ['--media-accent' as string]: placeholderAccent } : {}),
+  } as React.CSSProperties;
+
+  const isVideo = media?.type === 'video' && !!media?.videoUrl;
+  const thumbnailUrl = isVideo ? media?.videoThumbnailUrl : null;
+  const imageUrl = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
+  const altText  = isVideo
+    ? media?.videoThumbnailAlt ?? ''
+    : media?.imageAlt ?? '';
+
+  /* ── Video mode — clickable thumbnail with play button ── */
+  if (isVideo) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={`media-block media-block--video ${className}`.trim()}
+          style={wrapperStyle}
+          aria-label="Play video"
+        >
+          {thumbnailUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={thumbnailUrl}
+              alt={altText}
+              className="media-block__img"
+              style={{ objectFit }}
+              loading="lazy"
+            />
+          ) : (
+            <span className="media-block__placeholder" aria-hidden="true" />
+          )}
+          <span className="media-block__play" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
+            </svg>
+          </span>
+        </button>
+
+        {mounted && open && createPortal(
+          <div
+            ref={overlayRef}
+            className="media-block__overlay"
+            onClick={close}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Video player"
+          >
+            <div
+              ref={modalRef}
+              className="media-block__modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={close}
+                className="media-block__close"
+                aria-label="Close video"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 6l12 12M6 18L18 6"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+              <video
+                ref={videoRef}
+                className="media-block__video"
+                controls
+                playsInline
+                preload="none"
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
+      </>
+    );
+  }
+
+  /* ── Image mode ─────────────────────────────────────────── */
+  if (imageUrl) {
+    return (
+      <div className={`media-block ${className}`.trim()} style={wrapperStyle}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={imageUrl}
+          alt={altText}
+          className="media-block__img"
+          style={{ objectFit }}
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  /* ── Placeholder — no upload yet ────────────────────────── */
+  return (
+    <div
+      className={`media-block media-block--placeholder ${className}`.trim()}
+      style={wrapperStyle}
+      aria-hidden="true"
+    />
+  );
+}

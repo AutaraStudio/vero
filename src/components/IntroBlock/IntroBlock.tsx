@@ -7,6 +7,7 @@ import { gsap } from '@/lib/gsap';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import type { ThemeVariant } from '@/lib/theme';
+import MediaBlock, { type MediaBlockData } from '@/components/MediaBlock';
 import './IntroBlock.css';
 
 interface PortableTextSpan { _type: 'span'; text: string; marks?: string[]; }
@@ -18,6 +19,15 @@ interface Props {
   body?: PortableTextBlock[];
   ctaLabel?: string;
   ctaHref?: string;
+  /**
+   * Preferred way to pass media — a full mediaBlock object from Sanity.
+   * When set, it takes precedence over the legacy video* props below
+   * and renders via <MediaBlock /> (image OR clickable video modal OR
+   * a placeholder card if nothing's uploaded yet).
+   */
+  media?: MediaBlockData | null;
+  /** Legacy: video-only thumbnail + URL. Kept for backward compatibility
+   *  with pages that haven't migrated to the `media` prop yet. */
   videoThumbnailUrl?: string;
   videoThumbnailAlt?: string;
   videoUrl?: string;
@@ -60,6 +70,7 @@ export default function IntroBlock({
   body,
   ctaLabel,
   ctaHref,
+  media,
   videoThumbnailUrl,
   videoThumbnailAlt,
   videoUrl,
@@ -67,6 +78,9 @@ export default function IntroBlock({
   alwaysShowMedia = false,
   layout = 'split',
 }: Props) {
+  /* Treat the new `media` prop as authoritative when provided — a Sanity
+     mediaBlock with type 'video' or 'image' fully describes what to render. */
+  const useMediaBlock = !!media;
   const labelRef   = useFadeUp({ delay: 0,    duration: 0.5, y: 12 });
   const headingRef = useTextReveal({ delay: 0.05 });
   const bodyRef    = useFadeUp({ delay: 0.2,  duration: 0.6, y: 16 });
@@ -116,7 +130,7 @@ export default function IntroBlock({
     return () => window.removeEventListener('keydown', onKey);
   }, [modalOpen, videoUrl, closeModal]);
 
-  const hasMedia = Boolean(videoThumbnailUrl || videoUrl) || alwaysShowMedia;
+  const hasMedia = useMediaBlock || Boolean(videoThumbnailUrl || videoUrl) || alwaysShowMedia;
 
   const isCentered = layout === 'centered';
   const gridClass =
@@ -219,7 +233,14 @@ export default function IntroBlock({
               data-animate=""
               className="intro-block__media"
             >
-              {videoUrl ? (
+              {useMediaBlock ? (
+                /* New path — full mediaBlock object handles image / video / placeholder. */
+                <MediaBlock
+                  media={media}
+                  aspectRatio="16 / 10"
+                  placeholderAccent="var(--swatch--purple-500)"
+                />
+              ) : videoUrl ? (
                 <button
                   type="button"
                   className="intro-block__thumb"

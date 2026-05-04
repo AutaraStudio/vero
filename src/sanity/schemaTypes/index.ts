@@ -12,11 +12,13 @@ import { pricingTier } from './pricingTier'
 import { jobCategory } from './jobCategory'
 import { role } from './role'
 import { seoFields } from './seoFields'
+import { mediaBlock } from './mediaBlock'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
     /* Reusable object types — must be registered before documents that use them */
     seoFields,
+    mediaBlock,
 
     /* Documents */
     homePage,

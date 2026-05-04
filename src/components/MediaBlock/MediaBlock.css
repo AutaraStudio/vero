@@ -1,0 +1,151 @@
+/* ============================================================
+   MediaBlock — image / video / placeholder renderer
+   Visuals match the existing IntroBlock + HeroCentred patterns
+   so this drops in anywhere on the site without looking foreign.
+============================================================ */
+
+.media-block {
+  position: relative;
+  display: block;
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color--border-default);
+  background: var(--color--surface-raised);
+  /* aspect-ratio + border-radius set inline via the React component so
+     callers can override per-instance (hero might be 16/9, IntroBlock 16/10, etc.) */
+}
+
+/* ── Image / thumbnail ─────────────────────────────────────── */
+
+.media-block__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Placeholder card (used for no-upload + as a fallback for
+   missing video thumbnails) ─────────────────────────────────── */
+
+.media-block--placeholder,
+.media-block__placeholder {
+  /* If the caller passes --media-accent, use a soft tint of it.
+     Otherwise fall back to the brand-purple-tinted surface used in
+     other placeholders across the site (StickySteps, IntroBlock). */
+  background:
+    color-mix(
+      in srgb,
+      var(--media-accent, var(--swatch--purple-500)) 14%,
+      var(--color--surface-raised)
+    );
+}
+
+.media-block__placeholder {
+  position: absolute;
+  inset: 0;
+}
+
+/* ── Video variant (clickable button wrapping the thumbnail) ─── */
+
+.media-block--video {
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  text-align: left;
+  transition: transform var(--transition--spring);
+}
+
+.media-block--video:hover {
+  transform: translateY(-2px);
+}
+
+.media-block__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: var(--radius--full);
+  background: var(--color--interactive-cta);
+  color: var(--color--interactive-cta-text);
+  box-shadow: var(--shadow--overlay);
+  transition:
+    transform var(--transition--spring),
+    background-color var(--transition--default);
+  pointer-events: none;
+}
+
+.media-block--video:hover .media-block__play {
+  background: var(--color--interactive-cta-hover);
+  transform: translate(-50%, -50%) scale(1.05);
+}
+
+.media-block__play svg {
+  margin-left: 3px; /* optical centring of triangle */
+}
+
+@media (max-width: 600px) {
+  .media-block__play {
+    width: 3.5rem;
+    height: 3.5rem;
+  }
+}
+
+/* ── Modal (portaled to document.body) ─────────────────────── */
+
+.media-block__overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: color-mix(in srgb, var(--swatch--neutral-900) 75%, transparent);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+.media-block__modal {
+  position: relative;
+  width: min(1000px, 100%);
+  aspect-ratio: 16 / 9;
+  background: var(--swatch--neutral-900);
+  border-radius: var(--radius--lg);
+  overflow: hidden;
+  box-shadow: var(--shadow--overlay-lg);
+  cursor: default;
+}
+
+.media-block__close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius--full);
+  border: 1px solid color-mix(in srgb, var(--swatch--neutral-0) 30%, transparent);
+  background: color-mix(in srgb, var(--swatch--neutral-0) 12%, transparent);
+  backdrop-filter: blur(8px);
+  color: var(--swatch--neutral-0);
+  cursor: pointer;
+  transition: background-color var(--transition--default);
+}
+
+.media-block__close:hover {
+  background: color-mix(in srgb, var(--swatch--neutral-0) 22%, transparent);
+}
+
+.media-block__video {
+  width: 100%;
+  height: 100%;
+  display: block;
+  background: var(--swatch--neutral-900);
+}

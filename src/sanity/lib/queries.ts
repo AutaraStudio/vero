@@ -16,6 +16,29 @@ export const SEO_PROJECTION = `
   }
 `
 
+/**
+ * Project a `mediaBlock` field. Returns the toggle type plus image URLs and
+ * video URL/thumbnail in flat form ready to feed straight into <MediaBlock />.
+ *
+ * Usage:
+ *   *[_type == "homePage"][0] {
+ *     ${mediaProjection('heroMedia')},
+ *     ...other fields
+ *   }
+ */
+export function mediaProjection(fieldName: string): string {
+  return `
+    "${fieldName}": ${fieldName} {
+      type,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt,
+      videoUrl,
+      "videoThumbnailUrl": videoThumbnail.asset->url,
+      "videoThumbnailAlt": videoThumbnail.alt
+    }
+  `;
+}
+
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
     ${SEO_PROJECTION},
@@ -181,20 +204,17 @@ export const ABOUT_PAGE_QUERY = `
     ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
-    "heroImageUrl": heroImage.asset->url,
-    "heroImageAlt": heroImage.alt,
+    ${mediaProjection('heroMedia')},
 
     tazioEvolutionHeading,
     tazioEvolutionBody,
-    "tazioEvolutionImageUrl": tazioEvolutionImage.asset->url,
-    "tazioEvolutionImageAlt": tazioEvolutionImage.alt,
+    ${mediaProjection('tazioEvolutionMedia')},
     tazioEvolutionCTALabel,
     tazioEvolutionCTAHref,
 
     candidateExperiencesHeading,
     candidateExperiencesBody,
-    "candidateExperiencesImageUrl": candidateExperiencesImage.asset->url,
-    "candidateExperiencesImageAlt": candidateExperiencesImage.alt,
+    ${mediaProjection('candidateExperiencesMedia')},
 
     clientsHeading,
     clientsIntro,

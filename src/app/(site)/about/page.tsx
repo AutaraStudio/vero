@@ -6,12 +6,19 @@ import HeroSplit     from '@/components/HeroSplit';
 import IntroBlock    from '@/components/IntroBlock';
 import ClientsBlock  from '@/components/ClientsBlock';
 import TeamGrid      from '@/components/TeamGrid';
+import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([
-    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroImageUrl?: string } | null>(ABOUT_PAGE_QUERY),
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroMedia?: MediaBlockData } | null>(ABOUT_PAGE_QUERY),
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
   ]);
+  /* For OG fallback, use whichever image lives in the heroMedia block —
+     the image when type=image, the video poster when type=video. */
+  const heroFallbackImage =
+    page?.heroMedia?.type === 'video'
+      ? page?.heroMedia?.videoThumbnailUrl
+      : page?.heroMedia?.imageUrl;
   return generateSiteMetadata({
     seo: page?.seo,
     settings,
@@ -19,7 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title:       page?.heroHeadline ?? 'About us',
       description: page?.heroIntro ??
         'Vero Assess is part of Tazio — built on the same trusted technology powering enterprise recruitment platforms since 2010.',
-      imageUrl:    page?.heroImageUrl,
+      imageUrl:    heroFallbackImage ?? undefined,
     },
     path: '/about',
   });
@@ -33,20 +40,17 @@ interface PortableTextBlock { _type: 'block'; children: PortableTextSpan[]; styl
 interface AboutPageData {
   heroHeadline?: string;
   heroIntro?: string;
-  heroImageUrl?: string;
-  heroImageAlt?: string;
+  heroMedia?: MediaBlockData;
 
   tazioEvolutionHeading?: string;
   tazioEvolutionBody?: PortableTextBlock[];
-  tazioEvolutionImageUrl?: string;
-  tazioEvolutionImageAlt?: string;
+  tazioEvolutionMedia?: MediaBlockData;
   tazioEvolutionCTALabel?: string;
   tazioEvolutionCTAHref?: string;
 
   candidateExperiencesHeading?: string;
   candidateExperiencesBody?: PortableTextBlock[];
-  candidateExperiencesImageUrl?: string;
-  candidateExperiencesImageAlt?: string;
+  candidateExperiencesMedia?: MediaBlockData;
 
   clientsHeading?: string;
   clientsIntro?: string;
@@ -76,16 +80,12 @@ export default async function AboutPage() {
         eyebrow="About us"
         headline={data?.heroHeadline ?? 'Powered by trusted technology'}
         intro={data?.heroIntro}
-        image={
-          data?.heroImageUrl
-            ? { src: data.heroImageUrl, alt: data.heroImageAlt ?? 'Tazio platform' }
-            : undefined
-        }
+        media={data?.heroMedia}
         imageHeight="viewport"
         textAlign="bottom"
       />
 
-      {/* ── 2. Tazio's tech evolution (centred — platform image as featured visual) ── */}
+      {/* ── 2. Tazio's tech evolution (centred — image / video as featured visual) ── */}
       {data?.tazioEvolutionHeading && (
         <IntroBlock
           theme="brand-purple"
@@ -94,22 +94,20 @@ export default async function AboutPage() {
           body={data.tazioEvolutionBody as never}
           ctaLabel={data.tazioEvolutionCTALabel}
           ctaHref={data.tazioEvolutionCTAHref}
-          videoThumbnailUrl={data.tazioEvolutionImageUrl}
-          videoThumbnailAlt={data.tazioEvolutionImageAlt}
+          media={data.tazioEvolutionMedia}
           alwaysShowMedia
           layout="centered"
         />
       )}
 
-      {/* ── 3. Enhancing candidate experiences (text + image) ── */}
+      {/* ── 3. Enhancing candidate experiences (text + image / video) ── */}
       {data?.candidateExperiencesHeading && (
         <IntroBlock
           theme="brand-purple"
           eyebrow="Candidate experience"
           heading={data.candidateExperiencesHeading}
           body={data.candidateExperiencesBody as never}
-          videoThumbnailUrl={data.candidateExperiencesImageUrl}
-          videoThumbnailAlt={data.candidateExperiencesImageAlt}
+          media={data.candidateExperiencesMedia}
           alwaysShowMedia
         />
       )}

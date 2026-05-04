@@ -55,13 +55,14 @@ export const aboutPage = defineType({
       description: 'One or two sentences sitting beneath the headline.',
     }),
     defineField({
-      name: 'heroImage',
-      title: 'Hero image',
-      type: 'image',
+      name: 'heroMedia',
+      title: 'Hero media',
+      type: 'mediaBlock',
       group: 'hero',
-      options: { hotspot: true },
-      description: 'Large image on the right side of the hero (e.g. a Tazio platform shot). 1600×1000px recommended.',
-      fields: [defineField({ name: 'alt', title: 'Alt text (for screen readers)', type: 'string' })],
+      description:
+        'Image or video shown on the right side of the hero. ' +
+        'Pick "Video (opens modal)" to make the visitor click to watch. ' +
+        '1600×1000px recommended for images / 16:9 cover for videos.',
     }),
 
     /* ════════════════════════════════════════════════════════
@@ -83,13 +84,11 @@ export const aboutPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'tazioEvolutionImage',
-      title: 'Image (optional)',
-      type: 'image',
+      name: 'tazioEvolutionMedia',
+      title: 'Section media',
+      type: 'mediaBlock',
       group: 'tazioEvolution',
-      options: { hotspot: true },
-      description: 'Large image shown beneath the body text. Leave blank to skip the image.',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown beneath the body. Leave blank to skip the media slot.',
     }),
     defineField({
       name: 'tazioEvolutionCTALabel',
@@ -126,13 +125,11 @@ export const aboutPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'candidateExperiencesImage',
-      title: 'Image',
-      type: 'image',
+      name: 'candidateExperiencesMedia',
+      title: 'Section media',
+      type: 'mediaBlock',
       group: 'candidateExperiences',
-      options: { hotspot: true },
-      description: 'Image on the right side of the section. Recommended 4:3 ratio (e.g. 1200×900).',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video on the right side of the section. Recommended 4:3 ratio (e.g. 1200×900).',
     }),
 
     /* ════════════════════════════════════════════════════════
