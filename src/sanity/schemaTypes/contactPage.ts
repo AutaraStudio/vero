@@ -7,10 +7,19 @@ export const contactPage = defineType({
   type: 'document',
   icon: EnvelopeIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'faq', title: 'FAQ' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

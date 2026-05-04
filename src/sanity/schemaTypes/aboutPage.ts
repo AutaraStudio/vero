@@ -7,6 +7,7 @@ export const aboutPage = defineType({
   type: 'document',
   icon: InfoOutlineIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'tazioEvolution', title: 'Tazio Evolution' },
     { name: 'candidateExperiences', title: 'Candidate Experiences' },
@@ -14,6 +15,14 @@ export const aboutPage = defineType({
     { name: 'team', title: 'Team' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

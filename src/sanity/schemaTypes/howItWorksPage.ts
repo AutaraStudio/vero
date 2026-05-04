@@ -7,6 +7,7 @@ export const howItWorksPage = defineType({
   type: 'document',
   icon: PlayIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'gettingStarted', title: 'Getting Started' },
     { name: 'steps', title: 'Steps' },
@@ -14,6 +15,14 @@ export const howItWorksPage = defineType({
     { name: 'benefits', title: 'Benefits' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

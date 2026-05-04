@@ -1,5 +1,24 @@
+/* ── Reusable GROQ projections ─────────────────────────────────
+   Define these BEFORE any page query that interpolates them — JS
+   template literals are evaluated at module-load time and `const`
+   references resolve in source order. */
+
+/* Per-page SEO block. Drop `${SEO_PROJECTION}` into any page query. */
+export const SEO_PROJECTION = `
+  seo {
+    pageTitle,
+    metaDescription,
+    ogTitle,
+    ogDescription,
+    "ogImageUrl": ogImage.asset->url,
+    "ogImageAlt": ogImage.alt,
+    noIndex
+  }
+`
+
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
+    ${SEO_PROJECTION},
     heroBadgeLabel,
     heroBadgeHref,
     heroTitle,
@@ -58,6 +77,17 @@ export const HOME_PAGE_QUERY = `
 
 export const SITE_SETTINGS_QUERY = `
   *[_type == "siteSettings"][0] {
+    siteName,
+    titleTemplate,
+    defaultMetaDescription,
+    "defaultOgImageUrl": defaultOgImage.asset->url,
+    "defaultOgImageAlt": defaultOgImage.alt,
+    "faviconUrl":         favicon.asset->url,
+    "faviconMimeType":    favicon.asset->mimeType,
+    "appleTouchIconUrl":  appleTouchIcon.asset->url,
+    twitterHandle,
+    siteUrl,
+    themeColor,
     footerCtaHeading,
     footerCtaBody,
     footerCtaButtonLabel,
@@ -75,6 +105,7 @@ export const SITE_SETTINGS_QUERY = `
 
 export const PRICING_PAGE_QUERY = `
   *[_type == "pricingPage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
     starterCallout,

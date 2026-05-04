@@ -7,11 +7,90 @@ export const siteSettings = defineType({
   type: 'document',
   icon: CogIcon,
   groups: [
+    { name: 'seo',           title: 'SEO & Branding' },
     { name: 'footer',        title: 'Footer' },
     { name: 'nav',           title: 'Nav' },
     { name: 'partnerLogos',  title: 'Partner Logos' },
   ],
   fields: [
+    /* ── SEO & Branding (global defaults) ──────────────────
+       These provide site-wide fallbacks. Per-page SEO blocks override
+       individual fields when set; anything left blank inherits from here. */
+    defineField({
+      name: 'siteName',
+      title: 'Site name',
+      type: 'string',
+      group: 'seo',
+      description: 'Used in <title> tags as a suffix (e.g. "Pricing — Vero Assess").',
+      initialValue: 'Vero Assess',
+    }),
+    defineField({
+      name: 'titleTemplate',
+      title: 'Title template',
+      type: 'string',
+      group: 'seo',
+      description:
+        'Pattern for the <title> tag. Use %s for the page title and %site for the site name. ' +
+        'Example: "%s — %site". Leave blank for "%s — %site".',
+    }),
+    defineField({
+      name: 'defaultMetaDescription',
+      title: 'Default meta description',
+      type: 'text',
+      rows: 2,
+      group: 'seo',
+      description: 'Shown in search results when a page has no override.',
+    }),
+    defineField({
+      name: 'defaultOgImage',
+      title: 'Default social share image',
+      type: 'image',
+      options: { hotspot: true },
+      group: 'seo',
+      description: 'Used in social share previews when a page has no override. Recommended 1200×630.',
+      fields: [
+        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+      ],
+    }),
+    defineField({
+      name: 'favicon',
+      title: 'Favicon',
+      type: 'image',
+      options: { accept: 'image/png,image/svg+xml,image/x-icon' },
+      group: 'seo',
+      description: 'Browser-tab icon. Square PNG/SVG (32×32 or larger) works best.',
+    }),
+    defineField({
+      name: 'appleTouchIcon',
+      title: 'Apple touch icon',
+      type: 'image',
+      options: { accept: 'image/png' },
+      group: 'seo',
+      description: 'Used when someone adds the site to their iOS home screen. 180×180 PNG.',
+    }),
+    defineField({
+      name: 'twitterHandle',
+      title: 'Twitter / X handle',
+      type: 'string',
+      group: 'seo',
+      description: 'Without the @ — e.g. "veroassess". Used in Twitter card metadata.',
+    }),
+    defineField({
+      name: 'siteUrl',
+      title: 'Canonical site URL',
+      type: 'url',
+      group: 'seo',
+      description: 'e.g. https://www.veroassess.com — used to build absolute URLs in Open Graph metadata.',
+    }),
+    defineField({
+      name: 'themeColor',
+      title: 'Browser theme colour',
+      type: 'string',
+      group: 'seo',
+      description:
+        'Hex value used by mobile browsers to tint the address bar (e.g. "#472d6a"). Optional.',
+    }),
+
     /* ── Footer ── */
     defineField({
       name: 'footerCtaHeading',

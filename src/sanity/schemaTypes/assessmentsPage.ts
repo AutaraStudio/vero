@@ -7,9 +7,18 @@ export const assessmentsPage = defineType({
   type: 'document',
   icon: SearchIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

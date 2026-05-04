@@ -7,6 +7,7 @@ export const sciencePage = defineType({
   type: 'document',
   icon: SparklesIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'authentic', title: 'Finding Authentic Potential' },
     { name: 'theory', title: 'The Theory Behind Vero' },
@@ -14,6 +15,14 @@ export const sciencePage = defineType({
     { name: 'cta', title: 'Contact CTA' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

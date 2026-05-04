@@ -7,12 +7,21 @@ export const pricingPage = defineType({
   type: 'document',
   icon: TagIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'starter', title: 'Starter Callout' },
     { name: 'bespoke', title: 'Bespoke' },
     { name: 'faq', title: 'FAQ' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

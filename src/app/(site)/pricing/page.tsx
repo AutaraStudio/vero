@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { PRICING_PAGE_QUERY, PRICING_TIERS_QUERY } from '@/sanity/lib/queries';
+import { PRICING_PAGE_QUERY, PRICING_TIERS_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
 import TierCardsSection from './TierCardsSection';
 import ComparisonTable from './ComparisonTable';
@@ -7,11 +9,22 @@ import BespokeStrip from '@/components/BespokeStrip';
 import FAQSection from '@/components/FAQSection';
 import './pricing.css';
 
-export const metadata = {
-  title: 'Pricing — Vero Assess',
-  description:
-    'Flexible pricing for skills-based hiring assessments. Four plans for every team size, from one-off Starter packages through to Scale.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string } | null>(PRICING_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'Pricing',
+      description: page?.heroIntro ??
+        'Flexible pricing for skills-based hiring assessments. Four plans for every team size.',
+    },
+    path: '/pricing',
+  });
+}
 
 export interface PricingTier {
   _id: string;

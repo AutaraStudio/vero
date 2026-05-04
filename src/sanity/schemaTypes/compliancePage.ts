@@ -7,6 +7,7 @@ export const compliancePage = defineType({
   type: 'document',
   icon: CheckmarkCircleIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'security', title: 'Data Security' },
     { name: 'quality', title: 'Quality Assurance' },
@@ -14,6 +15,14 @@ export const compliancePage = defineType({
     { name: 'accessibility', title: 'Accessibility' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

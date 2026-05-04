@@ -11,9 +11,14 @@ import { compliancePage } from './compliancePage'
 import { pricingTier } from './pricingTier'
 import { jobCategory } from './jobCategory'
 import { role } from './role'
+import { seoFields } from './seoFields'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
+    /* Reusable object types — must be registered before documents that use them */
+    seoFields,
+
+    /* Documents */
     homePage,
     siteSettings,
     pricingPage,

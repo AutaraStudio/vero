@@ -7,6 +7,7 @@ export const homePage = defineType({
   type: 'document',
   icon: HomeIcon,
   groups: [
+    { name: 'seo',          title: 'SEO' },
     { name: 'hero',         title: 'Hero' },
     { name: 'introBlock',   title: 'Intro Block' },
     { name: 'usps',         title: 'USPs' },
@@ -15,6 +16,14 @@ export const homePage = defineType({
     { name: 'closingCta',   title: 'Closing CTA' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     /* ════════════════════════════════════════════════════════
        HERO
     ════════════════════════════════════════════════════════ */

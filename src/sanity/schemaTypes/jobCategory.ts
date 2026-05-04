@@ -7,6 +7,7 @@ export const jobCategory = defineType({
   type: 'document',
   icon: UsersIcon,
   groups: [
+    { name: 'seo', title: 'SEO' },
     { name: 'hero', title: 'Hero' },
     { name: 'dimensions', title: 'Dimensions' },
     { name: 'inAction', title: 'In Action (Section Header)' },
@@ -16,6 +17,14 @@ export const jobCategory = defineType({
     { name: 'bespoke', title: 'Bespoke CTA' },
   ],
   fields: [
+    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seoFields',
+      group: 'seo',
+    }),
+
     defineField({
       name: 'name',
       title: 'Category Name',
