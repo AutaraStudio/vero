@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity'
-import { SparklesIcon } from '@sanity/icons'
+import {
+  SparklesIcon,
+  SearchIcon,
+  StarIcon,
+  HeartFilledIcon,
+  BookIcon,
+  TrendUpwardIcon,
+  CommentIcon,
+} from '@sanity/icons'
 
 export const sciencePage = defineType({
   name: 'sciencePage',
@@ -7,20 +15,22 @@ export const sciencePage = defineType({
   type: 'document',
   icon: SparklesIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'authentic', title: 'Finding Authentic Potential' },
-    { name: 'theory', title: 'The Theory Behind Vero' },
-    { name: 'dataBacked', title: 'Data-Backed Recruitment' },
-    { name: 'cta', title: 'Contact CTA' },
+    { name: 'seo',        title: 'SEO',                              icon: SearchIcon },
+    { name: 'hero',       title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
+    { name: 'authentic',  title: 'Section 2 — Finding potential',    icon: HeartFilledIcon },
+    { name: 'theory',     title: 'Section 3 — The theory + dimensions', icon: BookIcon },
+    { name: 'dataBacked', title: 'Section 4 — Data-backed outcomes', icon: TrendUpwardIcon },
+    { name: 'cta',        title: 'Section 5 — Closing CTA',          icon: CommentIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social. ' +
+        'Anything left blank inherits from Site Settings.',
     }),
 
     /* ── Hero ── */

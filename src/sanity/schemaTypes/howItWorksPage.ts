@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity'
-import { PlayIcon } from '@sanity/icons'
+import {
+  PlayIcon,
+  SearchIcon,
+  StarIcon,
+  RocketIcon,
+  ListIcon,
+  HeartFilledIcon,
+  CheckmarkIcon,
+} from '@sanity/icons'
 
 export const howItWorksPage = defineType({
   name: 'howItWorksPage',
@@ -7,20 +15,22 @@ export const howItWorksPage = defineType({
   type: 'document',
   icon: PlayIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'gettingStarted', title: 'Getting Started' },
-    { name: 'steps', title: 'Steps' },
-    { name: 'candidateExperience', title: 'Candidate Experience' },
-    { name: 'benefits', title: 'Benefits' },
+    { name: 'seo',                 title: 'SEO',                             icon: SearchIcon },
+    { name: 'hero',                title: 'Section 1 — Hero',                icon: StarIcon, default: true },
+    { name: 'gettingStarted',      title: 'Section 2 — Getting started',     icon: RocketIcon },
+    { name: 'steps',               title: 'Section 3 — Process steps',       icon: ListIcon },
+    { name: 'candidateExperience', title: 'Section 4 — Candidate experience', icon: HeartFilledIcon },
+    { name: 'benefits',            title: 'Section 5 — Benefits',            icon: CheckmarkIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social. ' +
+        'Anything left blank inherits from Site Settings.',
     }),
 
     /* ── Hero ── */

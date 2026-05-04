@@ -1,5 +1,12 @@
 import { defineField, defineType } from 'sanity'
-import { TagIcon } from '@sanity/icons'
+import {
+  TagIcon,
+  SearchIcon,
+  StarIcon,
+  InfoOutlineIcon,
+  PackageIcon,
+  HelpCircleIcon,
+} from '@sanity/icons'
 
 export const pricingPage = defineType({
   name: 'pricingPage',
@@ -7,19 +14,21 @@ export const pricingPage = defineType({
   type: 'document',
   icon: TagIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'starter', title: 'Starter Callout' },
-    { name: 'bespoke', title: 'Bespoke' },
-    { name: 'faq', title: 'FAQ' },
+    { name: 'seo',     title: 'SEO',                            icon: SearchIcon },
+    { name: 'hero',    title: 'Section 1 — Hero',               icon: StarIcon, default: true },
+    { name: 'starter', title: 'Section 2 — Starter callout',    icon: InfoOutlineIcon },
+    { name: 'bespoke', title: 'Section 3 — Bespoke CTA',        icon: PackageIcon },
+    { name: 'faq',     title: 'Section 4 — FAQ',                icon: HelpCircleIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social. ' +
+        'Anything left blank inherits from Site Settings.',
     }),
 
     /* ── Hero ── */

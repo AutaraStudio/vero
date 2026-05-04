@@ -1,5 +1,15 @@
 import { defineField, defineType } from 'sanity'
-import { UsersIcon } from '@sanity/icons'
+import {
+  UsersIcon,
+  SearchIcon,
+  StarIcon,
+  BarChartIcon,
+  PlayIcon,
+  ImagesIcon,
+  TrendUpwardIcon,
+  ListIcon,
+  PackageIcon,
+} from '@sanity/icons'
 
 export const jobCategory = defineType({
   name: 'jobCategory',
@@ -7,22 +17,24 @@ export const jobCategory = defineType({
   type: 'document',
   icon: UsersIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'dimensions', title: 'Dimensions' },
-    { name: 'inAction', title: 'In Action (Section Header)' },
-    { name: 'featureCards', title: 'Feature Cards' },
-    { name: 'stats', title: 'Stats' },
-    { name: 'roster', title: 'Role Roster' },
-    { name: 'bespoke', title: 'Bespoke CTA' },
+    { name: 'seo',          title: 'SEO',                              icon: SearchIcon },
+    { name: 'hero',         title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
+    { name: 'dimensions',   title: 'Section 2 — Dimensions explainer', icon: BarChartIcon },
+    { name: 'inAction',     title: 'Section 3 — "In action" header',   icon: PlayIcon },
+    { name: 'featureCards', title: 'Section 4 — Feature carousel cards', icon: ImagesIcon },
+    { name: 'stats',        title: 'Section 5 — Headline stats',       icon: TrendUpwardIcon },
+    { name: 'roster',       title: 'Section 6 — Role roster',          icon: ListIcon },
+    { name: 'bespoke',      title: 'Section 7 — Bespoke CTA',          icon: PackageIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social ' +
+        'when this category page is shared. Anything left blank inherits from Site Settings.',
     }),
 
     defineField({

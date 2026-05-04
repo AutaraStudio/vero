@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity'
-import { InfoOutlineIcon } from '@sanity/icons'
+import {
+  InfoOutlineIcon,
+  SearchIcon,
+  StarIcon,
+  RocketIcon,
+  HeartFilledIcon,
+  CaseIcon,
+  UsersIcon,
+} from '@sanity/icons'
 
 export const aboutPage = defineType({
   name: 'aboutPage',
@@ -7,20 +15,23 @@ export const aboutPage = defineType({
   type: 'document',
   icon: InfoOutlineIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'tazioEvolution', title: 'Tazio Evolution' },
-    { name: 'candidateExperiences', title: 'Candidate Experiences' },
-    { name: 'clients', title: 'Clients' },
-    { name: 'team', title: 'Team' },
+    { name: 'seo',                  title: 'SEO',                              icon: SearchIcon },
+    { name: 'hero',                 title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
+    { name: 'tazioEvolution',       title: 'Section 2 — Tazio platform story', icon: RocketIcon },
+    { name: 'candidateExperiences', title: 'Section 3 — Candidate experience', icon: HeartFilledIcon },
+    { name: 'clients',              title: 'Section 4 — Clients & partners',   icon: CaseIcon },
+    { name: 'team',                 title: 'Section 5 — Team grid',            icon: UsersIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
+    /* ── SEO ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social. ' +
+        'Anything left blank inherits from Site Settings.',
     }),
 
     /* ── Hero ── */
@@ -236,7 +247,7 @@ export const aboutPage = defineType({
   ],
   preview: {
     prepare() {
-      return { title: 'About Page' }
+      return { title: 'About us page', subtitle: 'Singleton — only one of these exists' }
     },
   },
 })

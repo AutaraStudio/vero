@@ -1,5 +1,13 @@
 import { defineField, defineType } from 'sanity'
-import { CheckmarkCircleIcon } from '@sanity/icons'
+import {
+  CheckmarkCircleIcon,
+  SearchIcon,
+  StarIcon,
+  LockIcon,
+  CheckmarkIcon,
+  ControlsIcon,
+  EyeOpenIcon,
+} from '@sanity/icons'
 
 export const compliancePage = defineType({
   name: 'compliancePage',
@@ -7,20 +15,22 @@ export const compliancePage = defineType({
   type: 'document',
   icon: CheckmarkCircleIcon,
   groups: [
-    { name: 'seo', title: 'SEO' },
-    { name: 'hero', title: 'Hero' },
-    { name: 'security', title: 'Data Security' },
-    { name: 'quality', title: 'Quality Assurance' },
-    { name: 'ai', title: 'Our Approach to AI' },
-    { name: 'accessibility', title: 'Accessibility' },
+    { name: 'seo',           title: 'SEO',                              icon: SearchIcon },
+    { name: 'hero',          title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
+    { name: 'security',      title: 'Section 2 — Data security',        icon: LockIcon },
+    { name: 'quality',       title: 'Section 3 — Quality assurance',    icon: CheckmarkIcon },
+    { name: 'ai',            title: 'Section 4 — Our approach to AI',   icon: ControlsIcon },
+    { name: 'accessibility', title: 'Section 5 — Accessibility',        icon: EyeOpenIcon },
   ],
   fields: [
-    /* ── SEO (per-page overrides — falls back to siteSettings) ── */
     defineField({
       name: 'seo',
-      title: 'SEO',
+      title: 'Search engine + social sharing',
       type: 'seoFields',
       group: 'seo',
+      description:
+        'Browser tab title, search-result snippet, and link previews on social. ' +
+        'Anything left blank inherits from Site Settings.',
     }),
 
     /* ── Hero ── */
@@ -180,7 +190,7 @@ export const compliancePage = defineType({
   ],
   preview: {
     prepare() {
-      return { title: 'Compliance Page' }
+      return { title: 'Compliance page', subtitle: 'Singleton — only one of these exists' }
     },
   },
 })
