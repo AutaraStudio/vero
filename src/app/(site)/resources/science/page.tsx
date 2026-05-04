@@ -8,6 +8,7 @@ import ChecklistSection  from '@/components/ChecklistSection';
 import BespokeStrip      from '@/components/BespokeStrip';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
 import DimensionsSection from './DimensionsSection';
+import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([
@@ -47,14 +48,12 @@ interface SciencePageData {
 
   dimensionsHeading?: string;
   dimensionsBody?: PortableTextBlock[];
-  dimensionsImageUrl?: string;
-  dimensionsImageAlt?: string;
+  dimensionsMedia?: MediaBlockData;
   dimensionCategories?: { name: string; dimensions: string[] }[];
 
   insightsHeading?: string;
   insightsBody?: PortableTextBlock[];
-  insightsImageUrl?: string;
-  insightsImageAlt?: string;
+  insightsMedia?: MediaBlockData;
 
   dataBackedHeading?: string;
   dataBackedIntro?: string;
@@ -138,20 +137,27 @@ export default async function SciencePage() {
           heading={data.dimensionsHeading}
           body={data.dimensionsBody}
           categories={data.dimensionCategories}
-          imageUrl={data.dimensionsImageUrl}
-          imageAlt={data.dimensionsImageAlt}
+          imageUrl={
+            data.dimensionsMedia?.type === 'video'
+              ? data.dimensionsMedia.videoThumbnailUrl ?? undefined
+              : data.dimensionsMedia?.imageUrl ?? undefined
+          }
+          imageAlt={
+            data.dimensionsMedia?.type === 'video'
+              ? data.dimensionsMedia.videoThumbnailAlt ?? undefined
+              : data.dimensionsMedia?.imageAlt ?? undefined
+          }
         />
       )}
 
-      {/* ── 5. Detailed candidate insights (centred — text above, dashboard image below) ── */}
+      {/* ── 5. Detailed candidate insights (centred — text above, dashboard media below) ── */}
       {data?.insightsHeading && (
         <IntroBlock
           theme="brand-purple"
           eyebrow="The dashboard"
           heading={data.insightsHeading}
           body={data.insightsBody as never}
-          videoThumbnailUrl={data.insightsImageUrl}
-          videoThumbnailAlt={data.insightsImageAlt}
+          media={data.insightsMedia}
           alwaysShowMedia
           layout="centered"
         />

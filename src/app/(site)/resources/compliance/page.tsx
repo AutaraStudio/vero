@@ -6,6 +6,7 @@ import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import IntroBlock        from '@/components/IntroBlock';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
 import SecuritySection   from './SecuritySection';
+import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([
@@ -38,8 +39,7 @@ interface CompliancePageData {
 
   securityHeading?: string;
   securityBody?: string;
-  securityBadgesImageUrl?: string;
-  securityBadgesImageAlt?: string;
+  securityBadgesMedia?: MediaBlockData;
   securityCredentials?: ChecklistItem[];
 
   qualityHeading?: string;
@@ -48,8 +48,7 @@ interface CompliancePageData {
 
   aiHeading?: string;
   aiBody?: PortableTextBlock[];
-  aiImageUrl?: string;
-  aiImageAlt?: string;
+  aiMedia?: MediaBlockData;
 
   accessibilityHeading?: string;
   accessibilityBody?: string;
@@ -75,8 +74,16 @@ export default async function CompliancePage() {
           heading={data.securityHeading}
           body={data.securityBody}
           credentials={data.securityCredentials}
-          badgesImageUrl={data.securityBadgesImageUrl}
-          badgesImageAlt={data.securityBadgesImageAlt}
+          badgesImageUrl={
+            data.securityBadgesMedia?.type === 'video'
+              ? data.securityBadgesMedia.videoThumbnailUrl ?? undefined
+              : data.securityBadgesMedia?.imageUrl ?? undefined
+          }
+          badgesImageAlt={
+            data.securityBadgesMedia?.type === 'video'
+              ? data.securityBadgesMedia.videoThumbnailAlt ?? undefined
+              : data.securityBadgesMedia?.imageAlt ?? undefined
+          }
         />
       )}
 
@@ -129,8 +136,7 @@ export default async function CompliancePage() {
           eyebrow="AI"
           heading={data.aiHeading}
           body={data.aiBody as never}
-          videoThumbnailUrl={data.aiImageUrl}
-          videoThumbnailAlt={data.aiImageAlt}
+          media={data.aiMedia}
           alwaysShowMedia
           layout="centered"
         />

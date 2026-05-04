@@ -80,13 +80,11 @@ export const jobCategory = defineType({
       description: 'One or two sentences explaining who this category is for.',
     }),
     defineField({
-      name: 'heroImage',
-      title: 'Hero image',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'heroMedia',
+      title: 'Hero media (image or video)',
+      type: 'mediaBlock',
       group: 'hero',
-      description: 'Image on the right of the hero. Recommended 1200×900px (4:3). Hotspot lets you set the focal point.',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video on the right of the hero. Recommended 1200×900px (4:3) for images / 16:9 cover for videos.',
     }),
 
     /* ════════════════════════════════════════════════════════
@@ -120,13 +118,11 @@ export const jobCategory = defineType({
       description: 'Plain paragraph explaining which dimensions matter for this category.',
     }),
     defineField({
-      name: 'dimensionsSectionImage',
-      title: 'Supporting image',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'dimensionsSectionMedia',
+      title: 'Supporting media (image or video)',
+      type: 'mediaBlock',
       group: 'dimensions',
-      description: 'Right-side image. Optional — leave blank to show only text.',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Optional right-side image or clickable video. Leave blank to show only text.',
     }),
 
     /* ════════════════════════════════════════════════════════
@@ -333,13 +329,11 @@ export const jobCategory = defineType({
       hidden: ({ parent }) => !parent?.bespokeCTALabel,
     }),
     defineField({
-      name: 'bespokeSectionImage',
-      title: 'Optional supporting image',
-      type: 'image',
-      options: { hotspot: true },
+      name: 'bespokeSectionMedia',
+      title: 'Optional supporting media (image or video)',
+      type: 'mediaBlock',
       group: 'bespoke',
-      description: 'Image on the right side of the bespoke band. Optional.',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Optional image or clickable video on the right side of the bespoke band.',
     }),
   ],
   preview: {

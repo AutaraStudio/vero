@@ -2,24 +2,30 @@ import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
+import { mediaBlockToHeroCentredMedia } from '@/lib/media';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import LogoMarquee       from '@/components/LogoMarquee';
 import IntroBlock        from '@/components/IntroBlock';
 import FeatureSlider     from '@/components/FeatureSlider/FeatureSlider';
 import PricingShowcase   from '@/components/PricingShowcase/PricingShowcase';
+import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([
-    client.fetch<{ seo?: PageSeo; heroTitle?: string; heroIntro?: string; heroImageUrl?: string } | null>(HOME_PAGE_QUERY),
+    client.fetch<{ seo?: PageSeo; heroTitle?: string; heroIntro?: string; heroMedia?: MediaBlockData } | null>(HOME_PAGE_QUERY),
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
   ]);
+  const heroFallbackImage =
+    page?.heroMedia?.type === 'video'
+      ? page?.heroMedia?.videoThumbnailUrl
+      : page?.heroMedia?.imageUrl;
   return generateSiteMetadata({
     seo: page?.seo,
     settings,
     fallback: {
       title:       page?.heroTitle,
       description: page?.heroIntro,
-      imageUrl:    page?.heroImageUrl,
+      imageUrl:    heroFallbackImage ?? undefined,
     },
     path: '/',
   });
@@ -37,12 +43,7 @@ interface HomePageData {
   heroCTAHref?: string;
   heroSecondaryCTALabel?: string;
   heroSecondaryCTAHref?: string;
-  heroMediaType?: 'image' | 'video';
-  heroImageUrl?: string;
-  heroImageAlt?: string;
-  heroVideoThumbnailUrl?: string;
-  heroVideoThumbnailAlt?: string;
-  heroVideoUrl?: string;
+  heroMedia?: MediaBlockData;
 
   // Intro block
   introBlockEyebrow?: string;
@@ -50,9 +51,7 @@ interface HomePageData {
   introBlockBody?: unknown[];
   introBlockCtaLabel?: string;
   introBlockCtaHref?: string;
-  introBlockVideoThumbnailUrl?: string;
-  introBlockVideoThumbnailAlt?: string;
-  introBlockVideoUrl?: string;
+  introBlockMedia?: MediaBlockData;
 
   // USPs
   uspsSectionLabel?: string;
@@ -100,23 +99,10 @@ export default async function Home() {
     ? { label: data.heroBadgeLabel, href: data.heroBadgeHref ?? '#' }
     : undefined;
 
-  const media = (() => {
-    if (data?.heroMediaType === 'video' && data.heroVideoUrl) {
-      return {
-        type: 'video' as const,
-        thumbnailSrc: data.heroVideoThumbnailUrl ?? '',
-        videoSrc: data.heroVideoUrl,
-      };
-    }
-    if (data?.heroImageUrl) {
-      return {
-        type: 'image' as const,
-        src: data.heroImageUrl,
-        alt: data.heroImageAlt ?? 'Vero Assess platform preview',
-      };
-    }
-    return undefined;
-  })();
+  /* Adapt the unified mediaBlock projection into HeroCentred's legacy
+     media prop shape. The component still has its own custom modal —
+     the adapter just maps the field names. */
+  const media = mediaBlockToHeroCentredMedia(data?.heroMedia);
 
   return (
     <main>
@@ -159,9 +145,7 @@ export default async function Home() {
           body={data.introBlockBody as never}
           ctaLabel={data.introBlockCtaLabel}
           ctaHref={data.introBlockCtaHref}
-          videoThumbnailUrl={data.introBlockVideoThumbnailUrl}
-          videoThumbnailAlt={data.introBlockVideoThumbnailAlt}
-          videoUrl={data.introBlockVideoUrl}
+          media={data.introBlockMedia}
         />
       )}
 

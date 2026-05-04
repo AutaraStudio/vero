@@ -132,13 +132,11 @@ export const sciencePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'dimensionsImage',
-      title: 'Dimensions — Optional Graphic / Image',
-      type: 'image',
+      name: 'dimensionsMedia',
+      title: 'Dimensions — Optional graphic, image or video',
+      type: 'mediaBlock',
       group: 'theory',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
-      description: 'Optional graphic or image shown alongside the 16-dimensions section.',
+      description: 'Optional supporting media alongside the 16-dimensions section.',
     }),
     defineField({
       name: 'dimensionCategories',
@@ -186,12 +184,11 @@ export const sciencePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'insightsImage',
-      title: 'Insights — Dashboard Image',
-      type: 'image',
+      name: 'insightsMedia',
+      title: 'Insights — Dashboard image or video',
+      type: 'mediaBlock',
       group: 'theory',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown alongside the candidate insights section.',
     }),
 
     /* ── Data-Backed Recruitment ── */

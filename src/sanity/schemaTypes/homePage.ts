@@ -109,47 +109,11 @@ export const homePage = defineType({
       hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
     }),
     defineField({
-      name: 'heroMediaType',
-      title: 'Hero media',
-      type: 'string',
+      name: 'heroMedia',
+      title: 'Hero media (image or video)',
+      type: 'mediaBlock',
       group: 'hero',
-      description: 'Pick what shows beneath the headline. Image is simpler; video opens a modal player on click.',
-      options: {
-        list: [
-          { title: 'Static image', value: 'image' },
-          { title: 'Video (opens modal)', value: 'video' },
-        ],
-        layout: 'radio',
-      },
-      initialValue: 'image',
-    }),
-    defineField({
-      name: 'heroImage',
-      title: 'Hero image',
-      type: 'image',
-      group: 'hero',
-      options: { hotspot: true },
-      description: 'Recommended: 1600×900px landscape. Hotspot lets you set the focal point.',
-      fields: [defineField({ name: 'alt', title: 'Alt text (for screen readers)', type: 'string' })],
-      hidden: ({ parent }) => parent?.heroMediaType === 'video',
-    }),
-    defineField({
-      name: 'heroVideoThumbnail',
-      title: 'Video thumbnail image',
-      type: 'image',
-      group: 'hero',
-      options: { hotspot: true },
-      description: 'Still image shown before the video plays. 1600×900px recommended.',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
-      hidden: ({ parent }) => parent?.heroMediaType !== 'video',
-    }),
-    defineField({
-      name: 'heroVideoUrl',
-      title: 'Video file URL',
-      type: 'url',
-      group: 'hero',
-      description: 'Direct link to an .mp4 file. Loaded only when the user clicks Play.',
-      hidden: ({ parent }) => parent?.heroMediaType !== 'video',
+      description: 'Image or clickable video shown beneath the headline. 1600×900px recommended for images / 16:9 cover for videos.',
     }),
 
     /* ════════════════════════════════════════════════════════
@@ -190,21 +154,11 @@ export const homePage = defineType({
       hidden: ({ parent }) => !parent?.introBlockCtaLabel,
     }),
     defineField({
-      name: 'introBlockVideoThumbnail',
-      title: 'Video thumbnail image',
-      type: 'image',
+      name: 'introBlockMedia',
+      title: 'Section media (image or video)',
+      type: 'mediaBlock',
       group: 'introBlock',
-      options: { hotspot: true },
-      description:
-        'Still image shown before the video plays. 16:9 ratio works best (e.g. 1280×720).',
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
-    }),
-    defineField({
-      name: 'introBlockVideoUrl',
-      title: 'Video file URL',
-      type: 'url',
-      group: 'introBlock',
-      description: 'Direct link to an .mp4 file. Loaded only when the user clicks Play.',
+      description: 'Image or clickable video shown beside the intro body. 16:9 cover recommended.',
     }),
 
     /* ════════════════════════════════════════════════════════

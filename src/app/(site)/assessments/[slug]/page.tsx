@@ -8,6 +8,7 @@ import {
   SITE_SETTINGS_QUERY,
 } from '@/sanity/lib/queries';
 import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
+import type { MediaBlockData } from '@/components/MediaBlock';
 import HeroSplit from '@/components/HeroSplit';
 import DimensionsSection from './DimensionsSection';
 import FeatureCardsSection from './FeatureCardsSection';
@@ -31,15 +32,19 @@ export async function generateMetadata({ params }: { params: Params }): Promise<
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
   ]);
   const page = data as
-    | { seo?: PageSeo; name?: string; heroHeadline?: string; heroIntroCopy?: string; heroImageUrl?: string }
+    | { seo?: PageSeo; name?: string; heroHeadline?: string; heroIntroCopy?: string; heroMedia?: MediaBlockData }
     | null;
+  const heroFallbackImage =
+    page?.heroMedia?.type === 'video'
+      ? page?.heroMedia?.videoThumbnailUrl
+      : page?.heroMedia?.imageUrl;
   return generateSiteMetadata({
     seo: page?.seo,
     settings,
     fallback: {
       title:       page?.heroHeadline ?? page?.name ?? slug,
       description: page?.heroIntroCopy,
-      imageUrl:    page?.heroImageUrl,
+      imageUrl:    heroFallbackImage ?? undefined,
     },
     path: `/assessments/${slug}`,
   });
@@ -55,10 +60,10 @@ export default async function CategoryPage({ params }: { params: Params }) {
     heroHeadline,
     heroIntroCopy,
     keyDimensionsAssessed,
-    heroImageUrl,
+    heroMedia,
     dimensionsSectionHeading,
     dimensionsSectionBody,
-    dimensionsSectionImage,
+    dimensionsSectionMedia,
     inActionLabel,
     inActionHeading,
     inActionIntro,
@@ -81,7 +86,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     bespokeSectionBody,
     bespokeCTALabel,
     bespokeCTAHref,
-    bespokeSectionImage,
+    bespokeSectionMedia,
   } = data;
 
   // Pre-fetch Lottie JSON data server-side so the client doesn't need to
@@ -116,11 +121,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
         intro={heroIntroCopy}
         badges={dimensionBadges}
         primaryCTA={{ label: 'Get started', href: `/get-started?category=${slug}` }}
-        image={
-          heroImageUrl
-            ? { src: heroImageUrl, alt: heroHeadline }
-            : undefined
-        }
+        media={heroMedia}
         imageHeight="viewport"
         textAlign="bottom"
       />
@@ -129,7 +130,11 @@ export default async function CategoryPage({ params }: { params: Params }) {
         <DimensionsSection
           heading={dimensionsSectionHeading}
           body={dimensionsSectionBody}
-          imageUrl={dimensionsSectionImage?.asset?.url}
+          imageUrl={
+            dimensionsSectionMedia?.type === 'video'
+              ? dimensionsSectionMedia.videoThumbnailUrl
+              : dimensionsSectionMedia?.imageUrl
+          }
         />
       )}
 
@@ -170,22 +175,28 @@ export default async function CategoryPage({ params }: { params: Params }) {
       {/* Pricing tiers + collapsible comparison table — same on every assessment page */}
       <PricingShowcase collapsible />
 
-      {bespokeSectionHeading && (
-        <BespokeStrip
-          heading={bespokeSectionHeading}
-          body={bespokeSectionBody}
-          ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
-          ctaHref={bespokeCTAHref || '/contact'}
-          image={
-            bespokeSectionImage?.asset?.url
-              ? {
-                  src: bespokeSectionImage.asset.url,
-                  alt: 'Vero Assess platform preview',
-                }
-              : undefined
-          }
-        />
-      )}
+      {bespokeSectionHeading && (() => {
+        /* Convert mediaBlock to BespokeStrip's image-only prop. The strip
+           component itself doesn't yet support video; the image fallback
+           uses whichever still image is set (image, or video poster). */
+        const bespokeImageUrl =
+          bespokeSectionMedia?.type === 'video'
+            ? bespokeSectionMedia.videoThumbnailUrl
+            : bespokeSectionMedia?.imageUrl;
+        return (
+          <BespokeStrip
+            heading={bespokeSectionHeading}
+            body={bespokeSectionBody}
+            ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
+            ctaHref={bespokeCTAHref || '/contact'}
+            image={
+              bespokeImageUrl
+                ? { src: bespokeImageUrl, alt: 'Vero Assess platform preview' }
+                : undefined
+            }
+          />
+        );
+      })()}
     </main>
   );
 }

@@ -72,12 +72,11 @@ export const howItWorksPage = defineType({
       group: 'hero',
     }),
     defineField({
-      name: 'heroImage',
-      title: 'Hero Image',
-      type: 'image',
+      name: 'heroMedia',
+      title: 'Hero media (image or video)',
+      type: 'mediaBlock',
       group: 'hero',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown in the hero. 16:9 cover recommended.',
     }),
 
     /* ── Getting Started ── */
@@ -95,12 +94,11 @@ export const howItWorksPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'gettingStartedImage',
-      title: 'Image',
-      type: 'image',
+      name: 'gettingStartedMedia',
+      title: 'Section media (image or video)',
+      type: 'mediaBlock',
       group: 'gettingStarted',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown beside the body.',
     }),
     defineField({
       name: 'gettingStartedLinkLabel',
@@ -168,12 +166,11 @@ export const howItWorksPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'candidateExpImage',
-      title: 'Image',
-      type: 'image',
+      name: 'candidateExpMedia',
+      title: 'Section media (image or video)',
+      type: 'mediaBlock',
       group: 'candidateExperience',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown beside the body.',
     }),
 
     /* ── Benefits ── */

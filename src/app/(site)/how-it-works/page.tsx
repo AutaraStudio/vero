@@ -6,12 +6,17 @@ import HeroSplit      from '@/components/HeroSplit';
 import IntroBlock     from '@/components/IntroBlock';
 import StickyTabs, { type StickyTabItem } from '@/components/StickyTabs';
 import FeatureSlider  from '@/components/FeatureSlider/FeatureSlider';
+import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
   const [page, settings] = await Promise.all([
-    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroImageUrl?: string } | null>(HOW_IT_WORKS_PAGE_QUERY),
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroMedia?: MediaBlockData } | null>(HOW_IT_WORKS_PAGE_QUERY),
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
   ]);
+  const heroFallbackImage =
+    page?.heroMedia?.type === 'video'
+      ? page?.heroMedia?.videoThumbnailUrl
+      : page?.heroMedia?.imageUrl;
   return generateSiteMetadata({
     seo: page?.seo,
     settings,
@@ -19,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title:       page?.heroHeadline ?? 'How it works',
       description: page?.heroIntro ??
         'How Vero Assess works — getting started, the seven-step process, the candidate experience, and the benefits.',
-      imageUrl:    page?.heroImageUrl,
+      imageUrl:    heroFallbackImage ?? undefined,
     },
     path: '/how-it-works',
   });
@@ -38,14 +43,12 @@ interface HowItWorksData {
   heroCTAHref?: string;
   heroSecondaryCTALabel?: string;
   heroSecondaryCTAHref?: string;
-  heroImageUrl?: string;
-  heroImageAlt?: string;
+  heroMedia?: MediaBlockData;
 
   // Getting started
   gettingStartedHeading?: string;
   gettingStartedBody?: PortableTextBlock[];
-  gettingStartedImageUrl?: string;
-  gettingStartedImageAlt?: string;
+  gettingStartedMedia?: MediaBlockData;
   gettingStartedLinkLabel?: string;
   gettingStartedLinkHref?: string;
 
@@ -57,8 +60,7 @@ interface HowItWorksData {
   // Candidate experience
   candidateExpHeading?: string;
   candidateExpBody?: PortableTextBlock[];
-  candidateExpImageUrl?: string;
-  candidateExpImageAlt?: string;
+  candidateExpMedia?: MediaBlockData;
 
   // Benefits
   benefitsHeading?: string;
@@ -134,11 +136,7 @@ export default async function HowItWorksPage() {
             ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '/pricing' }
             : { label: 'View pricing', href: '/pricing' }
         }
-        image={
-          data?.heroImageUrl
-            ? { src: data.heroImageUrl, alt: data.heroImageAlt ?? 'Vero Assess platform preview' }
-            : undefined
-        }
+        media={data?.heroMedia}
         imageHeight="viewport"
         textAlign="bottom"
       />
@@ -152,8 +150,7 @@ export default async function HowItWorksPage() {
           body={data.gettingStartedBody as never}
           ctaLabel={data.gettingStartedLinkLabel}
           ctaHref={data.gettingStartedLinkHref}
-          videoThumbnailUrl={data.gettingStartedImageUrl}
-          videoThumbnailAlt={data.gettingStartedImageAlt}
+          media={data.gettingStartedMedia}
         />
       )}
 
@@ -187,8 +184,7 @@ export default async function HowItWorksPage() {
           eyebrow="Candidate experience"
           heading={data.candidateExpHeading}
           body={data.candidateExpBody as never}
-          videoThumbnailUrl={data.candidateExpImageUrl}
-          videoThumbnailAlt={data.candidateExpImageAlt}
+          media={data.candidateExpMedia}
         />
       )}
 

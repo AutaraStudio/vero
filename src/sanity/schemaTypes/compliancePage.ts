@@ -63,12 +63,11 @@ export const compliancePage = defineType({
       group: 'security',
     }),
     defineField({
-      name: 'securityBadgesImage',
-      title: 'Security Badges Graphic',
-      type: 'image',
+      name: 'securityBadgesMedia',
+      title: 'Security badges graphic (image or video)',
+      type: 'mediaBlock',
       group: 'security',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or video shown alongside the data security checklist.',
     }),
     defineField({
       name: 'securityCredentials',
@@ -141,12 +140,11 @@ export const compliancePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
-      name: 'aiImage',
-      title: 'Image',
-      type: 'image',
+      name: 'aiMedia',
+      title: 'Section media (image or video)',
+      type: 'mediaBlock',
       group: 'ai',
-      options: { hotspot: true },
-      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+      description: 'Image or clickable video shown alongside the AI section body.',
     }),
 
     /* ── Accessibility ── */

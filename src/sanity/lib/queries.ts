@@ -50,20 +50,13 @@ export const HOME_PAGE_QUERY = `
     heroCTAHref,
     heroSecondaryCTALabel,
     heroSecondaryCTAHref,
-    heroMediaType,
-    "heroImageUrl":          heroImage.asset->url,
-    "heroImageAlt":          heroImage.alt,
-    "heroVideoThumbnailUrl": heroVideoThumbnail.asset->url,
-    "heroVideoThumbnailAlt": heroVideoThumbnail.alt,
-    heroVideoUrl,
+    ${mediaProjection('heroMedia')},
     introBlockEyebrow,
     introBlockHeading,
     introBlockBody,
     introBlockCtaLabel,
     introBlockCtaHref,
-    "introBlockVideoThumbnailUrl": introBlockVideoThumbnail.asset->url,
-    "introBlockVideoThumbnailAlt": introBlockVideoThumbnail.alt,
-    introBlockVideoUrl,
+    ${mediaProjection('introBlockMedia')},
     uspsSectionLabel,
     uspsSectionHeading,
     uspsSectionSubheading,
@@ -164,13 +157,11 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     heroCTAHref,
     heroSecondaryCTALabel,
     heroSecondaryCTAHref,
-    "heroImageUrl": heroImage.asset->url,
-    "heroImageAlt": heroImage.alt,
+    ${mediaProjection('heroMedia')},
 
     gettingStartedHeading,
     gettingStartedBody,
-    "gettingStartedImageUrl": gettingStartedImage.asset->url,
-    "gettingStartedImageAlt": gettingStartedImage.alt,
+    ${mediaProjection('gettingStartedMedia')},
     gettingStartedLinkLabel,
     gettingStartedLinkHref,
 
@@ -184,8 +175,7 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
 
     candidateExpHeading,
     candidateExpBody,
-    "candidateExpImageUrl": candidateExpImage.asset->url,
-    "candidateExpImageAlt": candidateExpImage.alt,
+    ${mediaProjection('candidateExpMedia')},
 
     benefitsHeading,
     benefits[] {
@@ -263,8 +253,7 @@ export const SCIENCE_PAGE_QUERY = `
 
     dimensionsHeading,
     dimensionsBody,
-    "dimensionsImageUrl": dimensionsImage.asset->url,
-    "dimensionsImageAlt": dimensionsImage.alt,
+    ${mediaProjection('dimensionsMedia')},
     dimensionCategories[] {
       name,
       dimensions
@@ -272,8 +261,7 @@ export const SCIENCE_PAGE_QUERY = `
 
     insightsHeading,
     insightsBody,
-    "insightsImageUrl": insightsImage.asset->url,
-    "insightsImageAlt": insightsImage.alt,
+    ${mediaProjection('insightsMedia')},
 
     dataBackedHeading,
     dataBackedIntro,
@@ -296,8 +284,7 @@ export const COMPLIANCE_PAGE_QUERY = `
 
     securityHeading,
     securityBody,
-    "securityBadgesImageUrl": securityBadgesImage.asset->url,
-    "securityBadgesImageAlt": securityBadgesImage.alt,
+    ${mediaProjection('securityBadgesMedia')},
     securityCredentials[] {
       label,
       description
@@ -314,8 +301,7 @@ export const COMPLIANCE_PAGE_QUERY = `
 
     aiHeading,
     aiBody,
-    "aiImageUrl": aiImage.asset->url,
-    "aiImageAlt": aiImage.alt,
+    ${mediaProjection('aiMedia')},
 
     accessibilityHeading,
     accessibilityBody,
@@ -417,11 +403,10 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     keyDimensionsAssessed,
     heroHeadline,
     heroIntroCopy,
-    "heroImage": heroImage { asset->, ... },
-    "heroImageUrl": heroImage.asset->url,
+    ${mediaProjection('heroMedia')},
     dimensionsSectionHeading,
     dimensionsSectionBody,
-    "dimensionsSectionImage": dimensionsSectionImage { asset->, ... },
+    ${mediaProjection('dimensionsSectionMedia')},
     inActionLabel,
     inActionHeading,
     inActionIntro,
@@ -447,7 +432,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     bespokeSectionBody,
     bespokeCTALabel,
     bespokeCTAHref,
-    "bespokeSectionImage": bespokeSectionImage { asset->, ... },
+    ${mediaProjection('bespokeSectionMedia')},
     "roles": *[_type == "role" && parentCategory._ref == ^._id] | order(name asc) {
       _id,
       name,
