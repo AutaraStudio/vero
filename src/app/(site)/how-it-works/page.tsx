@@ -1,16 +1,29 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { HOW_IT_WORKS_PAGE_QUERY } from '@/sanity/lib/queries';
+import { HOW_IT_WORKS_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit      from '@/components/HeroSplit';
 import IntroBlock     from '@/components/IntroBlock';
 import StickyTabs, { type StickyTabItem } from '@/components/StickyTabs';
 import FeatureSlider  from '@/components/FeatureSlider/FeatureSlider';
 
-export const metadata: Metadata = {
-  title: 'How it works — Vero Assess',
-  description:
-    'How Vero Assess works — getting started, the seven-step process, the candidate experience, and the benefits.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroImageUrl?: string } | null>(HOW_IT_WORKS_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'How it works',
+      description: page?.heroIntro ??
+        'How Vero Assess works — getting started, the seven-step process, the candidate experience, and the benefits.',
+      imageUrl:    page?.heroImageUrl,
+    },
+    path: '/how-it-works',
+  });
+}
 
 /* ── Types matching the GROQ projection ──────────────────────────── */
 

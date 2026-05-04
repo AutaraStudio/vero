@@ -1,10 +1,13 @@
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { client } from '@/sanity/lib/client';
 import { sanityFetch } from '@/sanity/lib/live';
 import {
   JOB_CATEGORY_BY_SLUG_QUERY,
   JOB_CATEGORY_SLUGS_QUERY,
+  SITE_SETTINGS_QUERY,
 } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit from '@/components/HeroSplit';
 import DimensionsSection from './DimensionsSection';
 import FeatureCardsSection from './FeatureCardsSection';
@@ -21,10 +24,25 @@ export async function generateStaticParams() {
   return categories.map((c) => ({ slug: c.slug }));
 }
 
-export async function generateMetadata({ params }: { params: Params }) {
+export async function generateMetadata({ params }: { params: Params }): Promise<Metadata> {
   const { slug } = await params;
-  const { data } = await sanityFetch({ query: JOB_CATEGORY_BY_SLUG_QUERY, params: { slug } });
-  return { title: data?.name ?? slug };
+  const [{ data }, settings] = await Promise.all([
+    sanityFetch({ query: JOB_CATEGORY_BY_SLUG_QUERY, params: { slug } }),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  const page = data as
+    | { seo?: PageSeo; name?: string; heroHeadline?: string; heroIntroCopy?: string; heroImageUrl?: string }
+    | null;
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? page?.name ?? slug,
+      description: page?.heroIntroCopy,
+      imageUrl:    page?.heroImageUrl,
+    },
+    path: `/assessments/${slug}`,
+  });
 }
 
 export default async function CategoryPage({ params }: { params: Params }) {

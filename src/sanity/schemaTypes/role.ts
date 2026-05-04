@@ -77,12 +77,19 @@ export const role = defineType({
   preview: {
     select: {
       title: 'name',
-      subtitle: 'parentCategory.name',
+      categoryName: 'parentCategory.name',
+      categorySlug: 'parentCategory.slug.current',
+      slug: 'slug.current',
+      media: 'parentCategory.heroImage',
     },
-    prepare({ title, subtitle }) {
+    prepare({ title, categoryName, categorySlug, slug, media }) {
+      const subtitle = categoryName
+        ? `${categoryName} · /assessments/${categorySlug}/${slug ?? '…'}`
+        : 'No category assigned';
       return {
-        title,
-        subtitle: subtitle ? `↳ ${subtitle}` : 'No category',
+        title: title ?? 'Untitled role',
+        subtitle,
+        media,
       }
     },
   },

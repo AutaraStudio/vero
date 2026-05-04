@@ -1,15 +1,27 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { ASSESSMENTS_PAGE_QUERY, JOB_CATEGORIES_QUERY } from '@/sanity/lib/queries';
+import { ASSESSMENTS_PAGE_QUERY, JOB_CATEGORIES_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred  from '@/components/HeroCentred/HeroCentred';
 import BespokeStrip from '@/components/BespokeStrip/BespokeStrip';
 import FeatureSlider, { type FeatureSliderItem } from '@/components/FeatureSlider/FeatureSlider';
 
-export const metadata: Metadata = {
-  title: 'Assessments — Vero Assess',
-  description:
-    'Structured, scientifically-validated assessments designed around specific job families. Browse the categories and roles Vero Assess covers out of the box.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string } | null>(ASSESSMENTS_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'Assessments',
+      description: page?.heroIntro ??
+        'Structured, scientifically-validated assessments designed around specific job families. Browse the categories and roles Vero Assess covers out of the box.',
+    },
+    path: '/assessments',
+  });
+}
 
 interface AssessmentsPageData {
   heroHeadline?: string;

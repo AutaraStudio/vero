@@ -1,10 +1,29 @@
+import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import LogoMarquee       from '@/components/LogoMarquee';
 import IntroBlock        from '@/components/IntroBlock';
 import FeatureSlider     from '@/components/FeatureSlider/FeatureSlider';
 import PricingShowcase   from '@/components/PricingShowcase/PricingShowcase';
+
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroTitle?: string; heroIntro?: string; heroImageUrl?: string } | null>(HOME_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroTitle,
+      description: page?.heroIntro,
+      imageUrl:    page?.heroImageUrl,
+    },
+    path: '/',
+  });
+}
 
 /* ── Types matching the HOME_PAGE_QUERY projection ────────── */
 

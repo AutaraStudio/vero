@@ -1,16 +1,28 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { COMPLIANCE_PAGE_QUERY } from '@/sanity/lib/queries';
+import { COMPLIANCE_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import IntroBlock        from '@/components/IntroBlock';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
 import SecuritySection   from './SecuritySection';
 
-export const metadata: Metadata = {
-  title: 'Compliance — Vero Assess',
-  description:
-    'Safe, secure, compliant. ISO 27001, ISO 9001, Cyber Essentials Plus, WCAG 2.2 — the regulatory frameworks Vero Assess is built on.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroBody?: string } | null>(COMPLIANCE_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'Compliance',
+      description: page?.heroBody ??
+        'Safe, secure, compliant. ISO 27001, ISO 9001, Cyber Essentials Plus, WCAG 2.2 — the regulatory frameworks Vero Assess is built on.',
+    },
+    path: '/resources/compliance',
+  });
+}
 
 /* ── Types matching the GROQ projection ──────────────────────── */
 

@@ -124,6 +124,7 @@ export const PRICING_PAGE_QUERY = `
 
 export const ASSESSMENTS_PAGE_QUERY = `
   *[_type == "assessmentsPage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
     heroCTALabel,
@@ -133,6 +134,7 @@ export const ASSESSMENTS_PAGE_QUERY = `
 
 export const HOW_IT_WORKS_PAGE_QUERY = `
   *[_type == "howItWorksPage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
     heroCTALabel,
@@ -176,6 +178,7 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
 
 export const ABOUT_PAGE_QUERY = `
   *[_type == "aboutPage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
     "heroImageUrl": heroImage.asset->url,
@@ -219,6 +222,7 @@ export const ABOUT_PAGE_QUERY = `
 
 export const SCIENCE_PAGE_QUERY = `
   *[_type == "sciencePage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroBody,
 
@@ -266,6 +270,7 @@ export const SCIENCE_PAGE_QUERY = `
 
 export const COMPLIANCE_PAGE_QUERY = `
   *[_type == "compliancePage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroBody,
 
@@ -305,6 +310,7 @@ export const COMPLIANCE_PAGE_QUERY = `
 
 export const CONTACT_PAGE_QUERY = `
   *[_type == "contactPage"][0] {
+    ${SEO_PROJECTION},
     heroHeadline,
     heroIntro,
     contactInstructions,
@@ -384,6 +390,7 @@ export const JOB_CATEGORIES_QUERY = `
 
 export const JOB_CATEGORY_BY_SLUG_QUERY = `
   *[_type == "jobCategory" && slug.current == $slug][0] {
+    ${SEO_PROJECTION},
     _id,
     name,
     "slug": slug.current,

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { SCIENCE_PAGE_QUERY } from '@/sanity/lib/queries';
+import { SCIENCE_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit         from '@/components/HeroSplit';
 import IntroBlock        from '@/components/IntroBlock';
 import ChecklistSection  from '@/components/ChecklistSection';
@@ -8,11 +9,22 @@ import BespokeStrip      from '@/components/BespokeStrip';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
 import DimensionsSection from './DimensionsSection';
 
-export const metadata: Metadata = {
-  title: 'The science — Vero Assess',
-  description:
-    'The thinking behind Vero Assess. Four perspectives, sixteen dimensions, scientifically-validated assessments built to predict role-specific potential.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroBody?: string } | null>(SCIENCE_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'The science',
+      description: page?.heroBody ??
+        'The thinking behind Vero Assess. Four perspectives, sixteen dimensions, scientifically-validated assessments built to predict role-specific potential.',
+    },
+    path: '/resources/science',
+  });
+}
 
 /* ── Types matching the GROQ projection ──────────────────────── */
 

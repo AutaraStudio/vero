@@ -32,80 +32,116 @@ export const pricingPage = defineType({
     }),
 
     /* ── Hero ── */
+    /* ════════════════════════════════════════════════════════
+       SECTION 1 — HERO
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'heroHeadline',
       title: 'Headline',
       type: 'string',
       group: 'hero',
+      description: 'Big headline at the top of the page (e.g. "Flexible pricing"). 2–6 words.',
+      validation: (Rule) =>
+        Rule.max(80).warning('Headlines longer than 80 chars start to wrap awkwardly.'),
     }),
     defineField({
       name: 'heroIntro',
-      title: 'Intro',
+      title: 'Intro paragraph',
       type: 'text',
       rows: 4,
       group: 'hero',
+      description: 'One or two sentences explaining the pricing approach.',
     }),
 
-    /* ── Starter Callout ── */
+    /* ════════════════════════════════════════════════════════
+       SECTION 2 — STARTER CALLOUT
+       The small tooltip on the Starter pricing card.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'starterCallout',
-      title: 'Starter Callout',
+      title: 'Starter plan tooltip text',
       type: 'text',
       rows: 3,
       group: 'starter',
-      description: 'Short line nudging unsure visitors toward the Starter plan.',
+      description:
+        'Short callout shown when hovering the info icon on the Starter card. ' +
+        'Use this to nudge unsure visitors toward Starter (e.g. "Best for one-off campaigns").',
     }),
 
-    /* ── Bespoke ── */
+    /* ════════════════════════════════════════════════════════
+       SECTION 3 — BESPOKE CTA
+       The closing band offering custom pricing for larger needs.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'bespokeHeading',
-      title: 'Bespoke Heading',
+      title: 'Heading',
       type: 'string',
       group: 'bespoke',
+      description: 'Large headline in the bespoke band (e.g. "Need something custom?").',
     }),
     defineField({
       name: 'bespokeBody',
-      title: 'Bespoke Body',
+      title: 'Body paragraph',
       type: 'text',
       rows: 3,
       group: 'bespoke',
+      description: 'Short explanation underneath the bespoke heading.',
     }),
     defineField({
       name: 'bespokeCtaLabel',
-      title: 'Bespoke CTA Label',
+      title: 'Button — text',
       type: 'string',
       group: 'bespoke',
+      description: 'e.g. "Talk to us" or "Get in touch".',
     }),
     defineField({
       name: 'bespokeCtaHref',
-      title: 'Bespoke CTA Href',
+      title: 'Button — link',
       type: 'string',
       group: 'bespoke',
+      description: 'Where the button links to. Usually "/contact".',
+      hidden: ({ parent }) => !parent?.bespokeCtaLabel,
     }),
 
-    /* ── FAQ ── */
+    /* ════════════════════════════════════════════════════════
+       SECTION 4 — FAQ
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'faqHeading',
-      title: 'FAQ Heading',
+      title: 'Section heading',
       type: 'string',
       group: 'faq',
+      description: 'Heading above the FAQ accordion (e.g. "Pricing questions").',
     }),
     defineField({
       name: 'faqs',
-      title: 'FAQs',
+      title: 'Questions & answers',
       type: 'array',
       group: 'faq',
+      description: 'Each question becomes a click-to-expand row. Answers support bold + italic formatting.',
       of: [
         {
           type: 'object',
-          preview: { select: { title: 'question' } },
+          preview: {
+            select: { title: 'question' },
+            prepare: ({ title }) => ({
+              title: title || 'Untitled question',
+              subtitle: 'Click to edit answer',
+            }),
+          },
           fields: [
-            defineField({ name: 'question', title: 'Question', type: 'string' }),
+            defineField({
+              name: 'question',
+              title: 'Question',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
             defineField({
               name: 'answer',
               title: 'Answer',
               type: 'array',
-              of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [{ title: 'Emphasis', value: 'em' }, { title: 'Strong', value: 'strong' }] } }],
+              description: 'Plain text with optional bold or italic. Multiple paragraphs supported.',
+              of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [{ title: 'Italic', value: 'em' }, { title: 'Bold', value: 'strong' }] } }],
             }),
           ],
         },
@@ -113,16 +149,16 @@ export const pricingPage = defineType({
     }),
     defineField({
       name: 'faqFooter',
-      title: 'FAQ Footer',
+      title: 'Footer text (below FAQ list)',
       type: 'text',
       rows: 2,
       group: 'faq',
-      description: 'Short sign-off below the FAQ list.',
+      description: 'Optional sign-off below the FAQ list (e.g. "Still got questions? Email us at…").',
     }),
   ],
   preview: {
     prepare() {
-      return { title: 'Pricing Page' }
+      return { title: 'Pricing page', subtitle: 'Singleton — only one of these exists' }
     },
   },
 })

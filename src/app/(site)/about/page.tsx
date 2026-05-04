@@ -1,16 +1,29 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { ABOUT_PAGE_QUERY } from '@/sanity/lib/queries';
+import { ABOUT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit     from '@/components/HeroSplit';
 import IntroBlock    from '@/components/IntroBlock';
 import ClientsBlock  from '@/components/ClientsBlock';
 import TeamGrid      from '@/components/TeamGrid';
 
-export const metadata: Metadata = {
-  title: 'About us — Vero Assess',
-  description:
-    'Vero Assess is part of Tazio — built on the same trusted technology powering enterprise recruitment platforms since 2010.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string; heroImageUrl?: string } | null>(ABOUT_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'About us',
+      description: page?.heroIntro ??
+        'Vero Assess is part of Tazio — built on the same trusted technology powering enterprise recruitment platforms since 2010.',
+      imageUrl:    page?.heroImageUrl,
+    },
+    path: '/about',
+  });
+}
 
 /* ── Types matching the GROQ projection ──────────────────────── */
 

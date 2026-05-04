@@ -37,229 +37,309 @@ export const jobCategory = defineType({
         'when this category page is shared. Anything left blank inherits from Site Settings.',
     }),
 
+    /* ── Identity ── */
     defineField({
       name: 'name',
-      title: 'Category Name',
+      title: 'Category name',
       type: 'string',
+      description:
+        'Display name for this category (e.g. "Sales", "Operations & Logistics"). ' +
+        'Used in the URL slug, the navigation, the listing page, and search results.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
       name: 'slug',
-      title: 'Slug',
+      title: 'URL slug',
       type: 'slug',
       options: { source: 'name' },
+      description:
+        'The URL path for this category (e.g. "sales" → /assessments/sales). ' +
+        'Click "Generate" to derive from the name. ' +
+        'Avoid changing this once published — it breaks any incoming links.',
       validation: (Rule) => Rule.required(),
     }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 1 — HERO
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'heroHeadline',
-      title: 'Hero Headline',
+      title: 'Headline',
       type: 'string',
       group: 'hero',
-      validation: (Rule) => Rule.required(),
+      description: 'Big headline at the top of the category page. e.g. "Hire confident, capable salespeople".',
+      validation: (Rule) =>
+        Rule.required().max(80).warning('Headlines longer than 80 chars start to wrap awkwardly.'),
     }),
     defineField({
       name: 'heroIntroCopy',
-      title: 'Hero Intro Copy',
+      title: 'Intro paragraph',
       type: 'text',
       rows: 3,
       group: 'hero',
+      description: 'One or two sentences explaining who this category is for.',
     }),
     defineField({
       name: 'heroImage',
-      title: 'Hero Image',
+      title: 'Hero image',
       type: 'image',
       options: { hotspot: true },
       group: 'hero',
+      description: 'Image on the right of the hero. Recommended 1200×900px (4:3). Hotspot lets you set the focal point.',
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
     }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 2 — DIMENSIONS EXPLAINER (split layout)
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'dimensionsSectionHeading',
-      title: 'Dimensions Section Heading',
+      title: 'Heading',
       type: 'string',
       group: 'dimensions',
+      description: 'e.g. "What we measure".',
     }),
     defineField({
       name: 'dimensionsSectionBody',
-      title: 'Dimensions Section Body',
+      title: 'Body paragraph',
       type: 'text',
       rows: 4,
       group: 'dimensions',
+      description: 'Plain paragraph explaining which dimensions matter for this category.',
     }),
     defineField({
       name: 'dimensionsSectionImage',
-      title: 'Dimensions Section Image',
+      title: 'Supporting image',
       type: 'image',
       options: { hotspot: true },
       group: 'dimensions',
+      description: 'Right-side image. Optional — leave blank to show only text.',
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
     }),
-    /* ── In Action — section header above the FeatureCards carousel ── */
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 3 — "IN ACTION" SECTION HEADER
+       Header above the Feature Cards carousel (Section 4).
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'inActionLabel',
-      title: 'Eyebrow Label',
+      title: 'Small label above heading',
       type: 'string',
       group: 'inAction',
-      description: 'Small uppercase label above the heading. Defaults to "In action".',
+      description: 'Defaults to "In action" if left blank.',
     }),
     defineField({
       name: 'inActionHeading',
-      title: 'Section Heading',
+      title: 'Section heading',
       type: 'string',
       group: 'inAction',
-      description: 'Heading shown above the carousel.',
+      description: 'e.g. "How Vero Assess for Sales works".',
     }),
     defineField({
       name: 'inActionIntro',
-      title: 'Section Intro',
+      title: 'Intro paragraph',
       type: 'text',
       rows: 3,
       group: 'inAction',
-      description: 'Short description shown under the heading.',
+      description: 'Short description shown under the heading. Optional.',
     }),
 
+    /* ════════════════════════════════════════════════════════
+       SECTION 4 — FEATURE CAROUSEL CARDS
+       Horizontal carousel sitting under the "In action" header.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'featureCardsHeading',
-      title: 'Feature Cards Lead-Card Heading',
+      title: 'Lead card — heading',
       type: 'string',
       group: 'featureCards',
-      description: 'Heading of the FIRST card in the carousel (e.g. "Keeping your team on track").',
+      description:
+        'The FIRST card in the carousel (the wider hero card) gets this heading — ' +
+        'e.g. "Keeping your team on track". The remaining cards are added in the list below.',
     }),
     defineField({
       name: 'featureCardsSubheading',
-      title: 'Feature Cards Lead-Card Body',
+      title: 'Lead card — body',
       type: 'text',
       rows: 2,
       group: 'featureCards',
-      description: 'Body of the FIRST card in the carousel.',
+      description: 'Body text for the first/lead card.',
     }),
     defineField({
       name: 'featureCards',
-      title: 'Feature Cards',
+      title: 'Additional carousel cards',
       type: 'array',
       group: 'featureCards',
+      description:
+        'Cards shown after the lead card. 4–8 work best in the carousel. Each card has its own heading, body, and image.',
       of: [
         {
           type: 'object',
           fields: [
-            defineField({ name: 'heading', title: 'Heading', type: 'string' }),
-            defineField({ name: 'body', title: 'Body', type: 'text', rows: 3 }),
+            defineField({
+              name: 'heading',
+              title: 'Card heading',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'body',
+              title: 'Card body',
+              type: 'text',
+              rows: 3,
+              description: 'Keep concise — 2–3 sentences max.',
+            }),
             defineField({
               name: 'image',
-              title: 'Card Image',
+              title: 'Card image',
               type: 'image',
               options: { hotspot: true },
+              description: 'Shown at the top of the card. 16:10 ratio works best (e.g. 800×500).',
               fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
-              description: 'Shown at the top of the card in the In Action carousel.',
             }),
           ],
           preview: {
-            select: { title: 'heading', media: 'image' },
+            select: { title: 'heading', subtitle: 'body', media: 'image' },
+            prepare: ({ title, subtitle, media }) => ({
+              title: title || 'Untitled card',
+              subtitle: subtitle ? subtitle.slice(0, 80) : undefined,
+              media,
+            }),
           },
         },
       ],
     }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 5 — HEADLINE STATS
+       Four stat tiles shown as a row beneath the carousel.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'stat1Heading',
-      title: 'Stat 1 Heading',
+      title: 'Stat 1 — number',
       type: 'string',
       group: 'stats',
+      description: 'The big number / value (e.g. "82%" or "3×").',
     }),
     defineField({
       name: 'stat1Body',
-      title: 'Stat 1 Body',
+      title: 'Stat 1 — caption',
       type: 'string',
       group: 'stats',
+      description: 'Short description below the number (e.g. "of hires retained at 12 months").',
     }),
     defineField({
       name: 'stat2Heading',
-      title: 'Stat 2 Heading',
+      title: 'Stat 2 — number',
       type: 'string',
       group: 'stats',
     }),
     defineField({
       name: 'stat2Body',
-      title: 'Stat 2 Body',
+      title: 'Stat 2 — caption',
       type: 'string',
       group: 'stats',
     }),
     defineField({
       name: 'stat3Heading',
-      title: 'Stat 3 Heading',
+      title: 'Stat 3 — number',
       type: 'string',
       group: 'stats',
     }),
     defineField({
       name: 'stat3Body',
-      title: 'Stat 3 Body',
+      title: 'Stat 3 — caption',
       type: 'string',
       group: 'stats',
     }),
     defineField({
       name: 'stat4Heading',
-      title: 'Stat 4 Heading',
+      title: 'Stat 4 — number',
       type: 'string',
       group: 'stats',
     }),
     defineField({
       name: 'stat4Body',
-      title: 'Stat 4 Body',
+      title: 'Stat 4 — caption',
       type: 'string',
       group: 'stats',
     }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 6 — ROLE ROSTER HEADER
+       The roles themselves are managed separately under
+       "Roles" in the sidebar — they auto-link to this category
+       via the "Job Category" field on each role.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'roleRosterHeading',
-      title: 'Role Roster Heading',
+      title: 'Heading',
       type: 'string',
       group: 'roster',
+      description: 'Heading above the grid of roles (e.g. "Roles in this category").',
     }),
     defineField({
       name: 'roleRosterSubheading',
-      title: 'Role Roster Subheading',
+      title: 'Subheading',
       type: 'string',
       group: 'roster',
+      description: 'Optional one-line note shown beneath the heading.',
     }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 7 — BESPOKE CTA
+       Closing band offering custom assessment design.
+    ════════════════════════════════════════════════════════ */
     defineField({
       name: 'bespokeSectionHeading',
-      title: 'Bespoke Section Heading',
+      title: 'Heading',
       type: 'string',
       group: 'bespoke',
+      description: 'Big closing headline (e.g. "Need something built around your roles?").',
     }),
     defineField({
       name: 'bespokeSectionBody',
-      title: 'Bespoke Section Body',
+      title: 'Body paragraph',
       type: 'text',
       rows: 3,
       group: 'bespoke',
+      description: 'Short pitch underneath the heading.',
     }),
     defineField({
       name: 'bespokeCTALabel',
-      title: 'Bespoke CTA Label',
+      title: 'Button — text',
       type: 'string',
       group: 'bespoke',
+      description: 'e.g. "Talk to us".',
     }),
     defineField({
       name: 'bespokeCTAHref',
-      title: 'Bespoke CTA Href',
+      title: 'Button — link',
       type: 'string',
       group: 'bespoke',
-      description: 'Where the bespoke CTA links to (e.g. "/contact").',
+      description: 'Usually "/contact".',
+      hidden: ({ parent }) => !parent?.bespokeCTALabel,
     }),
     defineField({
       name: 'bespokeSectionImage',
-      title: 'Bespoke Section Image',
+      title: 'Optional supporting image',
       type: 'image',
       options: { hotspot: true },
       group: 'bespoke',
+      description: 'Image on the right side of the bespoke band. Optional.',
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
     }),
   ],
   preview: {
     select: {
       title: 'name',
-      subtitle: 'heroIntroCopy',
+      slug: 'slug.current',
       media: 'heroImage',
     },
-    prepare({ title, subtitle, media }) {
+    prepare({ title, slug, media }) {
       return {
-        title,
-        subtitle: subtitle ? subtitle.slice(0, 80) : 'No intro',
+        title: title ?? 'Untitled category',
+        subtitle: slug ? `/assessments/${slug}` : 'No URL slug yet',
         media,
       }
     },

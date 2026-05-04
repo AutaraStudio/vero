@@ -1,17 +1,29 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
-import { CONTACT_PAGE_QUERY } from '@/sanity/lib/queries';
+import { CONTACT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import FAQSection, { type FAQItem } from '@/components/FAQSection';
 import ContactForm from '@/components/ContactForm';
 import ContactHero from './ContactHero';
 import ContactMethods from './ContactMethods';
 import './contact.css';
 
-export const metadata: Metadata = {
-  title: 'Contact us — Vero Assess',
-  description:
-    'Get in touch with the Vero Assess team. Phone, email, contact form. We\'re happy to chat about how we can support your hiring.',
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const [page, settings] = await Promise.all([
+    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string } | null>(CONTACT_PAGE_QUERY),
+    client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+  ]);
+  return generateSiteMetadata({
+    seo: page?.seo,
+    settings,
+    fallback: {
+      title:       page?.heroHeadline ?? 'Contact us',
+      description: page?.heroIntro ??
+        "Get in touch with the Vero Assess team. Phone, email, contact form. We're happy to chat about how we can support your hiring.",
+    },
+    path: '/contact',
+  });
+}
 
 interface ContactPageData {
   heroHeadline?: string;
