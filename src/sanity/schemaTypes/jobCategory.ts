@@ -93,6 +93,18 @@ export const jobCategory = defineType({
        SECTION 2 — DIMENSIONS EXPLAINER (split layout)
     ════════════════════════════════════════════════════════ */
     defineField({
+      name: 'keyDimensionsAssessed',
+      title: 'Key dimensions assessed (short summary)',
+      type: 'text',
+      rows: 2,
+      group: 'dimensions',
+      description:
+        'Comma-separated list of the most relevant dimensions for this category ' +
+        '(e.g. "Collaboration, Trust, Goal orientation, Customer excellence"). ' +
+        'Shown as small badges on this category\'s detail page hero, and as the ' +
+        'preview line on the assessments listing page.',
+    }),
+    defineField({
       name: 'dimensionsSectionHeading',
       title: 'Heading',
       type: 'string',
