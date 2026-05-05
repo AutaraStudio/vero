@@ -11,12 +11,18 @@ import OrderSummary from '../components/OrderSummary';
 import '../details/details.css';
 import './contract.css';
 
-const CONTRACT_PDF_URL = 'https://example.com';
-
 export default function ContractPage() {
   const router = useRouter();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails } = state;
+  const { selectedRoles, contactDetails, recommendedTier } = state;
+
+  /* Two contract variants live on HubSpot. Starter buyers get the single-role
+     plan T&Cs; everyone else (Growth / Scale / Bespoke) gets the multi-role
+     plan T&Cs. Default to the multi-role doc if the tier hasn't been resolved
+     yet — it's the broader of the two. */
+  const contractPdfUrl = recommendedTier === 'starter'
+    ? 'https://25935419.fs1.hubspotusercontent-eu1.net/hubfs/25935419/Vero%20Assess/Terms%20and%20Conditions/Vero%20Assess%20Single%20Role%20Starter%20Plan%20Terms%20and%20Conditions.pdf'
+    : 'https://25935419.fs1.hubspotusercontent-eu1.net/hubfs/25935419/Vero%20Assess/Terms%20and%20Conditions/Vero%20Assess%20Multiple%20Role%20Plan%20Terms%20and%20Conditions.pdf';
 
   // Guard
   useEffect(() => {
@@ -29,7 +35,7 @@ export default function ContractPage() {
   const [accepted, setAccepted] = useState(false);
 
   const handleOpenContract = () => {
-    window.open(CONTRACT_PDF_URL, '_blank', 'noopener,noreferrer');
+    window.open(contractPdfUrl, '_blank', 'noopener,noreferrer');
     setHasOpenedContract(true);
   };
 
