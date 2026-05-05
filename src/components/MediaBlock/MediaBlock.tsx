@@ -16,6 +16,10 @@ export interface MediaBlockData {
   type?: 'image' | 'video' | null;
   imageUrl?: string | null;
   imageAlt?: string | null;
+  /** Optional mobile-specific image (≤768px viewport). When set, takes
+   *  precedence over imageUrl on mobile via a <picture><source/></picture>. */
+  imageMobileUrl?: string | null;
+  imageMobileAlt?: string | null;
   videoUrl?: string | null;
   /** How the video should play. Default: 'modal'.
    *  - 'modal'              — static thumbnail with play button → modal
@@ -24,6 +28,61 @@ export interface MediaBlockData {
   videoPlayback?: 'modal' | 'modal-with-preview' | 'autoplay' | null;
   videoThumbnailUrl?: string | null;
   videoThumbnailAlt?: string | null;
+  /** Optional mobile-specific video poster (≤768px viewport). */
+  videoThumbnailMobileUrl?: string | null;
+  videoThumbnailMobileAlt?: string | null;
+}
+
+/* Mobile breakpoint shared across this component. Matches the rest of
+   the site's "mobile" cutoff. */
+const MOBILE_MEDIA_QUERY = '(max-width: 768px)';
+
+/**
+ * Renders an <img>, but if a separate `mobileSrc` is provided, swaps to
+ * that image on mobile via a native <picture><source/></picture>. Zero JS,
+ * zero layout shift — the browser picks the right one before the request
+ * even fires.
+ */
+function ResponsiveImg({
+  src,
+  mobileSrc,
+  alt,
+  mobileAlt,
+  className,
+  style,
+}: {
+  src: string;
+  mobileSrc?: string | null;
+  alt: string;
+  mobileAlt?: string | null;
+  className?: string;
+  style?: React.CSSProperties;
+}) {
+  if (mobileSrc) {
+    return (
+      <picture>
+        <source media={MOBILE_MEDIA_QUERY} srcSet={mobileSrc} />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={mobileAlt ?? alt}
+          className={className}
+          style={style}
+          loading="lazy"
+        />
+      </picture>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src={src}
+      alt={alt}
+      className={className}
+      style={style}
+      loading="lazy"
+    />
+  );
 }
 
 interface MediaBlockProps {
@@ -148,9 +207,13 @@ export default function MediaBlock({
   const playbackMode     = media?.videoPlayback ?? 'modal';
   const isAutoplayMode   = isVideoMode && playbackMode === 'autoplay';
   const isModalWithPrev  = isVideoMode && playbackMode === 'modal-with-preview';
-  const thumbnailUrl     = isVideoMode ? media?.videoThumbnailUrl : null;
-  const imageUrl       = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
-  const altText        = isVideoMode
+  const thumbnailUrl       = isVideoMode ? media?.videoThumbnailUrl : null;
+  const thumbnailMobileUrl = isVideoMode ? media?.videoThumbnailMobileUrl : null;
+  const thumbnailMobileAlt = isVideoMode ? media?.videoThumbnailMobileAlt : null;
+  const imageUrl         = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
+  const imageMobileUrl   = media?.type === 'image' || !media?.type ? media?.imageMobileUrl : null;
+  const imageMobileAlt   = media?.type === 'image' || !media?.type ? media?.imageMobileAlt : null;
+  const altText          = isVideoMode
     ? media?.videoThumbnailAlt ?? ''
     : media?.imageAlt ?? '';
 
@@ -167,13 +230,13 @@ export default function MediaBlock({
           title="Video URL not set yet — add one in Sanity Studio"
         >
           {thumbnailUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
+            <ResponsiveImg
               src={thumbnailUrl}
+              mobileSrc={thumbnailMobileUrl}
               alt={altText}
+              mobileAlt={thumbnailMobileAlt}
               className="media-block__img"
               style={{ objectFit }}
-              loading="lazy"
             />
           ) : (
             <span className="media-block__placeholder" aria-hidden="true" />
@@ -291,13 +354,13 @@ export default function MediaBlock({
           title={hasVideoUrl ? undefined : 'Video URL not set yet — add one in Sanity Studio'}
         >
           {thumbnailUrl ? (
-            /* eslint-disable-next-line @next/next/no-img-element */
-            <img
+            <ResponsiveImg
               src={thumbnailUrl}
+              mobileSrc={thumbnailMobileUrl}
               alt={altText}
+              mobileAlt={thumbnailMobileAlt}
               className="media-block__img"
               style={{ objectFit }}
-              loading="lazy"
             />
           ) : (
             <span className="media-block__placeholder" aria-hidden="true" />
@@ -360,13 +423,13 @@ export default function MediaBlock({
   if (imageUrl) {
     return (
       <div className={`media-block ${className}`.trim()} style={wrapperStyle}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <ResponsiveImg
           src={imageUrl}
+          mobileSrc={imageMobileUrl}
           alt={altText}
+          mobileAlt={imageMobileAlt}
           className="media-block__img"
           style={{ objectFit }}
-          loading="lazy"
         />
       </div>
     );

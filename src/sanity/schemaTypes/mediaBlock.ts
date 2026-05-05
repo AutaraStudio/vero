@@ -35,18 +35,33 @@ export const mediaBlock = defineType({
       initialValue: 'image',
     }),
 
-    /* ── Image-mode field ─────────────────────────────── */
+    /* ── Image-mode fields ────────────────────────────── */
     defineField({
       name: 'image',
-      title: 'Image',
+      title: 'Image (desktop + default)',
       type: 'image',
       options: { hotspot: true },
       description:
         'Upload an image. Hotspot lets you set the focal point so it crops nicely at any aspect ratio. ' +
+        'Used on every viewport unless a mobile-specific image is provided below. ' +
         'Leave blank to show a coloured placeholder card.',
       hidden: ({ parent }) => parent?.type === 'video',
       fields: [
         defineField({ name: 'alt', title: 'Alt text (for screen readers)', type: 'string' }),
+      ],
+    }),
+    defineField({
+      name: 'imageMobile',
+      title: 'Mobile image (optional)',
+      type: 'image',
+      options: { hotspot: true },
+      description:
+        'Optional override shown only on mobile screens (≤768px). ' +
+        'Useful when the desktop image is wide / landscape and you want a portrait or square crop for phones. ' +
+        'Leave blank to use the main image above on mobile too.',
+      hidden: ({ parent }) => parent?.type === 'video',
+      fields: [
+        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
       ],
     }),
 
@@ -73,13 +88,27 @@ export const mediaBlock = defineType({
     }),
     defineField({
       name: 'videoThumbnail',
-      title: 'Video cover image (poster)',
+      title: 'Video cover image — poster (desktop + default)',
       type: 'image',
       options: { hotspot: true },
       description:
         'Still image shown before the video starts. Recommended 16:9 (e.g. 1280×720). ' +
         'For autoplay videos this acts as the poster while the video file is loading. ' +
         'Leave blank to show a coloured placeholder card.',
+      hidden: ({ parent }) => parent?.type !== 'video',
+      fields: [
+        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+      ],
+    }),
+    defineField({
+      name: 'videoThumbnailMobile',
+      title: 'Mobile video cover image (optional)',
+      type: 'image',
+      options: { hotspot: true },
+      description:
+        'Optional mobile-specific cover image (≤768px). ' +
+        'Use this when the desktop poster is too wide for a phone screen. ' +
+        'Leave blank to use the main cover image above on mobile too.',
       hidden: ({ parent }) => parent?.type !== 'video',
       fields: [
         defineField({ name: 'alt', title: 'Alt text', type: 'string' }),

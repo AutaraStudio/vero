@@ -48,10 +48,14 @@ export function mediaProjection(fieldName: string): string {
       type,
       "imageUrl": image.asset->url,
       "imageAlt": image.alt,
+      "imageMobileUrl": imageMobile.asset->url,
+      "imageMobileAlt": imageMobile.alt,
       videoUrl,
       videoPlayback,
       "videoThumbnailUrl": videoThumbnail.asset->url,
-      "videoThumbnailAlt": videoThumbnail.alt
+      "videoThumbnailAlt": videoThumbnail.alt,
+      "videoThumbnailMobileUrl": videoThumbnailMobile.asset->url,
+      "videoThumbnailMobileAlt": videoThumbnailMobile.alt
     }
   `;
 }
