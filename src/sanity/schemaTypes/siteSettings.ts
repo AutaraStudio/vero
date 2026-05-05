@@ -11,6 +11,7 @@ export const siteSettings = defineType({
     { name: 'footer',        title: 'Footer' },
     { name: 'nav',           title: 'Nav' },
     { name: 'partnerLogos',  title: 'Partner Logos' },
+    { name: 'legal',         title: 'Legal' },
   ],
   fields: [
     /* ── SEO & Branding (global defaults) ──────────────────
@@ -171,6 +172,27 @@ export const siteSettings = defineType({
           ],
         },
       ],
+    }),
+
+    /* ── Legal (T&C PDFs shown on the checkout contract step) ──
+       Two variants live on HubSpot today. Editable here so marketing can
+       swap the PDFs without a code deploy. If left blank, the site falls
+       back to the hardcoded HubSpot URLs in the contract page. */
+    defineField({
+      name: 'starterContractUrl',
+      title: 'Starter plan T&Cs (PDF URL)',
+      type: 'url',
+      group: 'legal',
+      description:
+        'Shown to Starter buyers on the checkout contract step. Paste the full https:// URL of the Single Role Starter Plan T&Cs PDF.',
+    }),
+    defineField({
+      name: 'multiRoleContractUrl',
+      title: 'Multi-role plan T&Cs (PDF URL)',
+      type: 'url',
+      group: 'legal',
+      description:
+        'Shown to Growth, Scale, and Bespoke buyers on the checkout contract step. Paste the full https:// URL of the Multiple Role Plan T&Cs PDF.',
     }),
   ],
   preview: {

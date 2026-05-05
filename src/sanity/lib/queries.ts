@@ -135,7 +135,9 @@ export const SITE_SETTINGS_QUERY = `
       name,
       "logoUrl":      logo.asset->url,
       "logoMimeType": logo.asset->mimeType
-    }
+    },
+    starterContractUrl,
+    multiRoleContractUrl
   }
 `
 
