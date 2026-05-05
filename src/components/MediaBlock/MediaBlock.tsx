@@ -125,29 +125,39 @@ export default function MediaBlock({
 
   /* ── Render ─────────────────────────────────────────────── */
 
+  /* When aspectRatio is 'auto' (e.g. HeroSplit lets its parent control
+     the height), don't set the inline aspect-ratio at all — that way the
+     parent CSS gets to define the dimensions. Otherwise apply the value
+     so the slot keeps its shape even when empty. */
   const wrapperStyle = {
-    aspectRatio,
+    ...(aspectRatio !== 'auto' ? { aspectRatio } : {}),
     borderRadius,
     ...(placeholderAccent ? { ['--media-accent' as string]: placeholderAccent } : {}),
   } as React.CSSProperties;
 
-  const isVideo = media?.type === 'video' && !!media?.videoUrl;
-  const thumbnailUrl = isVideo ? media?.videoThumbnailUrl : null;
-  const imageUrl = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
-  const altText  = isVideo
+  /* The editor's chosen mode — independent of whether all the underlying
+     fields have been uploaded yet. Lets us render a video preview slot
+     (with cover) even before the videoUrl has been pasted in. */
+  const isVideoMode  = media?.type === 'video';
+  const hasVideoUrl  = !!media?.videoUrl;
+  const thumbnailUrl = isVideoMode ? media?.videoThumbnailUrl : null;
+  const imageUrl     = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
+  const altText      = isVideoMode
     ? media?.videoThumbnailAlt ?? ''
     : media?.imageAlt ?? '';
 
   /* ── Video mode — clickable thumbnail with play button ── */
-  if (isVideo) {
+  if (isVideoMode) {
     return (
       <>
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => hasVideoUrl && setOpen(true)}
+          disabled={!hasVideoUrl}
           className={`media-block media-block--video ${className}`.trim()}
           style={wrapperStyle}
-          aria-label="Play video"
+          aria-label={hasVideoUrl ? 'Play video' : 'Video URL not set yet'}
+          title={hasVideoUrl ? undefined : 'Video URL not set yet — add one in Sanity Studio'}
         >
           {thumbnailUrl ? (
             /* eslint-disable-next-line @next/next/no-img-element */

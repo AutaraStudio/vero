@@ -142,7 +142,8 @@ a.hero-split__pill:hover {
 }
 
 .hero-split__image,
-.hero-split__image-placeholder {
+.hero-split__image-placeholder,
+.hero-split__media-block {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -180,7 +181,8 @@ a.hero-split__pill:hover {
 }
 
 .hero-split--image-viewport .hero-split__image,
-.hero-split--image-viewport .hero-split__image-placeholder {
+.hero-split--image-viewport .hero-split__image-placeholder,
+.hero-split--image-viewport .hero-split__media-block {
   height: 100%;
   aspect-ratio: auto;
   object-fit: cover;
@@ -196,7 +198,8 @@ a.hero-split__pill:hover {
     height: auto;
   }
   .hero-split--image-viewport .hero-split__image,
-  .hero-split--image-viewport .hero-split__image-placeholder {
+  .hero-split--image-viewport .hero-split__image-placeholder,
+  .hero-split--image-viewport .hero-split__media-block {
     aspect-ratio: 4 / 3;
     height: auto;
   }
