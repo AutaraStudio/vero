@@ -125,6 +125,7 @@ export default async function Home() {
             : { label: 'See how it works', href: '/how-it-works' }
         }
         media={media}
+        alwaysShowMedia
       />
 
       {/* ── 2. Partner logo marquee (global, from siteSettings) ──── */}

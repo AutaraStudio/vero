@@ -24,6 +24,13 @@ interface HeroCentredProps {
     | { type: 'video'; thumbnailSrc: string; videoSrc: string };
   /** Optional content rendered between the CTAs and the media (e.g. a logo strip) */
   belowCta?: React.ReactNode;
+  /**
+   * When true, always render the media slot — even if no media has been
+   * uploaded yet. Shows a tasteful coloured placeholder card so the layout
+   * doesn't collapse during content build-out. Default: false (no media →
+   * compact mode with smaller headline + tighter padding).
+   */
+  alwaysShowMedia?: boolean;
 }
 
 export default function HeroCentred({
@@ -35,6 +42,7 @@ export default function HeroCentred({
   secondaryCTA,
   media,
   belowCta,
+  alwaysShowMedia = false,
 }: HeroCentredProps) {
   const badgeRef    = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 16 });
   const headingRef  = useTextReveal({ scroll: false, delay: 0.3 });
@@ -119,10 +127,15 @@ export default function HeroCentred({
     return () => window.removeEventListener('keydown', handleKey);
   }, [modalOpen, media, closeModal]);
 
-  /* When there's no media slot, render in compact mode — smaller headline
-     and proper bottom padding so the hero ends cleanly instead of dropping
-     off into the next section. */
-  const isCompact = !media;
+  /* Show the media slot when either we have actual media OR the caller
+     explicitly opted into always-on (placeholder rendered while content
+     is still being uploaded). */
+  const showMediaSlot = !!media || alwaysShowMedia;
+
+  /* When there's no media slot at all, render in compact mode — smaller
+     headline and proper bottom padding so the hero ends cleanly instead
+     of dropping off into the next section. */
+  const isCompact = !showMediaSlot;
 
   return (
     <section
@@ -190,15 +203,22 @@ export default function HeroCentred({
         </div>
       </div>
 
-      {/* ── Media (optional) ──────────────────────────────── */}
-      {media && (
+      {/* ── Media slot ────────────────────────────────────── */}
+      {showMediaSlot && (
         <div className="hero-centred__media-wrap">
           <div
             ref={mediaRef as React.Ref<HTMLDivElement>}
             data-animate=""
             className="hero-centred__media"
           >
-            {media.type === 'image' ? (
+            {!media ? (
+              /* No media uploaded yet — show a tasteful placeholder card
+                 so the slot is visible during content build-out. */
+              <div
+                className="hero-centred__media-img hero-centred__placeholder"
+                aria-hidden="true"
+              />
+            ) : media.type === 'image' ? (
               <img
                 src={media.src}
                 alt={media.alt}
