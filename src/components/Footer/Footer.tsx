@@ -55,16 +55,19 @@ const assessmentGroups: { key: AssessmentGroup; title: string }[] = [
   { key: 'specialist',   title: 'Specialist' },
 ];
 
-/* Policy links — point at Tazio-hosted documents per client direction.
-   All open in a new tab since they're external to this site. */
-const legalLinks = [
-  { label: 'Privacy Policy', href: 'https://www.tazio.io/privacy-policy' },
+/* Policy links — privacy, cookies, and security live on this site
+   (sourced from Sanity, rendered at /legal/<slug>). Modern slavery
+   and status remain external to Tazio. */
+const legalLinks: { label: string; href: string; external?: boolean }[] = [
+  { label: 'Privacy Policy', href: '/legal/privacy' },
+  { label: 'Cookie Policy', href: '/legal/cookies' },
+  { label: 'Security', href: '/legal/security' },
   {
     label: 'Modern Slavery Statement',
     href: 'https://cdn.prod.website-files.com/66bb33f5cfec7c80b0da6fed/6925b1b4a26e3c0faa0ca494_Modern%20Slavery%20and%20Human%20Trafficking%20Statement%202025-2026.pdf',
+    external: true,
   },
-  { label: 'Status', href: 'https://status.tazio.network/' },
-  { label: 'Security', href: 'https://www.tazio.io/security' },
+  { label: 'Status', href: 'https://status.tazio.network/', external: true },
 ];
 
 const socialLinks = [
@@ -252,17 +255,27 @@ export default async function Footer() {
 
           <p className="footer__close-meta text-body--xs color--tertiary">
             <span>&copy; {year} Tazio Online Media Limited.</span>
-            {legalLinks.map((l) => (
-              <a
-                key={l.href}
-                href={l.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="footer__close-legal-link"
-              >
-                {l.label}
-              </a>
-            ))}
+            {legalLinks.map((l) =>
+              l.external ? (
+                <a
+                  key={l.href}
+                  href={l.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="footer__close-legal-link"
+                >
+                  {l.label}
+                </a>
+              ) : (
+                <Link
+                  key={l.href}
+                  href={l.href}
+                  className="footer__close-legal-link"
+                >
+                  {l.label}
+                </Link>
+              ),
+            )}
           </p>
 
           <div className="footer__partner">

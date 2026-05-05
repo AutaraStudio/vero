@@ -100,6 +100,10 @@ function pathsForDocument(doc: SanityWebhookPayload): { paths: string[]; layoutS
       paths.push('/pricing');
       break;
 
+    case 'legalPage':
+      if (doc.slug) paths.push(`/legal/${doc.slug}`);
+      break;
+
     case 'siteSettings':
       /* Site settings affect the global header, footer, and SEO defaults
          on every page — invalidate the root layout so all pages refresh. */

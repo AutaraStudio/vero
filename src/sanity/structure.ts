@@ -14,6 +14,7 @@ import {
   DocumentsIcon,
   PackageIcon,
   EditIcon,
+  DocumentTextIcon,
 } from '@sanity/icons'
 import type { ComponentType } from 'react'
 
@@ -123,6 +124,18 @@ export const structure = (S: StructureBuilder) =>
             .title('Pricing tiers')
             .filter('_type == "pricingTier"')
             .defaultOrdering([{ field: 'order', direction: 'asc' }])
+        ),
+
+      /* Legal — repeating documents (privacy, cookies, security, etc.).
+         Each one becomes a route at /legal/<slug>. */
+      S.listItem()
+        .title('Legal pages')
+        .icon(DocumentTextIcon)
+        .child(
+          S.documentList()
+            .title('Legal pages')
+            .filter('_type == "legalPage"')
+            .defaultOrdering([{ field: 'title', direction: 'asc' }])
         ),
 
       S.divider(),

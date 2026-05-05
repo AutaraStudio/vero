@@ -482,6 +482,21 @@ export const ALL_ROLES_QUERY = `
   }
 `
 
+export const LEGAL_PAGE_BY_SLUG_QUERY = `
+  *[_type == "legalPage" && slug.current == $slug][0] {
+    _id,
+    title,
+    "slug": slug.current,
+    intro,
+    lastUpdated,
+    body
+  }
+`
+
+export const LEGAL_PAGE_SLUGS_QUERY = `
+  *[_type == "legalPage" && defined(slug.current)] { "slug": slug.current }
+`
+
 export const ROLES_BY_CATEGORY_QUERY = `
   *[_type == "jobCategory"] | order(name asc) {
     _id,
