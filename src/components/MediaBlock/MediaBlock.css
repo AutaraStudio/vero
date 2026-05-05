@@ -23,6 +23,22 @@
   height: 100%;
 }
 
+/* ── Autoplay (background-video style) ────────────────────── */
+
+.media-block--autoplay {
+  /* No cursor or hover affordance — this is decorative, not clickable */
+  cursor: default;
+}
+
+.media-block__autoplay-video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Hide native controls completely — the video is decorative */
+  pointer-events: none;
+}
+
 /* ── Placeholder card (used for no-upload + as a fallback for
    missing video thumbnails) ─────────────────────────────────── */
 

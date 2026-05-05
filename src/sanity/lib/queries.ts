@@ -33,6 +33,7 @@ export function mediaProjection(fieldName: string): string {
       "imageUrl": image.asset->url,
       "imageAlt": image.alt,
       videoUrl,
+      videoPlayback,
       "videoThumbnailUrl": videoThumbnail.asset->url,
       "videoThumbnailAlt": videoThumbnail.alt
     }

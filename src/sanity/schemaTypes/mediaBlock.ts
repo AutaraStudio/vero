@@ -52,12 +52,30 @@ export const mediaBlock = defineType({
 
     /* ── Video-mode fields ────────────────────────────── */
     defineField({
+      name: 'videoPlayback',
+      title: 'How should the video play?',
+      type: 'string',
+      description:
+        '"Popup modal" — visitor clicks a play button to open the video in an overlay. ' +
+        '"Autoplay (muted, loop)" — video plays silently on loop in place, like a background video. No click required.',
+      options: {
+        list: [
+          { title: 'Popup modal — click to play with sound',     value: 'modal' },
+          { title: 'Autoplay (muted, looping) — like a background video', value: 'autoplay' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'modal',
+      hidden: ({ parent }) => parent?.type !== 'video',
+    }),
+    defineField({
       name: 'videoThumbnail',
       title: 'Video cover image (poster)',
       type: 'image',
       options: { hotspot: true },
       description:
-        'Still image shown before the video plays. Recommended 16:9 (e.g. 1280×720). ' +
+        'Still image shown before the video starts. Recommended 16:9 (e.g. 1280×720). ' +
+        'For autoplay videos this acts as the poster while the video file is loading. ' +
         'Leave blank to show a coloured placeholder card.',
       hidden: ({ parent }) => parent?.type !== 'video',
       fields: [
@@ -69,7 +87,8 @@ export const mediaBlock = defineType({
       title: 'Video file URL',
       type: 'url',
       description:
-        'Direct link to an .mp4 file (or HLS .m3u8). Loaded only when the visitor clicks Play.',
+        'Direct link to an .mp4 file (or HLS .m3u8). For modal videos, loaded only when the ' +
+        'visitor clicks Play. For autoplay videos, loaded immediately on page load.',
       hidden: ({ parent }) => parent?.type !== 'video',
     }),
   ],

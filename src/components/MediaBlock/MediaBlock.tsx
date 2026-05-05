@@ -17,6 +17,10 @@ export interface MediaBlockData {
   imageUrl?: string | null;
   imageAlt?: string | null;
   videoUrl?: string | null;
+  /** How the video should play. Default: 'modal'.
+   *  - 'modal'    — clickable thumbnail opens a portaled modal player
+   *  - 'autoplay' — plays inline, muted, looping (background-video style) */
+  videoPlayback?: 'modal' | 'autoplay' | null;
   videoThumbnailUrl?: string | null;
   videoThumbnailAlt?: string | null;
 }
@@ -138,15 +142,65 @@ export default function MediaBlock({
   /* The editor's chosen mode — independent of whether all the underlying
      fields have been uploaded yet. Lets us render a video preview slot
      (with cover) even before the videoUrl has been pasted in. */
-  const isVideoMode  = media?.type === 'video';
-  const hasVideoUrl  = !!media?.videoUrl;
-  const thumbnailUrl = isVideoMode ? media?.videoThumbnailUrl : null;
-  const imageUrl     = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
-  const altText      = isVideoMode
+  const isVideoMode    = media?.type === 'video';
+  const hasVideoUrl    = !!media?.videoUrl;
+  const playbackMode   = media?.videoPlayback ?? 'modal';
+  const isAutoplayMode = isVideoMode && playbackMode === 'autoplay';
+  const thumbnailUrl   = isVideoMode ? media?.videoThumbnailUrl : null;
+  const imageUrl       = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
+  const altText        = isVideoMode
     ? media?.videoThumbnailAlt ?? ''
     : media?.imageAlt ?? '';
 
-  /* ── Video mode — clickable thumbnail with play button ── */
+  /* ── Autoplay mode — inline muted-loop "background video" ── */
+  if (isAutoplayMode) {
+    /* If the URL hasn't been uploaded yet, render the same disabled-look
+       preview as the modal mode so the editor sees their slot. */
+    if (!hasVideoUrl) {
+      return (
+        <div
+          className={`media-block ${className}`.trim()}
+          style={wrapperStyle}
+          aria-label="Video URL not set yet"
+          title="Video URL not set yet — add one in Sanity Studio"
+        >
+          {thumbnailUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={thumbnailUrl}
+              alt={altText}
+              className="media-block__img"
+              style={{ objectFit }}
+              loading="lazy"
+            />
+          ) : (
+            <span className="media-block__placeholder" aria-hidden="true" />
+          )}
+        </div>
+      );
+    }
+
+    return (
+      <div className={`media-block media-block--autoplay ${className}`.trim()} style={wrapperStyle}>
+        <video
+          className="media-block__autoplay-video"
+          src={media!.videoUrl!}
+          poster={thumbnailUrl ?? undefined}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          aria-label={altText || 'Background video'}
+          /* These three attributes are critical for iOS — without
+             playsInline + muted + autoPlay, mobile Safari refuses to
+             autoplay. */
+        />
+      </div>
+    );
+  }
+
+  /* ── Modal video mode — clickable thumbnail with play button ── */
   if (isVideoMode) {
     return (
       <>
