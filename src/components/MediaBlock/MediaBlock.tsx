@@ -172,8 +172,11 @@ export default function MediaBlock({
             <span className="media-block__placeholder" aria-hidden="true" />
           )}
           <span className="media-block__play" aria-hidden="true">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-              <path d="M8 5v14l11-7L8 5z" fill="currentColor" />
+            <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
+              {/* Rounded-corner play triangle — fills more of the button than
+                 the geometric SVG triangle and reads as a friendlier "play"
+                 affordance. Matches the IntroBlock + HeroCentred play icon. */}
+              <path d="M2.2 2.863C2.2 1.612 3.572.845 4.638 1.5l8.347 5.137c1.016.625 1.016 2.1 0 2.725L4.638 14.5c-1.066.656-2.438-.11-2.438-1.363V2.863Z" />
             </svg>
           </span>
         </button>
