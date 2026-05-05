@@ -219,9 +219,14 @@
   margin-bottom: 0.25rem;
 }
 
-/* ── Code ─────────────────────────────────────────────────── */
+/* ── Code ──────────────────────────────────────────────────
+   Distinguish inline vs block by parent context, not className —
+   fenced code blocks without a language specifier arrive with
+   className: undefined, so a class-based check would mis-classify
+   them as inline pills and collapse multi-line content onto one line. */
 
-.manage__code {
+/* INLINE code — any <code> NOT inside a <pre> */
+.manage__article :not(pre) > code {
   font-family: ui-monospace, SFMono-Regular, Consolas, Menlo, monospace;
   font-size: 0.875em;
   padding: 0.125rem 0.4rem;
@@ -232,6 +237,7 @@
   white-space: nowrap;
 }
 
+/* BLOCK code — wrapper <pre> */
 .manage__pre {
   margin: 1.5rem 0;
   padding: 1.25rem 1.5rem;
@@ -239,14 +245,17 @@
   border: 1px solid var(--color--border-subtle);
   border-radius: var(--radius--md);
   /* Critical: clip the pre AND let it scroll horizontally inside.
-     overflow-x: auto + min-width: 0 keeps it from expanding the parent. */
+     overflow-x: auto + min-width: 0 + max-width: 100% keep it from
+     expanding the parent column when content is wider than the column. */
   overflow-x: auto;
   min-width: 0;
   max-width: 100%;
   line-height: 1.55;
 }
 
-.manage__pre code {
+/* <code> inside <pre> — preserve newlines, no pill chrome */
+.manage__pre > code {
+  display: block;
   background: transparent;
   border: 0;
   padding: 0;
@@ -254,7 +263,6 @@
   font-size: 0.875rem;
   color: var(--color--text-primary);
   white-space: pre;
-  display: block;
 }
 
 /* ── Tables ───────────────────────────────────────────────── */

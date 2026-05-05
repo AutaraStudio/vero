@@ -92,15 +92,15 @@ export default function ManageGuide({ markdown }: Props) {
       );
     },
     /* Override pre + code separately. react-markdown emits <pre><code>…</code></pre>
-       for fenced blocks; we let the outer <pre> hold our styles and keep
-       <code> a passthrough inside it. Inline code (no parent <pre>) gets
-       its own pill styling. */
+       for fenced blocks; we let the outer <pre> hold our styles and pass
+       <code> through unchanged. CSS distinguishes inline vs block by
+       whether the <code> sits inside a <pre> — that way fenced blocks
+       with NO language specifier (which arrive with className: undefined)
+       still render correctly as multi-line code, not as a one-line pill. */
     pre: ({ children }) => <pre className="manage__pre">{children}</pre>,
-    code: ({ children, className }) => {
-      const isBlock = !!className; // className like 'language-foo' for block code
-      if (isBlock) return <code className={className}>{children}</code>;
-      return <code className="manage__code">{children}</code>;
-    },
+    code: ({ children, className }) => (
+      <code className={className}>{children}</code>
+    ),
     table: ({ children }) => (
       <div className="manage__table-wrap">
         <table className="manage__table">{children}</table>
