@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
-import { mediaBlockToHeroCentredMedia } from '@/lib/media';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import LogoMarquee       from '@/components/LogoMarquee';
 import IntroBlock        from '@/components/IntroBlock';
@@ -99,11 +98,6 @@ export default async function Home() {
     ? { label: data.heroBadgeLabel, href: data.heroBadgeHref ?? '#' }
     : undefined;
 
-  /* Adapt the unified mediaBlock projection into HeroCentred's legacy
-     media prop shape. The component still has its own custom modal —
-     the adapter just maps the field names. */
-  const media = mediaBlockToHeroCentredMedia(data?.heroMedia);
-
   return (
     <main>
       {/* ── 1. Hero ───────────────────────────────────────── */}
@@ -124,7 +118,7 @@ export default async function Home() {
             ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
             : { label: 'See how it works', href: '/how-it-works' }
         }
-        media={media}
+        mediaBlock={data?.heroMedia}
         alwaysShowMedia
       />
 

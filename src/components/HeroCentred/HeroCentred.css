@@ -130,6 +130,17 @@
   display: block;
 }
 
+/* MediaBlock embedded inside the hero — strip its own border / radius
+   (the parent .hero-centred__media already provides them) and fill the
+   16/9 box that the parent defines. */
+.hero-centred__media .hero-centred__media-block {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+
 /* Placeholder card shown when no media is uploaded yet but the slot is
    visible (alwaysShowMedia). Subtle brand-purple tint matches the
    placeholder used in IntroBlock + StickySteps so the visual language

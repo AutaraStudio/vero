@@ -11,6 +11,7 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import type { ThemeVariant } from '@/lib/theme';
+import MediaBlock, { type MediaBlockData } from '@/components/MediaBlock';
 
 interface HeroCentredProps {
   theme?: ThemeVariant;
@@ -19,6 +20,18 @@ interface HeroCentredProps {
   intro?: string;
   primaryCTA?: { label: string; href: string };
   secondaryCTA?: { label: string; href: string };
+  /**
+   * Preferred way to pass hero media — a full mediaBlock from Sanity.
+   * Renders via <MediaBlock />, which handles all three video playback
+   * modes (modal / modal-with-preview / autoplay) plus image and the
+   * empty-slot placeholder.
+   */
+  mediaBlock?: MediaBlockData | null;
+  /**
+   * Legacy media prop — discriminated union, image OR modal video.
+   * Kept for backward compatibility with HeroCentred's old custom modal.
+   * If `mediaBlock` is provided, this is ignored.
+   */
   media?:
     | { type: 'image'; src: string; alt: string }
     | { type: 'video'; thumbnailSrc: string; videoSrc: string };
@@ -40,6 +53,7 @@ export default function HeroCentred({
   intro,
   primaryCTA,
   secondaryCTA,
+  mediaBlock,
   media,
   belowCta,
   alwaysShowMedia = false,
@@ -127,10 +141,13 @@ export default function HeroCentred({
     return () => window.removeEventListener('keydown', handleKey);
   }, [modalOpen, media, closeModal]);
 
-  /* Show the media slot when either we have actual media OR the caller
-     explicitly opted into always-on (placeholder rendered while content
-     is still being uploaded). */
-  const showMediaSlot = !!media || alwaysShowMedia;
+  /* Show the media slot when we have any of:
+     - A Sanity mediaBlock (preferred path — handed to <MediaBlock /> which
+       handles all three video playback modes + image + placeholder)
+     - The legacy media prop (custom HeroCentred modal)
+     - alwaysShowMedia (forces the slot open even when empty, so the
+       layout doesn't collapse during content build-out) */
+  const showMediaSlot = !!mediaBlock || !!media || alwaysShowMedia;
 
   /* When there's no media slot at all, render in compact mode — smaller
      headline and proper bottom padding so the hero ends cleanly instead
@@ -211,7 +228,18 @@ export default function HeroCentred({
             data-animate=""
             className="hero-centred__media"
           >
-            {!media ? (
+            {mediaBlock ? (
+              /* Preferred path — full Sanity mediaBlock. <MediaBlock />
+                 handles every video playback mode (modal /
+                 modal-with-preview / autoplay) plus image + placeholder. */
+              <MediaBlock
+                media={mediaBlock}
+                aspectRatio="auto"
+                borderRadius="0"
+                className="hero-centred__media-block"
+                placeholderAccent="var(--swatch--purple-500)"
+              />
+            ) : !media ? (
               /* No media uploaded yet — show a tasteful placeholder card
                  so the slot is visible during content build-out. */
               <div
