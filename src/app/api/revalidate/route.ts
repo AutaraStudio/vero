@@ -49,6 +49,14 @@ function pathsForDocument(doc: SanityWebhookPayload): { paths: string[]; layoutS
   const paths: string[] = [];
   const layoutScopes: string[] = [];
 
+  /* pageSeo docs are companion documents with deterministic IDs like
+     "homePage.seo", "aboutPage.seo". Map them back to the parent page
+     type and recurse so the SEO change invalidates the right route. */
+  if (doc._type === 'pageSeo' && doc._id?.endsWith('.seo')) {
+    const parentType = doc._id.replace(/\.seo$/, '');
+    return pathsForDocument({ _type: parentType });
+  }
+
   switch (doc._type) {
     case 'homePage':
       paths.push('/');
