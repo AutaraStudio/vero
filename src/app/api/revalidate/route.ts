@@ -1,5 +1,6 @@
 import { revalidatePath } from 'next/cache';
 import { NextRequest, NextResponse } from 'next/server';
+import { createHmac, timingSafeEqual } from 'node:crypto';
 
 /**
  * Sanity → Next.js revalidation webhook.
@@ -106,8 +107,46 @@ function pathsForDocument(doc: SanityWebhookPayload): { paths: string[]; layoutS
   return { paths, layoutScopes };
 }
 
+/**
+ * Verify Sanity's HMAC signature header.
+ * Format: `sanity-webhook-signature: t=<timestamp>,v1=<base64url-sig>`
+ * Signature is HMAC-SHA256 of `${timestamp}.${rawBody}` using the secret.
+ */
+function verifySanitySignature(
+  signatureHeader: string,
+  rawBody: string,
+  secret: string,
+): boolean {
+  const parts = Object.fromEntries(
+    signatureHeader.split(',').map((p) => {
+      const [k, ...rest] = p.trim().split('=');
+      return [k, rest.join('=')];
+    }),
+  );
+  const timestamp = parts.t;
+  const provided  = parts.v1;
+  if (!timestamp || !provided) return false;
+
+  const expected = createHmac('sha256', secret)
+    .update(`${timestamp}.${rawBody}`)
+    .digest('base64url');
+
+  /* Constant-time compare to prevent timing attacks */
+  const a = Buffer.from(provided);
+  const b = Buffer.from(expected);
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(a, b);
+}
+
 export async function POST(req: NextRequest) {
-  /* ── 1. Authorise ── */
+  /* ── 1. Authorise ──
+     Three accepted modes (any one passes):
+     a) Sanity HMAC signature header (sanity-webhook-signature) — what
+        real Sanity webhooks actually send when you set the Secret field
+        in the webhook config. This is the secure default.
+     b) Authorization: Bearer <secret> — for compatibility / curl tests
+     c) ?secret=<secret> query string — for the GET handler + curl tests
+  */
   const expectedSecret = process.env.SANITY_REVALIDATE_SECRET;
   if (!expectedSecret) {
     return NextResponse.json(
@@ -116,18 +155,28 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const authHeader   = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
-  const querySecret  = req.nextUrl.searchParams.get('secret');
-  const providedSecret = authHeader || querySecret;
+  /* Read the raw body once — both signature verification AND JSON parsing
+     need it. NextRequest.json() consumes the stream so we can't use it
+     after also calling .text(). */
+  const rawBody = await req.text();
 
-  if (providedSecret !== expectedSecret) {
+  const sigHeader     = req.headers.get('sanity-webhook-signature');
+  const authHeader    = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+  const querySecret   = req.nextUrl.searchParams.get('secret');
+
+  const isAuthorised =
+    (sigHeader && verifySanitySignature(sigHeader, rawBody, expectedSecret)) ||
+    authHeader === expectedSecret ||
+    querySecret === expectedSecret;
+
+  if (!isAuthorised) {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
   }
 
   /* ── 2. Parse + decide what to invalidate ── */
   let body: SanityWebhookPayload;
   try {
-    body = (await req.json()) as SanityWebhookPayload;
+    body = JSON.parse(rawBody || '{}') as SanityWebhookPayload;
   } catch {
     return NextResponse.json({ ok: false, error: 'Invalid JSON body' }, { status: 400 });
   }
