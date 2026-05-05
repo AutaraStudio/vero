@@ -5,6 +5,10 @@
  *    pageSeo document (homePage.seo, aboutPage.seo, etc.)
  *  • Job categories: writes seo.pageTitle + seo.metaDescription onto
  *    the inline seo field on each jobCategory document
+ *  • Sets siteSettings.titleTemplate to "%s" (pass-through) — the
+ *    client-supplied titles already include "Vero Assess" branding
+ *    where they want it, so we don't want the global template to
+ *    append a second "— Vero Assess" suffix.
  *
  * Idempotent — safe to re-run; existing values are overwritten with the
  * canonical copy here. If you want to keep an editor's customisations,
@@ -24,116 +28,117 @@ const client = createClient({
 });
 
 /* ────────────────────────────────────────────────────────────
-   Singleton page SEO copy.
-   Lengths chosen for SEO best practices:
-     - title ≤ 60 chars   (search engine truncates ~60-65)
-     - description 140-160 chars (search engine truncates ~160)
-   The Site Settings titleTemplate appends " — Vero Assess" so the
-   titles below are written without the brand suffix.
+   Singleton page SEO copy — supplied by client.
+   Titles are written VERBATIM — the global titleTemplate is set
+   to "%s" below so these render as-is in the browser tab.
 ──────────────────────────────────────────────────────────── */
 const PAGE_SEO = {
   homePage: {
-    pageTitle: 'Skills-based hiring assessments built for your roles',
+    pageTitle: 'Vero Assess | Science-Backed Talent Assessment Platform',
     metaDescription:
-      "Vero Assess helps hiring teams identify the right people faster, with science-backed assessments tailored to specific job families. Objective, fair, and built on trusted technology.",
+      'Identify top talent with role-specific, science-backed assessments. Reduce recruitment bias and make better hiring decisions with Vero Assess.',
   },
   aboutPage: {
-    pageTitle: 'About us — powered by trusted technology',
+    pageTitle: 'Vero Assess | Our Mission to Identify Talent Ready to Thrive',
     metaDescription:
-      'Vero Assess is part of Tazio, built on the same enterprise recruitment technology trusted by leading employers since 2010. Meet the team behind smarter, fairer hiring.',
-  },
-  pricingPage: {
-    pageTitle: 'Pricing — flexible plans for every team',
-    metaDescription:
-      "Four plans for every team size, from one-off Starter campaigns through to high-volume Scale recruitment. Transparent pricing with no long-term contract required.",
-  },
-  contactPage: {
-    pageTitle: 'Contact us',
-    metaDescription:
-      'Get in touch with the Vero Assess team. Talk to us about how science-backed assessments can transform your hiring — by phone, email, or contact form.',
-  },
-  howItWorksPage: {
-    pageTitle: 'How it works — from setup to first hire',
-    metaDescription:
-      "See how Vero Assess fits into your hiring process. Seven simple steps from sign-up to your first hire, with a candidate experience built around fairness.",
+      'Learn about the team behind Vero Assess and our commitment to making recruitment fairer, faster and more effective through science-backed assessments.',
   },
   sciencePage: {
-    pageTitle: 'The science behind Vero Assess',
+    pageTitle: 'The Science Behind Vero Assess | Validated Values and Traits',
     metaDescription:
-      'Four perspectives, sixteen dimensions, scientifically-validated assessments built to predict role-specific potential. The thinking behind Vero Assess.',
+      'Discover the academic research and psychometric principles that power our assessments, ensuring every test is reliable, fair and predictive of success.',
+  },
+  howItWorksPage: {
+    pageTitle: 'How Vero Assess Works | Streamline Your Hiring Process',
+    metaDescription:
+      'From rapid setup to detailed candidate results, see how easy it is to integrate role-specific assessments into your existing recruitment workflow.',
+  },
+  pricingPage: {
+    pageTitle: 'Flexible Pricing Plans for Teams | Vero Assess',
+    metaDescription:
+      'Choose a pricing plan to match your hiring needs. From Starter to Scale, find a package that fits your required roles and candidate volumes.',
   },
   compliancePage: {
-    pageTitle: 'Compliance — safe, secure, accessible',
+    pageTitle: 'Enterprise-Grade Security & ISO27001 Compliance | Vero Assess',
     metaDescription:
-      'ISO 27001, ISO 9001, Cyber Essentials Plus, and WCAG 2.2. The regulatory and accessibility frameworks Vero Assess is built on.',
+      'Learn about our commitment to data security and accessibility, including ISO27001 & ISO9001, Cyber Essentials Plus, and WCAG 2.2 standards.',
   },
-  assessmentsPage: {
-    pageTitle: 'Assessments built for the roles you actually hire',
+  contactPage: {
+    pageTitle: 'Get in Touch | Talk to us about Vero Assess',
     metaDescription:
-      'Browse our library of skills-based assessments designed around specific job families and roles. Find the right one for your hiring needs.',
+      'Have questions or ready to start? Contact the Vero Assess team if you need support to get our CV-less, bias-free assessments up and running.',
   },
 };
 
 /* ────────────────────────────────────────────────────────────
-   Per-category SEO copy. Keyed on jobCategory slug. Title ends
-   with " assessments" since the brand suffix gets added by the
-   global title template.
+   Per-category SEO copy — supplied by client. Keyed on jobCategory slug.
 ──────────────────────────────────────────────────────────── */
 const CATEGORY_SEO = {
   'administration': {
-    pageTitle: 'Administration assessments',
+    pageTitle: 'Administration Role Assessments | Hire Organised Talent',
     metaDescription:
-      'Hire dependable, organised administrators. Vero Assess for Administration measures the precision, focus and communication skills that make great support staff.',
-  },
-  'apprentices': {
-    pageTitle: 'Apprentice assessments',
-    metaDescription:
-      'Spot apprentice potential beyond the CV. Vero Assess measures coachability, motivation and aptitude for the trade — for fairer, smarter early-career hiring.',
-  },
-  'claims-and-collections': {
-    pageTitle: 'Claims and collections assessments',
-    metaDescription:
-      'Hire claims and collections agents who keep their head under pressure. Vero Assess tests the integrity, resilience and customer focus this work demands.',
-  },
-  'field-service-and-technicians': {
-    pageTitle: 'Field service and technicians assessments',
-    metaDescription:
-      'Hire field engineers and technicians who can fix the job AND handle the customer. Vero Assess measures practical judgement, problem-solving and service mindset.',
-  },
-  'graduates': {
-    pageTitle: 'Graduate assessments',
-    metaDescription:
-      'Identify high-potential graduates before they apply elsewhere. Vero Assess measures the values and capabilities that predict success in early-career roles.',
-  },
-  'health-and-social-care': {
-    pageTitle: 'Health and social care assessments',
-    metaDescription:
-      'Hire compassionate, resilient care staff. Vero Assess for Health and Social Care measures the empathy, emotional resilience and reliability the sector needs.',
-  },
-  'interns': {
-    pageTitle: 'Internship assessments',
-    metaDescription:
-      'Build a stronger talent pipeline through smarter intern hiring. Vero Assess measures aptitude, drive and team-fit so your interns become tomorrow\'s graduates.',
-  },
-  'operations-and-logistics': {
-    pageTitle: 'Operations and logistics assessments',
-    metaDescription:
-      'Hire process-led, precise operators. Vero Assess for Operations and Logistics measures the planning, attention-to-detail and reliability that keep work flowing.',
+      'Identify dependable, organised administration talent with specialised assessments designed to test attention to detail and efficiency.',
   },
   'retail-and-hospitality': {
-    pageTitle: 'Retail and hospitality assessments',
+    pageTitle: 'Retail & Hospitality Assessments | Hire Customer-Focused Talent',
     metaDescription:
-      'Hire customer-first retail and hospitality staff who solve problems on the floor. Vero Assess measures service mindset, energy and adaptability under pressure.',
+      'Streamline your retail hiring with assessments built for speed and accuracy. Identify reliable, customer-focused staff to strengthen your teams.',
   },
   'sales': {
-    pageTitle: 'Sales assessments',
+    pageTitle: 'Sales Role Assessments | Hire High-Performing Sales Talent',
     metaDescription:
-      "Hire commercially-minded salespeople who actually close. Vero Assess for Sales measures resilience, drive and the values that separate great sellers from average.",
+      'Use situational judgement and aptitude tests to identify resilient, goal-oriented sales professionals who can drive results for your business.',
+  },
+  'health-and-social-care': {
+    pageTitle: 'Health & Social Care Assessments | Identify Compassionate Talent',
+    metaDescription:
+      'Find candidates with the values and dependability to thrive in a health & social care role, with our specialised, bias-free assessments.',
+  },
+  'operations-and-logistics': {
+    pageTitle: 'Operations & Logistics Assessments | Reliable Staff Hiring',
+    metaDescription:
+      'Ensure operational reliability by assessing for aptitude, judgement and dependability as you build your warehouse and logistics team.',
+  },
+  'apprentices': {
+    pageTitle: 'Apprentice Assessments | Identify Talent Ready for a Challenge',
+    metaDescription:
+      'Discover high-potential apprentices with assessments designed to measure core aptitudes and the willingness to learn, regardless of previous experience.',
+  },
+  'graduates': {
+    pageTitle: 'Graduate Role Assessments | Scale Your Early Careers Hiring',
+    metaDescription:
+      'Assess large graduate pools efficiently with science-backed tests that identify future stars based on cognitive ability and cultural alignment.',
+  },
+  'interns': {
+    pageTitle: 'Intern Assessments | Objective Screening for Growth Potential',
+    metaDescription:
+      'Make informed decisions on intern placements using assessments that evaluate foundational skills, core values and suitability for your organisation.',
+  },
+  'claims-and-collections': {
+    pageTitle: 'Claims & Collections Assessments | Identify Integrity & Resilience',
+    metaDescription:
+      'Find candidates who maintain integrity and stay calm under pressure with assessments tailored for the claims and collections sector.',
+  },
+  'field-service-and-technicians': {
+    pageTitle: 'Field Service & Technician Assessments | Recruit Reliable Talent',
+    metaDescription:
+      'Identify dependable field service professionals and technicians who can work independently and provide a high-quality on-site service to your customers.',
   },
 };
 
+async function setTitleTemplatePassThrough() {
+  console.log('— siteSettings.titleTemplate → "%s" (pass-through) —');
+  const settings = await client.fetch(`*[_type == "siteSettings"][0]{ _id }`);
+  if (!settings?._id) {
+    console.log('  No siteSettings doc found — skipping template update.');
+    return;
+  }
+  await client.patch(settings._id).set({ titleTemplate: '%s' }).commit();
+  console.log(`  ${settings._id} updated`);
+}
+
 async function populateSingletonPages() {
-  console.log('— Singleton pages —');
+  console.log('\n— Singleton pages —');
   for (const [pageId, seo] of Object.entries(PAGE_SEO)) {
     const seoId = `${pageId}.seo`;
     await client
@@ -172,6 +177,7 @@ async function populateCategories() {
 }
 
 async function main() {
+  await setTitleTemplatePassThrough();
   await populateSingletonPages();
   const cats = await populateCategories();
   console.log(`\nDone. ${Object.keys(PAGE_SEO).length} pages + ${cats} categories.`);
