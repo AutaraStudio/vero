@@ -1,4 +1,4 @@
-import { StructureBuilder } from 'sanity/structure'
+import type { StructureBuilder } from 'sanity/structure'
 import {
   HomeIcon,
   TagIcon,
@@ -13,17 +13,19 @@ import {
   CheckmarkCircleIcon,
   DocumentsIcon,
   PackageIcon,
+  EditIcon,
 } from '@sanity/icons'
+import type { ComponentType } from 'react'
 
 /**
  * Custom Studio desk structure.
  *
  * Designed for non-technical content editors:
  * - Singletons grouped under "Pages" so the top level isn't a long list
- * - Repeating content (categories, roles, pricing tiers) grouped under
- *   "Content library"
- * - Site Settings sit at the bottom under "Settings" — rarely touched
- *   global config separated from day-to-day editing
+ * - Each page expands into "Content" + "SEO" sub-items so SEO is its
+ *   own focused area in the sidebar (separate from the section editing)
+ * - Repeating content (categories, roles, pricing tiers) under "Content library"
+ * - Site Settings sit at the bottom under "Settings"
  * - Icons everywhere for visual scanning
  */
 export const structure = (S: StructureBuilder) =>
@@ -32,9 +34,10 @@ export const structure = (S: StructureBuilder) =>
     .items([
 
       /* ────────────────────────────────────────────────────────
-         PAGES — singletons. These are the marketing pages of the
-         site. Each has a fixed structure; clients edit content
-         within the existing sections.
+         PAGES — singletons. Each page expands to two children:
+         "Content" (the section editing) and "SEO" (search engine
+         + social sharing fields). Both open the same underlying
+         document; the user picks which area they want to focus on.
       ──────────────────────────────────────────────────────── */
       S.listItem()
         .title('Pages')
@@ -43,78 +46,14 @@ export const structure = (S: StructureBuilder) =>
           S.list()
             .title('Pages')
             .items([
-              S.listItem()
-                .title('Home page')
-                .icon(HomeIcon)
-                .child(
-                  S.document()
-                    .schemaType('homePage')
-                    .documentId('homePage')
-                    .title('Home page')
-                ),
-              S.listItem()
-                .title('Pricing page')
-                .icon(TagIcon)
-                .child(
-                  S.document()
-                    .schemaType('pricingPage')
-                    .documentId('pricingPage')
-                    .title('Pricing page')
-                ),
-              S.listItem()
-                .title('Assessments overview')
-                .icon(SearchIcon)
-                .child(
-                  S.document()
-                    .schemaType('assessmentsPage')
-                    .documentId('assessmentsPage')
-                    .title('Assessments overview')
-                ),
-              S.listItem()
-                .title('How it works')
-                .icon(PlayIcon)
-                .child(
-                  S.document()
-                    .schemaType('howItWorksPage')
-                    .documentId('howItWorksPage')
-                    .title('How it works')
-                ),
-              S.listItem()
-                .title('About us')
-                .icon(InfoOutlineIcon)
-                .child(
-                  S.document()
-                    .schemaType('aboutPage')
-                    .documentId('aboutPage')
-                    .title('About us')
-                ),
-              S.listItem()
-                .title('Contact')
-                .icon(EnvelopeIcon)
-                .child(
-                  S.document()
-                    .schemaType('contactPage')
-                    .documentId('contactPage')
-                    .title('Contact')
-                ),
-              S.listItem()
-                .title('The science')
-                .icon(SparklesIcon)
-                .child(
-                  S.document()
-                    .schemaType('sciencePage')
-                    .documentId('sciencePage')
-                    .title('The science')
-                ),
-              S.listItem()
-                .title('Compliance')
-                .icon(CheckmarkCircleIcon)
-                .child(
-                  S.document()
-                    .schemaType('compliancePage')
-                    .documentId('compliancePage')
-                    .title('Compliance')
-                ),
+              pageWithContentAndSeo(S, 'homePage',         'Home page',           HomeIcon),
+              pageWithContentAndSeo(S, 'pricingPage',      'Pricing page',        TagIcon),
+              pageWithContentAndSeo(S, 'assessmentsPage',  'Assessments overview', SearchIcon),
+              pageWithContentAndSeo(S, 'howItWorksPage',   'How it works',        PlayIcon),
+              pageWithContentAndSeo(S, 'aboutPage',        'About us',            InfoOutlineIcon),
+              pageWithContentAndSeo(S, 'contactPage',      'Contact',             EnvelopeIcon),
+              pageWithContentAndSeo(S, 'sciencePage',      'The science',         SparklesIcon),
+              pageWithContentAndSeo(S, 'compliancePage',   'Compliance',          CheckmarkCircleIcon),
             ])
         ),
 
@@ -189,8 +128,7 @@ export const structure = (S: StructureBuilder) =>
       S.divider(),
 
       /* ────────────────────────────────────────────────────────
-         SETTINGS — global config that rarely changes. Lives at
-         the bottom so day-to-day editing stays in Pages / Content.
+         SETTINGS — global config that rarely changes.
       ──────────────────────────────────────────────────────── */
       S.listItem()
         .title('Site settings')
@@ -202,3 +140,48 @@ export const structure = (S: StructureBuilder) =>
             .title('Site settings')
         ),
     ])
+
+/**
+ * Build a sidebar item for a singleton page that expands into two children:
+ * - "Content" — the document with the Section 1 → Section N tabs visible
+ * - "SEO"     — the same document; the editor clicks the SEO tab at the top
+ *
+ * Both navigate to the same underlying document. The visual hierarchy in
+ * the sidebar makes it obvious that SEO is a separate concern from the
+ * section content. The document's group tabs (rendered automatically by
+ * Sanity above the form) handle the actual field filtering.
+ */
+function pageWithContentAndSeo(
+  S: StructureBuilder,
+  schemaType: string,
+  title: string,
+  icon: ComponentType,
+) {
+  return S.listItem()
+    .title(title)
+    .icon(icon)
+    .child(
+      S.list()
+        .title(title)
+        .items([
+          S.listItem()
+            .title('Content')
+            .icon(EditIcon)
+            .child(
+              S.document()
+                .schemaType(schemaType)
+                .documentId(schemaType)
+                .title(`${title} — Content`)
+            ),
+          S.listItem()
+            .title('SEO')
+            .icon(SearchIcon)
+            .child(
+              S.document()
+                .schemaType(schemaType)
+                .documentId(schemaType)
+                .title(`${title} — SEO`)
+            ),
+        ])
+    )
+}
