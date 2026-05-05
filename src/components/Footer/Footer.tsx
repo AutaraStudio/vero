@@ -179,7 +179,7 @@ export default async function Footer() {
 
         {/* ── Contact strip: Phone / Email / Address ─────────── */}
         <div className="footer__contact">
-          <a href="tel:+441234567890" className="footer__contact-item">
+          <a href="tel:+442922331888" className="footer__contact-item">
             <span className="footer__contact-icon" aria-hidden="true">
               <svg viewBox="0 0 24 24" fill="none">
                 <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.8 12.4 19.79 19.79 0 0 1 1.73 3.8 2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.69a16 16 0 0 0 6.29 6.29l1.06-1.06a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -187,7 +187,7 @@ export default async function Footer() {
             </span>
             <div className="footer__contact-text">
               <span className="footer__contact-label text-label--md color--tertiary">Phone</span>
-              <span className="color--primary font--medium">+44 (0)1234 567890</span>
+              <span className="color--primary font--medium">+44 (0)2922 331 888</span>
             </div>
           </a>
 
