@@ -18,9 +18,10 @@ export interface MediaBlockData {
   imageAlt?: string | null;
   videoUrl?: string | null;
   /** How the video should play. Default: 'modal'.
-   *  - 'modal'    — clickable thumbnail opens a portaled modal player
-   *  - 'autoplay' — plays inline, muted, looping (background-video style) */
-  videoPlayback?: 'modal' | 'autoplay' | null;
+   *  - 'modal'              — static thumbnail with play button → modal
+   *  - 'modal-with-preview' — autoplaying muted-loop video as preview, play button overlay → modal with sound
+   *  - 'autoplay'           — autoplaying muted-loop, no modal, no click (background-video style) */
+  videoPlayback?: 'modal' | 'modal-with-preview' | 'autoplay' | null;
   videoThumbnailUrl?: string | null;
   videoThumbnailAlt?: string | null;
 }
@@ -142,11 +143,12 @@ export default function MediaBlock({
   /* The editor's chosen mode — independent of whether all the underlying
      fields have been uploaded yet. Lets us render a video preview slot
      (with cover) even before the videoUrl has been pasted in. */
-  const isVideoMode    = media?.type === 'video';
-  const hasVideoUrl    = !!media?.videoUrl;
-  const playbackMode   = media?.videoPlayback ?? 'modal';
-  const isAutoplayMode = isVideoMode && playbackMode === 'autoplay';
-  const thumbnailUrl   = isVideoMode ? media?.videoThumbnailUrl : null;
+  const isVideoMode      = media?.type === 'video';
+  const hasVideoUrl      = !!media?.videoUrl;
+  const playbackMode     = media?.videoPlayback ?? 'modal';
+  const isAutoplayMode   = isVideoMode && playbackMode === 'autoplay';
+  const isModalWithPrev  = isVideoMode && playbackMode === 'modal-with-preview';
+  const thumbnailUrl     = isVideoMode ? media?.videoThumbnailUrl : null;
   const imageUrl       = media?.type === 'image' || !media?.type ? media?.imageUrl : null;
   const altText        = isVideoMode
     ? media?.videoThumbnailAlt ?? ''
@@ -197,6 +199,81 @@ export default function MediaBlock({
              autoplay. */
         />
       </div>
+    );
+  }
+
+  /* ── Modal-with-autoplay-preview mode ──
+     Looping muted preview plays in the slot. Click anywhere on the
+     preview opens the full modal player with sound. */
+  if (isModalWithPrev && hasVideoUrl) {
+    return (
+      <>
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className={`media-block media-block--video media-block--preview ${className}`.trim()}
+          style={wrapperStyle}
+          aria-label="Play video with sound"
+        >
+          <video
+            className="media-block__autoplay-video"
+            src={media!.videoUrl!}
+            poster={thumbnailUrl ?? undefined}
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+            aria-hidden="true"
+          />
+          <span className="media-block__play" aria-hidden="true">
+            <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">
+              <path d="M2.2 2.863C2.2 1.612 3.572.845 4.638 1.5l8.347 5.137c1.016.625 1.016 2.1 0 2.725L4.638 14.5c-1.066.656-2.438-.11-2.438-1.363V2.863Z" />
+            </svg>
+          </span>
+        </button>
+
+        {mounted && open && createPortal(
+          <div
+            ref={overlayRef}
+            className="media-block__overlay"
+            onClick={close}
+            role="dialog"
+            aria-modal="true"
+            aria-label="Video player"
+          >
+            <div
+              ref={modalRef}
+              className="media-block__modal"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                type="button"
+                onClick={close}
+                className="media-block__close"
+                aria-label="Close video"
+              >
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="M6 6l12 12M6 18L18 6"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </button>
+              <video
+                ref={videoRef}
+                className="media-block__video"
+                controls
+                playsInline
+                preload="none"
+              />
+            </div>
+          </div>,
+          document.body,
+        )}
+      </>
     );
   }
 

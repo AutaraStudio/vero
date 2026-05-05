@@ -56,12 +56,15 @@ export const mediaBlock = defineType({
       title: 'How should the video play?',
       type: 'string',
       description:
-        '"Popup modal" — visitor clicks a play button to open the video in an overlay. ' +
-        '"Autoplay (muted, loop)" — video plays silently on loop in place, like a background video. No click required.',
+        'Three behaviours: ' +
+        '"Popup with image preview" — static cover image + play button, click opens modal. ' +
+        '"Popup with looping video preview" — silent looping video preview + play button, click opens full modal with sound. ' +
+        '"Autoplay only" — silent looping video plays in place, no popup, no click.',
       options: {
         list: [
-          { title: 'Popup modal — click to play with sound',     value: 'modal' },
-          { title: 'Autoplay (muted, looping) — like a background video', value: 'autoplay' },
+          { title: 'Popup with image preview — click to play with sound',         value: 'modal' },
+          { title: 'Popup with looping video preview — click to play with sound', value: 'modal-with-preview' },
+          { title: 'Autoplay only (muted, looping) — no popup, no click',         value: 'autoplay' },
         ],
         layout: 'radio',
       },
