@@ -16,7 +16,11 @@ interface Props {
 }
 
 function tierHref(tier: PricingTier): string {
-  return tier.ctaType === 'contact' ? '/contact' : `/get-started?tier=${tier.slug}`;
+  if (tier.ctaType === 'contact') return '/contact';
+  /* Defensive: if slug is somehow missing from Sanity, route to the bare
+     get-started page rather than rendering /get-started?tier=undefined,
+     which previously could send a click home if the URL parsed oddly. */
+  return tier.slug ? `/get-started?tier=${tier.slug}` : '/get-started';
 }
 
 /**

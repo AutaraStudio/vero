@@ -53,7 +53,8 @@ function buildRows(tiers: PricingTier[]): FeatureRow[] {
 }
 
 function tierHref(tier: PricingTier): string {
-  return tier.ctaType === 'contact' ? '/contact' : `/get-started?tier=${tier.slug}`;
+  if (tier.ctaType === 'contact') return '/contact';
+  return tier.slug ? `/get-started?tier=${tier.slug}` : '/get-started';
 }
 
 export default function ComparisonTable({

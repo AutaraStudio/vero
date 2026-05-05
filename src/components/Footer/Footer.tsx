@@ -11,7 +11,7 @@ const linkColumns = [
     title: 'Product',
     links: [
       { label: 'Pricing', href: '/pricing' },
-      { label: 'How it works', href: '/how-it-works' },
+      { label: 'How it Works', href: '/how-it-works' },
       { label: 'Get started', href: '/get-started' },
     ],
   },
@@ -25,7 +25,7 @@ const linkColumns = [
   {
     title: 'Resources',
     links: [
-      { label: 'The science', href: '/resources/science' },
+      { label: 'The Science', href: '/resources/science' },
       { label: 'Compliance', href: '/resources/compliance' },
     ],
   },
@@ -55,10 +55,16 @@ const assessmentGroups: { key: AssessmentGroup; title: string }[] = [
   { key: 'specialist',   title: 'Specialist' },
 ];
 
+/* Policy links — point at Tazio-hosted documents per client direction.
+   All open in a new tab since they're external to this site. */
 const legalLinks = [
-  { label: 'Privacy', href: '/legal/privacy' },
-  { label: 'Terms', href: '/legal/terms' },
-  { label: 'Cookies', href: '/legal/cookies' },
+  { label: 'Privacy Policy', href: 'https://www.tazio.io/privacy-policy' },
+  {
+    label: 'Modern Slavery Statement',
+    href: 'https://cdn.prod.website-files.com/66bb33f5cfec7c80b0da6fed/6925b1b4a26e3c0faa0ca494_Modern%20Slavery%20and%20Human%20Trafficking%20Statement%202025-2026.pdf',
+  },
+  { label: 'Status', href: 'https://status.tazio.network/' },
+  { label: 'Security', href: 'https://www.tazio.io/security' },
 ];
 
 const socialLinks = [
@@ -207,23 +213,16 @@ export default async function Footer() {
             </span>
             <div className="footer__contact-text">
               <span className="footer__contact-label text-label--md color--tertiary">Address</span>
-              <span className="color--primary font--medium">London, United Kingdom</span>
+              <span className="color--primary font--medium">Cardiff, Wales, UK</span>
             </div>
           </div>
         </div>
 
-        {/* ── Centered brand close ────────────────────────────── */}
+        {/* ── Centered brand close ──────────────────────────────
+             White Vero Assess logo removed per client direction —
+             the wordmark already appears in the top nav so the close
+             block now leads with the social row + copyright meta. */}
         <div className="footer__close">
-          <Link href="/" aria-label="Vero Assess home" className="footer__close-logo">
-            <Image
-              src="/logo.svg"
-              alt="Vero Assess"
-              width={160}
-              height={46}
-              className="footer__logo-img"
-            />
-          </Link>
-
           <ul className="footer__social" aria-label="Social media">
             {socialLinks.map((s) => (
               <li key={s.name}>
@@ -242,16 +241,27 @@ export default async function Footer() {
             ))}
           </ul>
 
+          {/* Business info — full registered-company line per client copy.
+               year stays inline since this updates with each render. */}
+          <p className="footer__close-business text-body--xs color--tertiary">
+            Vero is a service offered by Tazio. Tazio is a service from Tazio
+            Online Media Limited &mdash; Registered in England &amp; Wales No:
+            03392879. Registered Office: Beechwood House, Greenwood Close,
+            Cardiff Gate, Pontprennau, Cardiff CF23 8RD.
+          </p>
+
           <p className="footer__close-meta text-body--xs color--tertiary">
-            <span>&copy; {year} Tazio Digital Ltd.</span>
+            <span>&copy; {year} Tazio Online Media Limited.</span>
             {legalLinks.map((l) => (
-              <Link
+              <a
                 key={l.href}
                 href={l.href}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="footer__close-legal-link"
               >
                 {l.label}
-              </Link>
+              </a>
             ))}
           </p>
 

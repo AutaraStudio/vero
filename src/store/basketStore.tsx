@@ -145,6 +145,11 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
         ...state,
         selectedRoles: [...state.selectedRoles, action.payload],
         nudgeShown: false,
+        /* Clear any prior tier override (URL ?tier= or manual click) so the
+           plan auto-tracks the actual role count. Otherwise a buyer who lands
+           from /pricing?tier=scale and then picks 3 roles would stay on Scale
+           — the client wants the smallest plan that fits the basket. */
+        tierOverride: null,
       };
     }
     case 'REMOVE_ROLE':
@@ -152,6 +157,7 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
         ...state,
         selectedRoles: state.selectedRoles.filter((r) => r.roleId !== action.payload.roleId),
         nudgeShown: false,
+        tierOverride: null,
       };
     case 'SET_TIER_OVERRIDE':
       return { ...state, tierOverride: action.payload };

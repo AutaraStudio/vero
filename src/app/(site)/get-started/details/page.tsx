@@ -493,11 +493,16 @@ export default function DetailsPage() {
         if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
         return undefined;
       case 'bespokeUrl':
-        if (isStarter || !value) return undefined;
+        if (isStarter) return undefined;
+        if (!value.trim()) return 'Portal URL is required';
         return SLUG_RE.test(value) ? undefined : 'Only lowercase letters, numbers, and hyphens';
       case 'brandColour1':
+        if (isStarter) return undefined;
+        if (!value.trim()) return 'Brand colour 1 is required';
+        return HEX_RE.test(value) ? undefined : 'Enter a valid hex colour (e.g. #ff6600)';
       case 'brandColour2':
-        if (isStarter || !value) return undefined;
+        if (isStarter) return undefined;
+        if (!value.trim()) return 'Brand colour 2 is required';
         return HEX_RE.test(value) ? undefined : 'Enter a valid hex colour (e.g. #ff6600)';
       default:                return undefined;
     }
@@ -534,14 +539,50 @@ export default function DetailsPage() {
     setErrors((e) => ({ ...e, [field]: msg }));
   };
 
+  /* Cross-field requirements that don't fit the per-field validator —
+     used both to gate the submit button and surface a single page-level
+     error on submit. Per client direction, every question is compulsory. */
+  const needsBranding = !isStarter;
+  const needsDates = recommendedTier === 'starter' || recommendedTier === 'essential';
+
+  const allDatesFilled = !needsDates
+    ? true
+    : selectedRoles.every((r) => {
+        const d = form.roleDates[r.roleId];
+        return !!(d?.openDate && d?.closeDate);
+      });
+
+  const usersFilled = isStarter
+    ? form.usersToAdd.trim().length > 0
+    : userEmails.length > 0;
+
+  const logoFilled = !needsBranding ? true : !!form.logoFile;
+
   const requiredFilled = !!(
     form.firstName.trim() &&
     form.lastName.trim() &&
     form.email.trim() &&
     form.company.trim() &&
     form.jobTitle.trim() &&
-    form.phone.trim()
+    form.phone.trim() &&
+    (form.keyContactSameAsMe ||
+      (form.keyContactName.trim() && form.keyContactEmail.trim())) &&
+    usersFilled &&
+    (!needsBranding ||
+      (logoFilled && form.bespokeUrl.trim() && form.brandColour1.trim() && form.brandColour2.trim())) &&
+    allDatesFilled
   );
+
+  /* Page-level error shown above the submit button when blocked. */
+  const blockerMessage = !requiredFilled
+    ? !usersFilled
+      ? 'Please add at least one user email address.'
+      : !logoFilled
+      ? 'Please upload your portal logo.'
+      : !allDatesFilled
+      ? 'Please set open and close dates for every role.'
+      : 'Please complete all required fields above.'
+    : '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1249,6 +1290,11 @@ export default function DetailsPage() {
 
             {/* Actions */}
             <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
+              {submitAttempted && blockerMessage && (
+                <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
+                  {blockerMessage}
+                </p>
+              )}
               <Button variant="primary" size="md" type="submit" disabled={!requiredFilled}>
                 Continue to contract →
               </Button>

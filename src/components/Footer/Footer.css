@@ -164,8 +164,24 @@
   letter-spacing: var(--font--label-ls);
 }
 
+/* Footer text dialled down a notch per client feedback — the previous
+   sizes felt too punchy at the bottom of the page. */
 .footer__contact-text > span:last-child {
-  font-size: var(--font--body-lg);
+  font-size: var(--font--body);
+}
+
+.footer__nav-title {
+  font-size: var(--font--label-sm);
+}
+
+.footer__nav-link {
+  font-size: 0.8125rem;
+}
+
+.footer__close-business {
+  max-width: 56ch;
+  text-align: center;
+  line-height: 1.6;
 }
 
 @media (max-width: 768px) {

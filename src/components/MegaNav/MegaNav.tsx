@@ -111,11 +111,15 @@ export default function MegaNav({
                 <li className="mega-nav__bar-action">
                   <NavBasket categories={categories} />
                 </li>
+                {/* Log-in button hidden until there's a destination for it.
+                    Kept in source rather than deleted so it's a one-line
+                    revert when the customer portal goes live.
                 <li className="mega-nav__bar-action">
                   <Button variant="secondary" size="sm" href="https://app.tazio.io" external>
                     Log in
                   </Button>
                 </li>
+                */}
                 <li className="mega-nav__bar-action">
                   <Button variant="primary" size="sm" href={navCtaHref}>
                     {navCtaLabel}
@@ -193,9 +197,9 @@ export default function MegaNav({
               <div data-menu-fade="" className="mega-nav__panel-col">
                 <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Resources</span>
                 <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/how-it-works" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">How it works</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our assessment process</span></Link></li>
+                  <li data-menu-fade=""><Link href="/how-it-works" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">How it Works</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our assessment process</span></Link></li>
                   <li data-menu-fade=""><Link href="/pricing" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Pricing</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Plans for every team size</span></Link></li>
-                  <li data-menu-fade=""><Link href="/resources/science" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">The science</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Research-backed methodology</span></Link></li>
+                  <li data-menu-fade=""><Link href="/resources/science" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">The Science</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Research-backed methodology</span></Link></li>
                   <li data-menu-fade=""><Link href="/resources/compliance" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Compliance</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">ISO, WCAG, Cyber Essentials</span></Link></li>
                 </ul>
               </div>
