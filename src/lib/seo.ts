@@ -26,6 +26,8 @@
    ============================================================ */
 
 import type { Metadata } from 'next';
+import { client } from '@/sanity/lib/client';
+import { PAGE_SEO_QUERY } from '@/sanity/lib/queries';
 
 export interface PageSeo {
   pageTitle?: string | null;
@@ -148,6 +150,22 @@ export function generateSiteMetadata({
   };
 
   return metadata;
+}
+
+/**
+ * Fetch the SEO block for a singleton page from its companion `pageSeo`
+ * document. The doc ID is derived from the page schema type:
+ *   homePage → homePage.seo
+ *   aboutPage → aboutPage.seo
+ *   ... etc.
+ *
+ * Returns undefined when no SEO doc exists yet (in which case the
+ * generateMetadata fallback chain — page heading / siteSettings — kicks in).
+ */
+export async function fetchPageSeo(schemaType: string): Promise<PageSeo | undefined> {
+  const seoId = `${schemaType}.seo`;
+  const result = await client.fetch<{ seo?: PageSeo } | null>(PAGE_SEO_QUERY, { seoId });
+  return result?.seo ?? undefined;
 }
 
 /**

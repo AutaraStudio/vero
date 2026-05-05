@@ -23,7 +23,6 @@ export const homePage = defineType({
   type: 'document',
   icon: HomeIcon,
   groups: [
-    { name: 'seo',         title: 'SEO',                    icon: SearchIcon },
     { name: 'hero',        title: 'Section 1 — Hero',       icon: StarIcon, default: true },
     { name: 'introBlock',  title: 'Section 2 — Intro + video', icon: PlayIcon },
     { name: 'usps',        title: 'Section 3 — Feature highlights', icon: HeartFilledIcon },
@@ -32,17 +31,6 @@ export const homePage = defineType({
     { name: 'closingCta',  title: 'Section 6 — Closing statement', icon: CommentIcon },
   ],
   fields: [
-    /* ── SEO ───────────────────────────────────────────── */
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Controls the browser tab title, search-result snippet, and link previews ' +
-        'when this page is shared on social. Anything left blank inherits from Site Settings.',
-    }),
-
     /* ════════════════════════════════════════════════════════
        SECTION 1 — HERO
     ════════════════════════════════════════════════════════ */

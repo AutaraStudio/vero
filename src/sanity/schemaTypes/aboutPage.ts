@@ -15,7 +15,6 @@ export const aboutPage = defineType({
   type: 'document',
   icon: InfoOutlineIcon,
   groups: [
-    { name: 'seo',                  title: 'SEO',                              icon: SearchIcon },
     { name: 'hero',                 title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
     { name: 'tazioEvolution',       title: 'Section 2 — Tazio platform story', icon: RocketIcon },
     { name: 'candidateExperiences', title: 'Section 3 — Candidate experience', icon: HeartFilledIcon },
@@ -23,17 +22,6 @@ export const aboutPage = defineType({
     { name: 'team',                 title: 'Section 5 — Team grid',            icon: UsersIcon },
   ],
   fields: [
-    /* ── SEO ── */
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings.',
-    }),
-
     /* ════════════════════════════════════════════════════════
        SECTION 1 — HERO
     ════════════════════════════════════════════════════════ */

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { PRICING_PAGE_QUERY, PRICING_TIERS_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
-import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
+import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred from '@/components/HeroCentred/HeroCentred';
 import TierCardsSection from './TierCardsSection';
 import ComparisonTable from './ComparisonTable';
@@ -10,12 +10,13 @@ import FAQSection from '@/components/FAQSection';
 import './pricing.css';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [page, settings] = await Promise.all([
-    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroIntro?: string } | null>(PRICING_PAGE_QUERY),
+  const [page, settings, seo] = await Promise.all([
+    client.fetch<{ heroHeadline?: string; heroIntro?: string } | null>(PRICING_PAGE_QUERY),
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+    fetchPageSeo('pricingPage'),
   ]);
   return generateSiteMetadata({
-    seo: page?.seo,
+    seo,
     settings,
     fallback: {
       title:       page?.heroHeadline ?? 'Pricing',

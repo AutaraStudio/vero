@@ -7,22 +7,9 @@ export const assessmentsPage = defineType({
   type: 'document',
   icon: SearchIcon,
   groups: [
-    { name: 'seo',  title: 'SEO',              icon: SearchIcon },
     { name: 'hero', title: 'Section 1 — Hero', icon: StarIcon, default: true },
   ],
   fields: [
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings. ' +
-        'Below this, the listing of Job Categories is generated automatically — ' +
-        'manage individual categories from the "Job categories" section in the sidebar.',
-    }),
-
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

@@ -143,13 +143,17 @@ export const structure = (S: StructureBuilder) =>
 
 /**
  * Build a sidebar item for a singleton page that expands into two children:
- * - "Content" — the document with the Section 1 → Section N tabs visible
- * - "SEO"     — the same document; the editor clicks the SEO tab at the top
  *
- * Both navigate to the same underlying document. The visual hierarchy in
- * the sidebar makes it obvious that SEO is a separate concern from the
- * section content. The document's group tabs (rendered automatically by
- * Sanity above the form) handle the actual field filtering.
+ * - "Content" — opens the page document (sections, hero, etc.). The SEO
+ *   field has been removed from this document so the form only shows
+ *   the section tabs.
+ *
+ * - "SEO"     — opens a SEPARATE `pageSeo` document with a deterministic
+ *   ID like `homePage.seo`. Its form contains only the SEO fields, so
+ *   the editor sees a clean focused view with no section tabs at all.
+ *
+ * generateMetadata on each page fetches both documents and merges the
+ * pageSeo into the SEO fallback chain.
  */
 function pageWithContentAndSeo(
   S: StructureBuilder,
@@ -157,6 +161,7 @@ function pageWithContentAndSeo(
   title: string,
   icon: ComponentType,
 ) {
+  const seoDocId = `${schemaType}.seo`;
   return S.listItem()
     .title(title)
     .icon(icon)
@@ -178,8 +183,8 @@ function pageWithContentAndSeo(
             .icon(SearchIcon)
             .child(
               S.document()
-                .schemaType(schemaType)
-                .documentId(schemaType)
+                .schemaType('pageSeo')
+                .documentId(seoDocId)
                 .title(`${title} — SEO`)
             ),
         ])

@@ -15,7 +15,6 @@ export const howItWorksPage = defineType({
   type: 'document',
   icon: PlayIcon,
   groups: [
-    { name: 'seo',                 title: 'SEO',                             icon: SearchIcon },
     { name: 'hero',                title: 'Section 1 — Hero',                icon: StarIcon, default: true },
     { name: 'gettingStarted',      title: 'Section 2 — Getting started',     icon: RocketIcon },
     { name: 'steps',               title: 'Section 3 — Process steps',       icon: ListIcon },
@@ -23,16 +22,6 @@ export const howItWorksPage = defineType({
     { name: 'benefits',            title: 'Section 5 — Benefits',            icon: CheckmarkIcon },
   ],
   fields: [
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings.',
-    }),
-
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

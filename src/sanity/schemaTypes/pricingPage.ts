@@ -14,23 +14,12 @@ export const pricingPage = defineType({
   type: 'document',
   icon: TagIcon,
   groups: [
-    { name: 'seo',     title: 'SEO',                            icon: SearchIcon },
     { name: 'hero',    title: 'Section 1 — Hero',               icon: StarIcon, default: true },
     { name: 'starter', title: 'Section 2 — Starter callout',    icon: InfoOutlineIcon },
     { name: 'bespoke', title: 'Section 3 — Bespoke CTA',        icon: PackageIcon },
     { name: 'faq',     title: 'Section 4 — FAQ',                icon: HelpCircleIcon },
   ],
   fields: [
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings.',
-    }),
-
     /* ── Hero ── */
     /* ════════════════════════════════════════════════════════
        SECTION 1 — HERO

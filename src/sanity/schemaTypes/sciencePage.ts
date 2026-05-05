@@ -15,7 +15,6 @@ export const sciencePage = defineType({
   type: 'document',
   icon: SparklesIcon,
   groups: [
-    { name: 'seo',        title: 'SEO',                              icon: SearchIcon },
     { name: 'hero',       title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
     { name: 'authentic',  title: 'Section 2 — Finding potential',    icon: HeartFilledIcon },
     { name: 'theory',     title: 'Section 3 — The theory + dimensions', icon: BookIcon },
@@ -23,16 +22,6 @@ export const sciencePage = defineType({
     { name: 'cta',        title: 'Section 5 — Closing CTA',          icon: CommentIcon },
   ],
   fields: [
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings.',
-    }),
-
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

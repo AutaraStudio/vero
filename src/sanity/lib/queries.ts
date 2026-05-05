@@ -3,7 +3,10 @@
    template literals are evaluated at module-load time and `const`
    references resolve in source order. */
 
-/* Per-page SEO block. Drop `${SEO_PROJECTION}` into any page query. */
+/* Per-page SEO block — historically projected from an inline `seo` field
+   on each page. Page singletons now store SEO in separate `pageSeo`
+   documents (one per page, deterministic IDs like `homePage.seo`).
+   The `jobCategory` collection still uses an inline `seo` field. */
 export const SEO_PROJECTION = `
   seo {
     pageTitle,
@@ -13,6 +16,19 @@ export const SEO_PROJECTION = `
     "ogImageUrl": ogImage.asset->url,
     "ogImageAlt": ogImage.alt,
     noIndex
+  }
+`
+
+/**
+ * Fetch the companion pageSeo document for a singleton page.
+ * Pass the page's _type (e.g. "homePage") and the function builds the
+ * predictable SEO doc ID and returns the projected SEO block.
+ *
+ * Used inside generateMetadata on each page route.
+ */
+export const PAGE_SEO_QUERY = `
+  *[_type == "pageSeo" && _id == $seoId][0] {
+    ${SEO_PROJECTION}
   }
 `
 
@@ -42,8 +58,7 @@ export function mediaProjection(fieldName: string): string {
 
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
-    ${SEO_PROJECTION},
-    heroBadgeLabel,
+        heroBadgeLabel,
     heroBadgeHref,
     heroTitle,
     heroIntro,
@@ -122,8 +137,7 @@ export const SITE_SETTINGS_QUERY = `
 
 export const PRICING_PAGE_QUERY = `
   *[_type == "pricingPage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroIntro,
     starterCallout,
     bespokeHeading,
@@ -141,8 +155,7 @@ export const PRICING_PAGE_QUERY = `
 
 export const ASSESSMENTS_PAGE_QUERY = `
   *[_type == "assessmentsPage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroIntro,
     heroCTALabel,
     heroCTAHref
@@ -151,8 +164,7 @@ export const ASSESSMENTS_PAGE_QUERY = `
 
 export const HOW_IT_WORKS_PAGE_QUERY = `
   *[_type == "howItWorksPage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroIntro,
     heroCTALabel,
     heroCTAHref,
@@ -192,8 +204,7 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
 
 export const ABOUT_PAGE_QUERY = `
   *[_type == "aboutPage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroIntro,
     ${mediaProjection('heroMedia')},
 
@@ -233,8 +244,7 @@ export const ABOUT_PAGE_QUERY = `
 
 export const SCIENCE_PAGE_QUERY = `
   *[_type == "sciencePage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroBody,
 
     authenticHeading,
@@ -279,8 +289,7 @@ export const SCIENCE_PAGE_QUERY = `
 
 export const COMPLIANCE_PAGE_QUERY = `
   *[_type == "compliancePage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroBody,
 
     securityHeading,
@@ -317,8 +326,7 @@ export const COMPLIANCE_PAGE_QUERY = `
 
 export const CONTACT_PAGE_QUERY = `
   *[_type == "contactPage"][0] {
-    ${SEO_PROJECTION},
-    heroHeadline,
+        heroHeadline,
     heroIntro,
     contactInstructions,
     phone,

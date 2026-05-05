@@ -15,7 +15,6 @@ export const compliancePage = defineType({
   type: 'document',
   icon: CheckmarkCircleIcon,
   groups: [
-    { name: 'seo',           title: 'SEO',                              icon: SearchIcon },
     { name: 'hero',          title: 'Section 1 — Hero',                 icon: StarIcon, default: true },
     { name: 'security',      title: 'Section 2 — Data security',        icon: LockIcon },
     { name: 'quality',       title: 'Section 3 — Quality assurance',    icon: CheckmarkIcon },
@@ -23,16 +22,6 @@ export const compliancePage = defineType({
     { name: 'accessibility', title: 'Section 5 — Accessibility',        icon: EyeOpenIcon },
   ],
   fields: [
-    defineField({
-      name: 'seo',
-      title: 'Search engine + social sharing',
-      type: 'seoFields',
-      group: 'seo',
-      description:
-        'Browser tab title, search-result snippet, and link previews on social. ' +
-        'Anything left blank inherits from Site Settings.',
-    }),
-
     /* ── Hero ── */
     defineField({
       name: 'heroHeadline',

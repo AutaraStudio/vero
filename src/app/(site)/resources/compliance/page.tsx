@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { COMPLIANCE_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
-import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
+import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import IntroBlock        from '@/components/IntroBlock';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
@@ -9,12 +9,13 @@ import SecuritySection   from './SecuritySection';
 import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const [page, settings] = await Promise.all([
-    client.fetch<{ seo?: PageSeo; heroHeadline?: string; heroBody?: string } | null>(COMPLIANCE_PAGE_QUERY),
+  const [page, settings, seo] = await Promise.all([
+    client.fetch<{ heroHeadline?: string; heroBody?: string } | null>(COMPLIANCE_PAGE_QUERY),
     client.fetch<SiteSeoSettings | null>(SITE_SETTINGS_QUERY),
+    fetchPageSeo('compliancePage'),
   ]);
   return generateSiteMetadata({
-    seo: page?.seo,
+    seo,
     settings,
     fallback: {
       title:       page?.heroHeadline ?? 'Compliance',
