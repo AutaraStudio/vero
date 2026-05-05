@@ -9,6 +9,20 @@ interface Props {
 }
 
 /**
+ * The markdown source-of-truth file (docs/client-manual.md) starts with
+ * its own H1 + TL;DR blockquote so it's self-contained when viewed on
+ * GitHub. The hosted page has its own polished hero header for those,
+ * so we strip them from the rendered body to avoid duplication.
+ */
+function stripLeadingTitle(md: string): string {
+  /* Drop everything from the start up to (but not including) the first
+     "## " heading — that includes the H1, TL;DR blockquote, and the
+     "Table of contents" header which is replaced by the sticky TOC aside. */
+  const idx = md.indexOf('\n## ');
+  return idx === -1 ? md : md.slice(idx + 1);
+}
+
+/**
  * Polished renderer for the client-manual markdown.
  *
  * - Uses react-markdown + remark-gfm (tables, task lists, etc.)
@@ -21,9 +35,13 @@ interface Props {
  *   simplified version we just let it render as a normal list.
  */
 export default function ManageGuide({ markdown }: Props) {
+  /* Render body without the source markdown's own H1 + TL;DR + ToC heading
+     (the hero above + sticky TOC aside replace those). */
+  const body = useMemo(() => stripLeadingTitle(markdown), [markdown]);
+
   /* Track which heading is currently in view so the right side TOC can
      highlight it. Built with IntersectionObserver client-side. */
-  const headings = useMemo(() => extractHeadings(markdown), [markdown]);
+  const headings = useMemo(() => extractHeadings(body), [body]);
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -73,11 +91,14 @@ export default function ManageGuide({ markdown }: Props) {
         </a>
       );
     },
+    /* Override pre + code separately. react-markdown emits <pre><code>…</code></pre>
+       for fenced blocks; we let the outer <pre> hold our styles and keep
+       <code> a passthrough inside it. Inline code (no parent <pre>) gets
+       its own pill styling. */
+    pre: ({ children }) => <pre className="manage__pre">{children}</pre>,
     code: ({ children, className }) => {
-      /* Block code (multi-line) gets className like 'language-foo';
-         inline code has none. */
-      const isBlock = !!className;
-      if (isBlock) return <pre className="manage__pre"><code>{children}</code></pre>;
+      const isBlock = !!className; // className like 'language-foo' for block code
+      if (isBlock) return <code className={className}>{children}</code>;
       return <code className="manage__code">{children}</code>;
     },
     table: ({ children }) => (
@@ -106,10 +127,26 @@ export default function ManageGuide({ markdown }: Props) {
 
   return (
     <main className="manage" data-theme="brand-purple">
+      {/* ── Hero header ─────────────────────────────────────── */}
+      <header className="manage__hero">
+        <div className="manage__hero-inner">
+          <span className="manage__eyebrow">
+            <span className="manage__eyebrow-dot" aria-hidden="true" />
+            Internal — not indexed
+          </span>
+          <h1 className="manage__hero-title">Content editor's manual</h1>
+          <p className="manage__hero-intro">
+            A friendly guide to editing the Vero Assess website. No coding required —
+            just text, images and the occasional video upload.
+          </p>
+        </div>
+      </header>
+
+      {/* ── Body + TOC ──────────────────────────────────────── */}
       <div className="manage__container">
         <article className="manage__article">
           <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-            {markdown}
+            {body}
           </ReactMarkdown>
         </article>
 
