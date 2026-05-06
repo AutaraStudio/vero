@@ -23,8 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           name="${SNAPSHOT_NAME:-Auto — $(date -u '+%Y-%m-%d %H:%M UTC')}"
-          response=$(curl -sS -w '\n%{http_code}' -X POST \
-            https://www.veroassess.com/api/backup \
+          response=$(curl -sS -L -w '\n%{http_code}' -X POST \
+            https://veroassess.com/api/backup \
             -H "Authorization: Bearer $BACKUP_CRON_SECRET" \
             -H 'Content-Type: application/json' \
             --data "$(jq -n --arg n "$name" '{name:$n}')")
