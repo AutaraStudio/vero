@@ -48,6 +48,14 @@ export const role = defineType({
       description: 'Lottie JSON animation file',
     }),
     defineField({
+      name: 'archived',
+      title: 'Archived',
+      type: 'boolean',
+      description:
+        'Hides this role from the public site and removes it from the HubSpot dropdown. Existing HubSpot records that already reference this role keep their data — the option just stops appearing in new selections. Use this instead of deleting.',
+      initialValue: false,
+    }),
+    defineField({
       name: 'hubspotLabel',
       title: 'HubSpot Label',
       type: 'string',
@@ -81,11 +89,13 @@ export const role = defineType({
       categorySlug: 'parentCategory.slug.current',
       slug: 'slug.current',
       media: 'parentCategory.heroImage',
+      archived: 'archived',
     },
-    prepare({ title, categoryName, categorySlug, slug, media }) {
-      const subtitle = categoryName
+    prepare({ title, categoryName, categorySlug, slug, media, archived }) {
+      const baseSubtitle = categoryName
         ? `${categoryName} · /assessments/${categorySlug}/${slug ?? '…'}`
         : 'No category assigned';
+      const subtitle = archived ? `(Archived) ${baseSubtitle}` : baseSubtitle;
       return {
         title: title ?? 'Untitled role',
         subtitle,
