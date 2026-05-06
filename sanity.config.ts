@@ -17,26 +17,22 @@ import PromoteAction from './src/sanity/actions/promoteAction'
 import {backupsTool} from './src/sanity/tools/backupsTool'
 
 /* ── Studio theme ─────────────────────────────────────────────
-   Brand the Sanity Studio with Vero's purple accent. buildLegacyTheme
-   maps a small set of tokens onto Sanity's full design system, which
-   is enough for high-impact branding without forking @sanity/ui.
-
-   Values come from the brand palette in src/app/globals.css so the
-   Studio chrome matches the live site rather than just looking
-   "themed". */
+   Light Studio with Vero purple as the brand accent. buildLegacyTheme
+   derives dark/light mode from the surface colours — keeping
+   component-bg + gray-base near white forces light mode throughout. */
 const veroStudioTheme = buildLegacyTheme({
-  '--black':              '#0a0a0d',
+  '--black':              '#1a1a20', // foreground / high-contrast text
   '--white':              '#ffffff',
-  '--gray-base':          '#1a1a20',
-  '--gray':               '#3a3a44',
+  '--gray-base':          '#f5f5f7', // dominant chrome surface (light)
+  '--gray':               '#9999a2', // mid-tone borders / muted text
 
-  '--component-bg':       '#16161a',
-  '--component-text-color':'#f5f5f7',
+  '--component-bg':         '#ffffff',
+  '--component-text-color': '#1a1a20',
 
-  '--brand-primary':      '#472d6a', // purple-500
-  '--focus-color':        '#472d6a',
+  '--brand-primary': '#472d6a', // purple-500
+  '--focus-color':   '#472d6a',
 
-  '--default-button-color':         '#3a3a44',
+  '--default-button-color':         '#e5e5ea',
   '--default-button-primary-color': '#472d6a',
   '--default-button-success-color': '#6fd08b',
   '--default-button-warning-color': '#fec601',
@@ -47,8 +43,8 @@ const veroStudioTheme = buildLegacyTheme({
   '--state-warning-color': '#fec601',
   '--state-danger-color':  '#f15f23',
 
-  '--main-navigation-color':           '#16161a',
-  '--main-navigation-color--inverted': '#ffffff',
+  '--main-navigation-color':           '#ffffff',
+  '--main-navigation-color--inverted': '#1a1a20',
 })
 
 export default defineConfig({
