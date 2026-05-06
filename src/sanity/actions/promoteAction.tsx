@@ -61,6 +61,17 @@ const PromoteAction: DocumentActionComponent = (
     }
   }, [id, onComplete])
 
+  /* Backups are operational metadata that lives in staging only —
+     they are never promoted to production. */
+  if (type === 'siteBackup') {
+    return {
+      label: 'Push to Live Site',
+      icon: RocketIcon,
+      disabled: true,
+      title: 'Backups stay in staging — they are not pushed live',
+    }
+  }
+
   /* Only surface this action in the staging dataset — promoting from
      production back to itself makes no sense. */
   if (activeDataset !== 'staging') {

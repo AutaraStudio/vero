@@ -15,6 +15,7 @@ import { seoFields } from './seoFields'
 import { mediaBlock } from './mediaBlock'
 import { pageSeo } from './pageSeo'
 import { legalPage } from './legalPage'
+import { siteBackup } from './siteBackup'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -39,5 +40,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     jobCategory,
     role,
     legalPage,
+    siteBackup,
   ],
 }
