@@ -19,7 +19,7 @@ const HUBSPOT_PROPERTY_URL =
   'https://api.hubapi.com/crm/v3/properties/companies/vero_assess_roles';
 
 const ROLES_SYNC_QUERY = `
-  *[_type == "role" && !archived] | order(name asc) {
+  *[_type == "role" && archived != true] | order(name asc) {
     _id,
     name,
     "slug": slug.current,
