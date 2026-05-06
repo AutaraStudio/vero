@@ -28,7 +28,8 @@
     "resend": "^6.10.0",
     "sanity": "^4.22.0",
     "stripe": "^22.0.1",
-    "styled-components": "^6.3.12"
+    "styled-components": "^6.3.12",
+    "vanilla-cookieconsent": "^3.1.0"
   },
   "devDependencies": {
     "@sanity/client": "^7.20.0",

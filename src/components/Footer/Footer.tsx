@@ -276,6 +276,15 @@ export default async function Footer() {
                 </Link>
               ),
             )}
+            {/* Opens the vanilla-cookieconsent preferences modal — the
+                library wires the click via the data-cc attribute. */}
+            <button
+              type="button"
+              data-cc="show-preferencesModal"
+              className="footer__close-legal-link"
+            >
+              Cookie preferences
+            </button>
           </p>
 
           <div className="footer__partner">
