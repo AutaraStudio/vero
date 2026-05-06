@@ -334,13 +334,13 @@ function BackupsToolView() {
         {confirmRestore && (
           <Card padding={4} tone="critical" radius={3} border>
             <Stack space={4}>
-              <Stack space={2}>
+              <Stack space={3}>
                 <Heading size={2}>Restore live site to this snapshot?</Heading>
                 <Text>
-                  This will <strong>replace every document</strong> on
-                  veroassess.com with the version captured in
-                  &ldquo;{confirmRestore.name}&rdquo; ({formatDate(confirmRestore.createdAt)}).
-                  Any changes made on the live site since then will be lost.
+                  This will replace every document on veroassess.com with
+                  the version captured in &ldquo;{confirmRestore.name}&rdquo;
+                  ({formatDate(confirmRestore.createdAt)}). Any changes made
+                  on the live site since then will be lost.
                 </Text>
                 <Text size={1} muted>
                   To confirm, type the snapshot name below.
