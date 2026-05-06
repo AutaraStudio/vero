@@ -31,11 +31,11 @@ Single Netlify site, branch deploys, per-context env vars on
 
 ### Sanity webhooks
 
-Two revalidation webhooks at https://www.sanity.io/manage/project/abtw5nba/api/webhooks:
-- `production` dataset → `https://www.veroassess.com/api/revalidate`
-- `staging` dataset → `https://staging--vero-assess-staging.netlify.app/api/revalidate`
-
-Both share the `SANITY_REVALIDATE_SECRET` env var.
+Webhooks at https://www.sanity.io/manage/project/abtw5nba/api/webhooks:
+- **Live revalidation (production)** → `https://www.veroassess.com/api/revalidate` (signed with `SANITY_REVALIDATE_SECRET`)
+- **Live revalidation (staging)** → `https://staging--vero-assess-staging.netlify.app/api/revalidate` (same secret)
+- **Sync roles to HubSpot** — production dataset, filter `_type == "role"` → `https://veroassess.com/api/hubspot/sync-roles` with `x-vero-sync-secret` header (`HUBSPOT_SYNC_SECRET`)
+- **Auto-sync roles staging → production** — staging dataset, filter `_type == "role"`, triggers Create + Update + Delete → `https://veroassess.com/api/sync-role` (signed with `SANITY_REVALIDATE_SECRET`). Roles bypass the Push to Live workflow — this webhook keeps production in step automatically.
 
 ### /admin namespace
 
@@ -63,9 +63,11 @@ Production builds redirect `/admin/*` → staging admin via `next.config.ts`.
 | Route             | What it does                                              |
 |-------------------|-----------------------------------------------------------|
 | `/api/promote`    | Copies one doc + assets from staging → production         |
+| `/api/sync-role`  | Auto-mirrors a role doc staging → production on Sanity webhook (handles deletes too) |
 | `/api/backup`     | Snapshots all production docs into a `siteBackup` in staging |
 | `/api/restore`    | Replays a `siteBackup` back into production atomically    |
 | `/api/revalidate` | Pre-existing — busts Next cache on Sanity webhooks        |
+| `/api/hubspot/sync-roles` | Replaces HubSpot's `vero_assess_roles` option list from production roles |
 
 All three custom routes use the same origin allow-list (no per-user token —
 Sanity Studio v3 uses cookie auth and `client.config().token` is empty).

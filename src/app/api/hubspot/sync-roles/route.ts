@@ -21,8 +21,6 @@ const HUBSPOT_PROPERTY_URL =
 const ROLES_SYNC_QUERY = `
   *[_type == "role" && archived != true] | order(name asc) {
     _id,
-    name,
-    "slug": slug.current,
     hubspotLabel,
     hubspotValue
   }
@@ -30,8 +28,6 @@ const ROLES_SYNC_QUERY = `
 
 interface SanityRole {
   _id: string;
-  name: string;
-  slug: string;
   hubspotLabel?: string;
   hubspotValue?: string;
 }
@@ -67,11 +63,14 @@ export async function POST(request: Request) {
     const options: HubSpotOption[] = [];
 
     for (const role of roles) {
-      const label = (role.hubspotLabel || role.name || '').trim();
-      const value = (role.hubspotValue || role.slug || '').trim().toLowerCase();
+      const label = (role.hubspotLabel ?? '').trim();
+      const value = (role.hubspotValue ?? '').trim().toLowerCase();
 
+      /* Strict: both HubSpot fields must be explicitly set. A role with
+         neither is website-only and is intentionally excluded from the
+         HubSpot dropdown. Role Name and slug control website display only. */
       if (!label || !value) {
-        console.warn(`[Sync] Skipping role ${role._id} — missing label or value`);
+        console.info(`[Sync] Skipping role ${role._id} — website-only (no HubSpot Label / Value)`);
         continue;
       }
 
