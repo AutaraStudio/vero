@@ -102,12 +102,7 @@ export const HOME_PAGE_QUERY = `
     pricingSectionSubheading,
     pricingHighlights,
     pricingCtaLabel,
-    pricingCtaHref,
-    closingStatement,
-    closingEyebrow,
-    closingBenefits,
-    closingCtaLabel,
-    closingCtaHref
+    pricingCtaHref
   }
 `
 
@@ -124,12 +119,6 @@ export const SITE_SETTINGS_QUERY = `
     twitterHandle,
     siteUrl,
     themeColor,
-    footerCtaHeading,
-    footerCtaBody,
-    footerCtaButtonLabel,
-    footerCtaButtonHref,
-    navCtaLabel,
-    navCtaHref,
     partnerLogosLabel,
     partnerLogos[] {
       name,
