@@ -33,7 +33,6 @@ const PromoteAction: DocumentActionComponent = (
 
   const client = useClient({ apiVersion })
   const activeDataset = client.config().dataset
-  const sessionToken = client.config().token
 
   const hasUnpublishedDraft = Boolean(draft) && !published
   const hasUnpublishedChanges = Boolean(draft && published)
@@ -44,10 +43,7 @@ const PromoteAction: DocumentActionComponent = (
     try {
       const res = await fetch('/api/promote', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(sessionToken ? { Authorization: `Bearer ${sessionToken}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ documentId: id }),
       })
 
@@ -63,7 +59,7 @@ const PromoteAction: DocumentActionComponent = (
     } finally {
       setBusy(false)
     }
-  }, [id, sessionToken, onComplete])
+  }, [id, onComplete])
 
   /* Only surface this action in the staging dataset — promoting from
      production back to itself makes no sense. */
