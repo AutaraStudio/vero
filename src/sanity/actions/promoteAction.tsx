@@ -9,19 +9,19 @@ import { apiVersion } from '../env'
  * "Push to Live Site" — Sanity Studio document action.
  *
  * Visible on every document in the staging Studio. Clicking it calls
- * /api/promote on the live site, which copies the document (and any
- * referenced assets) from the `staging` dataset into `production`.
+ * `/api/promote` on the same origin Studio is loaded from (avoids CORS).
+ * The route uses a project-wide Editor token, so it can read from
+ * `staging` and write to `production` regardless of which Netlify site
+ * happens to host it. Same code, same outcome.
  *
- * The Next.js revalidation webhook then fires automatically and the
- * production site rebuilds within a few seconds.
+ * The production-dataset Sanity webhook then fires automatically and
+ * the live site rebuilds within a few seconds.
  *
  * Disabled when:
  *   - the document has unpublished draft changes (we only promote what's
  *     actually published in staging)
  *   - the active dataset is `production` (avoids self-promotion confusion)
  */
-
-const PROMOTE_ENDPOINT_PROD = 'https://www.veroassess.com/api/promote'
 
 const PromoteAction: DocumentActionComponent = (
   props: DocumentActionProps,
@@ -42,12 +42,7 @@ const PromoteAction: DocumentActionComponent = (
     setBusy(true)
     setError(null)
     try {
-      const endpoint =
-        process.env.NODE_ENV === 'development'
-          ? '/api/promote'
-          : PROMOTE_ENDPOINT_PROD
-
-      const res = await fetch(endpoint, {
+      const res = await fetch('/api/promote', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
