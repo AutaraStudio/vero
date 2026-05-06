@@ -104,21 +104,23 @@ const PromoteAction: DocumentActionComponent = (
       type: 'confirm',
       tone: 'caution',
       message: (
-        <div style={{ lineHeight: 1.5 }}>
-          <strong>Push this page to veroassess.com?</strong>
-          <p style={{ marginTop: '0.5rem' }}>
+        <div style={{ lineHeight: 1.55, color: 'inherit' }}>
+          <p style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>
+            Push this page to veroassess.com?
+          </p>
+          <p style={{ margin: '0.5rem 0 0' }}>
             The live site will be replaced with the version currently
             published in staging. The change will appear within about a
             minute.
           </p>
           {hasUnpublishedChanges && (
-            <p style={{ marginTop: '0.5rem' }}>
+            <p style={{ margin: '0.5rem 0 0' }}>
               Note: you have unpublished draft edits. Only the published
               version will be pushed live — your drafts stay in staging.
             </p>
           )}
           {error && (
-            <p style={{ marginTop: '0.75rem', color: 'var(--card-badge-critical-fg-color, #c44)' }}>
+            <p style={{ margin: '0.75rem 0 0', color: 'var(--card-badge-critical-fg-color)' }}>
               {error}
             </p>
           )}
