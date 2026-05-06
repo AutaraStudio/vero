@@ -1,5 +1,14 @@
 import { defineField, defineType } from 'sanity'
 import { UserIcon } from '@sanity/icons'
+import { HubspotValueInput } from '../components/HubspotValueInput'
+
+/**
+ * Strip `drafts.` prefix so a draft of the same doc isn't flagged as a
+ * duplicate of its own published version. Returns the canonical id.
+ */
+function publishedId(id: string): string {
+  return id.replace(/^drafts\./, '')
+}
 
 export const role = defineType({
   name: 'role',
@@ -66,21 +75,43 @@ export const role = defineType({
       description:
         'HubSpot only. The name your sales team sees in the HubSpot "Vero Assess Roles" dropdown, reports, and deal records. Fill this in (along with HubSpot Internal Value) if you want this role to be selectable in HubSpot. Leave blank to keep the role website-only — it will not appear in HubSpot at all.',
       group: 'hubspot',
+      validation: (Rule) =>
+        Rule.custom(async (value, context) => {
+          if (!value) return true
+          const trimmed = value.trim()
+          if (!trimmed) return true
+          const client = context.getClient({ apiVersion: '2024-09-01' })
+          const currentId = publishedId((context.document?._id as string) ?? '')
+          const dupe = await client.fetch<string | null>(
+            `*[_type == "role" && lower(hubspotLabel) == lower($value) && _id != $id && _id != "drafts." + $id][0]._id`,
+            { value: trimmed, id: currentId },
+          )
+          return dupe ? `Another role already uses this HubSpot Label.` : true
+        }),
     }),
     defineField({
       name: 'hubspotValue',
       title: 'HubSpot Internal Value',
       type: 'string',
       description:
-        'HubSpot only. The behind-the-scenes code HubSpot stores to identify this role on company and deal records. Never seen by sales reps or customers. Fill this in (along with HubSpot Label) if you want this role to appear in HubSpot. Once set, do not change it — historical HubSpot records reference this value and would lose context. Lowercase letters, numbers, hyphens, underscores only.',
+        'HubSpot only. The behind-the-scenes code HubSpot stores to identify this role on company and deal records. Never seen by sales reps or customers. Fill this in (along with HubSpot Label) if you want this role to appear in HubSpot. Once set, do not change it — historical HubSpot records reference this value and would lose context. Lowercase letters, numbers, hyphens, underscores only — anything else is auto-formatted when you click out of the field.',
+      group: 'hubspot',
+      components: { input: HubspotValueInput },
       validation: (Rule) =>
         Rule.regex(/^[a-z0-9_-]+$/, {
           name: 'lowercase letters, numbers, hyphens, underscores only',
-        }).custom((value) => {
-          if (value && value.length > 100) return 'Max 100 characters';
-          return true;
-        }),
-      group: 'hubspot',
+        })
+          .max(100)
+          .custom(async (value, context) => {
+            if (!value) return true
+            const client = context.getClient({ apiVersion: '2024-09-01' })
+            const currentId = publishedId((context.document?._id as string) ?? '')
+            const dupe = await client.fetch<string | null>(
+              `*[_type == "role" && hubspotValue == $value && _id != $id && _id != "drafts." + $id][0]._id`,
+              { value, id: currentId },
+            )
+            return dupe ? `Another role already uses this HubSpot Internal Value.` : true
+          }),
     }),
   ],
   groups: [
