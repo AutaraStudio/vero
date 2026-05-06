@@ -79,6 +79,7 @@ SANITY_API_TOKEN               = project-wide Editor token (writes to BOTH)
 SANITY_API_READ_TOKEN          = Viewer token
 SANITY_REVALIDATE_SECRET       = (shared with both webhooks)
 SANITY_UPLOAD_TOKEN            = (existing)
+BACKUP_CRON_SECRET             = shared with the GitHub Actions nightly-backup workflow
 NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY, STRIPE_SECRET_KEY,
 HUBSPOT_ACCESS_TOKEN, RESEND_API_KEY = same values
 ```
@@ -97,6 +98,9 @@ For dataset-wide rollback:
 - Studio top bar → **Backups** → **Take snapshot** before risky edits.
 - If something breaks → **Backups** → **Restore to Live** (type the snapshot
   name to confirm).
+- A nightly automatic backup also runs at 02:15 UTC via GitHub Actions
+  (`.github/workflows/nightly-backup.yml`), so there is always a recent
+  snapshot even if the client forgets to take one.
 
 For per-doc rollback: Sanity's built-in History panel (clock icon, top right
 of any doc).
@@ -114,8 +118,6 @@ of any doc).
 
 - Diff preview inside the Push to Live confirm dialog (show what fields
   are about to change).
-- Scheduled auto-backups (cron via GitHub Actions or a Netlify scheduled
-  function — currently backups are manual via the Backups tool).
 - Custom Studio theme with proper brand colours — tried, reverted, not
   worth the effort.
 - Lock client roles to staging only at the Sanity ACL level (currently

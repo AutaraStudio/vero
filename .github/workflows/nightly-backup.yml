@@ -1,0 +1,35 @@
+name: Nightly production backup
+
+on:
+  schedule:
+    # 02:15 UTC daily — quiet hours for UK clients
+    - cron: '15 2 * * *'
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Optional snapshot name'
+        required: false
+        default: ''
+
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Trigger /api/backup
+        env:
+          BACKUP_CRON_SECRET: ${{ secrets.BACKUP_CRON_SECRET }}
+          SNAPSHOT_NAME: ${{ github.event.inputs.name }}
+        run: |
+          set -euo pipefail
+          name="${SNAPSHOT_NAME:-Auto — $(date -u '+%Y-%m-%d %H:%M UTC')}"
+          response=$(curl -sS -w '\n%{http_code}' -X POST \
+            https://www.veroassess.com/api/backup \
+            -H "Authorization: Bearer $BACKUP_CRON_SECRET" \
+            -H 'Content-Type: application/json' \
+            --data "$(jq -n --arg n "$name" '{name:$n}')")
+          body=$(echo "$response" | sed '$d')
+          status=$(echo "$response" | tail -n1)
+          echo "HTTP $status"
+          echo "$body"
+          test "$status" = "200"

@@ -48,6 +48,13 @@ function isOriginAllowed(req: NextRequest): boolean {
   return ALLOWED_ORIGINS.has(origin);
 }
 
+function isCronAuthorized(req: NextRequest): boolean {
+  const secret = process.env.BACKUP_CRON_SECRET;
+  if (!secret) return false;
+  const header = req.headers.get('authorization') ?? '';
+  return header === `Bearer ${secret}`;
+}
+
 export async function POST(req: NextRequest) {
   if (!projectId || !adminToken) {
     return NextResponse.json(
@@ -55,7 +62,7 @@ export async function POST(req: NextRequest) {
       { status: 500 },
     );
   }
-  if (!isOriginAllowed(req)) {
+  if (!isCronAuthorized(req) && !isOriginAllowed(req)) {
     return NextResponse.json({ ok: false, error: 'Origin not allowed' }, { status: 403 });
   }
 
