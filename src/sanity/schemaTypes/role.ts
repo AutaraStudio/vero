@@ -12,7 +12,7 @@ export const role = defineType({
       title: 'Role Name',
       type: 'string',
       description:
-        'Display name shown to visitors on the website — on the category page, in the role roster, and as the page heading. Example: "Account Executive".',
+        'Website only. Display name shown to visitors on the website — on the category page, in the role roster, and as the page heading. Example: "Account Executive". This value is never sent to HubSpot.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -21,7 +21,7 @@ export const role = defineType({
       type: 'slug',
       options: { source: 'name' },
       description:
-        'The URL piece for this role. Click "Generate" once to auto-create from the Role Name (e.g. "account-executive" → /assessments/sales/account-executive). Once a role is live, do not change the slug — it will break any external links pointing at the old URL.',
+        'Website only. The URL piece for this role. Click "Generate" once to auto-create from the Role Name (e.g. "account-executive" → /assessments/sales/account-executive). Once a role is live, do not change the slug — it will break any external links pointing at the old URL. This value is never sent to HubSpot.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -64,7 +64,7 @@ export const role = defineType({
       title: 'HubSpot Label',
       type: 'string',
       description:
-        'Advanced override. The human-readable name your sales team sees in the HubSpot "Vero Assess Roles" dropdown, reports, and deal records. Leave blank to use the Role Name (recommended). Only set this if HubSpot needs to display a different name than the website.',
+        'HubSpot only. The name your sales team sees in the HubSpot "Vero Assess Roles" dropdown, reports, and deal records. Fill this in (along with HubSpot Internal Value) if you want this role to be selectable in HubSpot. Leave blank to keep the role website-only — it will not appear in HubSpot at all.',
       group: 'hubspot',
     }),
     defineField({
@@ -72,7 +72,7 @@ export const role = defineType({
       title: 'HubSpot Internal Value',
       type: 'string',
       description:
-        'Advanced override. The behind-the-scenes code HubSpot stores to identify this role on company and deal records — never seen by sales reps or customers. Leave blank to use the slug (recommended). Only set this if you need to rename the slug but want HubSpot\'s historical records to keep working — set this to the OLD slug. Lowercase letters, numbers, hyphens, underscores only.',
+        'HubSpot only. The behind-the-scenes code HubSpot stores to identify this role on company and deal records. Never seen by sales reps or customers. Fill this in (along with HubSpot Label) if you want this role to appear in HubSpot. Once set, do not change it — historical HubSpot records reference this value and would lose context. Lowercase letters, numbers, hyphens, underscores only.',
       validation: (Rule) =>
         Rule.regex(/^[a-z0-9_-]+$/, {
           name: 'lowercase letters, numbers, hyphens, underscores only',
