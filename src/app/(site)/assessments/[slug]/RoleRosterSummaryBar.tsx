@@ -1,26 +1,33 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useBasket } from '@/store/basketStore';
 import { TIER_DATA, getTierPrice, getNudgeContent } from '@/lib/tierRecommendation';
-import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import UpsellNudge from '@/app/(site)/get-started/components/UpsellNudge';
 import '@/app/(site)/get-started/components/plan-bar.css';
 import './role-roster-summary-bar.css';
 
+/* Tweakables */
+const SHOW_DELAY_MS = 200;       // brief delay before sliding up so the bar
+                                  // doesn't pop in the moment a card scrolls past
+const HIDE_BOTTOM_RATIO = 0.1;   // hide when section's bottom edge has reached
+                                  // 10% from the viewport top (i.e. 90% past)
+
 /**
- * Section-scoped variant of the get-started PlanBar shown on each
- * assessment-category page. Visually matches the checkout-flow
- * bar (same plan-bar layout — tier name + price + CTA) so the user
- * gets a consistent "where you are with your basket" anchor across
- * the buying journey.
+ * Page-fixed summary bar shown on each assessment-category page. Slides
+ * up into view from the bottom when the role-grid section enters the
+ * viewport, slides back out once the section has mostly scrolled past.
  *
- * The bar is `position: sticky` rendered inside the role-grid
- * section, so it floats at the bottom of the viewport while the
- * section is on screen and scrolls away with the section as the
- * user moves past — pure CSS, no JS observer needed.
+ * Visually matches the get-started PlanBar (same plan-bar layout —
+ * tier name, price, limits, CTA) so the user sees a consistent
+ * "where you are with your basket" anchor across the buying journey.
+ *
+ * Uses a rAF poll on the role-grid section's getBoundingClientRect
+ * because the page's Lenis smooth-scroll didn't fire reliable scroll
+ * events for IntersectionObserver in earlier attempts.
  */
 export default function RoleRosterSummaryBar() {
   const router = useRouter();
@@ -28,22 +35,47 @@ export default function RoleRosterSummaryBar() {
   const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
 
   const [nudgeVisible, setNudgeVisible] = useState(false);
-  const barRef = useRef<HTMLDivElement>(null);
+  const [sectionInView, setSectionInView] = useState(false);
+  const [showWithDelay, setShowWithDelay] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
-  const visible = selectedRoles.length > 0 && !!tierInfo;
+  const hasContent = selectedRoles.length > 0 && !!tierInfo;
 
-  /* Slide-in when the bar first becomes visible — mirrors PlanBar. */
+  /* Poll the role-grid section's viewport position once per frame. */
   useEffect(() => {
-    if (!visible || !barRef.current) return;
-    gsap.fromTo(
-      barRef.current,
-      { y: '100%' },
-      { y: 0, duration: 0.45, ease: 'power3.out', delay: 0.05, clearProps: 'transform' },
-    );
-  }, [visible]);
+    const target = document.querySelector<HTMLElement>('.role-grid-section');
+    if (!target) return;
 
-  if (!visible || !tierInfo) return null;
+    let raf = 0;
+    let last: boolean | null = null;
+    const tick = () => {
+      const r = target.getBoundingClientRect();
+      const vh = window.innerHeight || document.documentElement.clientHeight;
+      const inView = r.top < vh && r.bottom > vh * HIDE_BOTTOM_RATIO;
+      if (inView !== last) {
+        last = inView;
+        setSectionInView(inView);
+      }
+      raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  /* Apply the show-with-delay so the slide-up animation has a beat. */
+  useEffect(() => {
+    if (!sectionInView || !hasContent) {
+      setShowWithDelay(false);
+      return;
+    }
+    const t = window.setTimeout(() => setShowWithDelay(true), SHOW_DELAY_MS);
+    return () => window.clearTimeout(t);
+  }, [sectionInView, hasContent]);
+
+  if (!hasContent || !tierInfo) return null;
 
   const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);
 
@@ -62,13 +94,34 @@ export default function RoleRosterSummaryBar() {
     router.push('/get-started/details');
   };
 
+  /* Popup primary action — "Explore Essential" or "Add more roles".
+     On category pages the user is browsing one category, so to actually
+     add more roles they need to see the full picker — push them into
+     /get-started where every category is visible at once. */
+  const handleAddMore = () => {
+    dispatch({ type: 'SET_NUDGE_SHOWN' });
+    setNudgeVisible(false);
+    router.push('/get-started');
+  };
+
+  /* Popup secondary action — "Continue with N roles". Skips the role
+     picker step and goes straight to the details form. */
+  const handleContinueFromNudge = () => {
+    dispatch({ type: 'SET_NUDGE_SHOWN' });
+    setNudgeVisible(false);
+    router.push('/get-started/details');
+  };
+
   const ctaLabel = recommendedTier === 'bespoke'
     ? 'Discuss your requirements →'
     : 'Continue to checkout';
 
-  return (
-    <>
-      <div ref={barRef} className="role-roster-summary-bar" data-theme="brand-purple">
+  if (!mounted) return null;
+
+  const bar = (
+    <div
+      className={`role-roster-summary-bar${showWithDelay ? ' is-visible' : ''}`}
+    >
         <div className="container">
           <div className="role-roster-summary-bar__inner">
             {/* Left — tier name + billing label (matches PlanBar) */}
@@ -102,26 +155,25 @@ export default function RoleRosterSummaryBar() {
             </Button>
           </div>
         </div>
-      </div>
+    </div>
+  );
 
-      {nudgeVisible && recommendedTier && (() => {
-        const content = getNudgeContent(recommendedTier, selectedRoles.length);
-        if (!content) return null;
-        return (
-          <UpsellNudge
-            content={content}
-            onAddMore={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-            }}
-            onContinue={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-              router.push('/get-started/details');
-            }}
-          />
-        );
-      })()}
-    </>
+  const nudgeContent =
+    nudgeVisible && recommendedTier
+      ? getNudgeContent(recommendedTier, selectedRoles.length)
+      : null;
+
+  return createPortal(
+    <>
+      {bar}
+      {nudgeContent && (
+        <UpsellNudge
+          content={nudgeContent}
+          onAddMore={handleAddMore}
+          onContinue={handleContinueFromNudge}
+        />
+      )}
+    </>,
+    document.body,
   );
 }
