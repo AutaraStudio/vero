@@ -125,6 +125,12 @@ export default function MediaBlock({
 }: MediaBlockProps) {
   const [open, setOpen]   = useState(false);
   const [mounted, setMounted] = useState(false);
+  /* In modal-with-preview mode, the looping autoplay preview already
+     shows the video. Once it starts playing we fade the play-button
+     overlay so it doesn't sit in the middle obscuring the content;
+     hovering the slot brings it back so the click-to-modal affordance
+     is still discoverable. */
+  const [previewPlaying, setPreviewPlaying] = useState(false);
   const overlayRef = useRef<HTMLDivElement>(null);
   const modalRef   = useRef<HTMLDivElement>(null);
   const videoRef   = useRef<HTMLVideoElement>(null);
@@ -274,7 +280,9 @@ export default function MediaBlock({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className={`media-block media-block--video media-block--preview ${className}`.trim()}
+          className={`media-block media-block--video media-block--preview ${
+            previewPlaying ? 'media-block--preview-playing' : ''
+          } ${className}`.trim()}
           style={wrapperStyle}
           aria-label="Play video with sound"
         >
@@ -288,6 +296,8 @@ export default function MediaBlock({
             playsInline
             preload="metadata"
             aria-hidden="true"
+            onPlaying={() => setPreviewPlaying(true)}
+            onPause={() => setPreviewPlaying(false)}
           />
           <span className="media-block__play" aria-hidden="true">
             <svg width="28" height="28" viewBox="0 0 16 16" fill="currentColor">

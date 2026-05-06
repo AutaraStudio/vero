@@ -45,7 +45,7 @@ export async function POST(request: Request) {
   const { name, email, company, message } = validation.data;
   const apiKey = process.env.RESEND_API_KEY;
   const from   = process.env.CONTACT_FROM_EMAIL ?? 'Vero Assess <hello@veroassess.com>';
-  const to     = process.env.CONTACT_TO_EMAIL   ?? 'sales@tazio.co.uk';
+  const to     = process.env.CONTACT_TO_EMAIL   ?? 'support@veroassess.com';
 
   /* Build a clean plain-text + HTML email body. */
   const subject = `New contact enquiry — ${name}`;
