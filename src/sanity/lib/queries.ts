@@ -448,7 +448,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     bespokeCTALabel,
     bespokeCTAHref,
     ${mediaProjection('bespokeSectionMedia')},
-    "roles": *[_type == "role" && parentCategory._ref == ^._id && !archived] | order(name asc) {
+    "roles": *[_type == "role" && parentCategory._ref == ^._id && archived != true] | order(name asc) {
       _id,
       name,
       "slug": slug.current,
@@ -472,7 +472,7 @@ export const NAV_CATEGORIES_QUERY = `
 `
 
 export const ALL_ROLES_QUERY = `
-  *[_type == "role" && !archived] | order(parentCategory->name asc, name asc) {
+  *[_type == "role" && archived != true] | order(parentCategory->name asc, name asc) {
     _id,
     name,
     "slug": slug.current,
@@ -502,7 +502,7 @@ export const ROLES_BY_CATEGORY_QUERY = `
     _id,
     name,
     "slug": slug.current,
-    "roles": *[_type == "role" && parentCategory._ref == ^._id && !archived] | order(name asc) {
+    "roles": *[_type == "role" && parentCategory._ref == ^._id && archived != true] | order(name asc) {
       _id,
       name,
       "slug": slug.current,
