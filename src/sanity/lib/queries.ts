@@ -467,7 +467,102 @@ export const JOB_CATEGORY_SLUGS_QUERY = `
 export const NAV_CATEGORIES_QUERY = `
   *[_type == "jobCategory"] | order(name asc) {
     name,
-    "slug": slug.current
+    "slug": slug.current,
+    navDescription
+  }
+`
+
+/* ─────────────────────────────────────────────────────────────
+   Global singletons — fetched once and shared by layout-level
+   components (nav + footer).
+───────────────────────────────────────────────────────────── */
+
+export const GLOBAL_NAV_QUERY = `
+  *[_id == "globalNav"][0] {
+    topItems[] {
+      _key,
+      _type,
+      label,
+      href,
+      external
+    },
+    companyColumns[] {
+      _key,
+      title,
+      links[] {
+        _key,
+        label,
+        description,
+        href,
+        external
+      }
+    },
+    companyCard {
+      eyebrow,
+      body,
+      ctaLabel,
+      ctaHref,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+    ctaLabel,
+    ctaHref
+  }
+`
+
+export const GLOBAL_FOOTER_QUERY = `
+  *[_id == "globalFooter"][0] {
+    ctaHeading,
+    ctaEyebrow,
+    ctaBenefits,
+    ctaPrimaryLabel,
+    ctaPrimaryHref,
+    ctaSecondaryLabel,
+    ctaSecondaryHref,
+    linkColumns[] {
+      _key,
+      title,
+      links[] {
+        _key,
+        label,
+        href,
+        external
+      }
+    },
+    contactPhone,
+    contactEmail,
+    contactAddress,
+    socialLinks[] {
+      _key,
+      platform,
+      url
+    },
+    legalLinks[] {
+      _key,
+      label,
+      href,
+      external
+    },
+    businessText,
+    copyrightText,
+    partnerLabel,
+    "partnerLogoUrl": partnerLogo.asset->url,
+    "partnerLogoAlt": partnerLogo.alt
+  }
+`
+
+export const GLOBAL_CATEGORY_GROUPS_QUERY = `
+  *[_id == "globalCategoryGroups"][0] {
+    groups[] {
+      _key,
+      title,
+      categories[]-> {
+        _id,
+        name,
+        "slug": slug.current,
+        navDescription
+      }
+    }
   }
 `
 

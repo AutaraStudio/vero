@@ -1,270 +1,269 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
-import { SITE_SETTINGS_QUERY, NAV_CATEGORIES_QUERY } from '@/sanity/lib/queries';
+import {
+  GLOBAL_FOOTER_QUERY,
+  GLOBAL_CATEGORY_GROUPS_QUERY,
+} from '@/sanity/lib/queries';
 import CTAStatement from '@/components/CTAStatement/CTAStatement';
+import { SocialIcon, platformLabel } from './socialIcons';
 import FooterFan from './FooterFan';
 import './Footer.css';
 
-const linkColumns = [
-  {
-    title: 'Product',
-    links: [
-      { label: 'Pricing', href: '/pricing' },
-      { label: 'How it Works', href: '/how-it-works' },
-      { label: 'Get started', href: '/get-started' },
-    ],
-  },
-  {
-    title: 'Company',
-    links: [
-      { label: 'About', href: '/about' },
-      { label: 'Contact', href: '/contact' },
-    ],
-  },
-  {
-    title: 'Resources',
-    links: [
-      { label: 'The Science', href: '/resources/science' },
-      { label: 'Compliance', href: '/resources/compliance' },
-    ],
-  },
-];
+/* ── Types from the CMS query ────────────────────────────────── */
 
-/* Short display labels + grouping for the assessments section.
-   Mirrors the grouping used by MegaNav so categories are sorted consistently
-   across the site. */
-type AssessmentGroup = 'jobFamilies' | 'earlyCareers' | 'specialist';
+interface FooterLink {
+  label?: string | null;
+  href?: string | null;
+  external?: boolean | null;
+}
+interface FooterColumn {
+  title?: string | null;
+  links?: FooterLink[] | null;
+}
+interface SocialLink {
+  platform?: string | null;
+  url?: string | null;
+}
+interface GlobalFooterData {
+  ctaHeading?: string | null;
+  ctaEyebrow?: string | null;
+  ctaBenefits?: string[] | null;
+  ctaPrimaryLabel?: string | null;
+  ctaPrimaryHref?: string | null;
+  ctaSecondaryLabel?: string | null;
+  ctaSecondaryHref?: string | null;
+  linkColumns?: FooterColumn[] | null;
+  contactPhone?: string | null;
+  contactEmail?: string | null;
+  contactAddress?: string | null;
+  socialLinks?: SocialLink[] | null;
+  legalLinks?: FooterLink[] | null;
+  businessText?: string | null;
+  copyrightText?: string | null;
+  partnerLabel?: string | null;
+  partnerLogoUrl?: string | null;
+  partnerLogoAlt?: string | null;
+}
 
-const assessmentMeta: Record<string, { group: AssessmentGroup; label: string }> = {
-  'administration':                { group: 'jobFamilies',  label: 'Administration' },
-  'operations-and-logistics':      { group: 'jobFamilies',  label: 'Operations & Logistics' },
-  'sales':                         { group: 'jobFamilies',  label: 'Sales' },
-  'retail-and-hospitality':        { group: 'jobFamilies',  label: 'Retail & Hospitality' },
-  'health-and-social-care':        { group: 'jobFamilies',  label: 'Health & Social Care' },
-  'graduates':                     { group: 'earlyCareers', label: 'Graduates' },
-  'apprentices':                   { group: 'earlyCareers', label: 'Apprentices' },
-  'interns':                       { group: 'earlyCareers', label: 'Interns' },
-  'claims-and-collections':        { group: 'specialist',   label: 'Claims & Collections' },
-  'field-service-and-technicians': { group: 'specialist',   label: 'Field Service' },
-};
+interface CategoryGroupItem {
+  _id?: string | null;
+  name?: string | null;
+  slug?: string | null;
+}
+interface CategoryGroup {
+  _key?: string | null;
+  title?: string | null;
+  categories?: CategoryGroupItem[] | null;
+}
+interface CategoryGroupsData {
+  groups?: CategoryGroup[] | null;
+}
 
-const assessmentGroups: { key: AssessmentGroup; title: string }[] = [
-  { key: 'jobFamilies',  title: 'Job families' },
-  { key: 'earlyCareers', title: 'Early careers' },
-  { key: 'specialist',   title: 'Specialist' },
-];
+/* ── Helpers ─────────────────────────────────────────────────── */
 
-/* Policy links — privacy, cookies, and security live on this site
-   (sourced from Sanity, rendered at /legal/<slug>). Modern slavery
-   and status remain external to Tazio. */
-const legalLinks: { label: string; href: string; external?: boolean }[] = [
-  { label: 'Privacy Policy', href: '/legal/privacy' },
-  { label: 'Cookie Policy', href: '/legal/cookies' },
-  { label: 'Security', href: '/legal/security' },
-  {
-    label: 'Modern Slavery Statement',
-    href: 'https://cdn.prod.website-files.com/66bb33f5cfec7c80b0da6fed/6925b1b4a26e3c0faa0ca494_Modern%20Slavery%20and%20Human%20Trafficking%20Statement%202025-2026.pdf',
-    external: true,
-  },
-  { label: 'Status', href: 'https://status.tazio.network/', external: true },
-];
+function telHref(phone: string): string {
+  return `tel:${phone.replace(/[^\d+]/g, '')}`;
+}
 
-/* Vero Assess doesn't run its own social presence — links route to
-   Tazio (the parent service) per client direction. */
-const socialLinks = [
-  {
-    name: 'LinkedIn',
-    href: 'https://www.linkedin.com/company/tazio/',
-    path: 'M20.45 20.45h-3.55v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.13 1.45-2.13 2.94v5.67H9.36V9h3.41v1.56h.05A3.74 3.74 0 0 1 16.18 8.7c3.6 0 4.27 2.37 4.27 5.45v6.3ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.56V9h3.56v11.45ZM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.21 0 22.22 0Z',
-  },
-  {
-    name: 'YouTube',
-    href: 'https://www.youtube.com/channel/UCfXfmtOQsyrkSeBAjeWZ05g',
-    path: 'M23.5 6.2a3.02 3.02 0 0 0-2.13-2.14C19.5 3.55 12 3.55 12 3.55s-7.5 0-9.37.51A3.02 3.02 0 0 0 .5 6.2C0 8.07 0 12 0 12s0 3.93.5 5.8a3.02 3.02 0 0 0 2.13 2.14c1.87.51 9.37.51 9.37.51s7.5 0 9.37-.51a3.02 3.02 0 0 0 2.13-2.14c.5-1.87.5-5.8.5-5.8s0-3.93-.5-5.8ZM9.6 15.57V8.43L15.82 12 9.6 15.57Z',
-  },
-];
+function renderInternalOrExternalLink(
+  link: { label?: string | null; href?: string | null; external?: boolean | null } | null | undefined,
+  className: string,
+  key?: string,
+) {
+  if (!link?.label || !link.href) return null;
+  const isExternal = link.external || /^https?:\/\//.test(link.href);
+  return isExternal ? (
+    <a
+      key={key ?? link.href}
+      href={link.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className={className}
+    >
+      {link.label}
+    </a>
+  ) : (
+    <Link key={key ?? link.href} href={link.href} className={className}>
+      {link.label}
+    </Link>
+  );
+}
+
+/* ── Component ───────────────────────────────────────────────── */
 
 export default async function Footer() {
-  const [settings, categories] = await Promise.all([
-    client.fetch(SITE_SETTINGS_QUERY),
-    client.fetch(NAV_CATEGORIES_QUERY) as Promise<{ name: string; slug: string }[]>,
+  const [footer, categoryGroups] = await Promise.all([
+    client.fetch<GlobalFooterData | null>(GLOBAL_FOOTER_QUERY),
+    client.fetch<CategoryGroupsData | null>(GLOBAL_CATEGORY_GROUPS_QUERY),
   ]);
 
-  const ctaHref = settings?.footerCtaButtonHref ?? '/get-started';
-  const ctaLabel = settings?.footerCtaButtonLabel ?? 'Get started';
   const year = new Date().getFullYear();
+  const ctaPrimary = {
+    label: footer?.ctaPrimaryLabel ?? 'Get started',
+    href: footer?.ctaPrimaryHref ?? '/get-started',
+  };
+  const ctaSecondary = footer?.ctaSecondaryLabel
+    ? { label: footer.ctaSecondaryLabel, href: footer.ctaSecondaryHref ?? '#' }
+    : undefined;
 
-  // Group categories by their assigned section, drop unknown slugs so the
-  // footer only renders categories the design has been planned for.
-  const groupedAssessments = assessmentGroups.map((group) => ({
-    ...group,
-    items: (categories ?? [])
-      .filter((c) => assessmentMeta[c.slug]?.group === group.key)
-      .map((c) => ({
-        label: assessmentMeta[c.slug]?.label ?? c.name,
-        href: `/assessments/${c.slug}`,
-      })),
-  }));
+  const copyright = (footer?.copyrightText ?? '© {year} Tazio Online Media Limited.').replace('{year}', String(year));
+
+  const groups = (categoryGroups?.groups ?? []).map((g) => ({
+    key: g._key ?? g.title ?? 'group',
+    title: g.title ?? '',
+    items: (g.categories ?? []).filter((c): c is CategoryGroupItem & { slug: string; name: string } =>
+      Boolean(c?.slug && c?.name),
+    ),
+  })).filter((g) => g.title && g.items.length > 0);
 
   return (
     <footer className="footer" data-theme="brand-purple-deep">
 
-      {/* ── Decorative shape fan — top-left corner, animates in on scroll ── */}
+      {/* ── Decorative shape fan — top-left corner ─────────── */}
       <FooterFan position="top-left" />
 
-      {/* ── Closing CTA — mirrors the home page CTAStatement ─── */}
-      <div className="footer__cta">
-        <CTAStatement
-          theme="brand-purple-deep"
-          cta={{ label: ctaLabel, href: ctaHref }}
-          secondaryCta={{ label: 'Talk to sales', href: '/contact' }}
-        />
-      </div>
+      {/* ── Closing CTA — full content from globalFooter ─── */}
+      {footer?.ctaHeading && (
+        <div className="footer__cta">
+          <CTAStatement
+            theme="brand-purple-deep"
+            statement={footer.ctaHeading}
+            eyebrow={footer.ctaEyebrow ?? undefined}
+            benefits={footer.ctaBenefits ?? undefined}
+            cta={ctaPrimary}
+            secondaryCta={ctaSecondary}
+          />
+        </div>
+      )}
 
       <div className="container container--wide footer__inner">
 
-        {/* ── Unified nav: Product / Company / Resources + 3 assessment groups ── */}
+        {/* ── Unified nav: editor-defined columns + assessment groups ── */}
         <nav className="footer__nav" aria-label="Footer navigation">
-          {linkColumns.map((col) => (
+          {(footer?.linkColumns ?? []).map((col) => col?.title && (
             <div key={col.title} className="footer__nav-col">
               <span className="footer__nav-title text-label--lg color--brand">
                 {col.title}
               </span>
               <ul className="footer__nav-list">
-                {col.links.map((link) => (
-                  <li key={link.href}>
-                    <Link href={link.href} className="footer__nav-link text-body--sm color--secondary">
-                      {link.label}
-                    </Link>
+                {(col.links ?? []).map((link, i) => link?.label && link?.href && (
+                  <li key={`${col.title}-${i}-${link.href}`}>
+                    {renderInternalOrExternalLink(
+                      link,
+                      'footer__nav-link text-body--sm color--secondary',
+                    )}
                   </li>
                 ))}
               </ul>
             </div>
           ))}
 
-          {groupedAssessments.map(
-            (group) =>
-              group.items.length > 0 && (
-                <div key={group.key} className="footer__nav-col">
-                  <span className="footer__nav-title text-label--lg color--brand">
-                    {group.title}
-                  </span>
-                  <ul className="footer__nav-list">
-                    {group.items.map((item) => (
-                      <li key={item.href}>
-                        <Link
-                          href={item.href}
-                          className="footer__nav-link text-body--sm color--secondary"
-                        >
-                          {item.label}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ),
-          )}
+          {groups.map((group) => (
+            <div key={group.key} className="footer__nav-col">
+              <span className="footer__nav-title text-label--lg color--brand">
+                {group.title}
+              </span>
+              <ul className="footer__nav-list">
+                {group.items.map((item) => (
+                  <li key={item.slug}>
+                    <Link
+                      href={`/assessments/${item.slug}`}
+                      className="footer__nav-link text-body--sm color--secondary"
+                    >
+                      {item.name}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
         </nav>
 
         {/* ── Contact strip: Phone / Email / Address ─────────── */}
-        <div className="footer__contact">
-          <a href="tel:+442922331888" className="footer__contact-item">
-            <span className="footer__contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.8 12.4 19.79 19.79 0 0 1 1.73 3.8 2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.69a16 16 0 0 0 6.29 6.29l1.06-1.06a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
-            <div className="footer__contact-text">
-              <span className="footer__contact-label text-label--md color--tertiary">Phone</span>
-              <span className="color--primary font--medium">+44 (0)2922 331 888</span>
-            </div>
-          </a>
-
-          <a href="mailto:support@veroassess.com" className="footer__contact-item">
-            <span className="footer__contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
-                <path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
-            <div className="footer__contact-text">
-              <span className="footer__contact-label text-label--md color--tertiary">Email</span>
-              <span className="color--primary font--medium">support@veroassess.com</span>
-            </div>
-          </a>
-
-          <div className="footer__contact-item">
-            <span className="footer__contact-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24" fill="none">
-                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/>
-              </svg>
-            </span>
-            <div className="footer__contact-text">
-              <span className="footer__contact-label text-label--md color--tertiary">Address</span>
-              <span className="color--primary font--medium">Cardiff, Wales, UK</span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Centered brand close ──────────────────────────────
-             White Vero Assess logo removed per client direction —
-             the wordmark already appears in the top nav so the close
-             block now leads with the social row + copyright meta. */}
-        <div className="footer__close">
-          <ul className="footer__social" aria-label="Social media">
-            {socialLinks.map((s) => (
-              <li key={s.name}>
-                <a
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer__social-link"
-                  aria-label={s.name}
-                >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path d={s.path} />
+        {(footer?.contactPhone || footer?.contactEmail || footer?.contactAddress) && (
+          <div className="footer__contact">
+            {footer?.contactPhone && (
+              <a href={telHref(footer.contactPhone)} className="footer__contact-item">
+                <span className="footer__contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.8 12.4 19.79 19.79 0 0 1 1.73 3.8 2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.69a16 16 0 0 0 6.29 6.29l1.06-1.06a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
-                </a>
-              </li>
-            ))}
-          </ul>
+                </span>
+                <div className="footer__contact-text">
+                  <span className="footer__contact-label text-label--md color--tertiary">Phone</span>
+                  <span className="color--primary font--medium">{footer.contactPhone}</span>
+                </div>
+              </a>
+            )}
 
-          {/* Business info — full registered-company line per client copy.
-               year stays inline since this updates with each render. */}
-          <p className="footer__close-business text-body--xs color--tertiary">
-            Vero is a service offered by Tazio. Tazio is a service from Tazio
-            Online Media Limited &mdash; Registered in England &amp; Wales No:
-            03392879. Registered Office: Beechwood House, Greenwood Close,
-            Cardiff Gate, Pontprennau, Cardiff CF23 8RD.
-          </p>
+            {footer?.contactEmail && (
+              <a href={`mailto:${footer.contactEmail}`} className="footer__contact-item">
+                <span className="footer__contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" strokeWidth="1.5"/>
+                    <path d="M3 7l9 6 9-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </span>
+                <div className="footer__contact-text">
+                  <span className="footer__contact-label text-label--md color--tertiary">Email</span>
+                  <span className="color--primary font--medium">{footer.contactEmail}</span>
+                </div>
+              </a>
+            )}
+
+            {footer?.contactAddress && (
+              <div className="footer__contact-item">
+                <span className="footer__contact-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 1 1 18 0Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="12" cy="10" r="3" stroke="currentColor" strokeWidth="1.5"/>
+                  </svg>
+                </span>
+                <div className="footer__contact-text">
+                  <span className="footer__contact-label text-label--md color--tertiary">Address</span>
+                  <span className="color--primary font--medium" style={{ whiteSpace: 'pre-line' }}>
+                    {footer.contactAddress}
+                  </span>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Centered brand close ──────────────────────────── */}
+        <div className="footer__close">
+          {(footer?.socialLinks ?? []).length > 0 && (
+            <ul className="footer__social" aria-label="Social media">
+              {footer?.socialLinks?.map((s) => s?.platform && s?.url && (
+                <li key={`${s.platform}-${s.url}`}>
+                  <a
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="footer__social-link"
+                    aria-label={platformLabel(s.platform)}
+                  >
+                    <SocialIcon platform={s.platform} />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {footer?.businessText && (
+            <p className="footer__close-business text-body--xs color--tertiary" style={{ whiteSpace: 'pre-line' }}>
+              {footer.businessText}
+            </p>
+          )}
 
           <p className="footer__close-meta text-body--xs color--tertiary">
-            <span>&copy; {year} Tazio Online Media Limited.</span>
-            {legalLinks.map((l) =>
-              l.external ? (
-                <a
-                  key={l.href}
-                  href={l.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="footer__close-legal-link"
-                >
-                  {l.label}
-                </a>
-              ) : (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  className="footer__close-legal-link"
-                >
-                  {l.label}
-                </Link>
-              ),
+            <span>{copyright}</span>
+            {(footer?.legalLinks ?? []).map((l, i) =>
+              renderInternalOrExternalLink(l, 'footer__close-legal-link', `${l?.href ?? 'legal'}-${i}`),
             )}
             {/* Opens the vanilla-cookieconsent preferences modal — the
-                library wires the click via the data-cc attribute. */}
+                library auto-binds the click via the data-cc attribute. */}
             <button
               type="button"
               data-cc="show-preferencesModal"
@@ -274,21 +273,25 @@ export default async function Footer() {
             </button>
           </p>
 
-          <div className="footer__partner">
-            <span className="text-body--sm color--tertiary">In partnership with</span>
-            <Image
-              src="/66bb33f5cfec7c80b0da70da_iselogo.png"
-              alt="Institute of Student Employers"
-              width={160}
-              height={64}
-              className="footer__partner-logo"
-            />
-          </div>
+          {footer?.partnerLogoUrl && (
+            <div className="footer__partner">
+              {footer.partnerLabel && (
+                <span className="text-body--sm color--tertiary">{footer.partnerLabel}</span>
+              )}
+              <Image
+                src={footer.partnerLogoUrl}
+                alt={footer.partnerLogoAlt ?? ''}
+                width={160}
+                height={64}
+                className="footer__partner-logo"
+              />
+            </div>
+          )}
         </div>
 
       </div>
 
-      {/* ── Decorative shape fan — bottom-right corner ───────── */}
+      {/* ── Decorative shape fan — bottom-right corner ───── */}
       <FooterFan position="bottom-right" />
     </footer>
   );

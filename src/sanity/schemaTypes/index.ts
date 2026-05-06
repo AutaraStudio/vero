@@ -16,6 +16,9 @@ import { mediaBlock } from './mediaBlock'
 import { pageSeo } from './pageSeo'
 import { legalPage } from './legalPage'
 import { siteBackup } from './siteBackup'
+import { globalCategoryGroups } from './globalCategoryGroups'
+import { globalNav } from './globalNav'
+import { globalFooter } from './globalFooter'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -41,5 +44,10 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     role,
     legalPage,
     siteBackup,
+
+    /* Global singletons — site-wide content shown on every page */
+    globalNav,
+    globalFooter,
+    globalCategoryGroups,
   ],
 }
