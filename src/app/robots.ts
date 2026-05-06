@@ -15,8 +15,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: [
           '/api/',         // server endpoints
-          '/studio',       // Sanity Studio mount point
-          '/guides/',      // internal client editor manual
+          '/admin/',       // Sanity Studio + internal client guide
           '/get-started/', // checkout flow — no need to crawl
         ],
       },

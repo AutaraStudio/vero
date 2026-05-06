@@ -30,7 +30,7 @@ A friendly guide to editing the website. No coding required.
 Sanity Studio lives at:
 
 ```
-https://veroassess.com/studio
+https://staging--vero-assess-staging.netlify.app/admin/studio
 ```
 
 (Or whichever URL your developer gives you.)
