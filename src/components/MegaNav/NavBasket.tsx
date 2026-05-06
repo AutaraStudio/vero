@@ -11,6 +11,7 @@ import {
 } from '@/lib/tierRecommendation';
 import Button from '@/components/ui/Button';
 import CheckIcon from '@/components/ui/CheckIcon';
+import UpsellNudge from '@/app/(site)/get-started/components/UpsellNudge';
 import type { NavCategory } from './MegaNav';
 import './NavBasket.css';
 
@@ -46,6 +47,7 @@ export default function NavBasket({ categories = [] }: Props) {
   const [open, setOpen] = useState(false);          // is the drawer in the DOM?
   const [animateIn, setAnimateIn] = useState(false); // is the .is-open class applied?
   const [confirmClear, setConfirmClear] = useState(false);
+  const [nudgeVisible, setNudgeVisible] = useState(false);
 
   /* Reset the confirm-clear state whenever the drawer closes */
   useEffect(() => {
@@ -85,19 +87,28 @@ export default function NavBasket({ categories = [] }: Props) {
     if (open && selectedRoles.length === 0) close();
   }, [open, selectedRoles.length, close]);
 
+  /* When the user clicks "Continue to checkout" inside the drawer.
+     If their basket is below the included role count for the tier
+     (e.g. 3 roles on Essential which allows up to 5), open the same
+     UpsellNudge that fires from the get-started page so they get a
+     consistent reminder either way they reach checkout. */
   const handleContinue = useCallback(() => {
-    close();
     if (recommendedTier === 'bespoke') {
+      close();
       router.push('/get-started/bespoke');
       return;
     }
     if (!nudgeShown && recommendedTier) {
       const nudgeContent = getNudgeContent(recommendedTier, selectedRoles.length);
       if (nudgeContent) {
-        // Defer to give nudge state space; for the drawer we just go straight to details
-        // (the nudge UX is checkout-specific)
+        /* Show the nudge in place of routing. We deliberately leave
+           the drawer mounted so the backdrop chain is consistent —
+           UpsellNudge mounts its own portal on top. */
+        setNudgeVisible(true);
+        return;
       }
     }
+    close();
     router.push('/get-started/details');
   }, [close, recommendedTier, nudgeShown, selectedRoles.length, router]);
 
@@ -105,6 +116,23 @@ export default function NavBasket({ categories = [] }: Props) {
     close();
     router.push('/get-started');
   }, [close, router]);
+
+  /* Nudge "Add more roles" — close drawer, send user to the role
+     picker so they can fill the remaining slots. */
+  const handleNudgeAddMore = useCallback(() => {
+    dispatch({ type: 'SET_NUDGE_SHOWN' });
+    setNudgeVisible(false);
+    close();
+    router.push('/get-started');
+  }, [dispatch, close, router]);
+
+  /* Nudge "Continue with N roles" — proceed straight to checkout. */
+  const handleNudgeContinue = useCallback(() => {
+    dispatch({ type: 'SET_NUDGE_SHOWN' });
+    setNudgeVisible(false);
+    close();
+    router.push('/get-started/details');
+  }, [dispatch, close, router]);
 
   const handleClear = useCallback(() => {
     dispatch({ type: 'CLEAR_BASKET' });
@@ -324,6 +352,18 @@ export default function NavBasket({ categories = [] }: Props) {
         </div>,
         document.body,
       )}
+
+      {nudgeVisible && recommendedTier && (() => {
+        const content = getNudgeContent(recommendedTier, selectedRoles.length);
+        if (!content) return null;
+        return (
+          <UpsellNudge
+            content={content}
+            onAddMore={handleNudgeAddMore}
+            onContinue={handleNudgeContinue}
+          />
+        );
+      })()}
     </>
   );
 }
