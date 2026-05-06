@@ -75,12 +75,7 @@ interface HomePageData {
   pricingCtaLabel?: string;
   pricingCtaHref?: string;
 
-  // Closing CTA
-  closingStatement?: string;
-  closingEyebrow?: string;
-  closingBenefits?: string[];
-  closingCtaLabel?: string;
-  closingCtaHref?: string;
+  // (Closing CTA fields removed — now driven by Global → Footer)
 }
 
 interface SiteSettingsLogos {

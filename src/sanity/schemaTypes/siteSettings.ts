@@ -7,12 +7,15 @@ export const siteSettings = defineType({
   title: 'Site Settings',
   type: 'document',
   icon: CogIcon,
+  /* Footer + Nav fields used to live here too — they're now in their
+     own focused docs under Global → Footer / Global → Nav. What
+     remains is genuinely site-wide and not specific to one surface:
+     SEO defaults, the home-page logo marquee, and the checkout T&C
+     URLs. */
   groups: [
     { name: 'seo',           title: 'SEO & Branding' },
-    { name: 'footer',        title: 'Footer' },
-    { name: 'nav',           title: 'Nav' },
-    { name: 'partnerLogos',  title: 'Partner Logos' },
-    { name: 'legal',         title: 'Legal' },
+    { name: 'partnerLogos',  title: 'Home page logo marquee' },
+    { name: 'legal',         title: 'Checkout T&C URLs' },
   ],
   fields: [
     /* ── SEO & Branding (global defaults) ──────────────────
@@ -72,10 +75,13 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'twitterHandle',
-      title: 'Twitter / X handle',
+      title: 'Twitter / X meta handle',
       type: 'string',
       group: 'seo',
-      description: 'Without the @ — e.g. "veroassess". Used in Twitter card metadata.',
+      description:
+        'Account handle (without the @) used ONLY in the Twitter-card meta tag — improves how the site looks when shared on X. ' +
+        'This is separate from the visible social icons in the footer (those live under Global → Footer → Social links). ' +
+        'Leave blank to skip the Twitter-card author tag.',
     }),
     defineField({
       name: 'siteUrl',
@@ -93,46 +99,9 @@ export const siteSettings = defineType({
         'Hex value used by mobile browsers to tint the address bar (e.g. "#472d6a"). Optional.',
     }),
 
-    /* ── Footer ── */
-    defineField({
-      name: 'footerCtaHeading',
-      title: 'Footer CTA Heading',
-      type: 'string',
-      group: 'footer',
-    }),
-    defineField({
-      name: 'footerCtaBody',
-      title: 'Footer CTA Body',
-      type: 'text',
-      rows: 2,
-      group: 'footer',
-    }),
-    defineField({
-      name: 'footerCtaButtonLabel',
-      title: 'Footer CTA Button Label',
-      type: 'string',
-      group: 'footer',
-    }),
-    defineField({
-      name: 'footerCtaButtonHref',
-      title: 'Footer CTA Button Href',
-      type: 'string',
-      group: 'footer',
-    }),
-
-    /* ── Nav ── */
-    defineField({
-      name: 'navCtaLabel',
-      title: 'Nav CTA Label',
-      type: 'string',
-      group: 'nav',
-    }),
-    defineField({
-      name: 'navCtaHref',
-      title: 'Nav CTA Href',
-      type: 'string',
-      group: 'nav',
-    }),
+    /* Footer + Nav CTA fields removed — managed via Global → Footer
+       and Global → Nav now. Existing data stays in the doc but is
+       hidden from Studio. */
 
     /* ── Partner Logos (global — used wherever the LogoMarquee renders) ── */
     defineField({

@@ -7,7 +7,6 @@ import {
   PlayIcon,
   RocketIcon,
   TagIcon,
-  CommentIcon,
   HeartFilledIcon,
 } from '@sanity/icons'
 
@@ -29,7 +28,8 @@ export const homePage = defineType({
     { name: 'usps',        title: 'Section 3 — Feature highlights', icon: HeartFilledIcon },
     { name: 'steps',       title: 'Section 4 — How it works', icon: RocketIcon },
     { name: 'pricing',     title: 'Section 5 — Pricing summary', icon: TagIcon },
-    { name: 'closingCta',  title: 'Section 6 — Closing statement', icon: CommentIcon },
+    /* "Section 6 — Closing statement" group removed. The closing CTA
+       is now site-wide — edit it via Global → Footer instead. */
   ],
   fields: [
     /* ════════════════════════════════════════════════════════
@@ -342,49 +342,12 @@ export const homePage = defineType({
       hidden: ({ parent }) => !parent?.pricingCtaLabel,
     }),
 
-    /* ════════════════════════════════════════════════════════
-       SECTION 6 — CLOSING STATEMENT
-       The big purple block above the footer.
-    ════════════════════════════════════════════════════════ */
-    defineField({
-      name: 'closingStatement',
-      title: 'Big headline statement',
-      type: 'string',
-      group: 'closingCta',
-      description: 'The largest text on the page. Aim for ≤10 punchy words.',
-      validation: (Rule) =>
-        Rule.max(120).warning('Statements longer than ~12 words tend to wrap into too many lines.'),
-    }),
-    defineField({
-      name: 'closingEyebrow',
-      title: 'Small label (yellow pill)',
-      type: 'string',
-      group: 'closingCta',
-      description: 'e.g. "with Vero Assess you can". Sits between the headline and the rotating benefits.',
-    }),
-    defineField({
-      name: 'closingBenefits',
-      title: 'Rotating benefit lines',
-      type: 'array',
-      group: 'closingCta',
-      of: [{ type: 'string' }],
-      description:
-        'Short benefit claims that fade in/out one at a time. 3–6 lines work best. ' +
-        'Each line is one short sentence (no full stop).',
-    }),
-    defineField({
-      name: 'closingCtaLabel',
-      title: 'Button — text',
-      type: 'string',
-      group: 'closingCta',
-    }),
-    defineField({
-      name: 'closingCtaHref',
-      title: 'Button — link',
-      type: 'string',
-      group: 'closingCta',
-      hidden: ({ parent }) => !parent?.closingCtaLabel,
-    }),
+    /* The closing CTA used to live here as a per-page section — but
+       it always renders the same content as the site-wide footer
+       block, so now lives once in Global → Footer. The fields are
+       removed from this schema; the orphan data on the existing
+       homePage doc is harmless and can be unset by an editor opening
+       the doc in Studio (Sanity ignores unknown fields). */
   ],
   preview: {
     prepare() {
