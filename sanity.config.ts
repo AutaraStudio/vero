@@ -12,6 +12,7 @@ import {structureTool} from 'sanity/structure'
 import {apiVersion, dataset, projectId} from './src/sanity/env'
 import {schema} from './src/sanity/schemaTypes'
 import {structure} from './src/sanity/structure'
+import PromoteAction from './src/sanity/actions/promoteAction'
 
 export default defineConfig({
   basePath: '/studio',
@@ -19,6 +20,11 @@ export default defineConfig({
   dataset,
   // Add and edit the content schema in the './sanity/schemaTypes' folder
   schema,
+  /* Append "Push to Live Site" to every document's action menu. The
+     action self-disables when the active dataset is production. */
+  document: {
+    actions: (prev) => [...prev, PromoteAction],
+  },
   plugins: [
     structureTool({structure}),
     // Vision is for querying with GROQ from inside the Studio
