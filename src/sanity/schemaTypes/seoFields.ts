@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 import { SearchIcon } from '@sanity/icons'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 
 /**
  * Reusable per-page SEO object.
@@ -66,7 +67,7 @@ export const seoFields = defineType({
         'Image shown in social share previews. Recommended: 1200×630px JPG/PNG. ' +
         'Leave blank to use the global default from Site Settings.',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
     defineField({

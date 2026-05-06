@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 import {
   SparklesIcon,
   SearchIcon,
@@ -98,7 +99,7 @@ export const sciencePage = defineType({
               title: 'Supporting image',
               type: 'image',
               options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
               description: 'Shown as the sticky visual in the scroll-driven section.',
             }),
           ],

@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 import { CogIcon } from '@sanity/icons'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 
 export const siteSettings = defineType({
   name: 'siteSettings',
@@ -50,7 +51,7 @@ export const siteSettings = defineType({
       group: 'seo',
       description: 'Used in social share previews when a page has no override. Recommended 1200×630.',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
     defineField({

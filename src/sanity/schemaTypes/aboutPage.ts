@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 import {
   InfoOutlineIcon,
   SearchIcon,
@@ -282,7 +283,7 @@ export const aboutPage = defineType({
               type: 'image',
               options: { hotspot: true },
               description: 'Square image works best (e.g. 800×800). Hotspot lets you set the focal point.',
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
             }),
           ],
         },

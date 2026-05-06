@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 import {
   UsersIcon,
   SearchIcon,
@@ -203,7 +204,7 @@ export const jobCategory = defineType({
               type: 'image',
               options: { hotspot: true },
               description: 'Shown at the top of the card. 16:10 ratio works best (e.g. 800×500).',
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
             }),
           ],
           preview: {
