@@ -168,6 +168,31 @@
   font-weight: 600;
 }
 
+.legal__em {
+  font-style: italic;
+}
+
+.legal__u {
+  text-decoration: underline;
+  text-decoration-color: var(--color--border-strong);
+  text-underline-offset: 0.2em;
+}
+
+.legal__s {
+  text-decoration: line-through;
+  text-decoration-color: var(--color--text-tertiary);
+}
+
+.legal__code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9em;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-subtle);
+  border-radius: var(--radius--sm);
+  padding: 0.1em 0.35em;
+  color: var(--color--text-primary);
+}
+
 .legal__link {
   color: var(--color--text-primary);
   text-decoration: underline;

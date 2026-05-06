@@ -489,7 +489,8 @@ export const LEGAL_PAGE_BY_SLUG_QUERY = `
     "slug": slug.current,
     intro,
     lastUpdated,
-    body
+    body,
+    legacyMarkdown
   }
 `
 

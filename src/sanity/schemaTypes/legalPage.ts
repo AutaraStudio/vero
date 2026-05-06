@@ -1,12 +1,15 @@
-import { defineField, defineType } from 'sanity'
+import { defineArrayMember, defineField, defineType } from 'sanity'
 import { DocumentTextIcon } from '@sanity/icons'
 
 /**
  * Legal page — privacy, cookie policy, security, etc.
  *
- * Body is stored as Markdown so editors can paste content from the
- * source policy documents and the page route renders it via
- * react-markdown with a clean, accessible long-form style.
+ * Body is Portable Text so editors get a proper rich-text editor with
+ * headings, lists, links, bold/italic, and block quotes — every option
+ * is mapped to a Vero-styled output in `LegalDocument.tsx`. The older
+ * `legacyMarkdown` field is kept visible for now so editors can copy
+ * content over from the previous markdown body; once a rich body is
+ * filled in, it takes precedence and the markdown is ignored.
  */
 export const legalPage = defineType({
   name: 'legalPage',
@@ -47,12 +50,71 @@ export const legalPage = defineType({
     }),
     defineField({
       name: 'body',
-      title: 'Body (Markdown)',
-      type: 'text',
-      rows: 30,
+      title: 'Body',
       description:
-        'The full policy text in Markdown. Use ## for sections, ### for subsections, and standard - bullet lists. Inline links work via [label](url).',
-      validation: (Rule) => Rule.required(),
+        'Rich text. Use H2 for top-level sections (these auto-populate the on-page table of contents), H3 for subsections, plus lists, links, and bold / italic as needed.',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'block',
+          /* Block styles available in the dropdown. We deliberately exclude
+             H1 — the page title is the only H1 — and oversized headings
+             that don't fit the legal layout. */
+          styles: [
+            { title: 'Normal', value: 'normal' },
+            { title: 'Section heading (H2)', value: 'h2' },
+            { title: 'Sub-section (H3)', value: 'h3' },
+            { title: 'Inline heading (H4)', value: 'h4' },
+            { title: 'Quote', value: 'blockquote' },
+          ],
+          lists: [
+            { title: 'Bullet', value: 'bullet' },
+            { title: 'Numbered', value: 'number' },
+          ],
+          marks: {
+            decorators: [
+              { title: 'Bold', value: 'strong' },
+              { title: 'Italic', value: 'em' },
+              { title: 'Underline', value: 'underline' },
+              { title: 'Strike-through', value: 'strike-through' },
+              { title: 'Inline code', value: 'code' },
+            ],
+            annotations: [
+              {
+                name: 'link',
+                type: 'object',
+                title: 'Link',
+                fields: [
+                  defineField({
+                    name: 'href',
+                    title: 'URL',
+                    type: 'url',
+                    validation: (Rule) =>
+                      Rule.uri({
+                        scheme: ['http', 'https', 'mailto', 'tel'],
+                        allowRelative: true,
+                      }),
+                  }),
+                  defineField({
+                    name: 'newTab',
+                    title: 'Open in a new tab',
+                    type: 'boolean',
+                    initialValue: true,
+                  }),
+                ],
+              },
+            ],
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'legacyMarkdown',
+      title: 'Body (legacy markdown)',
+      type: 'text',
+      rows: 20,
+      description:
+        'Old markdown body — used as a fallback while content is being moved into the rich-text Body above. Once you finish copying the content into the new editor, you can clear this field.',
     }),
   ],
   preview: {

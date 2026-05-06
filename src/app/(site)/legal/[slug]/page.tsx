@@ -9,13 +9,17 @@ import {
 import { generateSiteMetadata, type SiteSeoSettings } from '@/lib/seo';
 import LegalDocument from './LegalDocument';
 
+import type { PortableTextBlock } from '@portabletext/types';
+
 interface LegalPageData {
   _id: string;
   title: string;
   slug: string;
   intro?: string | null;
   lastUpdated?: string | null;
-  body: string;
+  /** Portable Text array for migrated docs, markdown string for un-migrated. */
+  body?: PortableTextBlock[] | string | null;
+  legacyMarkdown?: string | null;
 }
 
 interface SlugRow {
@@ -61,7 +65,8 @@ export default async function LegalRoute({ params }: RouteProps) {
       title={page.title}
       intro={page.intro}
       lastUpdated={page.lastUpdated}
-      markdown={page.body}
+      body={page.body}
+      legacyMarkdown={page.legacyMarkdown}
     />
   );
 }

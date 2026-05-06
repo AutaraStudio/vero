@@ -3,13 +3,18 @@
 import { useEffect, useMemo, useState } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { PortableText, type PortableTextComponents } from '@portabletext/react';
+import type { PortableTextBlock } from '@portabletext/types';
 import './legal.css';
 
 interface Props {
   title: string;
   intro?: string | null;
   lastUpdated?: string | null;
-  markdown: string;
+  /** Either Portable Text (new) or, on un-migrated docs, the legacy markdown
+      string that originally lived in this field. The renderer handles both. */
+  body?: PortableTextBlock[] | string | null;
+  legacyMarkdown?: string | null;
 }
 
 /**
@@ -18,11 +23,23 @@ interface Props {
  * - Theme: brand-purple-deep hero band, plain page-bg below for max readability
  * - Sticky table of contents on wide screens (auto-built from H2s)
  * - Active heading highlighted in the TOC via IntersectionObserver
- * - Markdown body rendered through react-markdown + remark-gfm so editors can
- *   paste straight from policy docs without learning a custom block schema
+ * - Body: Portable Text via @portabletext/react when present, otherwise
+ *   falls back to the legacy markdown body so existing pages keep working
+ *   while content is migrated into the rich-text editor.
  */
-export default function LegalDocument({ title, intro, lastUpdated, markdown }: Props) {
-  const headings = useMemo(() => extractHeadings(markdown), [markdown]);
+export default function LegalDocument({ title, intro, lastUpdated, body, legacyMarkdown }: Props) {
+  const useRichText = Array.isArray(body) && body.length > 0;
+  /* If `body` is still a markdown string (un-migrated doc) treat it as the
+     legacy fallback; the explicit legacyMarkdown field wins if both exist. */
+  const fallbackMarkdown =
+    legacyMarkdown ?? (typeof body === 'string' ? body : '');
+  const headings = useMemo(
+    () =>
+      useRichText
+        ? extractHeadingsFromBlocks(body as PortableTextBlock[])
+        : extractHeadingsFromMarkdown(fallbackMarkdown),
+    [useRichText, body, fallbackMarkdown],
+  );
   const [activeId, setActiveId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -40,46 +57,6 @@ export default function LegalDocument({ title, intro, lastUpdated, markdown }: P
     });
     return () => obs.disconnect();
   }, [headings]);
-
-  const components: Components = {
-    h1: ({ children }) => <h1 className="legal__h1">{children}</h1>,
-    h2: ({ children }) => {
-      const id = slug(extractText(children));
-      return (
-        <h2 id={id} className="legal__h2">
-          <a href={`#${id}`} className="legal__heading-anchor" aria-label="Link to section">
-            {children}
-          </a>
-        </h2>
-      );
-    },
-    h3: ({ children }) => {
-      const id = slug(extractText(children));
-      return <h3 id={id} className="legal__h3">{children}</h3>;
-    },
-    h4: ({ children }) => <h4 className="legal__h4">{children}</h4>,
-    p:  ({ children }) => <p  className="legal__p">{children}</p>,
-    ul: ({ children }) => <ul className="legal__ul">{children}</ul>,
-    ol: ({ children }) => <ol className="legal__ol">{children}</ol>,
-    li: ({ children }) => <li className="legal__li">{children}</li>,
-    a:  ({ children, href }) => {
-      const isExternal = !!href && /^(https?:|mailto:|tel:)/.test(href);
-      return (
-        <a
-          href={href}
-          className="legal__link"
-          {...(isExternal && href?.startsWith('http')
-            ? { target: '_blank', rel: 'noopener noreferrer' }
-            : {})}
-        >
-          {children}
-        </a>
-      );
-    },
-    strong: ({ children }) => <strong className="legal__strong">{children}</strong>,
-    hr:    () => <hr className="legal__hr" />,
-    blockquote: ({ children }) => <blockquote className="legal__blockquote">{children}</blockquote>,
-  };
 
   const formattedDate = lastUpdated ? formatDate(lastUpdated) : null;
 
@@ -100,9 +77,13 @@ export default function LegalDocument({ title, intro, lastUpdated, markdown }: P
       {/* Body + sticky TOC */}
       <div className="legal__container">
         <article className="legal__article">
-          <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-            {markdown}
-          </ReactMarkdown>
+          {useRichText ? (
+            <PortableText value={body as PortableTextBlock[]} components={ptComponents} />
+          ) : (
+            <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+              {fallbackMarkdown}
+            </ReactMarkdown>
+          )}
         </article>
 
         <aside className="legal__toc" aria-label="On this page">
@@ -122,6 +103,104 @@ export default function LegalDocument({ title, intro, lastUpdated, markdown }: P
     </main>
   );
 }
+
+/* ── Portable Text components ────────────────────────────────────
+   Every option exposed in the schema has a styled output here. */
+
+const ptComponents: PortableTextComponents = {
+  block: {
+    h2: ({ children }) => {
+      const id = slug(extractText(children));
+      return (
+        <h2 id={id} className="legal__h2">
+          <a href={`#${id}`} className="legal__heading-anchor" aria-label="Link to section">
+            {children}
+          </a>
+        </h2>
+      );
+    },
+    h3: ({ children }) => {
+      const id = slug(extractText(children));
+      return <h3 id={id} className="legal__h3">{children}</h3>;
+    },
+    h4: ({ children }) => <h4 className="legal__h4">{children}</h4>,
+    normal: ({ children }) => <p className="legal__p">{children}</p>,
+    blockquote: ({ children }) => <blockquote className="legal__blockquote">{children}</blockquote>,
+  },
+  list: {
+    bullet: ({ children }) => <ul className="legal__ul">{children}</ul>,
+    number: ({ children }) => <ol className="legal__ol">{children}</ol>,
+  },
+  listItem: {
+    bullet: ({ children }) => <li className="legal__li">{children}</li>,
+    number: ({ children }) => <li className="legal__li">{children}</li>,
+  },
+  marks: {
+    strong: ({ children }) => <strong className="legal__strong">{children}</strong>,
+    em: ({ children }) => <em className="legal__em">{children}</em>,
+    underline: ({ children }) => <u className="legal__u">{children}</u>,
+    'strike-through': ({ children }) => <s className="legal__s">{children}</s>,
+    code: ({ children }) => <code className="legal__code">{children}</code>,
+    link: ({ children, value }) => {
+      const href = (value as { href?: string } | undefined)?.href ?? '#';
+      const newTab = (value as { newTab?: boolean } | undefined)?.newTab;
+      const isExternal = /^(https?:|mailto:|tel:)/.test(href);
+      return (
+        <a
+          href={href}
+          className="legal__link"
+          {...(isExternal && newTab !== false && href.startsWith('http')
+            ? { target: '_blank', rel: 'noopener noreferrer' }
+            : {})}
+        >
+          {children}
+        </a>
+      );
+    },
+  },
+};
+
+/* ── Markdown fallback components (legacy bodies) ─────────────── */
+
+const mdComponents: Components = {
+  h1: ({ children }) => <h1 className="legal__h1">{children}</h1>,
+  h2: ({ children }) => {
+    const id = slug(extractText(children));
+    return (
+      <h2 id={id} className="legal__h2">
+        <a href={`#${id}`} className="legal__heading-anchor" aria-label="Link to section">
+          {children}
+        </a>
+      </h2>
+    );
+  },
+  h3: ({ children }) => {
+    const id = slug(extractText(children));
+    return <h3 id={id} className="legal__h3">{children}</h3>;
+  },
+  h4: ({ children }) => <h4 className="legal__h4">{children}</h4>,
+  p:  ({ children }) => <p  className="legal__p">{children}</p>,
+  ul: ({ children }) => <ul className="legal__ul">{children}</ul>,
+  ol: ({ children }) => <ol className="legal__ol">{children}</ol>,
+  li: ({ children }) => <li className="legal__li">{children}</li>,
+  a:  ({ children, href }) => {
+    const isExternal = !!href && /^(https?:|mailto:|tel:)/.test(href);
+    return (
+      <a
+        href={href}
+        className="legal__link"
+        {...(isExternal && href?.startsWith('http')
+          ? { target: '_blank', rel: 'noopener noreferrer' }
+          : {})}
+      >
+        {children}
+      </a>
+    );
+  },
+  strong: ({ children }) => <strong className="legal__strong">{children}</strong>,
+  hr:    () => <hr className="legal__hr" />,
+  blockquote: ({ children }) => <blockquote className="legal__blockquote">{children}</blockquote>,
+};
 
 /* ── Helpers ─────────────────────────────────────────────────── */
 
@@ -143,7 +222,7 @@ function slug(text: string): string {
     .replace(/-+/g, '-');
 }
 
-function extractHeadings(markdown: string): { id: string; text: string }[] {
+function extractHeadingsFromMarkdown(markdown: string): { id: string; text: string }[] {
   const headings: { id: string; text: string }[] = [];
   const lines = markdown.split('\n');
   let inFence = false;
@@ -155,6 +234,19 @@ function extractHeadings(markdown: string): { id: string; text: string }[] {
       const text = m[1].trim();
       headings.push({ id: slug(text), text });
     }
+  }
+  return headings;
+}
+
+function extractHeadingsFromBlocks(blocks: PortableTextBlock[]): { id: string; text: string }[] {
+  const headings: { id: string; text: string }[] = [];
+  for (const block of blocks) {
+    if (block._type !== 'block' || block.style !== 'h2') continue;
+    const text = (block.children ?? [])
+      .map((c) => (c as { text?: string }).text ?? '')
+      .join('')
+      .trim();
+    if (text) headings.push({ id: slug(text), text });
   }
   return headings;
 }
