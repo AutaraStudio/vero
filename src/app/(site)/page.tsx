@@ -75,19 +75,15 @@ interface HomePageData {
   pricingCtaLabel?: string;
   pricingCtaHref?: string;
 
+  // Logo marquee (home-page only — moved here from siteSettings)
+  partnerLogosLabel?: string;
+  partnerLogos?: { name: string; logoUrl?: string; logoMimeType?: string }[];
+
   // (Closing CTA fields removed — now driven by Global → Footer)
 }
 
-interface SiteSettingsLogos {
-  partnerLogosLabel?: string;
-  partnerLogos?: { name: string; logoUrl?: string; logoMimeType?: string }[];
-}
-
 export default async function Home() {
-  const [data, settings] = await Promise.all([
-    client.fetch<HomePageData | null>(HOME_PAGE_QUERY),
-    client.fetch<SiteSettingsLogos | null>(SITE_SETTINGS_QUERY),
-  ]);
+  const data = await client.fetch<HomePageData | null>(HOME_PAGE_QUERY);
 
   /* ── Hero media (image vs video) ──────────────────────── */
   const badge = data?.heroBadgeLabel
@@ -118,12 +114,12 @@ export default async function Home() {
         alwaysShowMedia
       />
 
-      {/* ── 2. Partner logo marquee (global, from siteSettings) ──── */}
-      {settings?.partnerLogos && settings.partnerLogos.length > 0 && (
+      {/* ── 2. Partner logo marquee — content lives on this homePage doc ── */}
+      {data?.partnerLogos && data.partnerLogos.length > 0 && (
         <LogoMarquee
           theme="brand-purple"
-          label={settings.partnerLogosLabel}
-          logos={settings.partnerLogos}
+          label={data.partnerLogosLabel}
+          logos={data.partnerLogos}
         />
       )}
 

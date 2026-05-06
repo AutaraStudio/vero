@@ -8,6 +8,7 @@ import {
   RocketIcon,
   TagIcon,
   HeartFilledIcon,
+  ImagesIcon,
 } from '@sanity/icons'
 
 /**
@@ -24,11 +25,12 @@ export const homePage = defineType({
   icon: HomeIcon,
   groups: [
     { name: 'hero',        title: 'Section 1 — Hero',       icon: StarIcon, default: true },
-    { name: 'introBlock',  title: 'Section 2 — Intro + video', icon: PlayIcon },
-    { name: 'usps',        title: 'Section 3 — Feature highlights', icon: HeartFilledIcon },
-    { name: 'steps',       title: 'Section 4 — How it works', icon: RocketIcon },
-    { name: 'pricing',     title: 'Section 5 — Pricing summary', icon: TagIcon },
-    /* "Section 6 — Closing statement" group removed. The closing CTA
+    { name: 'logoMarquee', title: 'Section 2 — Logo marquee', icon: ImagesIcon },
+    { name: 'introBlock',  title: 'Section 3 — Intro + video', icon: PlayIcon },
+    { name: 'usps',        title: 'Section 4 — Feature highlights', icon: HeartFilledIcon },
+    { name: 'steps',       title: 'Section 5 — How it works', icon: RocketIcon },
+    { name: 'pricing',     title: 'Section 6 — Pricing summary', icon: TagIcon },
+    /* "Section 7 — Closing statement" group removed. The closing CTA
        is now site-wide — edit it via Global → Footer instead. */
   ],
   fields: [
@@ -106,7 +108,54 @@ export const homePage = defineType({
     }),
 
     /* ════════════════════════════════════════════════════════
-       SECTION 2 — INTRO BLOCK (text + video)
+       SECTION 2 — LOGO MARQUEE
+       Scrolling row of partner / customer logos. Renders only on
+       the home page, just below the hero.
+    ════════════════════════════════════════════════════════ */
+    defineField({
+      name: 'partnerLogosLabel',
+      title: 'Section label',
+      type: 'string',
+      group: 'logoMarquee',
+      description:
+        'Small eyebrow shown above the marquee (e.g. "Trusted by hiring teams at"). Leave blank to hide the label.',
+    }),
+    defineField({
+      name: 'partnerLogos',
+      title: 'Logos',
+      type: 'array',
+      group: 'logoMarquee',
+      description:
+        'Logos shown in the scrolling marquee. SVG strongly preferred — uploaded as raw file assets so they render crisply and recolour cleanly. Leave the array empty to hide the section.',
+      of: [
+        {
+          type: 'object',
+          preview: {
+            select: { title: 'name', media: 'logo' },
+          },
+          fields: [
+            defineField({
+              name: 'name',
+              title: 'Company name',
+              type: 'string',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'logo',
+              title: 'Logo (SVG, PNG, or WebP)',
+              type: 'file',
+              options: {
+                accept: 'image/svg+xml,image/png,image/webp',
+              },
+              description: 'SVGs upload as files (no transformations) so they keep their full vector fidelity.',
+            }),
+          ],
+        },
+      ],
+    }),
+
+    /* ════════════════════════════════════════════════════════
+       SECTION 3 — INTRO BLOCK (text + video)
     ════════════════════════════════════════════════════════ */
     defineField({
       name: 'introBlockEyebrow',
@@ -151,7 +200,7 @@ export const homePage = defineType({
     }),
 
     /* ════════════════════════════════════════════════════════
-       SECTION 3 — FEATURE HIGHLIGHTS (cards grid)
+       SECTION 4 — FEATURE HIGHLIGHTS (cards grid)
     ════════════════════════════════════════════════════════ */
     defineField({
       name: 'uspsSectionLabel',
@@ -231,7 +280,7 @@ export const homePage = defineType({
     }),
 
     /* ════════════════════════════════════════════════════════
-       SECTION 4 — HOW IT WORKS (numbered steps)
+       SECTION 5 — HOW IT WORKS (numbered steps)
     ════════════════════════════════════════════════════════ */
     defineField({
       name: 'stepsSectionLabel',
@@ -298,7 +347,7 @@ export const homePage = defineType({
     }),
 
     /* ════════════════════════════════════════════════════════
-       SECTION 5 — PRICING SUMMARY
+       SECTION 6 — PRICING SUMMARY
     ════════════════════════════════════════════════════════ */
     defineField({
       name: 'pricingSectionLabel',
