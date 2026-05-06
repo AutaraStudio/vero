@@ -130,6 +130,10 @@
 .role-grid__card-name {
   margin: 0;
   text-wrap: balance;
+  /* Reserve 2 lines so 1-line names ("Office Coordinator") align with
+     2-line ones ("Document Control / Compliance Administrator").
+     text-h5 = 1.125rem at line-height ~1.3 → 2 lines ≈ 2.925rem. */
+  min-height: 2.925rem;
 }
 
 .role-grid__card-tasks {
