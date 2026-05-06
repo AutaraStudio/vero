@@ -22,12 +22,10 @@ export function ConsentManager({ children }: { children: React.ReactNode }) {
     <ConsentManagerProvider
       options={{
         mode: 'offline',
-        /* The runtime reads `consentCategories` from the top-level options
-           (see c15t source: configureConsentManager). The Studio types
-           document `store.initialConsentCategories` but the runtime path
-           ignores it — only the top-level field controls which categories
-           Accept All toggles on. */
-        // @ts-expect-error — c15t typings do not surface this field
+        /* c15t reads `consentCategories` from the top-level options
+           (see configureConsentManager in c15t source). The runtime
+           ignores `store.initialConsentCategories` — only this field
+           controls which categories Accept All toggles on. */
         consentCategories: ['necessary', 'measurement'],
       }}
     >
