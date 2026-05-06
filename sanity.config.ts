@@ -14,6 +14,7 @@ import {apiVersion, dataset, projectId} from './src/sanity/env'
 import {schema} from './src/sanity/schemaTypes'
 import {structure} from './src/sanity/structure'
 import PromoteAction from './src/sanity/actions/promoteAction'
+import {backupsTool} from './src/sanity/tools/backupsTool'
 
 export default defineConfig({
   basePath: '/admin/studio',
@@ -26,6 +27,10 @@ export default defineConfig({
   document: {
     actions: (prev) => [...prev, PromoteAction],
   },
+  /* Custom tools surface in the top-right of the Studio next to the
+     workspace switcher. The Backups tool only does anything in the
+     staging dataset — backups are written there for safety. */
+  tools: (prev) => [...prev, backupsTool],
   plugins: [
     structureTool({structure}),
     // Vision is for querying with GROQ from inside the Studio
