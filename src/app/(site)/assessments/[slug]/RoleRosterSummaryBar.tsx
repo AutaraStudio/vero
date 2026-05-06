@@ -1,35 +1,51 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA, getNudgeContent, getTierPrice } from '@/lib/tierRecommendation';
+import { TIER_DATA, getTierPrice, getNudgeContent } from '@/lib/tierRecommendation';
+import { gsap } from '@/lib/gsap';
+import Button from '@/components/ui/Button';
 import UpsellNudge from '@/app/(site)/get-started/components/UpsellNudge';
+import '@/app/(site)/get-started/components/plan-bar.css';
 import './role-roster-summary-bar.css';
 
 /**
- * Section-scoped sticky summary bar shown at the bottom of the role-roster
- * grid on every assessment-category page. It's `position: sticky` inside
- * the role-grid section, so it floats at the bottom of the viewport while
- * the section is on screen and scrolls away with the section as the user
- * moves past it — never sticks for the whole page.
+ * Section-scoped variant of the get-started PlanBar shown on each
+ * assessment-category page. Visually matches the checkout-flow
+ * bar (same plan-bar layout — tier name + price + CTA) so the user
+ * gets a consistent "where you are with your basket" anchor across
+ * the buying journey.
  *
- * Mirrors the behaviour of the basket-mobile-bar inside `/get-started`:
- * shows count + recommended-tier label + price hint, View basket / Continue
- * actions, and triggers the same UpsellNudge popup before sending the user
- * to the next checkout step.
+ * The bar is `position: sticky` rendered inside the role-grid
+ * section, so it floats at the bottom of the viewport while the
+ * section is on screen and scrolls away with the section as the
+ * user moves past — pure CSS, no JS observer needed.
  */
 export default function RoleRosterSummaryBar() {
   const router = useRouter();
   const { state, dispatch } = useBasket();
   const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
-  const [nudgeVisible, setNudgeVisible] = useState(false);
 
-  if (selectedRoles.length === 0) return null;
+  const [nudgeVisible, setNudgeVisible] = useState(false);
+  const barRef = useRef<HTMLDivElement>(null);
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
-  const price = tierInfo ? getTierPrice(tierInfo, paymentFrequency) : null;
+  const visible = selectedRoles.length > 0 && !!tierInfo;
+
+  /* Slide-in when the bar first becomes visible — mirrors PlanBar. */
+  useEffect(() => {
+    if (!visible || !barRef.current) return;
+    gsap.fromTo(
+      barRef.current,
+      { y: '100%' },
+      { y: 0, duration: 0.45, ease: 'power3.out', delay: 0.05, clearProps: 'transform' },
+    );
+  }, [visible]);
+
+  if (!visible || !tierInfo) return null;
+
+  const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);
 
   const handleContinue = () => {
     if (recommendedTier === 'bespoke') {
@@ -46,28 +62,43 @@ export default function RoleRosterSummaryBar() {
     router.push('/get-started/details');
   };
 
+  const ctaLabel = recommendedTier === 'bespoke'
+    ? 'Discuss your requirements →'
+    : 'Continue to checkout';
+
   return (
     <>
-      <div className="role-roster-summary-bar" role="region" aria-label="Selected roles summary">
-        <div className="role-roster-summary-bar__inner">
-          <div className="role-roster-summary-bar__info">
-            <div className="role-roster-summary-bar__info-row">
-              <span className="text-body--md font--medium color--primary">
-                {selectedRoles.length} role{selectedRoles.length !== 1 ? 's' : ''} selected
-              </span>
-              {tierInfo && (
-                <span className="section-label">{tierInfo.name}</span>
+      <div ref={barRef} className="role-roster-summary-bar" data-theme="brand-purple">
+        <div className="container">
+          <div className="role-roster-summary-bar__inner">
+            {/* Left — tier name + billing label (matches PlanBar) */}
+            <div className="plan-bar__left">
+              <span className="plan-bar__tier-name">{tierInfo.name}</span>
+              {tierInfo.hasFrequencyToggle && (
+                <span className="plan-bar__freq-label text-body--xs color--tertiary">
+                  {paymentFrequency === 'annual' ? 'Billed annually' : 'Billed monthly'}
+                </span>
               )}
             </div>
-            {tierInfo && price && (
-              <span className="text-body--xs color--tertiary">
-                {price.price} · {price.priceNote}
-              </span>
-            )}
-          </div>
-          <div className="role-roster-summary-bar__actions">
-            <Button variant="primary" size="sm" onClick={handleContinue}>
-              {recommendedTier === 'bespoke' ? 'Discuss requirements →' : 'Continue →'}
+
+            <span className="divider--vertical plan-bar__hide-tablet" aria-hidden="true" />
+
+            {/* Centre — price + limits (matches PlanBar) */}
+            <div className="plan-bar__centre">
+              <div className="plan-bar__price-row">
+                <span className="plan-bar__price text-h4 color--primary">{price}</span>
+                <span className="text-body--xs color--tertiary">{priceNote}</span>
+              </div>
+              <div className="plan-bar__limits-row">
+                <span className="text-body--xs color--secondary">{tierInfo.candidateLimit}</span>
+                <span className="plan-bar__dot" aria-hidden="true" />
+                <span className="text-body--xs color--secondary">{tierInfo.roleLimit}</span>
+              </div>
+            </div>
+
+            {/* Right — CTA */}
+            <Button variant="primary" size="md" onClick={handleContinue}>
+              {ctaLabel}
             </Button>
           </div>
         </div>
