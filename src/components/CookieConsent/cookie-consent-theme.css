@@ -68,3 +68,17 @@
   --cc-webkit-scrollbar-bg: var(--color--border-subtle);
   --cc-webkit-scrollbar-hover-bg: var(--color--border-default);
 }
+
+/* ── Compact cloud-layout consent banner ───────────────────────
+   The library's default cloud layout is 54em wide with 19em-min
+   buttons — too dominant for our use. Pin the card to 26em with
+   right-column buttons sized to fit their labels. */
+#cc-main .cm--cloud {
+  max-width: 32em;
+}
+#cc-main .cm--cloud .cm__btns {
+  max-width: 12em;
+}
+#cc-main .cm--cloud .cm__btn {
+  min-width: 0;
+}
