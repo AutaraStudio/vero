@@ -22,7 +22,16 @@ function ConfirmationContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, autoRenewal, isBespokeEnquiry, bespokeDetails } = state;
+
+  /* Snapshot the basket state on first render so the receipt below has
+     stable data to render from, then clear the live basket. Without this
+     snapshot, dispatching CLEAR_BASKET here would blank out the page
+     mid-render. With it, the page renders the order from frozen state
+     while the nav basket count drops to zero immediately — fixing the
+     bug where the basket lingered after a successful purchase until the
+     user clicked "Return to Vero Assess". */
+  const [snapshot] = useState(() => state);
+  const { selectedRoles, contactDetails, recommendedTier, paymentFrequency, autoRenewal, isBespokeEnquiry, bespokeDetails } = snapshot;
 
   const [sessionVerified, setSessionVerified] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -47,6 +56,14 @@ function ConfirmationContent() {
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  /* Clear the live basket once the confirmation page has mounted with
+     a snapshot in hand. Runs once. The receipt continues to render
+     from the snapshot above. */
+  useEffect(() => {
+    dispatch({ type: 'CLEAR_BASKET' });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const { price: tierPrice } = tierInfo
@@ -537,7 +554,7 @@ function ConfirmationContent() {
                 <span className="text-body--sm font--medium color--primary">support@veroassess.com</span>
               </div>
             </a>
-            <a href="tel:+441234567890" className="confirmation-contact__option">
+            <a href="tel:+442922331888" className="confirmation-contact__option">
               <span className="confirmation-contact__icon" aria-hidden="true">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.8 12.4 19.79 19.79 0 0 1 1.73 3.8 2 2 0 0 1 3.72 2h3a2 2 0 0 1 2 1.72c.127.96.362 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.69a16 16 0 0 0 6.29 6.29l1.06-1.06a2 2 0 0 1 2.11-.45c.907.338 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -545,7 +562,7 @@ function ConfirmationContent() {
               </span>
               <div className="confirmation-contact__option-text">
                 <span className="text-label--sm color--tertiary">Phone</span>
-                <span className="text-body--sm font--medium color--primary">+44 (0)1234 567890</span>
+                <span className="text-body--sm font--medium color--primary">+44 (0)2922 331 888</span>
               </div>
             </a>
           </div>

@@ -31,7 +31,21 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     gsap.ticker.add(tick);
     gsap.ticker.lagSmoothing(0);
 
+    /* Refresh ScrollTrigger positions after Lenis is wired up AND after
+       fonts / images / late layout have settled. Without this refresh,
+       triggers measured at hydration can land at stale Y positions
+       (especially for elements deep in the page like the footer
+       CTAStatement) — they fire off-screen and, because we use
+       once: true, the animation runs into nothing and the elements
+       stay at opacity: 0. The symptom is "card outline visible, but
+       heading / buttons missing" on intermittent loads. */
+    const refresh = () => ScrollTrigger.refresh();
+    const initialRefresh = window.setTimeout(refresh, 120);
+    window.addEventListener('load', refresh);
+
     return () => {
+      window.clearTimeout(initialRefresh);
+      window.removeEventListener('load', refresh);
       lenis.destroy();
       lenisRef.current = null;
       gsap.ticker.remove(tick);
@@ -48,6 +62,12 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     const lenis = lenisRef.current;
     if (!lenis) return;
     lenis.scrollTo(0, { immediate: true, force: true });
+    /* New page layout = potentially different scroll heights for every
+       trigger that lives inside the persistent layout (nav, footer,
+       SmoothScroll wrapper). Re-measure once the new content has
+       painted so triggers attach to correct Y positions. */
+    const t = window.setTimeout(() => ScrollTrigger.refresh(), 80);
+    return () => window.clearTimeout(t);
   }, [pathname]);
 
   return <>{children}</>;
