@@ -2,6 +2,7 @@ import type { StructureBuilder } from 'sanity/structure'
 import {
   HomeIcon,
   TagIcon,
+  TagsIcon,
   UsersIcon,
   UserIcon,
   CogIcon,
@@ -15,6 +16,9 @@ import {
   PackageIcon,
   EditIcon,
   DocumentTextIcon,
+  EarthGlobeIcon,
+  MenuIcon,
+  ComposeIcon,
 } from '@sanity/icons'
 import type { ComponentType } from 'react'
 
@@ -141,7 +145,52 @@ export const structure = (S: StructureBuilder) =>
       S.divider(),
 
       /* ────────────────────────────────────────────────────────
-         SETTINGS — global config that rarely changes.
+         GLOBAL — site-wide content shown on every page.
+         Each child is a separate singleton so editors can jump
+         straight to "Footer" or "Nav" without scrolling through
+         a megadoc.
+      ──────────────────────────────────────────────────────── */
+      S.listItem()
+        .title('Global')
+        .icon(EarthGlobeIcon)
+        .child(
+          S.list()
+            .title('Global')
+            .items([
+              S.listItem()
+                .title('Nav')
+                .icon(MenuIcon)
+                .child(
+                  S.document()
+                    .schemaType('globalNav')
+                    .documentId('globalNav')
+                    .title('Nav'),
+                ),
+              S.listItem()
+                .title('Footer')
+                .icon(ComposeIcon)
+                .child(
+                  S.document()
+                    .schemaType('globalFooter')
+                    .documentId('globalFooter')
+                    .title('Footer'),
+                ),
+              S.listItem()
+                .title('Category groups (nav + footer)')
+                .icon(TagsIcon)
+                .child(
+                  S.document()
+                    .schemaType('globalCategoryGroups')
+                    .documentId('globalCategoryGroups')
+                    .title('Category groups'),
+                ),
+            ]),
+        ),
+
+      S.divider(),
+
+      /* ────────────────────────────────────────────────────────
+         SETTINGS — SEO + branding defaults that rarely change.
       ──────────────────────────────────────────────────────── */
       S.listItem()
         .title('Site settings')

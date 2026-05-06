@@ -3,17 +3,34 @@
 import { usePathname } from 'next/navigation';
 import MegaNav from '@/components/MegaNav';
 import SmoothScroll from '@/components/SmoothScroll';
-import type { NavCategory } from '@/components/MegaNav/MegaNav';
+import type {
+  NavTopItem,
+  NavColumn,
+  NavCompanyCard,
+  NavCategoryGroup,
+} from '@/components/MegaNav/MegaNav';
 
 interface ConditionalShellProps {
   children: React.ReactNode;
   footer?: React.ReactNode;
-  navCtaLabel?: string;
-  navCtaHref?: string;
-  categories?: NavCategory[];
+  topItems?: NavTopItem[];
+  companyColumns?: NavColumn[];
+  companyCard?: NavCompanyCard | null;
+  ctaLabel?: string;
+  ctaHref?: string;
+  categoryGroups?: NavCategoryGroup[];
 }
 
-export default function ConditionalShell({ children, footer, navCtaLabel, navCtaHref, categories = [] }: ConditionalShellProps) {
+export default function ConditionalShell({
+  children,
+  footer,
+  topItems = [],
+  companyColumns = [],
+  companyCard = null,
+  ctaLabel = 'Get started',
+  ctaHref = '/get-started',
+  categoryGroups = [],
+}: ConditionalShellProps) {
   const pathname = usePathname();
   const isCheckout = pathname.startsWith('/get-started');
 
@@ -23,7 +40,14 @@ export default function ConditionalShell({ children, footer, navCtaLabel, navCta
 
   return (
     <>
-      <MegaNav navCtaLabel={navCtaLabel} navCtaHref={navCtaHref} categories={categories} />
+      <MegaNav
+        topItems={topItems}
+        companyColumns={companyColumns}
+        companyCard={companyCard}
+        ctaLabel={ctaLabel}
+        ctaHref={ctaHref}
+        categoryGroups={categoryGroups}
+      />
       <SmoothScroll>
         {children}
         {footer}

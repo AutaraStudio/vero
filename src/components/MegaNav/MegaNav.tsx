@@ -29,41 +29,66 @@ function ChevronLeft({ className }: { className?: string }) {
 /* ── Types ── */
 
 export interface NavCategory {
-  name: string;
-  slug: string;
+  _id?: string | null;
+  name?: string | null;
+  slug?: string | null;
+  navDescription?: string | null;
 }
 
-/* ── Nav grouping config ── */
-/* Maps each slug to its column group and short description shown in the menu. */
-/* If a new category is added in Sanity, add it here to include it in the nav. */
+export interface NavCategoryGroup {
+  _key?: string | null;
+  title?: string | null;
+  categories?: NavCategory[] | null;
+}
 
-type NavGroup = 'jobFamilies' | 'earlyCareers' | 'specialist';
+export interface NavLink {
+  label?: string | null;
+  description?: string | null;
+  href?: string | null;
+  external?: boolean | null;
+}
 
-const categoryMeta: Record<string, { group: NavGroup; label: string; desc: string }> = {
-  'administration':                { group: 'jobFamilies',  label: 'Administration',              desc: 'Dependable, organised talent' },
-  'operations-and-logistics':      { group: 'jobFamilies',  label: 'Operations & Logistics',      desc: 'Precise, process-led hires' },
-  'sales':                         { group: 'jobFamilies',  label: 'Sales',                       desc: 'Commercially-minded performers' },
-  'retail-and-hospitality':        { group: 'jobFamilies',  label: 'Retail & Hospitality',        desc: 'Service-led problem solvers' },
-  'health-and-social-care':        { group: 'jobFamilies',  label: 'Health & Social Care',        desc: 'Compassionate, resilient staff' },
-  'graduates':                     { group: 'earlyCareers', label: 'Graduates',                   desc: 'Future leaders, assessed early' },
-  'apprentices':                   { group: 'earlyCareers', label: 'Apprentices',                 desc: 'Spot potential beyond CVs' },
-  'interns':                       { group: 'earlyCareers', label: 'Interns',                     desc: 'Build your talent pipeline' },
-  'claims-and-collections':        { group: 'specialist',   label: 'Claims & Collections',        desc: 'Integrity under pressure' },
-  'field-service-and-technicians': { group: 'specialist',   label: 'Field Service & Technicians', desc: 'Practical and customer-facing' },
-};
+export interface NavColumn {
+  _key?: string | null;
+  title?: string | null;
+  links?: NavLink[] | null;
+}
+
+export interface NavCompanyCard {
+  eyebrow?: string | null;
+  body?: string | null;
+  ctaLabel?: string | null;
+  ctaHref?: string | null;
+  imageUrl?: string | null;
+  imageAlt?: string | null;
+}
+
+export interface NavTopItem {
+  _key?: string | null;
+  _type?: 'plainLink' | 'assessmentsDropdown' | 'companyDropdown' | string | null;
+  label?: string | null;
+  href?: string | null;
+  external?: boolean | null;
+}
+
+interface MegaNavProps {
+  topItems?: NavTopItem[];
+  companyColumns?: NavColumn[];
+  companyCard?: NavCompanyCard | null;
+  ctaLabel?: string;
+  ctaHref?: string;
+  categoryGroups?: NavCategoryGroup[];
+}
 
 /* ── Component ── */
 
-interface MegaNavProps {
-  navCtaLabel?: string;
-  navCtaHref?: string;
-  categories?: NavCategory[];
-}
-
 export default function MegaNav({
-  navCtaLabel = 'Get started',
-  navCtaHref = '/get-started',
-  categories = [],
+  topItems = [],
+  companyColumns = [],
+  companyCard = null,
+  ctaLabel = 'Get started',
+  ctaHref = '/get-started',
+  categoryGroups = [],
 }: MegaNavProps) {
   const navRef = useRef<HTMLElement>(null);
 
@@ -72,6 +97,22 @@ export default function MegaNav({
     if (!el) return;
     return initMegaNav(el);
   }, []);
+
+  /* Has the editor placed each dropdown trigger? Used to gate panel
+     rendering so we don't show empty dropdowns on a misconfigured nav. */
+  const hasAssessmentsDropdown = topItems.some((i) => i?._type === 'assessmentsDropdown');
+  const hasCompanyDropdown = topItems.some((i) => i?._type === 'companyDropdown');
+
+  /* All categories that ended up inside any group. */
+  const visibleCategoryGroups = (categoryGroups ?? [])
+    .map((g) => ({
+      _key: g._key,
+      title: g.title ?? '',
+      categories: (g.categories ?? []).filter(
+        (c): c is NavCategory & { slug: string; name: string } => Boolean(c?.slug && c?.name),
+      ),
+    }))
+    .filter((g) => g.title && g.categories.length > 0);
 
   return (
     <nav ref={navRef} data-menu-open="false" data-menu-wrap="" className="mega-nav">
@@ -87,42 +128,80 @@ export default function MegaNav({
             {/* Nav inner */}
             <div data-nav-list="" data-mobile-nav="" className="mega-nav__bar-inner flex gap--sm">
               <ul className="mega-nav__bar-list flex gap--xs">
-                <li data-nav-list-item="">
-                  <button data-dropdown-toggle="assessments" aria-expanded="false" aria-haspopup="true" className="mega-nav__bar-link is--dropdown">
-                    <span className="mega-nav__bar-link-label text-body--sm font--medium">Assessments</span>
-                    <ChevronDown className="mega-nav__bar-link-icon is--dropdown" />
-                  </button>
-                </li>
-                <li data-nav-list-item="">
-                  <button data-dropdown-toggle="company" aria-expanded="false" aria-haspopup="true" className="mega-nav__bar-link is--dropdown">
-                    <span className="mega-nav__bar-link-label text-body--sm font--medium">Company</span>
-                    <ChevronDown className="mega-nav__bar-link-icon is--dropdown" />
-                  </button>
-                </li>
-                <li data-nav-list-item="">
-                  <Link href="/pricing" className="mega-nav__bar-link">
-                    <span className="mega-nav__bar-link-label text-body--sm font--medium">Pricing</span>
-                  </Link>
-                </li>
+                {topItems.map((item, i) => {
+                  const key = item._key ?? `top-${i}`;
+                  if (item._type === 'assessmentsDropdown') {
+                    return (
+                      <li key={key} data-nav-list-item="">
+                        <button
+                          data-dropdown-toggle="assessments"
+                          aria-expanded="false"
+                          aria-haspopup="true"
+                          className="mega-nav__bar-link is--dropdown"
+                        >
+                          <span className="mega-nav__bar-link-label text-body--sm font--medium">
+                            {item.label ?? 'Assessments'}
+                          </span>
+                          <ChevronDown className="mega-nav__bar-link-icon is--dropdown" />
+                        </button>
+                      </li>
+                    );
+                  }
+                  if (item._type === 'companyDropdown') {
+                    return (
+                      <li key={key} data-nav-list-item="">
+                        <button
+                          data-dropdown-toggle="company"
+                          aria-expanded="false"
+                          aria-haspopup="true"
+                          className="mega-nav__bar-link is--dropdown"
+                        >
+                          <span className="mega-nav__bar-link-label text-body--sm font--medium">
+                            {item.label ?? 'Company'}
+                          </span>
+                          <ChevronDown className="mega-nav__bar-link-icon is--dropdown" />
+                        </button>
+                      </li>
+                    );
+                  }
+                  // Plain link
+                  if (!item.label || !item.href) return null;
+                  const isExternal = item.external || /^https?:\/\//.test(item.href);
+                  return (
+                    <li key={key} data-nav-list-item="">
+                      {isExternal ? (
+                        <a
+                          href={item.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mega-nav__bar-link"
+                        >
+                          <span className="mega-nav__bar-link-label text-body--sm font--medium">
+                            {item.label}
+                          </span>
+                        </a>
+                      ) : (
+                        <Link href={item.href} className="mega-nav__bar-link">
+                          <span className="mega-nav__bar-link-label text-body--sm font--medium">
+                            {item.label}
+                          </span>
+                        </Link>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
 
               {/* Actions */}
               <ul data-nav-list-item="" className="mega-nav__bar-list is--actions flex gap--sm">
                 <li className="mega-nav__bar-action">
-                  <NavBasket categories={categories} />
+                  <NavBasket
+                    categories={visibleCategoryGroups.flatMap((g) => g.categories.map((c) => ({ name: c.name, slug: c.slug })))}
+                  />
                 </li>
-                {/* Log-in button hidden until there's a destination for it.
-                    Kept in source rather than deleted so it's a one-line
-                    revert when the customer portal goes live.
                 <li className="mega-nav__bar-action">
-                  <Button variant="secondary" size="sm" href="https://app.tazio.io" external>
-                    Log in
-                  </Button>
-                </li>
-                */}
-                <li className="mega-nav__bar-action">
-                  <Button variant="primary" size="sm" href={navCtaHref}>
-                    {navCtaLabel}
+                  <Button variant="primary" size="sm" href={ctaHref}>
+                    {ctaLabel}
                   </Button>
                 </li>
               </ul>
@@ -153,74 +232,111 @@ export default function MegaNav({
         <div data-dropdown-container="" className="mega-nav__dropdown-container">
           <div data-dropdown-bg="" className="mega-nav__dropdown-bg surface--raised" />
 
-          {/* ── Assessments panel ── */}
-          <div data-panel-state="" data-nav-content="assessments" role="region" aria-label="assessments menu" className="mega-nav__dropdown-panel">
-            <div className="mega-nav__dropdown-inner flex">
-              {([
-                { key: 'jobFamilies',  title: 'Job families',  colored: false },
-                { key: 'earlyCareers', title: 'Early careers', colored: false },
-                { key: 'specialist',   title: 'Specialist',    colored: true },
-              ] as const).map(({ key, title, colored }) => {
-                const items = categories
-                  .filter((c) => categoryMeta[c.slug]?.group === key)
-                  .map((c) => ({ slug: c.slug, ...categoryMeta[c.slug] }));
-                if (items.length === 0) return null;
-                return (
-                  <div key={key} data-menu-fade="" className={`mega-nav__panel-col${colored ? ' is--colored' : ''}`}>
-                    <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">{title}</span>
+          {/* ── Assessments panel — driven by globalCategoryGroups ── */}
+          {hasAssessmentsDropdown && (
+            <div data-panel-state="" data-nav-content="assessments" role="region" aria-label="assessments menu" className="mega-nav__dropdown-panel">
+              <div className="mega-nav__dropdown-inner flex">
+                {visibleCategoryGroups.map((group, gi) => {
+                  const colored = gi === visibleCategoryGroups.length - 1; /* last group gets the accent column */
+                  return (
+                    <div key={group._key ?? group.title} data-menu-fade="" className={`mega-nav__panel-col${colored ? ' is--colored' : ''}`}>
+                      <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">{group.title}</span>
+                      <ul className="mega-nav__panel-list stack--xs">
+                        {group.categories.map((cat) => (
+                          <li key={cat.slug} data-menu-fade="">
+                            <Link href={`/assessments/${cat.slug}`} className="mega-nav__panel-link rounded--sm">
+                              <span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">{cat.name}</span>
+                              {cat.navDescription && (
+                                <span className="mega-nav__panel-link-desc text-body--xs color--tertiary">{cat.navDescription}</span>
+                              )}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* ── Company panel — driven by globalNav.companyColumns + companyCard ── */}
+          {hasCompanyDropdown && (
+            <div data-panel-state="" data-nav-content="company" role="region" aria-label="company menu" className="mega-nav__dropdown-panel">
+              <div className="mega-nav__dropdown-inner flex">
+                {(companyColumns ?? []).map((col, i) => col?.title && (
+                  <div key={col._key ?? `${col.title}-${i}`} data-menu-fade="" className="mega-nav__panel-col">
+                    <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">{col.title}</span>
                     <ul className="mega-nav__panel-list stack--xs">
-                      {items.map((item) => (
-                        <li key={item.slug} data-menu-fade="">
-                          <Link href={`/assessments/${item.slug}`} className="mega-nav__panel-link rounded--sm">
-                            <span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">{item.label}</span>
-                            <span className="mega-nav__panel-link-desc text-body--xs color--tertiary">{item.desc}</span>
-                          </Link>
-                        </li>
-                      ))}
+                      {(col.links ?? []).map((link, li) => {
+                        if (!link?.label || !link?.href) return null;
+                        const isExternal = link.external || /^https?:\/\//.test(link.href);
+                        const inner = (
+                          <>
+                            <span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">{link.label}</span>
+                            {link.description && (
+                              <span className="mega-nav__panel-link-desc text-body--xs color--tertiary">{link.description}</span>
+                            )}
+                          </>
+                        );
+                        return (
+                          <li key={`${col._key ?? col.title}-${li}-${link.href}`} data-menu-fade="">
+                            {isExternal ? (
+                              <a
+                                href={link.href}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="mega-nav__panel-link rounded--sm"
+                              >
+                                {inner}
+                              </a>
+                            ) : (
+                              <Link href={link.href} className="mega-nav__panel-link rounded--sm">
+                                {inner}
+                              </Link>
+                            )}
+                          </li>
+                        );
+                      })}
                     </ul>
                   </div>
-                );
-              })}
-            </div>
-          </div>
+                ))}
 
-          {/* ── Company panel ── */}
-          <div data-panel-state="" data-nav-content="company" role="region" aria-label="company menu" className="mega-nav__dropdown-panel">
-            <div className="mega-nav__dropdown-inner flex">
-              <div data-menu-fade="" className="mega-nav__panel-col">
-                <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Company</span>
-                <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/about" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">About Vero Assess</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our mission and approach</span></Link></li>
-                  <li data-menu-fade=""><Link href="/contact" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Contact</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Get in touch</span></Link></li>
-                </ul>
-              </div>
-              <div data-menu-fade="" className="mega-nav__panel-col">
-                <span data-menu-fade="" className="mega-nav__panel-label text-label--sm color--tertiary">Resources</span>
-                <ul className="mega-nav__panel-list stack--xs">
-                  <li data-menu-fade=""><Link href="/how-it-works" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">How it Works</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Our assessment process</span></Link></li>
-                  <li data-menu-fade=""><Link href="/pricing" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Pricing</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Plans for every team size</span></Link></li>
-                  <li data-menu-fade=""><Link href="/resources/science" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">The Science</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">Research-backed methodology</span></Link></li>
-                  <li data-menu-fade=""><Link href="/resources/compliance" className="mega-nav__panel-link rounded--sm"><span className="mega-nav__panel-link-text text-body--sm font--medium color--primary">Compliance</span><span className="mega-nav__panel-link-desc text-body--xs color--tertiary">ISO, WCAG, Cyber Essentials</span></Link></li>
-                </ul>
-              </div>
-              <div data-menu-fade="" className="mega-nav__panel-col is--colored has--card">
-                <div className="mega-nav__card rounded--md">
-                  <div className="mega-nav__card-visual">
-                    <div className="mega-nav__card-visual-placeholder" />
-                  </div>
-                  <div className="mega-nav__card-content stack--sm">
-                    <div className="mega-nav__card-text">
-                      <p className="text-body--sm font--medium color--primary">Live in 48 hours</p>
-                      <p className="text-body--xs color--tertiary">Get your assessments running fast</p>
+                {companyCard?.eyebrow && (
+                  <div data-menu-fade="" className="mega-nav__panel-col is--colored has--card">
+                    <div className="mega-nav__card rounded--md">
+                      <div className="mega-nav__card-visual">
+                        {companyCard.imageUrl ? (
+                          <Image
+                            src={companyCard.imageUrl}
+                            alt={companyCard.imageAlt ?? ''}
+                            fill
+                            sizes="320px"
+                            className="mega-nav__card-image"
+                          />
+                        ) : (
+                          <div className="mega-nav__card-visual-placeholder" />
+                        )}
+                      </div>
+                      <div className="mega-nav__card-content stack--sm">
+                        <div className="mega-nav__card-text">
+                          <p className="text-body--sm font--medium color--primary">{companyCard.eyebrow}</p>
+                          {companyCard.body && (
+                            <p className="text-body--xs color--tertiary">{companyCard.body}</p>
+                          )}
+                        </div>
+                        {companyCard.ctaLabel && companyCard.ctaHref && (
+                          <Button variant="primary" size="sm" href={companyCard.ctaHref}>
+                            {companyCard.ctaLabel}
+                          </Button>
+                        )}
+                      </div>
                     </div>
-                    <Button variant="primary" size="sm" href="/get-started">
-                      Get started
-                    </Button>
                   </div>
-                </div>
+                )}
               </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 

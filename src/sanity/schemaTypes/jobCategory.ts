@@ -59,6 +59,15 @@ export const jobCategory = defineType({
         'Avoid changing this once published — it breaks any incoming links.',
       validation: (Rule) => Rule.required(),
     }),
+    defineField({
+      name: 'navDescription',
+      title: 'Nav dropdown description',
+      type: 'string',
+      description:
+        'One-line teaser shown beneath the category name in the Assessments nav dropdown ' +
+        '(e.g. "Commercially-minded performers"). Keep it short — the dropdown is a glance, not a paragraph.',
+      validation: (Rule) => Rule.max(60).warning('Stays on a single line up to ~60 chars.'),
+    }),
 
     /* ════════════════════════════════════════════════════════
        SECTION 1 — HERO
