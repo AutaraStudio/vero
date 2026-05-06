@@ -1,26 +1,29 @@
 /* ──────────────────────────────────────────────────────────────
-   Role-roster summary bar — section-scoped variant of FixedBar.
+   Role-roster summary bar — page-fixed, full-width.
 
-   Visually matches the get-started PlanBar (same plan-bar__* inner
-   styling) but positioned `sticky` inside the role-grid section
-   rather than `fixed` to the viewport. The browser handles the scope
-   automatically: the bar floats at the bottom of the viewport while
-   the section is on screen, then scrolls away with the section's
-   content as the user moves past it.
-
-   No JS observer needed.
+   Slides up from below when the role-grid section enters the
+   viewport (with a short delay set in JS) and slides back out
+   when the section is mostly scrolled past. Uses a neutral
+   surface (no theme tint) so it reads consistently against
+   whatever section colour sits behind it.
 ────────────────────────────────────────────────────────────── */
 
 .role-roster-summary-bar {
-  position: sticky;
+  position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 10;
-  margin-top: 2.5rem;
-  margin-inline: calc(var(--container-gutter, 1.5rem) * -1);
+  z-index: 100;
   border-top: 1px solid var(--color--border-default);
-  background: var(--color--page-bg);
+  background: var(--color--surface-raised);
+  transform: translateY(100%);
+  transition: transform 350ms cubic-bezier(0.32, 0.72, 0, 1);
+  pointer-events: none;
+}
+
+.role-roster-summary-bar.is-visible {
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
 .role-roster-summary-bar__inner {
