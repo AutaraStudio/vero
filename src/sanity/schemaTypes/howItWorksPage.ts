@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 import {
   PlayIcon,
   SearchIcon,
@@ -133,7 +134,7 @@ export const howItWorksPage = defineType({
               title: 'Step Image',
               type: 'image',
               options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
             }),
           ],
         },
@@ -186,7 +187,7 @@ export const howItWorksPage = defineType({
               title: 'Icon / Screenshot',
               type: 'image',
               options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
             }),
           ],
         },

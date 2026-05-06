@@ -1,4 +1,5 @@
 import { defineField, defineType } from 'sanity'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 import {
   CheckmarkCircleIcon,
   SearchIcon,
@@ -106,7 +107,7 @@ export const compliancePage = defineType({
               title: 'Supporting image',
               type: 'image',
               options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
               description: 'Shown as the sticky visual in the scroll-driven Quality Assurance section.',
             }),
           ],
@@ -167,7 +168,7 @@ export const compliancePage = defineType({
               title: 'Supporting image',
               type: 'image',
               options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string' })],
+              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
               description: 'Shown as the sticky visual in the scroll-driven section (e.g. screenshot of accessibility feature in action).',
             }),
           ],

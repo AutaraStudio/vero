@@ -1,5 +1,6 @@
 import { defineField, defineType } from 'sanity'
 import { ImageIcon } from '@sanity/icons'
+import { altRequiredWhenImagePresent } from '../lib/altFieldValidation'
 
 /**
  * Reusable Image-or-Video toggle.
@@ -47,7 +48,7 @@ export const mediaBlock = defineType({
         'Leave blank to show a coloured placeholder card.',
       hidden: ({ parent }) => parent?.type === 'video',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text (for screen readers)', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text (for screen readers)', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
     defineField({
@@ -61,7 +62,7 @@ export const mediaBlock = defineType({
         'Leave blank to use the main image above on mobile too.',
       hidden: ({ parent }) => parent?.type === 'video',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
 
@@ -97,7 +98,7 @@ export const mediaBlock = defineType({
         'Leave blank to show a coloured placeholder card.',
       hidden: ({ parent }) => parent?.type !== 'video',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
     defineField({
@@ -111,7 +112,7 @@ export const mediaBlock = defineType({
         'Leave blank to use the main cover image above on mobile too.',
       hidden: ({ parent }) => parent?.type !== 'video',
       fields: [
-        defineField({ name: 'alt', title: 'Alt text', type: 'string' }),
+        defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent }),
       ],
     }),
     defineField({
