@@ -282,7 +282,7 @@
   text-decoration: none;
   color: inherit;
   transition: color var(--transition--default);
-  /* Reset for when this class is applied to a <button> (Cookie preferences) */
+  /* Reset for when this class is on a <button> (Cookie preferences) */
   background: none;
   border: 0;
   padding: 0;

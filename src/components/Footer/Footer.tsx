@@ -3,7 +3,6 @@ import Image from 'next/image';
 import { client } from '@/sanity/lib/client';
 import { SITE_SETTINGS_QUERY, NAV_CATEGORIES_QUERY } from '@/sanity/lib/queries';
 import CTAStatement from '@/components/CTAStatement/CTAStatement';
-import { CookiePreferencesButton } from '@/components/CookiePreferencesButton/CookiePreferencesButton';
 import FooterFan from './FooterFan';
 import './Footer.css';
 
@@ -277,7 +276,15 @@ export default async function Footer() {
                 </Link>
               ),
             )}
-            <CookiePreferencesButton className="footer__close-legal-link" />
+            {/* Opens the vanilla-cookieconsent preferences modal — the
+                library wires the click via the data-cc attribute. */}
+            <button
+              type="button"
+              data-cc="show-preferencesModal"
+              className="footer__close-legal-link"
+            >
+              Cookie preferences
+            </button>
           </p>
 
           <div className="footer__partner">

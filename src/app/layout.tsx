@@ -2,8 +2,7 @@ import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateRootMetadata, type SiteSeoSettings } from '@/lib/seo';
-import { ConsentManager } from '@/components/ConsentManager/ConsentManager';
-import { GoogleAnalytics } from '@/components/Analytics/GoogleAnalytics';
+import { CookieConsentBanner } from '@/components/CookieConsent/CookieConsent';
 import './globals.css';
 import './utilities.css';
 
@@ -26,12 +25,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body suppressHydrationWarning>
-        <ConsentManager>
-          {children}
-          {/* GA4 self-gates on `measurement` consent — renders Script
-              tags only after the user accepts via the c15t banner. */}
-          <GoogleAnalytics />
-        </ConsentManager>
+        {children}
+        {/* Banner + preferences dialog. GA4 only loads after the
+            user accepts the analytics category. */}
+        <CookieConsentBanner />
       </body>
     </html>
   );
