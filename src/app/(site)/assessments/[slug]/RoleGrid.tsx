@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
@@ -148,40 +148,38 @@ export default function RoleGrid({
   };
 
   return (
-    <>
-      <section className="role-grid-section" data-theme={theme}>
-        <div className="container">
-          {(heading || subheading) && (
-            <div className="role-grid__header">
-              {heading && <h2 className="text-h2 text-balance max-ch-30 color--primary">{heading}</h2>}
-              {subheading && (
-                <p className="text-body--lg color--secondary leading--snug">
-                  {subheading}
-                </p>
-              )}
-            </div>
-          )}
-
-          <div
-            ref={gridRef as React.RefObject<HTMLDivElement>}
-            className="role-grid"
-          >
-            {roles.map((role) => (
-              <RoleCard
-                key={role._id}
-                role={role}
-                selected={isSelected(role._id)}
-                onToggle={() => toggleRole(role)}
-              />
-            ))}
+    <section className="role-grid-section" data-theme={theme}>
+      <div className="container">
+        {(heading || subheading) && (
+          <div className="role-grid__header">
+            {heading && <h2 className="text-h2 text-balance max-ch-30 color--primary">{heading}</h2>}
+            {subheading && (
+              <p className="text-body--lg color--secondary leading--snug">
+                {subheading}
+              </p>
+            )}
           </div>
+        )}
 
-          {/* Section-scoped sticky summary — appears once a role is
-              selected and stays pinned to the bottom of the viewport
-              only while the role roster is on screen. */}
-          <RoleRosterSummaryBar />
+        <div
+          ref={gridRef as React.RefObject<HTMLDivElement>}
+          className="role-grid"
+        >
+          {roles.map((role) => (
+            <RoleCard
+              key={role._id}
+              role={role}
+              selected={isSelected(role._id)}
+              onToggle={() => toggleRole(role)}
+            />
+          ))}
         </div>
-      </section>
-    </>
+
+        {/* Sticky summary visually matches the get-started PlanBar.
+            `position: sticky` scopes it to this section — once the
+            section scrolls off the bar scrolls away with it. */}
+        <RoleRosterSummaryBar />
+      </div>
+    </section>
   );
 }
