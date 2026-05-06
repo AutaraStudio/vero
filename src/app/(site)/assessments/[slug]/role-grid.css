@@ -135,6 +135,11 @@
 .role-grid__card-tasks {
   margin: 0;
   flex: 1;
+  /* Reserve space for ~2 lines so the Strengths divider lands at the
+     same vertical position whether a role's tasks copy is one line or
+     two. Anything longer pushes the divider down naturally and the
+     grid keeps row heights in sync. 2 * 0.875rem * 1.5 line-height. */
+  min-height: 2.625rem;
 }
 
 .role-grid__card-strengths {
