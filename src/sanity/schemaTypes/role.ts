@@ -11,6 +11,8 @@ export const role = defineType({
       name: 'name',
       title: 'Role Name',
       type: 'string',
+      description:
+        'Display name shown to visitors on the website — on the category page, in the role roster, and as the page heading. Example: "Account Executive".',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -18,6 +20,8 @@ export const role = defineType({
       title: 'Slug',
       type: 'slug',
       options: { source: 'name' },
+      description:
+        'The URL piece for this role. Click "Generate" once to auto-create from the Role Name (e.g. "account-executive" → /assessments/sales/account-executive). Once a role is live, do not change the slug — it will break any external links pointing at the old URL.',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -60,7 +64,7 @@ export const role = defineType({
       title: 'HubSpot Label',
       type: 'string',
       description:
-        'How this role appears in the HubSpot "Vero Assess Roles" dropdown. Leave blank to use the Role Name.',
+        'Advanced override. The human-readable name your sales team sees in the HubSpot "Vero Assess Roles" dropdown, reports, and deal records. Leave blank to use the Role Name (recommended). Only set this if HubSpot needs to display a different name than the website.',
       group: 'hubspot',
     }),
     defineField({
@@ -68,7 +72,7 @@ export const role = defineType({
       title: 'HubSpot Internal Value',
       type: 'string',
       description:
-        'Stable identifier sent to HubSpot (lowercase letters, numbers, hyphens, underscores). Leave blank to use the slug.',
+        'Advanced override. The behind-the-scenes code HubSpot stores to identify this role on company and deal records — never seen by sales reps or customers. Leave blank to use the slug (recommended). Only set this if you need to rename the slug but want HubSpot\'s historical records to keep working — set this to the OLD slug. Lowercase letters, numbers, hyphens, underscores only.',
       validation: (Rule) =>
         Rule.regex(/^[a-z0-9_-]+$/, {
           name: 'lowercase letters, numbers, hyphens, underscores only',

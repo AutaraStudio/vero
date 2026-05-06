@@ -187,13 +187,20 @@ Sidebar → **Roles** shows everything organised by category:
 - Then one folder per category (Administration / Sales / etc.) showing just that category's roles
 
 Each role has:
-- **Name** (e.g. "Account Executive")
-- **URL slug** (auto-generated from the name — leave alone)
-- **Job category** — pick the parent category from the dropdown
+- **Role Name** — what visitors see on the website. Shown on the category page, in the role roster, and as the page heading. Example: "Account Executive"
+- **Slug** — the URL piece (e.g. `account-executive` → `/assessments/sales/account-executive`). Click "Generate" once to auto-create from the Role Name. Once a role is live, **don't change the slug** — it will break any external links pointing at the old URL
+- **Job Category** — pick the parent category from the dropdown
 - **Tasks** — one-line summary of what the role does
-- **Strengths** — comma-separated list
-- **Lottie animation** — optional `.json` file for the role card animation
-- **HubSpot Label / Internal Value** — only edit if integrating with HubSpot (your dev team will handle this)
+- **Strengths** — comma-separated list, e.g. "Organisation, attention to detail, clear communication"
+- **Lottie Animation** — optional `.json` file for the role card animation
+- **Archived** — tick this to retire a role. The role disappears from the website and the HubSpot dropdown, but historical HubSpot deal records that already had this role selected keep their data. Always use this instead of deleting
+
+Inside the **HubSpot Sync** tab (advanced — usually leave blank):
+
+- **HubSpot Label** — what the sales team sees in HubSpot's "Vero Assess Roles" dropdown, reports, and deal records. Leave blank to use the Role Name. Only set this if HubSpot needs to show a different name to what's on the website
+- **HubSpot Internal Value** — the behind-the-scenes code HubSpot stores. Never seen by sales reps or customers. Leave blank to use the slug. Only set this if you need to rename the slug but want HubSpot's historical records to keep working — set this to the **old** slug
+
+> **Rule of thumb:** for a brand-new role, fill in only Role Name, Slug, Job Category, Tasks, and Strengths. Leave both HubSpot fields blank — the system uses the Role Name and slug automatically.
 
 ### Adding a new role
 
