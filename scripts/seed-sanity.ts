@@ -522,16 +522,12 @@ const homePageDoc = {
   pricingCtaLabel: 'Find out more and buy',
 }
 
+/* siteSettings is now SEO + branding only — footer and nav CTAs moved
+   to globalFooter / globalNav (see scripts/sanity-exec-seed-globals.mjs).
+   The empty doc here exists so the seeder still creates the singleton. */
 const siteSettingsDoc = {
   _id: 'siteSettings',
   _type: 'siteSettings',
-  footerCtaHeading: 'Ready to find the right people?',
-  footerCtaBody:
-    'Start assessing smarter. Go live within 48 hours with science-backed, role-specific assessments.',
-  footerCtaButtonLabel: 'Get started',
-  footerCtaButtonHref: '/get-started',
-  navCtaLabel: 'Get started',
-  navCtaHref: '/get-started',
 }
 
 const pricingPageDoc = {
