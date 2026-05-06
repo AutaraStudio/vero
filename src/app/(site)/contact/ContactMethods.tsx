@@ -59,7 +59,7 @@ export default function ContactMethods({ phone, email }: Props) {
   return (
     <aside className="contact-methods" aria-label="Other ways to get in touch">
       <header className="contact-methods__header stack--md">
-        <h3 className="text-h5 color--primary">Or reach us directly</h3>
+        <h3 className="text-h5 color--primary">Reach us directly</h3>
         <p className="text-body--sm color--secondary leading--snug">
           We typically respond within one working day.
         </p>
@@ -112,7 +112,7 @@ export default function ContactMethods({ phone, email }: Props) {
                 Hours
               </span>
               <span className="contact-methods__value text-body--md font--medium color--primary">
-                Mon–Fri, 9am–5pm GMT
+                Mon–Fri, 9am–5pm
               </span>
             </span>
           </div>
