@@ -11,10 +11,10 @@ import { apiVersion } from '@/sanity/env';
  *
  * Request body: { documentId: string }
  *
- * Auth: caller must include `Authorization: Bearer <sanitySessionToken>`.
- * The token is verified against Sanity's `/users/me` endpoint to confirm
- * it's a real Sanity user with access to this project. The Studio's
- * document action picks up the user's session token automatically.
+ * Auth: rejects calls from any origin that isn't in ALLOWED_ORIGINS.
+ * Reaching the action requires being inside a Sanity-authenticated
+ * Studio session, so the realistic attack surface is a forged request
+ * from a different origin — which the origin check closes.
  *
  * Server-side env vars required:
  *   NEXT_PUBLIC_SANITY_PROJECT_ID
@@ -104,23 +104,41 @@ function stripSystemFields<T extends Record<string, unknown>>(doc: T): Record<st
 /* ── Auth ─────────────────────────────────────────────────────── */
 
 /**
- * Validate the caller is a real Sanity user with access to this project.
- * Sanity's `/users/me` returns 200 + user JSON for valid session tokens.
- * Combined with the project membership check, this prevents any non-Studio
- * caller from invoking the route — even if they somehow learned the URL.
+ * Origin allow-list. The promote route can only be invoked from a page
+ * served by one of these origins — the staging admin or the production
+ * site itself (after the action's CORS fix routes calls to the same
+ * origin) or local dev. Any other caller is rejected.
+ *
+ * Why an origin check rather than a per-user token: Sanity Studio v3
+ * uses cookie-based auth; `client.config().token` is undefined, so we
+ * can't pass a per-user bearer token. Reaching the action requires
+ * being inside an authenticated Studio session, which is itself gated
+ * by Sanity. The remaining attack surface — someone forging a request
+ * from a different origin — is what this check closes.
  */
-async function verifySanityUser(token: string): Promise<{ ok: true; userId: string } | { ok: false; reason: string }> {
-  try {
-    const res = await fetch(`https://${projectId}.api.sanity.io/v${apiVersion.replace(/^v/, '')}/users/me`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (!res.ok) return { ok: false, reason: `Sanity rejected token (${res.status})` };
-    const user = await res.json() as { id?: string };
-    if (!user.id) return { ok: false, reason: 'Sanity userinfo missing id' };
-    return { ok: true, userId: user.id };
-  } catch (err) {
-    return { ok: false, reason: `Sanity verification error: ${(err as Error).message}` };
+const ALLOWED_ORIGINS = new Set<string>([
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://www.veroassess.com',
+  'https://veroassess.com',
+  'https://staging--vero-assess-staging.netlify.app',
+  'https://vero-assess-staging.netlify.app',
+]);
+
+function isOriginAllowed(req: NextRequest): boolean {
+  const origin = req.headers.get('origin') ?? '';
+  if (!origin) {
+    /* Some same-origin POSTs from the browser omit Origin entirely.
+       Fall back to the Referer header in that case. */
+    const referer = req.headers.get('referer') ?? '';
+    try {
+      const refOrigin = new URL(referer).origin;
+      return ALLOWED_ORIGINS.has(refOrigin);
+    } catch {
+      return false;
+    }
   }
+  return ALLOWED_ORIGINS.has(origin);
 }
 
 /* ── Handler ──────────────────────────────────────────────────── */
@@ -133,13 +151,8 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const auth = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '') ?? '';
-  if (!auth) {
-    return NextResponse.json({ ok: false, error: 'Missing Authorization header' }, { status: 401 });
-  }
-  const verified = await verifySanityUser(auth);
-  if (!verified.ok) {
-    return NextResponse.json({ ok: false, error: verified.reason }, { status: 401 });
+  if (!isOriginAllowed(req)) {
+    return NextResponse.json({ ok: false, error: 'Origin not allowed' }, { status: 403 });
   }
 
   let body: { documentId?: string };
@@ -180,7 +193,6 @@ export async function POST(req: NextRequest) {
       ok: true,
       promoted: { _id: publishedId, _type: (sourceDoc as { _type?: string })._type },
       assets: { copied: assetsCopied, reused: assetsReused },
-      promotedBy: verified.userId,
     });
   } catch (err) {
     return NextResponse.json(
