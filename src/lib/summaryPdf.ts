@@ -114,7 +114,7 @@ function buildSummaryHtml(data: SummaryData): string {
           <!-- Logo -->
           <tr>
             <td align="center" style="padding: 0 0 32px 0;">
-              <img src="https://vero-assess.netlify.app/logo.svg" alt="Vero Assess" width="160" style="display: block; height: auto;" />
+              <img src="https://veroassess.com/logo.svg" alt="Vero Assess" width="160" style="display: block; height: auto;" />
             </td>
           </tr>
 
