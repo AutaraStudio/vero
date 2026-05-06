@@ -72,6 +72,17 @@ const PromoteAction: DocumentActionComponent = (
     }
   }
 
+  /* Roles auto-mirror to production via the /api/sync-role webhook the
+     moment they are published, including deletes — no manual button. */
+  if (type === 'role') {
+    return {
+      label: 'Roles publish automatically',
+      icon: RocketIcon,
+      disabled: true,
+      title: 'Roles go live the moment you publish — Push to Live is not needed',
+    }
+  }
+
   /* Only surface this action in the staging dataset — promoting from
      production back to itself makes no sense. */
   if (activeDataset !== 'staging') {

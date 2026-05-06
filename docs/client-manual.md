@@ -186,8 +186,12 @@ Sidebar → **Roles** shows everything organised by category:
 - **All roles** — every role on the site
 - Then one folder per category (Administration / Sales / etc.) showing just that category's roles
 
-Each role has:
-- **Role Name** — what visitors see on the website. Shown on the category page, in the role roster, and as the page heading. Example: "Account Executive"
+Roles publish automatically — the moment you click **Publish** in Studio, they appear on the live website and (if HubSpot fields are filled in) in HubSpot. There is no "Push to Live" step for roles.
+
+Each role has two groups of fields:
+
+**Website fields** — control how the role appears on `veroassess.com`:
+- **Role Name** — what visitors see. Shown on the category page, in the role roster, and as the page heading. Example: "Account Executive"
 - **Slug** — the URL piece (e.g. `account-executive` → `/assessments/sales/account-executive`). Click "Generate" once to auto-create from the Role Name. Once a role is live, **don't change the slug** — it will break any external links pointing at the old URL
 - **Job Category** — pick the parent category from the dropdown
 - **Tasks** — one-line summary of what the role does
@@ -195,21 +199,27 @@ Each role has:
 - **Lottie Animation** — optional `.json` file for the role card animation
 - **Archived** — tick this to retire a role. The role disappears from the website and the HubSpot dropdown, but historical HubSpot deal records that already had this role selected keep their data. Always use this instead of deleting
 
-Inside the **HubSpot Sync** tab (advanced — usually leave blank):
+**HubSpot fields** (in the **HubSpot Sync** tab) — fill these in only if you want the role to appear in HubSpot:
+- **HubSpot Label** — what your sales team sees in HubSpot's "Vero Assess Roles" dropdown, reports, and deal records
+- **HubSpot Internal Value** — the behind-the-scenes code HubSpot stores. Never seen by sales reps or customers. Once set, **don't change it** — historical HubSpot records reference this code and would lose context
 
-- **HubSpot Label** — what the sales team sees in HubSpot's "Vero Assess Roles" dropdown, reports, and deal records. Leave blank to use the Role Name. Only set this if HubSpot needs to show a different name to what's on the website
-- **HubSpot Internal Value** — the behind-the-scenes code HubSpot stores. Never seen by sales reps or customers. Leave blank to use the slug. Only set this if you need to rename the slug but want HubSpot's historical records to keep working — set this to the **old** slug
+> **How the two groups relate:** Website fields and HubSpot fields are independent.
+>
+> - Filled both website fields + both HubSpot fields → role appears on the website AND in HubSpot
+> - Filled only website fields → website-only role (will NOT appear in HubSpot)
+> - Both HubSpot fields must be filled together — if only one is set, the role is treated as website-only
 
-> **Rule of thumb:** for a brand-new role, fill in only Role Name, Slug, Job Category, Tasks, and Strengths. Leave both HubSpot fields blank — the system uses the Role Name and slug automatically.
+> **Deleting vs archiving:** prefer **Archived**. A delete removes the role permanently and instantly everywhere — website, HubSpot dropdown, and the role document itself. Archiving keeps the document around so you can un-archive later.
 
 ### Adding a new role
 
 1. Sidebar → **Roles** → **All roles**
 2. Top-right → click **Create** (the + icon)
-3. Fill in name, pick parent category, fill in tasks/strengths
-4. Publish
+3. Fill in Role Name, pick parent Job Category, fill in tasks/strengths
+4. (Optional) open the **HubSpot Sync** tab and fill in HubSpot Label + Internal Value if you want the role in HubSpot too
+5. Publish
 
-The role automatically appears on the parent category's `/assessments/[category]` page within ~5 seconds.
+The role appears on the parent category's `/assessments/[category]` page within ~30 seconds, and in HubSpot's dropdown around the same time if you set the HubSpot fields. No Push to Live step is needed for roles.
 
 > 🎬 **Screen recording placeholder — "Adding a new role"**
 > *(record: ~25 seconds: Roles → All roles → Create → fill in name + category + tasks + strengths → Publish → load the live category page → see new role appear)*
