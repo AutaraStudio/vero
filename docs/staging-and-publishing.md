@@ -73,7 +73,7 @@ pages live.
                      │                       │ (server-side, admin token)
                      │                       │
                 ┌────┴───────────────────────┴────┐
-                │  Sanity Studio  (/studio)       │
+                │  Sanity Studio  (/admin/studio) │
                 │  • Default dataset: staging     │
                 │  • "Push to Live Site" action   │
                 └─────────────────────────────────┘
@@ -171,7 +171,7 @@ Set this in each Netlify site's Build & Deploy → Production branch.
 ### Local development
 
 Local dev uses `staging` by default (set in `.env.local`). Editing in your
-local Studio at `localhost:3000/studio` writes to the staging dataset — same
+local Studio at `localhost:3000/admin/studio` writes to the staging dataset — same
 as the deployed staging Studio.
 
 To test the promotion flow locally, the action falls back to a relative
