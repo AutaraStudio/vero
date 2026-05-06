@@ -71,6 +71,12 @@ export const HOME_PAGE_QUERY = `
     heroSecondaryCTALabel,
     heroSecondaryCTAHref,
     ${mediaProjection('heroMedia')},
+    partnerLogosLabel,
+    partnerLogos[] {
+      name,
+      "logoUrl":      logo.asset->url,
+      "logoMimeType": logo.asset->mimeType
+    },
     introBlockEyebrow,
     introBlockHeading,
     introBlockBody,
@@ -119,12 +125,6 @@ export const SITE_SETTINGS_QUERY = `
     twitterHandle,
     siteUrl,
     themeColor,
-    partnerLogosLabel,
-    partnerLogos[] {
-      name,
-      "logoUrl":      logo.asset->url,
-      "logoMimeType": logo.asset->mimeType
-    },
     starterContractUrl,
     multiRoleContractUrl
   }

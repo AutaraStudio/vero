@@ -14,7 +14,6 @@ export const siteSettings = defineType({
      URLs. */
   groups: [
     { name: 'seo',           title: 'SEO & Branding' },
-    { name: 'partnerLogos',  title: 'Home page logo marquee' },
     { name: 'legal',         title: 'Checkout T&C URLs' },
   ],
   fields: [
@@ -100,49 +99,9 @@ export const siteSettings = defineType({
     }),
 
     /* Footer + Nav CTA fields removed — managed via Global → Footer
-       and Global → Nav now. Existing data stays in the doc but is
-       hidden from Studio. */
-
-    /* ── Partner Logos (global — used wherever the LogoMarquee renders) ── */
-    defineField({
-      name: 'partnerLogosLabel',
-      title: 'Default Section Label',
-      type: 'string',
-      group: 'partnerLogos',
-      description: 'Default eyebrow shown above the marquee (e.g. "Trusted by hiring teams at"). Pages can still override this.',
-    }),
-    defineField({
-      name: 'partnerLogos',
-      title: 'Partner Logos',
-      type: 'array',
-      group: 'partnerLogos',
-      description: 'Logos shown in the marquee. SVG strongly preferred — uploaded as raw file assets so they render crisply and recolour cleanly.',
-      of: [
-        {
-          type: 'object',
-          preview: {
-            select: { title: 'name', media: 'logo' },
-          },
-          fields: [
-            defineField({
-              name: 'name',
-              title: 'Company name',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            }),
-            defineField({
-              name: 'logo',
-              title: 'Logo (SVG, PNG, or WebP)',
-              type: 'file',
-              options: {
-                accept: 'image/svg+xml,image/png,image/webp',
-              },
-              description: 'SVGs upload as files (no transformations) so they keep their full vector fidelity.',
-            }),
-          ],
-        },
-      ],
-    }),
+       and Global → Nav now. Partner Logos moved to Home page →
+       Section 2 — Logo marquee (it only ever rendered there).
+       Existing data stays in the doc but is hidden from Studio. */
 
     /* ── Legal (T&C PDFs shown on the checkout contract step) ──
        Two variants live on HubSpot today. Editable here so marketing can
