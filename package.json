@@ -9,7 +9,6 @@
     "lint": "eslint"
   },
   "dependencies": {
-    "@c15t/nextjs": "^2.0.4",
     "@gsap/react": "^2.1.2",
     "@sanity/image-url": "^1.2.0",
     "@sanity/vision": "^4.22.0",

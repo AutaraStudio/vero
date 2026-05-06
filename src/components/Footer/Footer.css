@@ -282,12 +282,6 @@
   text-decoration: none;
   color: inherit;
   transition: color var(--transition--default);
-  /* Reset for when this class is applied to a <button> (Cookie preferences) */
-  background: none;
-  border: 0;
-  padding: 0;
-  font: inherit;
-  cursor: pointer;
 }
 
 .footer__close-legal-link:hover {
