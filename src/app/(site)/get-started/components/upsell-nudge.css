@@ -5,7 +5,10 @@
 .nudge-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  /* Above the nav basket drawer (z-index 1000) so the nudge is
+     reachable when triggered from the drawer's "Continue to checkout"
+     button. */
+  z-index: 1100;
   background: var(--color--surface-overlay);
   display: flex;
   align-items: center;
