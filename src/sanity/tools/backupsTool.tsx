@@ -1,22 +1,19 @@
 import { useCallback, useEffect, useState } from 'react'
-import { ArchiveIcon, RestoreIcon, AddIcon, RefreshIcon } from '@sanity/icons'
+import { ArchiveIcon, RestoreIcon, AddIcon, RefreshIcon, EditIcon, CheckmarkIcon, CloseIcon } from '@sanity/icons'
 import { useClient, type Tool } from 'sanity'
-import { Card, Stack, Heading, Text, Button, Flex, Spinner, Box, Badge, useToast } from '@sanity/ui'
+import { Card, Stack, Heading, Text, Button, Flex, Spinner, Box, Badge, useToast, TextInput } from '@sanity/ui'
 
 import { apiVersion } from '../env'
 
 /**
  * "Backups" Studio tool.
  *
- * Lives in the staging Studio sidebar. Three things:
- *   1. "Take Snapshot" button → POST /api/backup → snapshots all
- *      production documents into a `siteBackup` doc in staging.
- *   2. List of existing snapshots, newest first, with date/doc count.
- *   3. Per-row "Restore to Live" button → POST /api/restore →
- *      replays the snapshot's documents back into production.
- *
- * Both restore actions show a confirmation step. Restoring is a
- * write to production, so it's gated by typing the snapshot name.
+ * Top bar of the staging Studio. Provides:
+ *   1. "Take snapshot" — opens a dialog asking for a name, then
+ *      POSTs to /api/backup to snapshot every production document.
+ *   2. List of snapshots (newest first) with date + doc count.
+ *   3. Per-row "Rename" (pencil) for editing the human label.
+ *   4. Per-row "Restore to Live" gated by typing the snapshot name.
  */
 
 type BackupRow = {
@@ -30,6 +27,11 @@ const BACKUPS_QUERY = `*[_type == "siteBackup"] | order(createdAt desc) {
   _id, name, createdAt, docCount
 }`
 
+function defaultSnapshotName() {
+  const d = new Date()
+  return `Snapshot — ${d.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short' })}`
+}
+
 function BackupsToolView() {
   const client = useClient({ apiVersion })
   const toast = useToast()
@@ -38,6 +40,16 @@ function BackupsToolView() {
   const [rows, setRows] = useState<BackupRow[]>([])
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
+
+  /* "Take snapshot" dialog */
+  const [snapshotDialogOpen, setSnapshotDialogOpen] = useState(false)
+  const [snapshotName, setSnapshotName] = useState('')
+
+  /* Per-row inline rename: id of the row currently being edited */
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameDraft, setRenameDraft] = useState('')
+
+  /* Restore confirm */
   const [confirmRestore, setConfirmRestore] = useState<BackupRow | null>(null)
   const [confirmText, setConfirmText] = useState('')
 
@@ -57,13 +69,18 @@ function BackupsToolView() {
     void refresh()
   }, [refresh])
 
+  const openSnapshotDialog = () => {
+    setSnapshotName(defaultSnapshotName())
+    setSnapshotDialogOpen(true)
+  }
+
   const handleTakeSnapshot = useCallback(async () => {
     setBusy('snapshot')
     try {
       const res = await fetch('/api/backup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ name: snapshotName.trim() || defaultSnapshotName() }),
       })
       const json = (await res.json()) as { ok?: boolean; error?: string; backup?: { docCount: number } }
       if (!res.ok || !json.ok) throw new Error(json.error || `Snapshot failed (${res.status})`)
@@ -72,13 +89,35 @@ function BackupsToolView() {
         title: 'Snapshot created',
         description: `${json.backup?.docCount ?? 0} documents captured`,
       })
+      setSnapshotDialogOpen(false)
+      setSnapshotName('')
       await refresh()
     } catch (err) {
       toast.push({ status: 'error', title: 'Snapshot failed', description: (err as Error).message })
     } finally {
       setBusy(null)
     }
-  }, [refresh, toast])
+  }, [snapshotName, refresh, toast])
+
+  const handleSaveRename = useCallback(async (row: BackupRow) => {
+    const name = renameDraft.trim()
+    if (!name || name === row.name) {
+      setRenamingId(null)
+      return
+    }
+    setBusy(`rename-${row._id}`)
+    try {
+      await client.patch(row._id).set({ name }).commit()
+      toast.push({ status: 'success', title: 'Renamed', description: name })
+      setRenamingId(null)
+      setRenameDraft('')
+      await refresh()
+    } catch (err) {
+      toast.push({ status: 'error', title: 'Could not rename', description: (err as Error).message })
+    } finally {
+      setBusy(null)
+    }
+  }, [renameDraft, client, refresh, toast])
 
   const handleRestore = useCallback(async () => {
     const target = confirmRestore
@@ -145,12 +184,49 @@ function BackupsToolView() {
             <Button
               icon={AddIcon}
               tone="primary"
-              onClick={() => void handleTakeSnapshot()}
-              text={busy === 'snapshot' ? 'Capturing…' : 'Take snapshot'}
+              onClick={openSnapshotDialog}
+              text="Take snapshot"
               disabled={busy !== null}
             />
           </Flex>
         </Flex>
+
+        {snapshotDialogOpen && (
+          <Card padding={4} tone="primary" radius={3} border>
+            <Stack space={4}>
+              <Stack space={2}>
+                <Heading size={2}>Name this snapshot</Heading>
+                <Text size={1} muted>
+                  Give it a label that&rsquo;ll make sense to future-you, like
+                  &ldquo;Before pricing changes&rdquo; or &ldquo;Q2 launch&rdquo;.
+                </Text>
+              </Stack>
+              <TextInput
+                value={snapshotName}
+                onChange={(e) => setSnapshotName(e.currentTarget.value)}
+                placeholder={defaultSnapshotName()}
+                autoFocus
+              />
+              <Flex gap={2} justify="flex-end">
+                <Button
+                  mode="ghost"
+                  text="Cancel"
+                  onClick={() => {
+                    setSnapshotDialogOpen(false)
+                    setSnapshotName('')
+                  }}
+                  disabled={busy === 'snapshot'}
+                />
+                <Button
+                  tone="primary"
+                  text={busy === 'snapshot' ? 'Capturing…' : 'Take snapshot'}
+                  onClick={() => void handleTakeSnapshot()}
+                  disabled={busy === 'snapshot'}
+                />
+              </Flex>
+            </Stack>
+          </Card>
+        )}
 
         {loading ? (
           <Flex align="center" gap={3} padding={4}>
@@ -173,33 +249,85 @@ function BackupsToolView() {
           </Card>
         ) : (
           <Stack space={2}>
-            {rows.map((row) => (
-              <Card key={row._id} padding={4} radius={2} shadow={1} tone="default">
-                <Flex align="center" justify="space-between" gap={3} wrap="wrap">
-                  <Stack space={2}>
-                    <Flex align="center" gap={2}>
-                      <ArchiveIcon />
-                      <Heading size={1}>{row.name || 'Untitled snapshot'}</Heading>
-                    </Flex>
-                    <Flex gap={2} align="center">
-                      <Text size={1} muted>{formatDate(row.createdAt)}</Text>
-                      <Badge tone="primary" mode="outline">{row.docCount ?? 0} docs</Badge>
-                    </Flex>
-                  </Stack>
-                  <Button
-                    icon={RestoreIcon}
-                    tone="critical"
-                    mode="ghost"
-                    text={busy === row._id ? 'Restoring…' : 'Restore to Live'}
-                    onClick={() => {
-                      setConfirmRestore(row)
-                      setConfirmText('')
-                    }}
-                    disabled={busy !== null}
-                  />
-                </Flex>
-              </Card>
-            ))}
+            {rows.map((row) => {
+              const isRenaming = renamingId === row._id
+              return (
+                <Card key={row._id} padding={4} radius={2} shadow={1} tone="default">
+                  <Flex align="center" justify="space-between" gap={3} wrap="wrap">
+                    <Stack space={2} flex={1} style={{ minWidth: '16rem' }}>
+                      <Flex align="center" gap={2}>
+                        <ArchiveIcon />
+                        {isRenaming ? (
+                          <Flex align="center" gap={2} flex={1}>
+                            <Box flex={1}>
+                              <TextInput
+                                value={renameDraft}
+                                onChange={(e) => setRenameDraft(e.currentTarget.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') void handleSaveRename(row)
+                                  if (e.key === 'Escape') setRenamingId(null)
+                                }}
+                                autoFocus
+                              />
+                            </Box>
+                            <Button
+                              icon={CheckmarkIcon}
+                              tone="primary"
+                              mode="ghost"
+                              onClick={() => void handleSaveRename(row)}
+                              disabled={busy !== null}
+                              aria-label="Save name"
+                            />
+                            <Button
+                              icon={CloseIcon}
+                              mode="ghost"
+                              onClick={() => {
+                                setRenamingId(null)
+                                setRenameDraft('')
+                              }}
+                              disabled={busy !== null}
+                              aria-label="Cancel rename"
+                            />
+                          </Flex>
+                        ) : (
+                          <>
+                            <Heading size={1}>{row.name || 'Untitled snapshot'}</Heading>
+                            <Button
+                              icon={EditIcon}
+                              mode="bleed"
+                              padding={1}
+                              onClick={() => {
+                                setRenamingId(row._id)
+                                setRenameDraft(row.name ?? '')
+                              }}
+                              disabled={busy !== null}
+                              aria-label="Rename"
+                            />
+                          </>
+                        )}
+                      </Flex>
+                      <Flex gap={2} align="center" wrap="wrap">
+                        <Text size={1} muted>{formatDate(row.createdAt)}</Text>
+                        <Badge tone="primary" mode="outline">{row.docCount ?? 0} docs</Badge>
+                      </Flex>
+                    </Stack>
+                    {!isRenaming && (
+                      <Button
+                        icon={RestoreIcon}
+                        tone="critical"
+                        mode="ghost"
+                        text={busy === row._id ? 'Restoring…' : 'Restore to Live'}
+                        onClick={() => {
+                          setConfirmRestore(row)
+                          setConfirmText('')
+                        }}
+                        disabled={busy !== null}
+                      />
+                    )}
+                  </Flex>
+                </Card>
+              )
+            })}
           </Stack>
         )}
 
@@ -219,20 +347,10 @@ function BackupsToolView() {
                 </Text>
               </Stack>
 
-              <input
+              <TextInput
                 value={confirmText}
-                onChange={(e) => setConfirmText(e.target.value)}
+                onChange={(e) => setConfirmText(e.currentTarget.value)}
                 placeholder={confirmRestore.name}
-                style={{
-                  width: '100%',
-                  padding: '0.625rem 0.75rem',
-                  borderRadius: 3,
-                  border: '1px solid var(--card-border-color)',
-                  background: 'var(--card-bg-color)',
-                  color: 'var(--card-fg-color)',
-                  fontFamily: 'inherit',
-                  fontSize: '0.9375rem',
-                }}
               />
 
               <Flex gap={2} justify="flex-end">
