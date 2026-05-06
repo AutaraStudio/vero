@@ -7,7 +7,7 @@ import './manage.css';
 /**
  * Internal client-facing guide for editing content in Sanity Studio.
  *
- * - Hosted at /guides/manage so the URL is easy to share with the client
+ * - Hosted at /admin/guide so the URL is easy to share with the client
  * - generateMetadata returns robots: { index: false, follow: false } so it
  *   never appears in search results
  * - Also blocked at the crawler level via robots.txt (defence in depth)
