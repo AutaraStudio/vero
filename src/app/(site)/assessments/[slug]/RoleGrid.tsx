@@ -6,6 +6,7 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
 import ActionButton from '@/components/ui/ActionButton';
 import type { ThemeVariant } from '@/lib/theme';
+import RoleRosterSummaryBar from './RoleRosterSummaryBar';
 import './role-grid.css';
 
 interface Role {
@@ -174,13 +175,13 @@ export default function RoleGrid({
               />
             ))}
           </div>
+
+          {/* Section-scoped sticky summary — appears once a role is
+              selected and stays pinned to the bottom of the viewport
+              only while the role roster is on screen. */}
+          <RoleRosterSummaryBar />
         </div>
       </section>
-
-      {/* Sticky bottom-of-screen FixedBar removed — per spec, sticky basket
-         bars are only shown inside the get-started/checkout flow. Selection
-         feedback on the category page comes from the cards themselves and
-         the persistent basket button in the nav. */}
     </>
   );
 }
