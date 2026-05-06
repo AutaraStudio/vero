@@ -50,8 +50,8 @@ export function CookieConsentBanner() {
     void CookieConsent.run({
       guiOptions: {
         consentModal: {
-          layout: 'box',
-          position: 'bottom right',
+          layout: 'cloud',
+          position: 'bottom left',
           equalWeightButtons: true,
           flipButtons: false,
         },
@@ -90,9 +90,9 @@ export function CookieConsentBanner() {
         translations: {
           en: {
             consentModal: {
-              title: 'We use cookies',
+              title: 'Cookies',
               description:
-                'Vero Assess uses cookies that are strictly necessary for the site to work, plus optional analytics cookies that help us understand how visitors use the site so we can improve it. You can change your choice at any time via "Cookie preferences" in the footer.',
+                'We use essential cookies plus optional analytics. Change anytime via "Cookie preferences" in the footer.',
               acceptAllBtn: 'Accept all',
               acceptNecessaryBtn: 'Reject optional',
               showPreferencesBtn: 'Manage preferences',
