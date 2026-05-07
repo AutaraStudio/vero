@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import Script from 'next/script';
 import { client } from '@/sanity/lib/client';
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateRootMetadata, type SiteSeoSettings } from '@/lib/seo';
@@ -7,13 +6,12 @@ import { CookieConsentBanner } from '@/components/CookieConsent/CookieConsent';
 import './globals.css';
 import './utilities.css';
 
-/* HubSpot portal tracking script. Sets the hubspotutk cookie so server-
-   side form submissions can pass it through as context.hutk and avoid
-   being spam-flagged as "unregistered site domain". Also enables
-   contact-attribution and visit tracking inside HubSpot's CRM. EU1
-   region matches the Tazio portal. afterInteractive so it doesn't
-   block first paint. */
-const HUBSPOT_TRACKING_SCRIPT = '//js-eu1.hs-scripts.com/25935419.js';
+/* HubSpot tracking script intentionally NOT installed. Tazio's portal
+   has Conversations + Collected Forms running globally, both of which
+   bleed into Vero (chat widget, duplicate auto-detected forms) when
+   the tracking script is present. Spam-flag avoidance for HubSpot
+   form submissions is handled by adding the Vero domains to HubSpot's
+   tracked-domain allowlist instead. */
 
 /**
  * Root metadata pulled from Sanity siteSettings — provides the global
@@ -38,11 +36,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Banner + preferences dialog. GA4 only loads after the
             user accepts the analytics category. */}
         <CookieConsentBanner />
-        <Script
-          id="hs-script-loader"
-          src={HUBSPOT_TRACKING_SCRIPT}
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   );
