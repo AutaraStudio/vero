@@ -4,8 +4,7 @@ import { TIER_DATA, getTierPrice } from './tierRecommendation';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-const FROM_EMAIL = 'Vero Assess <automation@autara.studio>';
-// TODO: Switch to 'orders@veroassess.com' once production domain is verified on Resend
+const FROM_EMAIL = 'Vero Assess <orders@veroassess.com>';
 
 /* Internal recipients for the admin order-summary email. The three visible
    addresses are sent via Resend's `to:` array so each recipient sees the
