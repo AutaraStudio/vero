@@ -49,10 +49,10 @@ export default function ComingSoonClient({
             <Image
               src="/logo.svg"
               alt="Vero Assess"
-              width={240}
-              height={68}
+              width={140}
+              height={40}
               priority
-              style={{ width: '100%', height: 'auto', maxWidth: '15rem' }}
+              style={{ width: 'auto', height: 'clamp(2rem, 4vh, 2.75rem)' }}
             />
           </div>
 
@@ -66,7 +66,7 @@ export default function ComingSoonClient({
           )}
           <h1
             ref={headingRef as React.RefObject<HTMLHeadingElement>}
-            className="coming-soon__heading"
+            className="coming-soon__heading text-display--lg text-balance max-ch-22 color--primary"
           >
             {heading}
           </h1>
