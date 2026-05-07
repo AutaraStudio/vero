@@ -7,14 +7,16 @@ import './ContactForm.css';
 type Status = 'idle' | 'submitting' | 'success' | 'error';
 
 interface FormState {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   company: string;
   message: string;
 }
 
 interface Errors {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   message?: string;
   form?: string;
@@ -24,15 +26,16 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function validate(values: FormState): Errors {
   const e: Errors = {};
-  if (!values.name.trim())                    e.name    = 'Please enter your name';
-  if (!values.email.trim())                   e.email   = 'Please enter your email';
+  if (!values.firstName.trim()) e.firstName = 'Please enter your first name';
+  if (!values.lastName.trim())  e.lastName  = 'Please enter your surname';
+  if (!values.email.trim())     e.email     = 'Please enter your email';
   else if (!EMAIL_RE.test(values.email.trim())) e.email = 'Please enter a valid email';
-  if (!values.message.trim())                 e.message = 'Please enter a message';
+  if (!values.message.trim())   e.message   = 'Please enter a message';
   else if (values.message.trim().length < 10) e.message = 'A bit more detail would help (at least 10 characters)';
   return e;
 }
 
-const INITIAL: FormState = { name: '', email: '', company: '', message: '' };
+const INITIAL: FormState = { firstName: '', lastName: '', email: '', company: '', message: '' };
 
 interface Props {
   /** Where the form posts. Default: /api/contact */
@@ -60,7 +63,7 @@ export default function ContactForm({ endpoint = '/api/contact' }: Props) {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setTouched({ name: true, email: true, message: true });
+    setTouched({ firstName: true, lastName: true, email: true, message: true });
 
     const v = validate(values);
     setErrors(v);
@@ -123,15 +126,28 @@ export default function ContactForm({ endpoint = '/api/contact' }: Props) {
     <form className="contact-form" onSubmit={onSubmit} noValidate>
       <div className="contact-form__row">
         <Field
-          id="cf-name"
-          label="Your name"
+          id="cf-first-name"
+          label="First name"
           required
-          value={values.name}
-          onChange={(v) => update('name', v)}
-          onBlur={() => blur('name')}
-          error={touched.name ? errors.name : undefined}
-          autoComplete="name"
+          value={values.firstName}
+          onChange={(v) => update('firstName', v)}
+          onBlur={() => blur('firstName')}
+          error={touched.firstName ? errors.firstName : undefined}
+          autoComplete="given-name"
         />
+        <Field
+          id="cf-last-name"
+          label="Surname"
+          required
+          value={values.lastName}
+          onChange={(v) => update('lastName', v)}
+          onBlur={() => blur('lastName')}
+          error={touched.lastName ? errors.lastName : undefined}
+          autoComplete="family-name"
+        />
+      </div>
+
+      <div className="contact-form__row">
         <Field
           id="cf-email"
           label="Email"
@@ -144,15 +160,14 @@ export default function ContactForm({ endpoint = '/api/contact' }: Props) {
           autoComplete="email"
           inputMode="email"
         />
+        <Field
+          id="cf-company"
+          label="Company"
+          value={values.company}
+          onChange={(v) => update('company', v)}
+          autoComplete="organization"
+        />
       </div>
-
-      <Field
-        id="cf-company"
-        label="Company"
-        value={values.company}
-        onChange={(v) => update('company', v)}
-        autoComplete="organization"
-      />
 
       <Field
         id="cf-message"
@@ -182,8 +197,10 @@ export default function ContactForm({ endpoint = '/api/contact' }: Props) {
         >
           {status === 'submitting' ? 'Sending…' : 'Send message'}
         </Button>
-        <p className="text-body--xs color--tertiary">
-          We'll only use these details to respond to your enquiry.
+        <p className="contact-form__privacy text-body--xs color--tertiary leading--snug">
+          By submitting this form, you agree to allow Vero Assess (Tazio) to
+          store and process your personal data to respond to your enquiry. See
+          our <a href="/legal/privacy">privacy policy</a> for more.
         </p>
       </div>
     </form>
