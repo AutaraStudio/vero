@@ -1,0 +1,105 @@
+'use client';
+
+import Image from 'next/image';
+import { useTextReveal } from '@/hooks/useTextReveal';
+import { useFadeUp } from '@/hooks/useFadeUp';
+import ContactForm from '@/components/ContactForm';
+import ContactMethods from '@/app/(site)/contact/ContactMethods';
+import BrandShapes from '@/components/BrandShapes/BrandShapes';
+import './coming-soon.css';
+
+interface Props {
+  heading: string;
+  description?: string | null;
+  launchDateLabel?: string | null;
+  formInstructions?: string | null;
+  phone?: string | null;
+  email?: string | null;
+}
+
+export default function ComingSoonClient({
+  heading,
+  description,
+  launchDateLabel,
+  formInstructions,
+  phone,
+  email,
+}: Props) {
+  const logoRef    = useFadeUp({ scroll: false, delay: 0,    duration: 0.6, y: 12 });
+  const eyebrowRef = useFadeUp({ scroll: false, delay: 0.15, duration: 0.5, y: 12 });
+  const headingRef = useTextReveal({ scroll: false, delay: 0.3, duration: 0.7 });
+  const bodyRef    = useFadeUp({ scroll: false, delay: 0.55, duration: 0.6, y: 16 });
+  const formRef    = useFadeUp({ scroll: false, delay: 0.7,  duration: 0.6, y: 16 });
+  const methodsRef = useFadeUp({ scroll: false, delay: 0.8,  duration: 0.6, y: 16 });
+
+  return (
+    /* BrandShapes portals into document.body and runs the fan-in entrance
+       on mount — same animation the marketing pages use on the hero. */
+    <main data-theme="brand-purple" className="coming-soon">
+      <BrandShapes />
+
+      <div className="coming-soon__inner">
+
+        <header className="coming-soon__header">
+          <div
+            ref={logoRef as React.RefObject<HTMLDivElement>}
+            className="coming-soon__logo"
+          >
+            <Image
+              src="/logo.svg"
+              alt="Vero Assess"
+              width={240}
+              height={68}
+              priority
+              style={{ width: '100%', height: 'auto', maxWidth: '15rem' }}
+            />
+          </div>
+
+          {launchDateLabel && (
+            <p
+              ref={eyebrowRef as React.RefObject<HTMLParagraphElement>}
+              className="coming-soon__eyebrow text-label--sm"
+            >
+              Coming {launchDateLabel}
+            </p>
+          )}
+          <h1
+            ref={headingRef as React.RefObject<HTMLHeadingElement>}
+            className="coming-soon__heading"
+          >
+            {heading}
+          </h1>
+          {description && (
+            <p
+              ref={bodyRef as React.RefObject<HTMLParagraphElement>}
+              className="coming-soon__body text-body--lg color--secondary leading--snug"
+            >
+              {description}
+            </p>
+          )}
+        </header>
+
+        <div className="coming-soon__grid">
+          <div ref={formRef as React.RefObject<HTMLDivElement>} className="coming-soon__form">
+            <header className="coming-soon__form-header stack--md">
+              <h2 className="text-h4 color--primary">Send us a message</h2>
+              {formInstructions && (
+                <p className="text-body--md color--secondary leading--snug">
+                  {formInstructions}
+                </p>
+              )}
+            </header>
+            <ContactForm />
+          </div>
+
+          <div
+            ref={methodsRef as React.RefObject<HTMLDivElement>}
+            className="coming-soon__methods"
+          >
+            <ContactMethods phone={phone ?? undefined} email={email ?? undefined} />
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

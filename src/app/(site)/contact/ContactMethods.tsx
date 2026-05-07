@@ -1,5 +1,7 @@
 'use client';
 
+import './contact-methods.css';
+
 interface Props {
   phone?: string;
   email?: string;
