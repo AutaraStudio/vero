@@ -14,6 +14,7 @@ const ADMIN_ORDER_RECIPIENTS = [
   'chelsea.francis@tazio.co.uk',
   'setup@veroassess.com',
   'louise.williams@tazio.co.uk',
+  'kathryn.jones@tazio.co.uk',
 ];
 const ADMIN_ORDER_BCC = ['matt@autara.studio'];
 
