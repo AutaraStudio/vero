@@ -17,15 +17,19 @@ export async function POST(request: Request) {
     // Push to HubSpot
     await submitCheckoutToHubSpot(payload);
 
-    // Send invoice submission email (fire-and-forget)
-    sendInvoiceSubmissionEmail(payload).catch((err) => {
-      console.error('[Invoice] Email failed (non-blocking):', err);
-    });
-
-    // Internal admin summary — separate template, fire-and-forget.
-    sendAdminOrderSummary(payload, 'invoice-requested').catch((err) => {
-      console.error('[Invoice] Admin summary failed (non-blocking):', err);
-    });
+    /* Await both email sends — see /api/checkout/confirm for details.
+       Serverless freezes the process on response return, killing any
+       fire-and-forget fetch before it reaches Resend. */
+    const [customerResult, adminResult] = await Promise.allSettled([
+      sendInvoiceSubmissionEmail(payload),
+      sendAdminOrderSummary(payload, 'invoice-requested'),
+    ]);
+    if (customerResult.status === 'rejected') {
+      console.error('[Invoice] Customer email failed (non-blocking):', customerResult.reason);
+    }
+    if (adminResult.status === 'rejected') {
+      console.error('[Invoice] Admin summary failed (non-blocking):', adminResult.reason);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
