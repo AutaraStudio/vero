@@ -2,8 +2,64 @@ import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { sendContactAcknowledgement } from '@/lib/email';
 
+/* HubSpot Forms v3 submission — public endpoint, region-agnostic.
+   Every contact-form submission is mirrored to HubSpot so the sales
+   team can work the lead in the CRM. The IDs are not secrets — the
+   same values sit in the public embed snippet HubSpot generates. */
+const HUBSPOT_PORTAL_ID = '25935419';
+const HUBSPOT_FORM_ID   = 'e0e03d8b-ada8-4940-9f54-172bd160ba63';
+const HUBSPOT_FORM_URL  =
+  `https://api.hsforms.com/submissions/v3/integration/submit/${HUBSPOT_PORTAL_ID}/${HUBSPOT_FORM_ID}`;
+
+interface HubSpotPayload {
+  firstName: string;
+  lastName: string;
+  email: string;
+  company: string;
+  pageUri: string;
+  ipAddress: string | null;
+}
+
+async function submitToHubSpot(p: HubSpotPayload): Promise<void> {
+  const body = {
+    fields: [
+      { name: 'firstname', value: p.firstName },
+      { name: 'lastname',  value: p.lastName },
+      { name: 'email',     value: p.email },
+      { name: 'company',   value: p.company },
+    ],
+    context: {
+      pageUri: p.pageUri,
+      pageName: 'Contact form',
+      ...(p.ipAddress ? { ipAddress: p.ipAddress } : {}),
+    },
+    /* Required for any HubSpot form configured with GDPR consent. The
+       text mirrors what users see beneath the form ("By submitting…").
+       We're not opting them into a marketing subscription — that needs
+       a subscriptionTypeId we don't yet have from the client. */
+    legalConsentOptions: {
+      consent: {
+        consentToProcess: true,
+        text: 'By submitting this form, I agree to allow Vero Assess (Tazio) to store and process my personal data to respond to my enquiry.',
+      },
+    },
+  };
+
+  const res = await fetch(HUBSPOT_FORM_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    throw new Error(`HubSpot ${res.status}: ${errBody.slice(0, 300)}`);
+  }
+}
+
 interface ContactPayload {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   company?: string;
   message: string;
@@ -16,18 +72,20 @@ function validate(payload: unknown): { ok: true; data: ContactPayload } | { ok: 
   if (!payload || typeof payload !== 'object') return { ok: false, error: 'Invalid payload' };
   const p = payload as Record<string, unknown>;
 
-  const name    = typeof p.name === 'string' ? p.name.trim() : '';
-  const email   = typeof p.email === 'string' ? p.email.trim() : '';
-  const company = typeof p.company === 'string' ? p.company.trim() : '';
-  const message = typeof p.message === 'string' ? p.message.trim() : '';
+  const firstName = typeof p.firstName === 'string' ? p.firstName.trim() : '';
+  const lastName  = typeof p.lastName  === 'string' ? p.lastName.trim()  : '';
+  const email     = typeof p.email     === 'string' ? p.email.trim()     : '';
+  const company   = typeof p.company   === 'string' ? p.company.trim()   : '';
+  const message   = typeof p.message   === 'string' ? p.message.trim()   : '';
 
-  if (!name)               return { ok: false, error: 'Name is required' };
-  if (!email)              return { ok: false, error: 'Email is required' };
+  if (!firstName)            return { ok: false, error: 'First name is required' };
+  if (!lastName)             return { ok: false, error: 'Surname is required' };
+  if (!email)                return { ok: false, error: 'Email is required' };
   if (!EMAIL_RE.test(email)) return { ok: false, error: 'Invalid email' };
-  if (!message)            return { ok: false, error: 'Message is required' };
-  if (message.length < 10) return { ok: false, error: 'Message is too short' };
+  if (!message)              return { ok: false, error: 'Message is required' };
+  if (message.length < 10)   return { ok: false, error: 'Message is too short' };
 
-  return { ok: true, data: { name, email, company, message } };
+  return { ok: true, data: { firstName, lastName, email, company, message } };
 }
 
 export async function POST(request: Request) {
@@ -43,17 +101,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: validation.error }, { status: 400 });
   }
 
-  const { name, email, company, message } = validation.data;
+  const { firstName, lastName, email, company, message } = validation.data;
+  const fullName = `${firstName} ${lastName}`.trim();
+  /* Best-effort tracking context for HubSpot. Referer (where the form
+     was submitted from) lets HubSpot show the originating page on the
+     contact record. */
+  const pageUri = request.headers.get('referer') ?? 'https://veroassess.com/contact';
+  const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null;
   const apiKey = process.env.RESEND_API_KEY;
-  const from   = process.env.CONTACT_FROM_EMAIL ?? 'Vero Assess <hello@veroassess.com>';
-  const to     = process.env.CONTACT_TO_EMAIL   ?? 'support@veroassess.com';
+  const from   = process.env.CONTACT_FROM_EMAIL ?? 'Vero Assess <orders@veroassess.com>';
+  /* Single recipient. Hardcoded so a stale CONTACT_TO_EMAIL on the
+     Netlify side can't accidentally route leads elsewhere. */
+  const to = 'sales@veroassess.com';
 
   /* Build a clean plain-text + HTML email body. */
-  const subject = `New contact enquiry — ${name}`;
+  const subject = `New contact enquiry — ${fullName}`;
   const text = [
     `New enquiry from the Vero Assess contact form.`,
     ``,
-    `Name:    ${name}`,
+    `Name:    ${fullName}`,
     `Email:   ${email}`,
     `Company: ${company || '—'}`,
     ``,
@@ -66,7 +132,7 @@ export async function POST(request: Request) {
       <h2 style="margin:0 0 1rem 0">New contact enquiry</h2>
       <p style="margin:0 0 1rem 0;color:#5a4f6e">From the Vero Assess contact form</p>
       <table cellpadding="6" style="border-collapse:collapse;margin:1rem 0">
-        <tr><td style="color:#5a4f6e">Name</td><td><strong>${escapeHtml(name)}</strong></td></tr>
+        <tr><td style="color:#5a4f6e">Name</td><td><strong>${escapeHtml(fullName)}</strong></td></tr>
         <tr><td style="color:#5a4f6e">Email</td><td><a href="mailto:${escapeHtml(email)}">${escapeHtml(email)}</a></td></tr>
         <tr><td style="color:#5a4f6e">Company</td><td>${escapeHtml(company || '—')}</td></tr>
       </table>
@@ -75,22 +141,42 @@ export async function POST(request: Request) {
     </div>
   `;
 
-  /* Dev / no-key fallback: log it server-side and pretend success. Means the
-     form works locally without a Resend setup. */
-  if (!apiKey) {
-    console.log('[contact-form] RESEND_API_KEY missing — message NOT sent. Logged here:');
-    console.log({ to, from, subject, text });
-    return NextResponse.json({ ok: true, devOnly: true });
-  }
-
   try {
+    /* The HubSpot Forms public endpoint doesn't need an API key, so it
+       fires regardless of whether Resend is configured — keeps the
+       lead capture path working locally / in preview where the dev
+       might not have RESEND_API_KEY set. */
+    const hubspotPromise = submitToHubSpot({
+      firstName,
+      lastName,
+      email,
+      company: company ?? '',
+      pageUri,
+      ipAddress,
+    });
+
+    /* Dev / no-key fallback: skip the email sends, still hit HubSpot. */
+    if (!apiKey) {
+      console.log('[contact-form] RESEND_API_KEY missing — emails skipped. HubSpot submission still firing.');
+      console.log({ to, from, subject, text });
+      const hsResult = await hubspotPromise.then(
+        () => ({ ok: true as const }),
+        (err: unknown) => ({ ok: false as const, err }),
+      );
+      if (!hsResult.ok) {
+        console.error('[contact-form] HubSpot submission failed (non-blocking):', hsResult.err);
+      }
+      return NextResponse.json({ ok: true, devOnly: true });
+    }
+
     const resend = new Resend(apiKey);
 
-    /* Send the team-facing email and the customer acknowledgement in
-       parallel. allSettled means a Resend hiccup on the acknowledgement
-       can't drop the team's lead — getting the enquiry to the team is
-       what the form is for; the acknowledgement is a bonus on top. */
-    const [teamResult, ackResult] = await Promise.allSettled([
+    /* Send the team-facing email, the customer acknowledgement, and the
+       HubSpot CRM submission in parallel. allSettled so a hiccup on any
+       one path can't suppress the others — getting the enquiry to the
+       team is what the form is for; HubSpot + the acknowledgement are
+       bonuses on top. */
+    const [teamResult, ackResult, hubspotResult] = await Promise.allSettled([
       resend.emails.send({
         from,
         to: [to],
@@ -99,7 +185,8 @@ export async function POST(request: Request) {
         text,
         html,
       }),
-      sendContactAcknowledgement({ name, email, company, message }),
+      sendContactAcknowledgement({ name: fullName, email, company, message }),
+      hubspotPromise,
     ]);
 
     if (teamResult.status === 'rejected') {
@@ -116,6 +203,12 @@ export async function POST(request: Request) {
          just didn't get the bonus acknowledgement. Log so we can spot
          it in the function logs. */
       console.error('[contact-form] Acknowledgement email failed (non-blocking):', ackResult.reason);
+    }
+
+    if (hubspotResult.status === 'rejected') {
+      /* Same rationale — HubSpot is a CRM mirror; the email already
+         landed with the team. Log loudly so we can investigate. */
+      console.error('[contact-form] HubSpot submission failed (non-blocking):', hubspotResult.reason);
     }
 
     return NextResponse.json({ ok: true });
