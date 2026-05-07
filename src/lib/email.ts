@@ -7,6 +7,17 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const FROM_EMAIL = 'Vero Assess <automation@autara.studio>';
 // TODO: Switch to 'orders@veroassess.com' once production domain is verified on Resend
 
+/* Internal recipients for the admin order-summary email. The three visible
+   addresses are sent via Resend's `to:` array so each recipient sees the
+   others and can hit Reply-All without losing context. matt@autara.studio
+   is BCC'd for ops monitoring without showing up on the To line. */
+const ADMIN_ORDER_RECIPIENTS = [
+  'chelsea.francis@tazio.co.uk',
+  'setup@veroassess.com',
+  'louise.williams@tazio.co.uk',
+];
+const ADMIN_ORDER_BCC = ['matt@autara.studio'];
+
 // ── Send order confirmation email ─────────────────────────────
 
 export async function sendConfirmationEmail(payload: CheckoutPayload): Promise<void> {
@@ -162,6 +173,87 @@ export async function sendInvoiceSubmissionEmail(payload: CheckoutPayload): Prom
   }
 
   console.log(`[Email] Invoice submission email sent to ${contactDetails.email} (id: ${data?.id})`);
+}
+
+// ── Send admin-only order summary email ──────────────────────
+
+export async function sendAdminOrderSummary(
+  payload: CheckoutPayload,
+  status: 'paid' | 'invoice-requested',
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[Email] RESEND_API_KEY not set — skipping admin order summary');
+    return;
+  }
+
+  const { contactDetails, selectedRoles, tier, paymentFrequency, autoRenewal, paymentMethod, submittedAt } = payload;
+  const tierInfo = TIER_DATA[tier];
+  const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);
+
+  const rolesByCategory: Record<string, string[]> = {};
+  for (const role of selectedRoles) {
+    if (!rolesByCategory[role.categoryName]) rolesByCategory[role.categoryName] = [];
+    rolesByCategory[role.categoryName].push(role.roleName);
+  }
+
+  const campaignLines: string[] = [];
+  for (const role of selectedRoles) {
+    const dates = contactDetails.roleDates[role.roleId];
+    if (dates?.openDate && dates?.closeDate) {
+      campaignLines.push(`${role.roleName}: ${formatDate(dates.openDate)} – ${formatDate(dates.closeDate)}`);
+    }
+  }
+
+  const userEmails = contactDetails.usersToAdd.split('\n').map((s) => s.trim()).filter(Boolean);
+  const frequencyLabel = tier === 'starter' ? 'One-off payment' : paymentFrequency === 'annual' ? 'Annual' : 'Monthly';
+  const paymentMethodLabel = paymentMethod === 'card' ? 'Card payment' : 'Invoice';
+
+  const html = buildAdminOrderHtml({
+    status,
+    submittedAt: submittedAt ?? new Date().toISOString(),
+    firstName: contactDetails.firstName,
+    lastName: contactDetails.lastName,
+    email: contactDetails.email,
+    phone: contactDetails.phone,
+    jobTitle: contactDetails.jobTitle,
+    company: contactDetails.company,
+    tierName: tierInfo.name,
+    price,
+    priceNote,
+    frequencyLabel,
+    paymentMethodLabel,
+    autoRenewal: tier !== 'starter' && paymentFrequency === 'annual' ? autoRenewal : null,
+    candidateLimit: tierInfo.candidateLimit,
+    roleCount: selectedRoles.length,
+    rolesByCategory,
+    campaignLines,
+    userEmails,
+    portalUrl: contactDetails.bespokeUrl,
+    sendFeedbackReports: contactDetails.sendFeedbackReports,
+    keyContactName: contactDetails.keyContactSameAsMe ? '' : contactDetails.keyContactName,
+    keyContactEmail: contactDetails.keyContactSameAsMe ? '' : contactDetails.keyContactEmail,
+    brandColour1: contactDetails.brandColour1,
+    brandColour2: contactDetails.brandColour2,
+    logoFileName: contactDetails.logoFileName,
+  });
+
+  const subjectPrefix = status === 'paid' ? '[Order paid]' : '[Invoice requested]';
+  const subject = `${subjectPrefix} ${contactDetails.company} — ${tierInfo.name}, ${selectedRoles.length} role${selectedRoles.length !== 1 ? 's' : ''}, ${price}`;
+
+  const { data, error: sendError } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: ADMIN_ORDER_RECIPIENTS,
+    bcc: ADMIN_ORDER_BCC,
+    subject,
+    html,
+  });
+
+  if (sendError) {
+    console.error('[Email] Admin summary Resend API error:', sendError);
+    throw new Error(`Admin summary send failed: ${sendError.message}`);
+  }
+
+  console.log(`[Email] Admin order summary sent for ${contactDetails.company} (id: ${data?.id})`);
 }
 
 // ── HTML template ──────────────────────────────────────────────
@@ -663,6 +755,254 @@ function stepRow(num: string, title: string, body: string): string {
       </tr>
     </table>`;
 }
+
+// ── Admin order summary template ──────────────────────────────
+
+interface AdminEmailData {
+  status: 'paid' | 'invoice-requested';
+  submittedAt: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  jobTitle: string;
+  company: string;
+  tierName: string;
+  price: string;
+  priceNote: string;
+  frequencyLabel: string;
+  paymentMethodLabel: string;
+  autoRenewal: boolean | null;
+  candidateLimit: string;
+  roleCount: number;
+  rolesByCategory: Record<string, string[]>;
+  campaignLines: string[];
+  userEmails: string[];
+  portalUrl: string;
+  sendFeedbackReports: string;
+  keyContactName: string;
+  keyContactEmail: string;
+  brandColour1: string;
+  brandColour2: string;
+  logoFileName: string;
+}
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+/* All roles fully expanded — admins want the full list, not a "+N more"
+   summary. Same shape as buildRolesHtml minus the SHOW_THRESHOLD trim. */
+function buildAdminRolesHtml(rolesByCategory: Record<string, string[]>): string {
+  let html = '';
+  for (const [category, roles] of Object.entries(rolesByCategory)) {
+    html += `
+      <tr><td style="padding: 12px 0 4px 0;">
+        <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #6b5a7e;">${escapeHtml(category)}</span>
+        <span style="font-size: 11px; color: #9b8dab; margin-left: 6px;">${roles.length} role${roles.length !== 1 ? 's' : ''}</span>
+      </td></tr>`;
+    for (const role of roles) {
+      html += `
+      <tr><td style="padding: 3px 0 3px 12px; font-size: 14px; color: #201530;">
+        ${escapeHtml(role)}
+      </td></tr>`;
+    }
+  }
+  return html;
+}
+
+function buildAdminOrderHtml(data: AdminEmailData): string {
+  const {
+    status, submittedAt,
+    firstName, lastName, email, phone, jobTitle, company,
+    tierName, price, priceNote, frequencyLabel, paymentMethodLabel, autoRenewal,
+    candidateLimit, roleCount, rolesByCategory, campaignLines, userEmails,
+    portalUrl, sendFeedbackReports, keyContactName, keyContactEmail,
+    brandColour1, brandColour2, logoFileName,
+  } = data;
+
+  /* Status banner palette — neutral inline hexes consistent with the rest
+     of this file. Greens for paid, ambers for invoice-requested. */
+  const banner = status === 'paid'
+    ? { bg: '#dcfce7', border: '#86efac', text: '#15803d', label: 'Card paid' }
+    : { bg: '#fef3c7', border: '#fcd34d', text: '#92400e', label: 'Invoice requested' };
+
+  const buyerFullName = `${firstName} ${lastName}`.trim();
+
+  const submittedFmt = (() => {
+    try {
+      const d = new Date(submittedAt);
+      return d.toLocaleString('en-GB', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Europe/London' });
+    } catch {
+      return submittedAt;
+    }
+  })();
+
+  const rolesHtml = buildAdminRolesHtml(rolesByCategory);
+
+  const datesHtml = campaignLines.length === 0 ? '' : campaignLines
+    .map((line) => `
+      <tr><td style="padding: 3px 0; font-size: 14px; color: #201530;">${escapeHtml(line)}</td></tr>`)
+    .join('');
+
+  const usersHtml = userEmails.length === 0 ? '' : userEmails
+    .map((u, i) => `
+      <tr><td style="padding: 3px 0; font-size: 14px; color: #201530;">
+        <span style="color: #9b8dab; font-size: 12px; margin-right: 6px;">${i + 1}.</span>${escapeHtml(u)}
+      </td></tr>`)
+    .join('');
+
+  const colourSwatch = (hex: string) => {
+    if (!hex) return '';
+    return `
+      <span style="display: inline-block; width: 12px; height: 12px; background-color: ${escapeHtml(hex)}; border: 1px solid #d4cdde; border-radius: 2px; vertical-align: middle; margin-right: 8px;"></span>${escapeHtml(hex)}`;
+  };
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Internal order summary — ${escapeHtml(company)}</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f0f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f0f6;">
+    <tr>
+      <td align="center" style="padding: 32px 16px;">
+
+        <table role="presentation" width="640" cellpadding="0" cellspacing="0" style="max-width: 640px; width: 100%;">
+
+          <!-- Status banner -->
+          <tr>
+            <td style="background-color: ${banner.bg}; border: 1px solid ${banner.border}; border-radius: 6px 6px 0 0; padding: 16px 24px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td>
+                    <span style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: ${banner.text};">${banner.label}</span>
+                    <br>
+                    <span style="font-size: 17px; font-weight: 700; color: #201530;">${escapeHtml(company)} — ${escapeHtml(tierName)}</span>
+                  </td>
+                  <td align="right" style="vertical-align: top;">
+                    <span style="font-size: 17px; font-weight: 700; color: #201530;">${price}</span>
+                    <br>
+                    <span style="font-size: 12px; color: #6b5a7e;">${escapeHtml(priceNote)}</span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Customer block (most prominent) -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed;">
+              <p style="margin: 0 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Customer</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${detailRow('Name', escapeHtml(buyerFullName))}
+                ${detailRow('Email', `<a href="mailto:${escapeHtml(email)}" style="color: #472d6a; text-decoration: underline;">${escapeHtml(email)}</a>`)}
+                ${phone ? detailRow('Phone', `<a href="tel:${escapeHtml(phone)}" style="color: #472d6a; text-decoration: underline;">${escapeHtml(phone)}</a>`) : ''}
+                ${jobTitle ? detailRow('Job title', escapeHtml(jobTitle)) : ''}
+                ${detailRow('Company', escapeHtml(company))}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Order block -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Order</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${detailRow('Tier', `${escapeHtml(tierName)} (${roleCount} role${roleCount !== 1 ? 's' : ''})`)}
+                ${detailRow('Price', `${price} <span style="color:#6b5a7e;">${escapeHtml(priceNote)}</span>`)}
+                ${detailRow('Billing', escapeHtml(frequencyLabel))}
+                ${detailRow('Payment method', escapeHtml(paymentMethodLabel))}
+                ${autoRenewal !== null ? detailRow('Auto-renewal', autoRenewal ? 'Yes — renews in 12 months' : 'No — expires after 12 months') : ''}
+                ${detailRow('Candidate limit', escapeHtml(candidateLimit))}
+                ${detailRow('Feedback reports', sendFeedbackReports === 'yes' ? 'Yes' : sendFeedbackReports === 'no' ? 'No' : 'Not specified')}
+                ${portalUrl ? detailRow('Portal URL', `${escapeHtml(portalUrl)}.veroassess.com`) : ''}
+              </table>
+            </td>
+          </tr>
+
+          <!-- Roles -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 0 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Roles (${roleCount})</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${rolesHtml}
+              </table>
+            </td>
+          </tr>
+
+          ${campaignLines.length > 0 ? `
+          <!-- Campaign dates -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Campaign dates (${campaignLines.length})</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${datesHtml}
+              </table>
+            </td>
+          </tr>` : ''}
+
+          ${userEmails.length > 0 ? `
+          <!-- Users -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Users to add (${userEmails.length})</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${usersHtml}
+              </table>
+            </td>
+          </tr>` : ''}
+
+          ${keyContactName || keyContactEmail ? `
+          <!-- Key project contact -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Key project contact</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${keyContactName ? detailRow('Name', escapeHtml(keyContactName)) : ''}
+                ${keyContactEmail ? detailRow('Email', `<a href="mailto:${escapeHtml(keyContactEmail)}" style="color: #472d6a; text-decoration: underline;">${escapeHtml(keyContactEmail)}</a>`) : ''}
+              </table>
+            </td>
+          </tr>` : ''}
+
+          ${portalUrl || brandColour1 || brandColour2 || logoFileName ? `
+          <!-- Branding -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 4px 24px 24px 24px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed; border-top: 1px solid #f0ecf4;">
+              <p style="margin: 16px 0 12px 0; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: #472d6a;">Branding</p>
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                ${portalUrl ? detailRow('Portal URL', `${escapeHtml(portalUrl)}.veroassess.com`) : ''}
+                ${brandColour1 ? detailRow('Brand colour 1', colourSwatch(brandColour1)) : ''}
+                ${brandColour2 ? detailRow('Brand colour 2', colourSwatch(brandColour2)) : ''}
+                ${logoFileName ? detailRow('Logo file', escapeHtml(logoFileName)) : ''}
+              </table>
+            </td>
+          </tr>` : ''}
+
+          <!-- Footer / submitted timestamp -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 16px 24px; border: 1px solid #e8e3ed; border-radius: 0 0 6px 6px; border-top: 1px solid #f0ecf4;">
+              <span style="font-size: 12px; color: #6b5a7e;">Submitted ${escapeHtml(submittedFmt)}</span>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ── Date helper ───────────────────────────────────────────────
 
 function formatDate(iso: string): string {
   if (!iso) return '';

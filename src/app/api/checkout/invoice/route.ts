@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
-import { sendInvoiceSubmissionEmail } from '@/lib/email';
+import { sendInvoiceSubmissionEmail, sendAdminOrderSummary } from '@/lib/email';
 
 export async function POST(request: Request) {
   try {
@@ -20,6 +20,11 @@ export async function POST(request: Request) {
     // Send invoice submission email (fire-and-forget)
     sendInvoiceSubmissionEmail(payload).catch((err) => {
       console.error('[Invoice] Email failed (non-blocking):', err);
+    });
+
+    // Internal admin summary — separate template, fire-and-forget.
+    sendAdminOrderSummary(payload, 'invoice-requested').catch((err) => {
+      console.error('[Invoice] Admin summary failed (non-blocking):', err);
     });
 
     return NextResponse.json({ success: true });
