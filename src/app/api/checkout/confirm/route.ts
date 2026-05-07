@@ -28,16 +28,22 @@ export async function POST(request: Request) {
       console.error('[Confirm] HubSpot failed (non-blocking):', err);
     }
 
-    // Email can stay async — Resend is fast and failure doesn't break the CRM
-    sendConfirmationEmail(payload).catch((err) => {
-      console.error('[Confirm] Email failed (non-blocking):', err);
-    });
-
-    // Internal admin summary — separate template, fire-and-forget so admin
-    // mail server hiccups can't block the customer's success response.
-    sendAdminOrderSummary(payload, 'paid').catch((err) => {
-      console.error('[Confirm] Admin summary failed (non-blocking):', err);
-    });
+    /* Await both email sends — Netlify (and Vercel) freeze the function
+       process the moment the response is returned, which kills any
+       in-flight fetch from a fire-and-forget .catch() before Resend can
+       accept it. Use allSettled so a Resend hiccup on one mail can't
+       suppress the other, and so neither failure blocks the success
+       response to the user. */
+    const [customerResult, adminResult] = await Promise.allSettled([
+      sendConfirmationEmail(payload),
+      sendAdminOrderSummary(payload, 'paid'),
+    ]);
+    if (customerResult.status === 'rejected') {
+      console.error('[Confirm] Customer email failed (non-blocking):', customerResult.reason);
+    }
+    if (adminResult.status === 'rejected') {
+      console.error('[Confirm] Admin summary failed (non-blocking):', adminResult.reason);
+    }
 
     return NextResponse.json({ success: true });
   } catch (err) {
