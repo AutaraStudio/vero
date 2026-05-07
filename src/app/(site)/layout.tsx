@@ -58,8 +58,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     client.fetch<GlobalNavData | null>(GLOBAL_NAV_QUERY),
     client.fetch<CategoryGroupsData | null>(GLOBAL_CATEGORY_GROUPS_QUERY),
     client.fetch<string[] | null>(ALL_ROLE_IDS_QUERY),
-    client.fetch<ComingSoonData | null>(COMING_SOON_QUERY),
-    client.fetch<ComingSoonContact | null>(COMING_SOON_CONTACT_QUERY),
+    /* Read the comingSoon singleton from the drafts perspective so the
+       editor doesn't have to click Publish — Studio auto-saves edits
+       as drafts, and the toggle takes effect immediately. The rest of
+       the site stays on the default published perspective. */
+    client.fetch<ComingSoonData | null>(COMING_SOON_QUERY, {}, { perspective: 'drafts' }),
+    client.fetch<ComingSoonContact | null>(COMING_SOON_CONTACT_QUERY, {}, { perspective: 'drafts' }),
   ]);
 
   /* Coming-soon mode replaces every public route with the holding page.
