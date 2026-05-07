@@ -19,6 +19,7 @@ import { siteBackup } from './siteBackup'
 import { globalCategoryGroups } from './globalCategoryGroups'
 import { globalNav } from './globalNav'
 import { globalFooter } from './globalFooter'
+import { comingSoon } from './comingSoon'
 
 export const schema: { types: SchemaTypeDefinition[] } = {
   types: [
@@ -49,5 +50,6 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     globalNav,
     globalFooter,
     globalCategoryGroups,
+    comingSoon,
   ],
 }
