@@ -125,14 +125,19 @@ a.hero-split__pill:hover {
 }
 
 @media (max-width: 479px) {
+  /* Stack vertically on small phones but keep buttons content-width
+     (left-aligned with the heading/body above), not edge-to-edge.
+     Full-width buttons looked oversized on the category-page hero
+     and the decorative blob extension on the .btn-blob component
+     needs natural width to render correctly. */
   .hero-split__cta {
     flex-direction: column-reverse;
-    align-items: stretch;
-    width: 100%;
+    align-items: flex-start;
   }
-  .hero-split__cta > * {
-    width: 100%;
-  }
+}
+
+.hero-split--text-h-center .hero-split__cta {
+  align-items: center;
 }
 
 /* ── Media column ─────────────────────────────────────────── */

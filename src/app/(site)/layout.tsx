@@ -25,6 +25,8 @@ interface GlobalNavData {
   companyCard?: NavCompanyCard | null;
   ctaLabel?: string | null;
   ctaHref?: string | null;
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
 }
 
 interface CategoryGroupsData {
@@ -60,10 +62,20 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     client.fetch<string[] | null>(ALL_ROLE_IDS_QUERY),
     /* Read the comingSoon singleton from the drafts perspective so the
        editor doesn't have to click Publish — Studio auto-saves edits
-       as drafts, and the toggle takes effect immediately. The rest of
-       the site stays on the default published perspective. */
-    client.fetch<ComingSoonData | null>(COMING_SOON_QUERY, {}, { perspective: 'drafts' }),
-    client.fetch<ComingSoonContact | null>(COMING_SOON_CONTACT_QUERY, {}, { perspective: 'drafts' }),
+       as drafts. cache: 'no-store' opts this single fetch out of
+       Next.js's per-route caching so the toggle takes effect on the
+       next request, not on the next deploy / revalidation. The rest
+       of the site stays on the default published+cached fetches. */
+    client.fetch<ComingSoonData | null>(
+      COMING_SOON_QUERY,
+      {},
+      { perspective: 'drafts', cache: 'no-store' },
+    ),
+    client.fetch<ComingSoonContact | null>(
+      COMING_SOON_CONTACT_QUERY,
+      {},
+      { perspective: 'drafts', cache: 'no-store' },
+    ),
   ]);
 
   /* Coming-soon mode replaces every public route with the holding page.
@@ -92,6 +104,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         companyCard={nav?.companyCard ?? null}
         ctaLabel={nav?.ctaLabel ?? 'Get started'}
         ctaHref={nav?.ctaHref ?? '/get-started'}
+        secondaryCtaLabel={nav?.secondaryCtaLabel ?? null}
+        secondaryCtaHref={nav?.secondaryCtaHref ?? null}
         categoryGroups={categoryGroups?.groups ?? []}
         footer={<Footer />}
       >

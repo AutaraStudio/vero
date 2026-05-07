@@ -280,10 +280,14 @@ export async function sendContactAcknowledgement(
     message: payload.message,
   });
 
+  /* The contact-form acknowledgement is sent from the sales address
+     (not the default orders@ used by checkout flows) and replies go
+     back to the same inbox so customers don't dead-end at a different
+     mailbox if they hit Reply. */
   const { data, error: sendError } = await resend.emails.send({
-    from: FROM_EMAIL,
+    from: 'Vero Assess <sales@veroassess.com>',
     to: payload.email,
-    replyTo: 'support@veroassess.com',
+    replyTo: 'sales@veroassess.com',
     subject: 'Thanks for getting in touch — Vero Assess',
     html,
   });

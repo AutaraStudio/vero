@@ -18,7 +18,7 @@ export const globalNav = defineType({
   groups: [
     { name: 'top', title: 'Top-level items', default: true },
     { name: 'company', title: 'Company dropdown' },
-    { name: 'cta', title: 'CTA button' },
+    { name: 'cta', title: 'CTA buttons' },
   ],
   fields: [
     /* ────────────────────────────────────────────────────────────
@@ -184,11 +184,30 @@ export const globalNav = defineType({
     }),
 
     /* ────────────────────────────────────────────────────────────
-       Top-right CTA button
+       Top-right CTA buttons. Two spots side-by-side: a primary
+       "Get started" on the right, and a secondary outline button to
+       its left (typically "Contact"). Leave the secondary fields
+       blank to hide that button.
     ──────────────────────────────────────────────────────────── */
     defineField({
+      name: 'secondaryCtaLabel',
+      title: 'Secondary CTA label',
+      type: 'string',
+      group: 'cta',
+      description: 'Outline button shown to the left of the primary CTA. Leave blank to hide.',
+      initialValue: 'Contact',
+    }),
+    defineField({
+      name: 'secondaryCtaHref',
+      title: 'Secondary CTA link',
+      type: 'string',
+      group: 'cta',
+      description: 'Internal path like "/contact" or full https:// URL for external.',
+      initialValue: '/contact',
+    }),
+    defineField({
       name: 'ctaLabel',
-      title: 'CTA button label',
+      title: 'Primary CTA label',
       type: 'string',
       group: 'cta',
       initialValue: 'Get started',
@@ -196,7 +215,7 @@ export const globalNav = defineType({
     }),
     defineField({
       name: 'ctaHref',
-      title: 'CTA button link',
+      title: 'Primary CTA link',
       type: 'string',
       group: 'cta',
       initialValue: '/get-started',
