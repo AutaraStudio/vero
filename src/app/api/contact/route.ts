@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
+import { sendContactAcknowledgement } from '@/lib/email';
 
 interface ContactPayload {
   name: string;
@@ -84,18 +85,39 @@ export async function POST(request: Request) {
 
   try {
     const resend = new Resend(apiKey);
-    const result = await resend.emails.send({
-      from,
-      to: [to],
-      replyTo: email,
-      subject,
-      text,
-      html,
-    });
-    if (result.error) {
-      console.error('[contact-form] Resend error:', result.error);
+
+    /* Send the team-facing email and the customer acknowledgement in
+       parallel. allSettled means a Resend hiccup on the acknowledgement
+       can't drop the team's lead — getting the enquiry to the team is
+       what the form is for; the acknowledgement is a bonus on top. */
+    const [teamResult, ackResult] = await Promise.allSettled([
+      resend.emails.send({
+        from,
+        to: [to],
+        replyTo: email,
+        subject,
+        text,
+        html,
+      }),
+      sendContactAcknowledgement({ name, email, company, message }),
+    ]);
+
+    if (teamResult.status === 'rejected') {
+      console.error('[contact-form] Team email failed:', teamResult.reason);
       return NextResponse.json({ error: 'Could not send your message' }, { status: 500 });
     }
+    if (teamResult.value.error) {
+      console.error('[contact-form] Resend error:', teamResult.value.error);
+      return NextResponse.json({ error: 'Could not send your message' }, { status: 500 });
+    }
+
+    if (ackResult.status === 'rejected') {
+      /* Don't fail the request — the team got the lead, the customer
+         just didn't get the bonus acknowledgement. Log so we can spot
+         it in the function logs. */
+      console.error('[contact-form] Acknowledgement email failed (non-blocking):', ackResult.reason);
+    }
+
     return NextResponse.json({ ok: true });
   } catch (err) {
     console.error('[contact-form] Unexpected error:', err);
