@@ -110,7 +110,7 @@
 
 @media (max-width: 1024px) {
   .stats-section__stat {
-    padding: 0 1.5rem;
+    padding: 1.5rem;
   }
 }
 
@@ -120,7 +120,7 @@
   }
 
   .stats-section__stat {
-    padding: 1.5rem 0;
+    padding: 1.5rem;
   }
 
   .stats-section__stat + .stats-section__stat {

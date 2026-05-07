@@ -495,7 +495,9 @@ export const GLOBAL_NAV_QUERY = `
       "imageAlt": image.alt
     },
     ctaLabel,
-    ctaHref
+    ctaHref,
+    secondaryCtaLabel,
+    secondaryCtaHref
   }
 `
 

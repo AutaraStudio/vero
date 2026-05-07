@@ -77,6 +77,8 @@ interface MegaNavProps {
   companyCard?: NavCompanyCard | null;
   ctaLabel?: string;
   ctaHref?: string;
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
   categoryGroups?: NavCategoryGroup[];
 }
 
@@ -88,6 +90,8 @@ export default function MegaNav({
   companyCard = null,
   ctaLabel = 'Get started',
   ctaHref = '/get-started',
+  secondaryCtaLabel = null,
+  secondaryCtaHref = null,
   categoryGroups = [],
 }: MegaNavProps) {
   const navRef = useRef<HTMLElement>(null);
@@ -192,13 +196,21 @@ export default function MegaNav({
                 })}
               </ul>
 
-              {/* Actions */}
+              {/* Actions — order from left to right:
+                    basket (only when populated) → secondary CTA → primary CTA */}
               <ul data-nav-list-item="" className="mega-nav__bar-list is--actions flex gap--sm">
                 <li className="mega-nav__bar-action">
                   <NavBasket
                     categories={visibleCategoryGroups.flatMap((g) => g.categories.map((c) => ({ name: c.name, slug: c.slug })))}
                   />
                 </li>
+                {secondaryCtaLabel && secondaryCtaHref && (
+                  <li className="mega-nav__bar-action mega-nav__bar-action--secondary">
+                    <Button variant="secondary" size="sm" href={secondaryCtaHref}>
+                      {secondaryCtaLabel}
+                    </Button>
+                  </li>
+                )}
                 <li className="mega-nav__bar-action">
                   <Button variant="primary" size="sm" href={ctaHref}>
                     {ctaLabel}
