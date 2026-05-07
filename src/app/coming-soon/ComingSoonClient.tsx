@@ -5,7 +5,7 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import ContactForm from '@/components/ContactForm';
 import ContactMethods from '@/app/(site)/contact/ContactMethods';
-import BrandShapes from '@/components/BrandShapes/BrandShapes';
+import FooterFan from '@/components/Footer/FooterFan';
 import './coming-soon.css';
 
 interface Props {
@@ -33,10 +33,11 @@ export default function ComingSoonClient({
   const methodsRef = useFadeUp({ scroll: false, delay: 0.8,  duration: 0.6, y: 16 });
 
   return (
-    /* BrandShapes portals into document.body and runs the fan-in entrance
-       on mount — same animation the marketing pages use on the hero. */
+    /* FooterFan in the bottom-right corner — the same brand-shape
+       fan used at the foot of marketing pages, set to fire on mount
+       (no scroll trigger) since the holding page is single-viewport. */
     <main data-theme="brand-purple" className="coming-soon">
-      <BrandShapes />
+      <FooterFan position="bottom-right" trigger="load" />
 
       <div className="coming-soon__inner">
 
