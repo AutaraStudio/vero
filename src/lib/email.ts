@@ -256,6 +256,46 @@ export async function sendAdminOrderSummary(
   console.log(`[Email] Admin order summary sent for ${contactDetails.company} (id: ${data?.id})`);
 }
 
+// ── Send contact-form acknowledgement to the enquirer ────────
+
+interface ContactAcknowledgementPayload {
+  name: string;
+  email: string;
+  company?: string;
+  message: string;
+}
+
+export async function sendContactAcknowledgement(
+  payload: ContactAcknowledgementPayload,
+): Promise<void> {
+  if (!process.env.RESEND_API_KEY) {
+    console.warn('[Email] RESEND_API_KEY not set — skipping contact acknowledgement');
+    return;
+  }
+
+  const firstName = payload.name.trim().split(/\s+/)[0] ?? payload.name.trim();
+  const html = buildContactAcknowledgementHtml({
+    firstName,
+    company: payload.company ?? '',
+    message: payload.message,
+  });
+
+  const { data, error: sendError } = await resend.emails.send({
+    from: FROM_EMAIL,
+    to: payload.email,
+    replyTo: 'support@veroassess.com',
+    subject: 'Thanks for getting in touch — Vero Assess',
+    html,
+  });
+
+  if (sendError) {
+    console.error('[Email] Contact acknowledgement Resend API error:', sendError);
+    throw new Error(`Contact acknowledgement send failed: ${sendError.message}`);
+  }
+
+  console.log(`[Email] Contact acknowledgement sent to ${payload.email} (id: ${data?.id})`);
+}
+
 // ── HTML template ──────────────────────────────────────────────
 
 interface EmailData {
@@ -991,6 +1031,113 @@ function buildAdminOrderHtml(data: AdminEmailData): string {
           <tr>
             <td style="background-color: #ffffff; padding: 16px 24px; border: 1px solid #e8e3ed; border-radius: 0 0 6px 6px; border-top: 1px solid #f0ecf4;">
               <span style="font-size: 12px; color: #6b5a7e;">Submitted ${escapeHtml(submittedFmt)}</span>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
+}
+
+// ── Contact acknowledgement template ──────────────────────────
+
+interface ContactAckTemplateData {
+  firstName: string;
+  company: string;
+  message: string;
+}
+
+function buildContactAcknowledgementHtml(data: ContactAckTemplateData): string {
+  const { firstName, company, message } = data;
+
+  /* Preserve line breaks the user typed. escapeHtml first, then turn the
+     newlines into <br> so HTML-mail clients render the message the way
+     it was written. */
+  const messageHtml = escapeHtml(message).replace(/\r?\n/g, '<br>');
+
+  return `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thanks for getting in touch — Vero Assess</title>
+</head>
+<body style="margin: 0; padding: 0; background-color: #f3f0f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-font-smoothing: antialiased;">
+
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #f3f0f6;">
+    <tr>
+      <td align="center" style="padding: 40px 16px;">
+
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; width: 100%;">
+
+          <!-- Logo -->
+          <tr>
+            <td align="center" style="padding: 0 0 32px 0;">
+              <img src="https://veroassess.com/logo.svg" alt="Vero Assess" width="160" style="display: block; height: auto;" />
+            </td>
+          </tr>
+
+          <!-- Hero card -->
+          <tr>
+            <td style="background-color: #472d6a; border-radius: 8px 8px 0 0; padding: 40px 40px 32px 40px; text-align: center;">
+              <div style="width: 56px; height: 56px; background-color: rgba(255,255,255,0.15); border-radius: 50%; margin: 0 auto 20px auto; line-height: 56px; font-size: 28px;">
+                ✓
+              </div>
+              <h1 style="margin: 0 0 8px 0; font-size: 24px; font-weight: 700; color: #ffffff; line-height: 1.3;">
+                Thanks, ${escapeHtml(firstName)}
+              </h1>
+              <p style="margin: 0; font-size: 15px; color: rgba(255,255,255,0.75); line-height: 1.5;">
+                We've received your message and a member of the team will get back to you shortly.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Body card -->
+          <tr>
+            <td style="background-color: #ffffff; padding: 32px 40px; border-left: 1px solid #e8e3ed; border-right: 1px solid #e8e3ed;">
+
+              <p style="margin: 0 0 20px 0; font-size: 15px; color: #6b5a7e; line-height: 1.6;">
+                We typically reply within one working day. In the meantime, here's a copy of what you sent us — keep it for your records.
+              </p>
+
+              ${company ? `
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 16px;">
+                ${detailRow('Company', escapeHtml(company))}
+              </table>
+              ` : ''}
+
+              <!-- Message echo -->
+              <div style="background-color: #faf8fc; border-left: 3px solid #472d6a; padding: 16px 20px; border-radius: 2px;">
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #9b8dab;">Your message</span>
+                <p style="margin: 8px 0 0 0; font-size: 14px; color: #201530; line-height: 1.6; white-space: pre-wrap;">${messageHtml}</p>
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Support footer -->
+          <tr>
+            <td style="background-color: #ffffff; border-radius: 0 0 8px 8px; padding: 28px 40px; border: 1px solid #e8e3ed; border-top: 2px solid #472d6a; text-align: center;">
+              <p style="margin: 0 0 4px 0; font-size: 15px; font-weight: 600; color: #201530;">Need to add something?</p>
+              <p style="margin: 0 0 16px 0; font-size: 14px; color: #6b5a7e;">Just reply to this email — it goes straight to our support team.</p>
+              <a href="mailto:support@veroassess.com" style="display: inline-block; padding: 10px 24px; background-color: #472d6a; color: #ffffff; text-decoration: none; border-radius: 4px; font-size: 14px; font-weight: 600;">
+                Email support
+              </a>
+            </td>
+          </tr>
+
+          <!-- Legal footer -->
+          <tr>
+            <td style="padding: 24px 40px; text-align: center;">
+              <p style="margin: 0; font-size: 12px; color: #9b8dab; line-height: 1.6;">
+                Vero Assess Ltd · support@veroassess.com
+                <br>
+                You received this because you submitted the contact form on veroassess.com.
+              </p>
             </td>
           </tr>
 
