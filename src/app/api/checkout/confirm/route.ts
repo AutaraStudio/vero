@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { validateCheckoutPayload } from '@/lib/checkout-schema';
-import { sendConfirmationEmail } from '@/lib/email';
+import { sendConfirmationEmail, sendAdminOrderSummary } from '@/lib/email';
 import { submitCheckoutToHubSpot } from '@/lib/hubspot';
 
 /**
@@ -31,6 +31,12 @@ export async function POST(request: Request) {
     // Email can stay async — Resend is fast and failure doesn't break the CRM
     sendConfirmationEmail(payload).catch((err) => {
       console.error('[Confirm] Email failed (non-blocking):', err);
+    });
+
+    // Internal admin summary — separate template, fire-and-forget so admin
+    // mail server hiccups can't block the customer's success response.
+    sendAdminOrderSummary(payload, 'paid').catch((err) => {
+      console.error('[Confirm] Admin summary failed (non-blocking):', err);
     });
 
     return NextResponse.json({ success: true });
