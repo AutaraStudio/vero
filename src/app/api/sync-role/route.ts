@@ -6,21 +6,33 @@ import { apiVersion } from '@/sanity/env';
 /**
  * POST /api/sync-role
  *
- * Auto-mirror a single role document from `staging` → `production`.
- * Triggered by a Sanity webhook on the staging dataset filtered to
- * `_type == "role"` (Create + Update + Delete).
+ * Auto-mirror documents from `staging` → `production`. Despite the name
+ * (kept for backwards-compatibility with the existing webhook URL), this
+ * endpoint handles two document types that bypass the Push to Live
+ * workflow:
  *
- * Roles intentionally bypass the Push to Live workflow — they are simple
- * reference data, not pages, and an extra confirmation step per role is
- * friction the editor doesn't need. The website + HubSpot dropdown both
- * follow staging directly, so a delete in Studio cleans up everywhere.
+ *   • `role` — assets cloned, published version mirrored. Roles are
+ *     reference data (small, frequently edited) where the per-role
+ *     publish-and-promote cycle is friction.
  *
- * For create/update: assets are cloned, doc is createOrReplaced.
- * For delete: webhook payload still has _id, doc no longer exists in
- * staging, so we delete from production.
+ *   • `comingSoon` — both draft and published versions mirrored. The
+ *     toggle-and-it's-live UX hinges on production reading the staging
+ *     draft via perspective:'drafts'; this sync is what lands the draft
+ *     in the production dataset for that read to find.
+ *
+ * Triggered by a single Sanity webhook on the staging dataset filtered to
+ * `_type in ["role", "comingSoon"]` (Create + Update + Delete + drafts).
+ * Sharing one webhook keeps us under Sanity's free webhook quota.
  *
  * Auth: reuses SANITY_REVALIDATE_SECRET (same pattern as /api/revalidate).
  */
+
+const ALLOWED_TYPES = ['role', 'comingSoon'] as const;
+type AllowedType = (typeof ALLOWED_TYPES)[number];
+
+function isAllowedType(t: unknown): t is AllowedType {
+  return typeof t === 'string' && (ALLOWED_TYPES as readonly string[]).includes(t);
+}
 
 export const maxDuration = 30;
 
@@ -138,49 +150,95 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: 'Missing _id in payload' }, { status: 400 });
   }
   const publishedId = rawId.replace(/^drafts\./, '');
+  const draftId = `drafts.${publishedId}`;
 
   const staging = stagingClient();
   const production = productionClient();
 
+  /* Identify the doc type. The staging draft (if present) is the most
+     authoritative because the comingSoon toggle is edited as a draft;
+     fall back to published, then to the production-side doc as a last
+     resort for delete events where everything's gone from staging. */
+  const stagingDraft = await staging.getDocument(draftId);
+  const stagingPublished = await staging.getDocument(publishedId);
+  const productionPublished = await production.getDocument(publishedId);
+
+  const docType =
+    (stagingDraft as { _type?: string } | null)?._type ??
+    (stagingPublished as { _type?: string } | null)?._type ??
+    (productionPublished as { _type?: string } | null)?._type;
+
+  if (!isAllowedType(docType)) {
+    return NextResponse.json(
+      { ok: false, error: `sync only handles ${ALLOWED_TYPES.join(', ')} documents (got ${docType})` },
+      { status: 400 },
+    );
+  }
+
   try {
-    const sourceDoc = await staging.getDocument(publishedId);
+    if (docType === 'role') {
+      /* Roles: only the published version matters on production. The
+         staging Studio's publish-on-save flow already collapses drafts
+         into published before we see the webhook. */
+      if (!stagingPublished) {
+        if (!productionPublished) {
+          return NextResponse.json({ ok: true, action: 'noop-already-absent', _id: publishedId });
+        }
+        await production.delete(publishedId);
+        return NextResponse.json({ ok: true, action: 'deleted', _id: publishedId });
+      }
 
-    if (!sourceDoc) {
-      /* Deleted in staging — remove from production too. Defensive: only
-         delete if the production doc is still a role, never something we
-         got tricked into deleting via a forged payload. */
-      const prodDoc = await production.getDocument(publishedId);
-      if (!prodDoc) {
-        return NextResponse.json({ ok: true, action: 'noop-already-absent', _id: publishedId });
-      }
-      if ((prodDoc as { _type?: string })._type !== 'role') {
-        return NextResponse.json(
-          { ok: false, error: `Refusing to delete production doc of type ${(prodDoc as { _type?: string })._type}` },
-          { status: 400 },
-        );
-      }
-      await production.delete(publishedId);
-      return NextResponse.json({ ok: true, action: 'deleted', _id: publishedId });
+      const assetIds = Array.from(collectAssetRefs(stagingPublished));
+      await cloneMissingAssets(assetIds, staging, production);
+
+      const docToWrite = { ...stripSystemFields(stagingPublished as Record<string, unknown>), _id: publishedId };
+      await production.createOrReplace(docToWrite as { _id: string; _type: string });
+      return NextResponse.json({ ok: true, action: 'upserted', _id: publishedId, assetCount: assetIds.length });
     }
 
-    if ((sourceDoc as { _type?: string })._type !== 'role') {
-      return NextResponse.json(
-        { ok: false, error: 'sync-role only handles role documents' },
-        { status: 400 },
-      );
-    }
-
-    const assetIds = Array.from(collectAssetRefs(sourceDoc));
-    await cloneMissingAssets(assetIds, staging, production);
-
-    const docToWrite = { ...stripSystemFields(sourceDoc as Record<string, unknown>), _id: publishedId };
-    await production.createOrReplace(docToWrite as { _id: string; _type: string });
-
-    return NextResponse.json({ ok: true, action: 'upserted', _id: publishedId, assetCount: assetIds.length });
+    /* comingSoon — mirror BOTH draft and published states so the
+       perspective:'drafts' lookup on production behaves identically
+       to staging. The toggle's UX is "flip and it's live" without a
+       publish click, which means the draft IS the source of truth. */
+    const draftAction = await mirrorComingSoonVersion(staging, production, draftId, stagingDraft);
+    const publishedAction = await mirrorComingSoonVersion(
+      staging,
+      production,
+      publishedId,
+      stagingPublished,
+    );
+    return NextResponse.json({
+      ok: true,
+      _id: publishedId,
+      type: 'comingSoon',
+      draft: draftAction,
+      published: publishedAction,
+    });
   } catch (err) {
     return NextResponse.json(
       { ok: false, error: (err as Error).message ?? 'Unknown error' },
       { status: 500 },
     );
   }
+}
+
+async function mirrorComingSoonVersion(
+  staging: SanityClient,
+  production: SanityClient,
+  fullId: string,
+  stagingDoc: unknown,
+): Promise<'upserted' | 'deleted' | 'noop'> {
+  if (!stagingDoc) {
+    const prodDoc = await production.getDocument(fullId);
+    if (!prodDoc) return 'noop';
+    if ((prodDoc as { _type?: string })._type !== 'comingSoon') {
+      throw new Error(`Refusing to delete production doc of type ${(prodDoc as { _type?: string })._type}`);
+    }
+    await production.delete(fullId);
+    return 'deleted';
+  }
+  void staging;
+  const docToWrite = { ...stripSystemFields(stagingDoc as Record<string, unknown>), _id: fullId };
+  await production.createOrReplace(docToWrite as { _id: string; _type: string });
+  return 'upserted';
 }
