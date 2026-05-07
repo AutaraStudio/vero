@@ -18,6 +18,8 @@ interface ConditionalShellProps {
   companyCard?: NavCompanyCard | null;
   ctaLabel?: string;
   ctaHref?: string;
+  secondaryCtaLabel?: string | null;
+  secondaryCtaHref?: string | null;
   categoryGroups?: NavCategoryGroup[];
 }
 
@@ -29,6 +31,8 @@ export default function ConditionalShell({
   companyCard = null,
   ctaLabel = 'Get started',
   ctaHref = '/get-started',
+  secondaryCtaLabel = null,
+  secondaryCtaHref = null,
   categoryGroups = [],
 }: ConditionalShellProps) {
   const pathname = usePathname();
@@ -46,6 +50,8 @@ export default function ConditionalShell({
         companyCard={companyCard}
         ctaLabel={ctaLabel}
         ctaHref={ctaHref}
+        secondaryCtaLabel={secondaryCtaLabel}
+        secondaryCtaHref={secondaryCtaHref}
         categoryGroups={categoryGroups}
       />
       <SmoothScroll>
