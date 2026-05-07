@@ -18,11 +18,6 @@ interface HubSpotPayload {
   company: string;
   pageUri: string;
   ipAddress: string | null;
-  /* HubSpot's tracking cookie value, set by the hs-scripts loader on
-     the client. Passing it as context.hutk lets HubSpot tie this
-     submission to the visitor's existing tracked session, which is
-     what stops the "unregistered site domain" spam flag. */
-  hutk: string | null;
 }
 
 async function submitToHubSpot(p: HubSpotPayload): Promise<void> {
@@ -33,11 +28,14 @@ async function submitToHubSpot(p: HubSpotPayload): Promise<void> {
       { name: 'email',     value: p.email },
       { name: 'company',   value: p.company },
     ],
+    /* Spam-flag avoidance comes from adding Vero domains to HubSpot's
+       tracked-domain allowlist (Settings → Tracking Code) — not from
+       the hubspotutk cookie. The tracking script isn't installed here,
+       so there's no cookie to forward. */
     context: {
       pageUri: p.pageUri,
       pageName: 'Contact form',
       ...(p.ipAddress ? { ipAddress: p.ipAddress } : {}),
-      ...(p.hutk ? { hutk: p.hutk } : {}),
     },
     /* Required for any HubSpot form configured with GDPR consent. The
        text mirrors what users see beneath the form ("By submitting…").
@@ -111,14 +109,9 @@ export async function POST(request: Request) {
   const fullName = `${firstName} ${lastName}`.trim();
   /* Best-effort tracking context for HubSpot. Referer (where the form
      was submitted from) lets HubSpot show the originating page on the
-     contact record. The hubspotutk cookie is set by the HubSpot
-     tracking script in the root layout — when present, HubSpot
-     associates the submission with the visitor's existing session
-     and skips the "unregistered site domain" spam check. */
+     contact record. */
   const pageUri = request.headers.get('referer') ?? 'https://veroassess.com/contact';
   const ipAddress = request.headers.get('x-forwarded-for')?.split(',')[0].trim() ?? null;
-  const hutkMatch = request.headers.get('cookie')?.match(/(?:^|;\s*)hubspotutk=([^;]+)/);
-  const hutk = hutkMatch?.[1] ?? null;
   const apiKey = process.env.RESEND_API_KEY;
   const from   = process.env.CONTACT_FROM_EMAIL ?? 'Vero Assess <orders@veroassess.com>';
   /* Single recipient. Hardcoded so a stale CONTACT_TO_EMAIL on the
@@ -164,7 +157,6 @@ export async function POST(request: Request) {
       company: company ?? '',
       pageUri,
       ipAddress,
-      hutk,
     });
 
     /* Dev / no-key fallback: skip the email sends, still hit HubSpot. */
