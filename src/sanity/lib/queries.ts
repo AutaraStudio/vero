@@ -582,6 +582,8 @@ export const LEGAL_PAGE_SLUGS_QUERY = `
   *[_type == "legalPage" && defined(slug.current)] { "slug": slug.current }
 `
 
+export const ALL_ROLE_IDS_QUERY = `*[_type == "role" && archived != true]._id`
+
 export const ROLES_BY_CATEGORY_QUERY = `
   *[_type == "jobCategory"] | order(name asc) {
     _id,

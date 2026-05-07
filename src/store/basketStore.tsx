@@ -77,6 +77,7 @@ export interface BasketState extends InternalState {
 export type BasketAction =
   | { type: 'ADD_ROLE'; payload: SelectedRole }
   | { type: 'REMOVE_ROLE'; payload: { roleId: string } }
+  | { type: 'RECONCILE_ROLES'; payload: { validRoleIds: string[] } }
   | { type: 'SET_TIER_OVERRIDE'; payload: TierKey | null }
   | { type: 'SET_CONTACT_DETAILS'; payload: ContactDetails }
   | { type: 'ACCEPT_CONTRACT' }
@@ -159,6 +160,17 @@ function basketReducer(state: InternalState, action: BasketAction): InternalStat
         nudgeShown: false,
         tierOverride: null,
       };
+    case 'RECONCILE_ROLES': {
+      /* Drop any role whose id is no longer in the live catalogue. Without
+         this, a stale entry persisted in sessionStorage (a role that has
+         since been deleted, archived, or renamed in Sanity) inflates the
+         basket count by one — pushing 50 selected → 51 → bespoke even
+         when the user picked exactly the Scale-tier maximum. */
+      const valid = new Set(action.payload.validRoleIds);
+      const next = state.selectedRoles.filter((r) => valid.has(r.roleId));
+      if (next.length === state.selectedRoles.length) return state;
+      return { ...state, selectedRoles: next };
+    }
     case 'SET_TIER_OVERRIDE':
       return { ...state, tierOverride: action.payload };
     case 'SET_CONTACT_DETAILS':
@@ -213,6 +225,7 @@ function persistState(state: InternalState): void {
 interface BasketContextValue {
   _internal: InternalState;
   dispatch: React.Dispatch<BasketAction>;
+  hydrated: boolean;
 }
 
 const BasketContext = createContext<BasketContextValue | null>(null);
@@ -241,7 +254,7 @@ export function BasketProvider({ children }: { children: ReactNode }) {
   }, [state, hydrated]);
 
   return (
-    <BasketContext.Provider value={{ _internal: state, dispatch }}>
+    <BasketContext.Provider value={{ _internal: state, dispatch, hydrated }}>
       {children}
     </BasketContext.Provider>
   );
@@ -252,7 +265,7 @@ export function BasketProvider({ children }: { children: ReactNode }) {
 export function useBasket() {
   const ctx = useContext(BasketContext);
   if (!ctx) throw new Error('useBasket must be used within a BasketProvider');
-  const { _internal, dispatch } = ctx;
+  const { _internal, dispatch, hydrated } = ctx;
 
   // Auto-tier from role count
   const autoTier: TierKey | null =
@@ -269,5 +282,6 @@ export function useBasket() {
   return {
     state: { ..._internal, recommendedTier } satisfies BasketState,
     dispatch,
+    hydrated,
   };
 }
