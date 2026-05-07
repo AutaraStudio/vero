@@ -8,6 +8,7 @@ import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import FixedBar from '@/components/ui/FixedBar';
 import UpsellNudge from './UpsellNudge';
+import { usePlanBarSubmitDisabled } from './planBarSubmit';
 import type { ThemeVariant } from '@/lib/theme';
 import './plan-bar.css';
 
@@ -22,6 +23,13 @@ export default function PlanBar({ theme }: PlanBarProps) {
   const pathname = usePathname();
   const barRef = useRef<HTMLDivElement>(null);
   const [nudgeVisible, setNudgeVisible] = useState(false);
+
+  /* Pages that own a form (currently /get-started/details) publish their
+     "required-fields-filled" state via this signal so the bar's CTA
+     mirrors the inline submit button — disabled when the form isn't
+     ready, primary purple when it is. Other pages don't publish, so the
+     signal resolves to false (enabled), which is the existing behaviour. */
+  const submitDisabled = usePlanBarSubmitDisabled();
 
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
   const isStep1 = pathname === '/get-started';
@@ -106,6 +114,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
             size="md"
             href={cta.href}
             onClick={cta.onClick}
+            disabled={submitDisabled}
             {...(cta.formId ? { type: 'submit' as const, form: cta.formId } : {})}
           >
             {cta.label}
