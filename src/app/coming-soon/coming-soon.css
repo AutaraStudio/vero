@@ -1,32 +1,32 @@
 /* ============================================================
    Coming-soon page
-   Full-viewport holding page. The BrandShapes fan animation
-   sits behind a centred content block: logo + heading +
-   description + contact form + reach-us card.
+   Single-viewport holding page (no scroll). FooterFan animates
+   in the bottom-right corner; centred content stack: small logo,
+   eyebrow, heading, description, contact form + reach-us card.
 ============================================================ */
 
 .coming-soon {
   position: relative;
-  min-height: 100vh;
+  height: 100vh;
   overflow: hidden;
   background-color: var(--color--page-bg);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: clamp(3rem, 8vh, 6rem) 1.5rem;
+  padding: clamp(1.5rem, 3vh, 2.5rem) 1.5rem;
 }
 
 /* ── Content ────────────────────────────────────────────── */
 
 .coming-soon__inner {
   position: relative;
-  z-index: 1;
+  z-index: 2;
   width: 100%;
-  max-width: 64rem;
+  max-width: 56rem;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: clamp(2.5rem, 6vh, 4rem);
+  gap: clamp(1.25rem, 3vh, 2rem);
 }
 
 .coming-soon__header {
@@ -34,16 +34,14 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
-/* Large centred logo above the heading */
 .coming-soon__logo {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100%;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.25rem;
 }
 
 .coming-soon__eyebrow {
@@ -53,20 +51,21 @@
   color: var(--swatch--purple-500);
 }
 
+/* The heading uses the .text-display--lg utility class for
+   typography (matches the rest of the site — weight 600, fluid
+   font-size, balanced wrapping). The class below only handles
+   the GSAP visibility hand-off and tightens line-height for the
+   compact viewport-locked layout. */
 .coming-soon__heading {
-  font-size: clamp(2rem, 5vw, 3.25rem);
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
-  color: var(--color--text-primary);
   margin: 0;
   visibility: hidden;
-  max-width: 22ch;
+  font-size: clamp(1.75rem, 3.5vw + 0.5rem, 2.75rem);
+  line-height: 1.05;
 }
 
 .coming-soon__body {
   margin: 0;
-  max-width: 52ch;
+  max-width: 50ch;
 }
 
 /* ── Grid: form on the left, methods on the right ──────── */
@@ -74,22 +73,29 @@
 .coming-soon__grid {
   display: grid;
   grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
-  gap: clamp(1.5rem, 4vw, 2.5rem);
+  gap: clamp(1rem, 2.5vw, 1.75rem);
   align-items: start;
 }
 
 @media (max-width: 900px) {
+  /* On narrow screens the page can scroll — single-viewport is a
+     desktop expectation, not a hard rule on mobile. */
+  .coming-soon {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+  }
   .coming-soon__grid {
     grid-template-columns: 1fr;
-    gap: 2rem;
+    gap: 1.5rem;
   }
 }
 
 .coming-soon__form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  padding: clamp(1.75rem, 4vw, 2.25rem);
+  gap: 1rem;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
   background: var(--color--surface-raised);
   border: 1px solid var(--color--border-default);
   border-radius: var(--radius--lg);
@@ -102,11 +108,28 @@
   margin: 0;
 }
 
-/* The wrapped ContactMethods component (the same one used on /contact)
-   defaults to position: sticky to ride alongside the form. There's no
-   scrolling sibling on the coming-soon page, so flatten the sticky
-   here — the .contact-methods element sits directly inside the wrapper. */
+/* ContactMethods defaults to position: sticky (used on /contact to
+   ride alongside the form). Coming-soon has no scrolling sibling,
+   so flatten that here. */
 .coming-soon__methods .contact-methods {
   position: static;
   top: auto;
+  padding: clamp(1.25rem, 2.5vw, 1.75rem);
+  gap: 1rem;
+}
+
+/* Tighter row padding so the methods column matches the form's
+   height in the viewport-locked layout. */
+.coming-soon__methods .contact-methods__item {
+  padding: 0.625rem 0.875rem;
+}
+
+/* Cap the message textarea so the whole form fits on a single
+   viewport without scrolling. The full 5-row textarea pushes the
+   form past 100vh on shorter laptop screens. The shared
+   .form-field__textarea sets min-height — override here. */
+.coming-soon__form textarea.form-field__textarea {
+  min-height: 4.5rem;
+  height: 4.5rem;
+  resize: none;
 }

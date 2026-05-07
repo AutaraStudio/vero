@@ -15,9 +15,16 @@ const FAN = [
 interface FooterFanProps {
   /** Corner anchor. Default: 'bottom-right' */
   position?: 'top-left' | 'bottom-right';
+  /**
+   * 'scroll' fires the fan when its parent footer enters the viewport
+   * (the default — used at the bottom of long marketing pages).
+   * 'load' fires immediately on mount, for short single-viewport pages
+   * like /coming-soon where the fan is already visible at first paint.
+   */
+  trigger?: 'scroll' | 'load';
 }
 
-export default function FooterFan({ position = 'bottom-right' }: FooterFanProps) {
+export default function FooterFan({ position = 'bottom-right', trigger = 'scroll' }: FooterFanProps) {
   const wrapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -26,16 +33,21 @@ export default function FooterFan({ position = 'bottom-right' }: FooterFanProps)
     const shapes = el.querySelectorAll('.footer-fan__shape');
     if (shapes.length === 0) return;
 
-    // Use the parent <footer> as the scroll trigger — the fan wrap itself has
-    // zero box because its children are absolutely positioned, which makes
-    // ScrollTrigger's start/end calc unreliable.
-    const trigger = el.closest('footer') ?? el;
-
     gsap.set(shapes, { rotation: 0, opacity: 0 });
 
-    const tl = gsap.timeline({
-      scrollTrigger: { trigger, start: 'top 85%', once: true },
-    });
+    /* 'scroll' uses the closest ancestor as the scroll trigger; the fan
+       wrap itself has zero box (absolutely-positioned children) which
+       confuses ScrollTrigger's start/end calc. 'load' just runs the
+       timeline immediately on mount. */
+    const tl = trigger === 'scroll'
+      ? gsap.timeline({
+          scrollTrigger: {
+            trigger: el.closest('footer, [data-fan-trigger]') ?? el,
+            start: 'top 85%',
+            once: true,
+          },
+        })
+      : gsap.timeline({ delay: 0.15 });
 
     /* For the top-left variant we mirror the shape (scale -1, -1) AND the
        rotation, so the fan opens outward (down-right) — same visual rhythm
@@ -63,7 +75,7 @@ export default function FooterFan({ position = 'bottom-right' }: FooterFanProps)
     });
 
     return () => { tl.kill(); };
-  }, [position]);
+  }, [position, trigger]);
 
   return (
     <div

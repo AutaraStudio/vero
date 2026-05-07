@@ -5,7 +5,7 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import ContactForm from '@/components/ContactForm';
 import ContactMethods from '@/app/(site)/contact/ContactMethods';
-import BrandShapes from '@/components/BrandShapes/BrandShapes';
+import FooterFan from '@/components/Footer/FooterFan';
 import './coming-soon.css';
 
 interface Props {
@@ -33,10 +33,11 @@ export default function ComingSoonClient({
   const methodsRef = useFadeUp({ scroll: false, delay: 0.8,  duration: 0.6, y: 16 });
 
   return (
-    /* BrandShapes portals into document.body and runs the fan-in entrance
-       on mount — same animation the marketing pages use on the hero. */
+    /* FooterFan in the bottom-right corner — the same brand-shape
+       fan used at the foot of marketing pages, set to fire on mount
+       (no scroll trigger) since the holding page is single-viewport. */
     <main data-theme="brand-purple" className="coming-soon">
-      <BrandShapes />
+      <FooterFan position="bottom-right" trigger="load" />
 
       <div className="coming-soon__inner">
 
@@ -48,10 +49,10 @@ export default function ComingSoonClient({
             <Image
               src="/logo.svg"
               alt="Vero Assess"
-              width={240}
-              height={68}
+              width={140}
+              height={40}
               priority
-              style={{ width: '100%', height: 'auto', maxWidth: '15rem' }}
+              style={{ width: 'auto', height: 'clamp(2rem, 4vh, 2.75rem)' }}
             />
           </div>
 
@@ -65,7 +66,7 @@ export default function ComingSoonClient({
           )}
           <h1
             ref={headingRef as React.RefObject<HTMLHeadingElement>}
-            className="coming-soon__heading"
+            className="coming-soon__heading text-display--lg text-balance max-ch-22 color--primary"
           >
             {heading}
           </h1>
