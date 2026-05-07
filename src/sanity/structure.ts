@@ -19,6 +19,7 @@ import {
   EarthGlobeIcon,
   MenuIcon,
   ComposeIcon,
+  RocketIcon,
 } from '@sanity/icons'
 import type { ComponentType } from 'react'
 
@@ -183,6 +184,15 @@ export const structure = (S: StructureBuilder) =>
                     .schemaType('globalCategoryGroups')
                     .documentId('globalCategoryGroups')
                     .title('Category groups'),
+                ),
+              S.listItem()
+                .title('Coming soon mode')
+                .icon(RocketIcon)
+                .child(
+                  S.document()
+                    .schemaType('comingSoon')
+                    .documentId('comingSoon')
+                    .title('Coming soon mode'),
                 ),
             ]),
         ),

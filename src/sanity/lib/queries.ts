@@ -584,6 +584,24 @@ export const LEGAL_PAGE_SLUGS_QUERY = `
 
 export const ALL_ROLE_IDS_QUERY = `*[_type == "role" && archived != true]._id`
 
+/* Singleton — Studio's documentId('comingSoon') forces a single doc, but
+   a doc created via the MCP / API may end up at a different _id, so the
+   query is _type-only to be defensive. There should never be more than
+   one. */
+export const COMING_SOON_QUERY = `
+  *[_type == "comingSoon"][0] {
+    enabled,
+    heading,
+    description,
+    launchDate,
+    formInstructions
+  }
+`
+
+export const COMING_SOON_CONTACT_QUERY = `
+  *[_type == "contactPage"][0] { phone, email }
+`
+
 export const ROLES_BY_CATEGORY_QUERY = `
   *[_type == "jobCategory"] | order(name asc) {
     _id,

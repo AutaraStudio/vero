@@ -1,0 +1,112 @@
+/* ============================================================
+   Coming-soon page
+   Full-viewport holding page. The BrandShapes fan animation
+   sits behind a centred content block: logo + heading +
+   description + contact form + reach-us card.
+============================================================ */
+
+.coming-soon {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  background-color: var(--color--page-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(3rem, 8vh, 6rem) 1.5rem;
+}
+
+/* ── Content ────────────────────────────────────────────── */
+
+.coming-soon__inner {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 64rem;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(2.5rem, 6vh, 4rem);
+}
+
+.coming-soon__header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* Large centred logo above the heading */
+.coming-soon__logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.75rem;
+}
+
+.coming-soon__eyebrow {
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: var(--font--label-ls);
+  color: var(--swatch--purple-500);
+}
+
+.coming-soon__heading {
+  font-size: clamp(2rem, 5vw, 3.25rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color--text-primary);
+  margin: 0;
+  visibility: hidden;
+  max-width: 22ch;
+}
+
+.coming-soon__body {
+  margin: 0;
+  max-width: 52ch;
+}
+
+/* ── Grid: form on the left, methods on the right ──────── */
+
+.coming-soon__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr);
+  gap: clamp(1.5rem, 4vw, 2.5rem);
+  align-items: start;
+}
+
+@media (max-width: 900px) {
+  .coming-soon__grid {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
+}
+
+.coming-soon__form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: clamp(1.75rem, 4vw, 2.25rem);
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--lg);
+}
+
+.coming-soon__form-header h2 {
+  margin: 0;
+}
+.coming-soon__form-header p {
+  margin: 0;
+}
+
+/* The wrapped ContactMethods component (the same one used on /contact)
+   defaults to position: sticky to ride alongside the form. There's no
+   scrolling sibling on the coming-soon page, so flatten the sticky
+   here — the .contact-methods element sits directly inside the wrapper. */
+.coming-soon__methods .contact-methods {
+  position: static;
+  top: auto;
+}
