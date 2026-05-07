@@ -34,8 +34,10 @@ function formatLaunchDate(iso?: string): string | null {
 
 export default async function ComingSoonPage() {
   const [data, contact] = await Promise.all([
-    client.fetch<ComingSoonData | null>(COMING_SOON_QUERY),
-    client.fetch<ContactDetails | null>(COMING_SOON_CONTACT_QUERY),
+    /* Match the (site) layout — read drafts so the preview here mirrors
+       what an editor sees in Studio without needing to publish. */
+    client.fetch<ComingSoonData | null>(COMING_SOON_QUERY, {}, { perspective: 'drafts' }),
+    client.fetch<ContactDetails | null>(COMING_SOON_CONTACT_QUERY, {}, { perspective: 'drafts' }),
   ]);
 
   return (
