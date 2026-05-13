@@ -12,6 +12,13 @@
   --gs-header-h: 4.25rem;
   --gs-progress-h: 3.75rem;
   --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
+  /* Height of the bottom sticky PlanBar (FixedBar). Used to (a) shrink
+     the sidebar's available height so it doesn't overlap the bar and
+     (b) add bottom clearance to each page so form content can't slide
+     under the bar. PlanBar's intrinsic height is ~55px; we add a small
+     buffer on top so the sidebar leaves a visible gap above the bar
+     rather than touching it. */
+  --gs-planbar-h: 5rem;
 
   min-height: 100vh;
   display: flex;
@@ -78,6 +85,9 @@
 
 .get-started-main {
   flex: 1;
+  /* Reserve clearance below page content for the sticky PlanBar so it
+     can't ride over the last form fields / actions / pricing card. */
+  padding-bottom: calc(var(--gs-planbar-h) + 1rem);
 }
 
 /* ── Progress bar ── */
@@ -267,9 +277,10 @@
 .basket__sticky {
   position: sticky;
   /* Pin directly below the sticky header + progress bar so the sidebar
-     fills exactly the height the user has available. */
+     fills exactly the height the user has available — minus the bottom
+     PlanBar so the two never overlap. */
   top: var(--gs-top-offset);
-  height: calc(100vh - var(--gs-top-offset));
+  height: calc(100vh - var(--gs-top-offset) - var(--gs-planbar-h));
   min-height: 0;
   padding: 1.5rem 1.25rem 0;
   display: flex;
