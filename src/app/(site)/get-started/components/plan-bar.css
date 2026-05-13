@@ -65,6 +65,14 @@
 
 /* ── Responsive ── */
 
+/* Hidden on mobile via the parent class — used on /get-started where the
+   role picker has its own basket-mobile-bar pinned to the viewport edge. */
+@media (max-width: 768px) {
+  .plan-bar--hide-mobile {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .plan-bar__hide-tablet,
   .plan-bar__limits-row {

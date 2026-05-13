@@ -48,7 +48,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [!!tierInfo]);
 
-  const HIDDEN_PATHS = ['/get-started/confirmation', '/get-started/bespoke', '/get-started/payment'];
+  const HIDDEN_PATHS = ['/get-started/confirmation', '/get-started/bespoke'];
   if (!tierInfo || selectedRoles.length === 0 || HIDDEN_PATHS.includes(pathname)) return null;
 
   const { price, priceNote } = getTierPrice(tierInfo, paymentFrequency);
@@ -79,7 +79,10 @@ export default function PlanBar({ theme }: PlanBarProps) {
 
   return (
     <>
-      <div ref={barRef}>
+      {/* On /get-started the role picker owns its own basket-mobile-bar at
+          the bottom of the viewport on ≤768px. Hide PlanBar on that path
+          at the same breakpoint so the two don't stack. */}
+      <div ref={barRef} className={isStep1 ? 'plan-bar--hide-mobile' : undefined}>
         <FixedBar theme={theme}>
 
           {/* Left — tier name + billing frequency label */}
