@@ -207,6 +207,38 @@
   padding-top: 1rem;
 }
 
+/* The wrapper around .checkout-actions-row on each step. Pin it to the
+   bottom of the viewport on mobile so the Back + Continue controls are
+   always reachable — regardless of how tall the form has grown above. */
+.details-actions,
+.contract-actions,
+.payment-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (max-width: 991px) {
+  .details-actions,
+  .contract-actions,
+  .payment-actions {
+    position: sticky;
+    bottom: 0;
+    z-index: 18;
+    margin-top: 1.5rem;
+    padding: 0.875rem 1rem 1rem;
+    background: var(--color--page-bg);
+    border-top: 1px solid var(--color--border-default);
+    /* Cancel the .checkout-actions-row's own top padding so the bar
+       sits compact when stuck to the viewport edge. */
+  }
+  .details-actions .checkout-actions-row,
+  .contract-actions .checkout-actions-row,
+  .payment-actions .checkout-actions-row {
+    padding-top: 0;
+  }
+}
+
 /* ── Basket panel ── */
 
 .basket {
