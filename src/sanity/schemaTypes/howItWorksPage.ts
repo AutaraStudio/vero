@@ -5,7 +5,6 @@ import {
   SearchIcon,
   StarIcon,
   RocketIcon,
-  ListIcon,
   HeartFilledIcon,
   CheckmarkIcon,
 } from '@sanity/icons'
@@ -18,9 +17,8 @@ export const howItWorksPage = defineType({
   groups: [
     { name: 'hero',                title: 'Section 1 — Hero',                icon: StarIcon, default: true },
     { name: 'gettingStarted',      title: 'Section 2 — Getting started',     icon: RocketIcon },
-    { name: 'steps',               title: 'Section 3 — Process steps',       icon: ListIcon },
-    { name: 'candidateExperience', title: 'Section 4 — Candidate experience', icon: HeartFilledIcon },
-    { name: 'benefits',            title: 'Section 5 — Benefits',            icon: CheckmarkIcon },
+    { name: 'candidateExperience', title: 'Section 3 — Candidate experience', icon: HeartFilledIcon },
+    { name: 'benefits',            title: 'Section 4 — Benefits',            icon: CheckmarkIcon },
   ],
   fields: [
     /* ── Hero ── */
@@ -102,43 +100,6 @@ export const howItWorksPage = defineType({
       title: 'Pricing Link Href',
       type: 'string',
       group: 'gettingStarted',
-    }),
-
-    /* ── Steps ── */
-    defineField({
-      name: 'stepsHeading',
-      title: 'Section Heading',
-      type: 'string',
-      group: 'steps',
-    }),
-    defineField({
-      name: 'stepsIntro',
-      title: 'Section Intro',
-      type: 'text',
-      rows: 3,
-      group: 'steps',
-    }),
-    defineField({
-      name: 'steps',
-      title: 'Steps',
-      type: 'array',
-      group: 'steps',
-      of: [
-        {
-          type: 'object',
-          preview: { select: { title: 'body' }, prepare({ title }) { return { title: title ? `${title.slice(0, 60)}…` : 'Step' } } },
-          fields: [
-            defineField({ name: 'body', title: 'Body', type: 'text', rows: 4 }),
-            defineField({
-              name: 'image',
-              title: 'Step Image',
-              type: 'image',
-              options: { hotspot: true },
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
-            }),
-          ],
-        },
-      ],
     }),
 
     /* ── Candidate Experience ── */
