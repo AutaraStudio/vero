@@ -273,6 +273,14 @@
   display: none;
 }
 
+/* When AT the start (prev disabled) or end (next disabled), hide the
+   relevant edge chevron completely rather than just fading it. The
+   bottom-bar Prev/Next keep the existing 0.2-opacity faded look — only
+   these floating edge duplicates disappear. */
+.gsap-slider__edge-control[data-gsap-slider-control-status="not-active"] {
+  display: none;
+}
+
 /* Mobile: drop arrow size + tuck closer to the edge. */
 @media screen and (max-width: 767px) {
   .gsap-slider__edge-control {
