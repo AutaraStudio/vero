@@ -67,10 +67,6 @@ export default async function CategoryPage({ params }: { params: Params }) {
     inActionLabel,
     inActionHeading,
     inActionIntro,
-    featureCardsHeading,
-    featureCardsSubheading,
-    featureCardsLeadImageUrl,
-    featureCardsLeadImageAlt,
     featureCards,
     stat1Heading,
     stat1Body,
@@ -140,16 +136,12 @@ export default async function CategoryPage({ params }: { params: Params }) {
         />
       )}
 
-      {((featureCards && featureCards.length > 0) || featureCardsHeading) && (
+      {featureCards && featureCards.length > 0 && (
         <FeatureCardsSection
           sectionLabel={inActionLabel}
           sectionHeading={inActionHeading}
           sectionIntro={inActionIntro}
-          leadHeading={featureCardsHeading}
-          leadBody={featureCardsSubheading}
-          leadImageUrl={featureCardsLeadImageUrl}
-          leadImageAlt={featureCardsLeadImageAlt}
-          cards={featureCards ?? []}
+          cards={featureCards}
         />
       )}
 
