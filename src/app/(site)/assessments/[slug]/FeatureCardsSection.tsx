@@ -16,48 +16,31 @@ interface FeatureCardsSectionProps {
   sectionHeading?: string;
   sectionIntro?: string;
 
-  /** First slider card — the "lead" card with the category-level promise */
-  leadHeading?: string;
-  leadBody?: string;
-  leadImageUrl?: string;
-  leadImageAlt?: string;
-
-  /** Remaining slider cards — the specific value points */
+  /** Carousel cards — rendered in the order supplied. The first card is
+   *  what the visitor sees on landing. */
   cards: FeatureCard[];
 
   theme?: ThemeVariant;
 }
 
 /**
- * "In action" carousel for an assessment category page.
- * Composes the FeatureSlider with:
- *   • a section header (label + heading + intro) above the slider
- *   • a lead card (Sanity featureCardsHeading + featureCardsSubheading)
- *   • N value cards (Sanity featureCards[])
+ * "In action" carousel for an assessment category page. Composes the
+ * FeatureSlider with a section header (label + heading + intro) above
+ * a single flat list of cards (Sanity featureCards[]).
  */
 export default function FeatureCardsSection({
   sectionLabel = 'In action',
   sectionHeading,
   sectionIntro,
-  leadHeading,
-  leadBody,
-  leadImageUrl,
-  leadImageAlt,
   cards,
   theme = 'brand-purple',
 }: FeatureCardsSectionProps) {
-  /* Compose the slider items: optional lead card first, then the value cards */
-  const items: FeatureSliderItem[] = [
-    ...(leadHeading
-      ? [{ title: leadHeading, body: leadBody ?? '', imageUrl: leadImageUrl, imageAlt: leadImageAlt }]
-      : []),
-    ...cards.map((c) => ({
-      title: c.heading,
-      body:  c.body,
-      imageUrl: c.imageUrl,
-      imageAlt: c.imageAlt,
-    })),
-  ];
+  const items: FeatureSliderItem[] = cards.map((c) => ({
+    title: c.heading,
+    body: c.body,
+    imageUrl: c.imageUrl,
+    imageAlt: c.imageAlt,
+  }));
 
   if (items.length === 0) return null;
 
