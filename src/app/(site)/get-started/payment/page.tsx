@@ -94,7 +94,17 @@ function StripePaymentForm({
           <span className="text-body--sm color--tertiary">Loading payment form...</span>
         </div>
       )}
+      {/* Mobile-only inline submit — desktop uses the sidebar CTA */}
       <div className="payment-actions">
+        <Button
+          variant="primary"
+          size="md"
+          onClick={handleSubmit}
+          disabled={!stripe || !elements || isProcessing || !ready}
+          className="checkout-inline-submit"
+        >
+          {isProcessing ? 'Processing payment...' : 'Complete order →'}
+        </Button>
         <Link href="/get-started/contract" className="form-back-link">
           ← Back
         </Link>
@@ -568,8 +578,17 @@ function PaymentContent() {
                   </p>
                 </div>
 
-                {/* Back link only — Complete order lives in the sidebar CTA. */}
+                {/* Mobile-only inline submit — desktop uses the sidebar CTA */}
                 <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
+                  <Button
+                    variant="primary"
+                    size="md"
+                    onClick={handleInvoiceCheckout}
+                    disabled={isLoading || !!invoiceEmailError}
+                    className="checkout-inline-submit"
+                  >
+                    {isLoading ? 'Submitting...' : 'Complete order →'}
+                  </Button>
                   <Link href="/get-started/contract" className="form-back-link">
                     ← Back
                   </Link>

@@ -8,6 +8,7 @@ import { TIER_USER_LIMITS, type TierKey } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { gsap } from '@/lib/gsap';
+import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import BasketContent from '../components/BasketContent';
 import './details.css';
@@ -1347,14 +1348,25 @@ export default function DetailsPage() {
             </div>
             )}
 
-            {/* Inline error message + back link. Submit lives in the
-                sidebar's footer CTA — see <BasketContent primaryAction>. */}
+            {/* Inline error message + back link. On desktop the sidebar's
+                footer CTA owns submission; on mobile the inline submit
+                button below is shown instead (sidebar stacks below the
+                form so an always-visible Continue is needed up top). */}
             <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
               {submitAttempted && blockerMessage && (
                 <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
                   {blockerMessage}
                 </p>
               )}
+              <Button
+                variant="primary"
+                size="md"
+                type="submit"
+                disabled={!requiredFilled}
+                className="checkout-inline-submit"
+              >
+                Continue to contract →
+              </Button>
               <Link href="/get-started" className="form-back-link">
                 ← Back to roles
               </Link>

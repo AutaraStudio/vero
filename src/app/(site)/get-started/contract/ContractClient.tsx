@@ -124,8 +124,18 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
           </p>
         </div>
 
-        {/* Back link only — Continue lives in the sidebar's footer CTA. */}
+        {/* On desktop the sidebar CTA owns submission; on mobile the
+            inline Continue below is shown instead. */}
         <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="contract-actions">
+          <Button
+            variant="primary"
+            size="md"
+            disabled={!accepted}
+            onClick={handleAccept}
+            className="checkout-inline-submit"
+          >
+            Continue to payment →
+          </Button>
           <Link href="/get-started/details" className="form-back-link">
             ← Back
           </Link>
