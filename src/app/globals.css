@@ -271,7 +271,8 @@
   /* Text */
   --color--text-primary:          var(--swatch--neutral-900);
   --color--text-secondary:        var(--swatch--neutral-600);
-  --color--text-tertiary:         var(--swatch--neutral-400);
+  /* a11y: tertiary darkened from neutral-400 so it clears WCAG AA 4.5:1 on white */
+  --color--text-tertiary:         color-mix(in srgb, var(--swatch--neutral-900), white 35%);
   --color--text-muted:            color-mix(in srgb, var(--swatch--neutral-900) 40%, transparent);
   --color--text-inverse:          var(--swatch--neutral-0);
   --color--text-inverse-secondary: var(--swatch--neutral-0-o70);
@@ -442,7 +443,8 @@
   --color--page-bg-subtle: color-mix(in srgb, var(--swatch--purple-500) 4%, var(--swatch--neutral-0));
   --color--text-primary:   var(--swatch--purple-800);
   --color--text-secondary: var(--swatch--purple-700);
-  --color--text-tertiary:  var(--swatch--purple-400);
+  /* a11y: tertiary darkened from purple-400 so it clears WCAG AA 4.5:1 on the purple-tinted bg */
+  --color--text-tertiary:  color-mix(in srgb, var(--swatch--purple-500) 20%, var(--swatch--neutral-600));
   --color--text-muted:     color-mix(in srgb, var(--swatch--purple-800) 40%, transparent);
   --color--text-brand:     var(--swatch--purple-500);
   --color--border-default: var(--swatch--purple-o20);
@@ -513,9 +515,10 @@
 [data-theme="brand-blue"] {
   --color--page-bg:        color-mix(in srgb, var(--swatch--blue-500) 8%, var(--swatch--neutral-0));
   --color--page-bg-subtle: color-mix(in srgb, var(--swatch--blue-500) 4%, var(--swatch--neutral-0));
-  --color--text-primary:   color-mix(in srgb, var(--swatch--blue-500) 80%, var(--swatch--neutral-900));
-  --color--text-secondary: color-mix(in srgb, var(--swatch--blue-500) 50%, var(--swatch--neutral-600));
-  --color--text-tertiary:  var(--swatch--blue-400);
+  /* a11y: tints darkened so all three tiers clear WCAG AA 4.5:1 on the blue-tinted page bg */
+  --color--text-primary:   color-mix(in srgb, var(--swatch--blue-500) 20%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--blue-500) 20%, var(--swatch--neutral-700));
+  --color--text-tertiary:  color-mix(in srgb, var(--swatch--blue-500) 15%, var(--swatch--neutral-600));
   --color--text-muted:     color-mix(in srgb, var(--swatch--blue-700) 40%, transparent);
   --color--text-brand:     var(--swatch--blue-600);
   --color--border-default: var(--swatch--blue-o20);
@@ -532,7 +535,8 @@
   --color--interactive-secondary-hover-bg: var(--swatch--blue-o10);
   --color--interactive-cta:       var(--swatch--blue-500);
   --color--interactive-cta-hover: var(--swatch--blue-600);
-  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* a11y: dark label on blue-500 reaches ~6:1; white on blue-500 was ~2.7:1 (fails AA) */
+  --color--interactive-cta-text:  var(--swatch--neutral-900);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--blue-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--blue-o30);
@@ -588,9 +592,10 @@
 [data-theme="brand-green"] {
   --color--page-bg:        color-mix(in srgb, var(--swatch--green-500) 8%, var(--swatch--neutral-0));
   --color--page-bg-subtle: color-mix(in srgb, var(--swatch--green-500) 4%, var(--swatch--neutral-0));
-  --color--text-primary:   color-mix(in srgb, var(--swatch--green-500) 60%, var(--swatch--neutral-900));
-  --color--text-secondary: color-mix(in srgb, var(--swatch--green-500) 40%, var(--swatch--neutral-600));
-  --color--text-tertiary:  var(--swatch--green-600);
+  /* a11y: tints darkened so all three tiers clear WCAG AA 4.5:1 on the green-tinted page bg */
+  --color--text-primary:   color-mix(in srgb, var(--swatch--green-500) 20%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--green-500) 20%, var(--swatch--neutral-700));
+  --color--text-tertiary:  color-mix(in srgb, var(--swatch--green-500) 15%, var(--swatch--neutral-600));
   --color--text-muted:     color-mix(in srgb, var(--swatch--green-700) 40%, transparent);
   --color--text-brand:     var(--swatch--green-700);
   --color--border-default: var(--swatch--green-o20);
@@ -607,7 +612,8 @@
   --color--interactive-secondary-hover-bg: var(--swatch--green-o10);
   --color--interactive-cta:       var(--swatch--green-600);
   --color--interactive-cta-hover: var(--swatch--green-700);
-  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* a11y: dark label on green-600 reaches ~6.9:1; white on green-600 was ~2.5:1 (fails AA) */
+  --color--interactive-cta-text:  var(--swatch--neutral-900);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--green-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--green-o30);
@@ -663,9 +669,10 @@
 [data-theme="brand-orange"] {
   --color--page-bg:        color-mix(in srgb, var(--swatch--orange-500) 7%, var(--swatch--neutral-0));
   --color--page-bg-subtle: color-mix(in srgb, var(--swatch--orange-500) 4%, var(--swatch--neutral-0));
-  --color--text-primary:   color-mix(in srgb, var(--swatch--orange-500) 70%, var(--swatch--neutral-900));
-  --color--text-secondary: color-mix(in srgb, var(--swatch--orange-500) 40%, var(--swatch--neutral-600));
-  --color--text-tertiary:  var(--swatch--orange-400);
+  /* a11y: tints darkened so all three tiers clear WCAG AA 4.5:1 on the orange-tinted page bg */
+  --color--text-primary:   color-mix(in srgb, var(--swatch--orange-500) 30%, var(--swatch--neutral-900));
+  --color--text-secondary: color-mix(in srgb, var(--swatch--orange-500) 25%, var(--swatch--neutral-700));
+  --color--text-tertiary:  color-mix(in srgb, var(--swatch--orange-500) 15%, var(--swatch--neutral-600));
   --color--text-muted:     color-mix(in srgb, var(--swatch--orange-600) 40%, transparent);
   --color--text-brand:     var(--swatch--orange-600);
   --color--border-default: var(--swatch--orange-o20);
@@ -682,7 +689,8 @@
   --color--interactive-secondary-hover-bg: var(--swatch--orange-o10);
   --color--interactive-cta:       var(--swatch--orange-500);
   --color--interactive-cta-hover: var(--swatch--orange-600);
-  --color--interactive-cta-text:  var(--swatch--neutral-0);
+  /* a11y: dark label on orange-500 reaches ~5:1; white on orange-500 was ~3.25:1 (fails AA) */
+  --color--interactive-cta-text:  var(--swatch--neutral-900);
   /* Overlays & modals only — never on flat cards */
   --shadow--overlay:    0 2px 24px var(--swatch--orange-o15);
   --shadow--overlay-lg: 0 8px 40px var(--swatch--orange-o30);
@@ -740,7 +748,8 @@
   --color--page-bg-subtle: color-mix(in srgb, var(--swatch--yellow-500) 5%, var(--swatch--neutral-0));
   --color--text-primary:   color-mix(in srgb, var(--swatch--yellow-500) 15%, var(--swatch--neutral-900));
   --color--text-secondary: var(--swatch--neutral-600);
-  --color--text-tertiary:  var(--swatch--neutral-400);
+  /* a11y: tertiary darkened from neutral-400 so it clears WCAG AA 4.5:1 on tinted white */
+  --color--text-tertiary:  color-mix(in srgb, var(--swatch--neutral-900), white 35%);
   --color--text-muted:     color-mix(in srgb, var(--swatch--neutral-900) 35%, transparent);
   --color--text-brand:     var(--swatch--yellow-700);
   --color--border-default: var(--swatch--yellow-o30);
@@ -976,5 +985,54 @@ img, video {
 /* Prevent FOUC on animated elements before GSAP initialises */
 [data-animate] {
   visibility: hidden;
+}
+
+/* ============================================================
+   A11Y — global focus baseline + skip link
+============================================================ */
+
+:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius--sm);
+}
+
+/* WCAG 2.4.11 Focus Not Obscured (AA) — the MegaNav is sticky, so when
+   focus or anchor-scroll lands an element near the top of the viewport
+   the nav would otherwise cover it. scroll-padding-top reserves the
+   space for any scroll-into-view operation (Tab focus, in-page anchors,
+   skip-link target). 1rem of breathing room sits below the nav. */
+html {
+  scroll-padding-top: calc(var(--height--navbar) + 1rem);
+}
+
+/* Visually hidden until focused, then revealed in the top-left */
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 1000;
+  padding: 0.625rem 1rem;
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--md);
+  font-weight: 600;
+  text-decoration: none;
+  transform: translateY(calc(-100% - 1rem));
+  transition: transform var(--transition--default);
+}
+.skip-link:focus,
+.skip-link:focus-visible {
+  transform: translateY(0);
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 2px;
+}
+
+/* When focus moves into <main> via the skip link, don't paint a focus ring on
+   the landmark itself — the focus is conceptual, not visual. */
+main:focus,
+main:focus-visible {
+  outline: none;
 }
 

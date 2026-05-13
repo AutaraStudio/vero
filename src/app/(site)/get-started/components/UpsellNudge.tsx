@@ -16,6 +16,13 @@ interface UpsellNudgeProps {
 export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNudgeProps) {
   const backdropRef = useRef<HTMLDivElement>(null);
   const cardRef = useRef<HTMLDivElement>(null);
+  /* Capture whatever element triggered the nudge so we can return focus on
+     dismiss (WCAG 2.4.3 dialog best practice). Lazy-init so we read
+     activeElement at mount time, not on every render. */
+  const triggerRef = useRef<HTMLElement | null>(null);
+  if (triggerRef.current === null && typeof document !== 'undefined') {
+    triggerRef.current = document.activeElement as HTMLElement | null;
+  }
 
   useEffect(() => {
     if (!backdropRef.current || !cardRef.current) return;
@@ -34,7 +41,24 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
         delay: 0.05,
       });
     });
+    /* Move focus into the dialog so keyboard users land inside it. The card
+       has tabIndex={-1} below — programmatically focusable but not in the
+       tab order. Screen readers will announce the labelled dialog. */
+    cardRef.current.focus();
     return () => ctx.revert();
+  }, []);
+
+  /* ESC closes the nudge using the same path as the backdrop click. Both
+     actions in this dialog commit (addMore or continue), so we route ESC
+     to the less destructive choice — "add more" — which matches the
+     backdrop-click behaviour. */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') dismiss('addMore');
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const dismiss = (action: 'addMore' | 'continue') => {
@@ -52,6 +76,10 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
       delay: 0.05,
       ease: 'power2.in',
       onComplete: () => {
+        /* Return focus to whatever opened the nudge before the parent
+           navigates / unmounts us. If the parent routes elsewhere, this
+           is a no-op; otherwise it puts the user back where they were. */
+        triggerRef.current?.focus();
         if (action === 'addMore') onAddMore();
         else onContinue();
       },
@@ -69,7 +97,7 @@ export default function UpsellNudge({ content, onAddMore, onContinue }: UpsellNu
         if (e.target === e.currentTarget) dismiss('addMore');
       }}
     >
-      <div ref={cardRef} className="nudge-card">
+      <div ref={cardRef} tabIndex={-1} className="nudge-card">
 
         {/* Visual block */}
         {content.type === 'slots-remaining' && content.maxRoles && (() => {

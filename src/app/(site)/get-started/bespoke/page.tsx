@@ -14,6 +14,11 @@ export default function BespokePage() {
   const { state, dispatch } = useBasket();
   const { selectedRoles, recommendedTier } = state;
 
+  /* WCAG 2.4.2 — descriptive page title for this enquiry step. */
+  useEffect(() => {
+    document.title = 'Bespoke enquiry — Vero Assess';
+  }, []);
+
   const [form, setForm] = useState<BespokeDetails>({
     firstName: '',
     lastName: '',
@@ -153,7 +158,7 @@ export default function BespokePage() {
           <div>
             <div className="bespoke-page__header">
               <span className="section-label">Bespoke solution</span>
-              <h2 className="text-h3 color--primary">Tell us about your requirements</h2>
+              <h1 className="text-h3 color--primary">Tell us about your requirements</h1>
               <p className="text-body--sm color--secondary">
                 Share some details and one of our team will be in touch within 24 hours to
                 build a tailored assessment solution around your needs.

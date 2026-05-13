@@ -69,7 +69,7 @@ export default async function SciencePage() {
   const data = await client.fetch<SciencePageData | null>(SCIENCE_PAGE_QUERY);
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero ───────────────────────────────────────── */}
       <HeroSplit
         theme="brand-purple"

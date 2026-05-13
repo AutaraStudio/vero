@@ -60,7 +60,7 @@ export default async function AssessmentsPage() {
   }));
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero ───────────────────────────────────────── */}
       <HeroCentred
         theme="brand-purple"

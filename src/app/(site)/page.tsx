@@ -91,7 +91,7 @@ export default async function Home() {
     : undefined;
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero ───────────────────────────────────────── */}
       <HeroCentred
         theme="brand-purple"

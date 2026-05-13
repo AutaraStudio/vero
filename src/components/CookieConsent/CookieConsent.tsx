@@ -94,13 +94,13 @@ export function CookieConsentBanner() {
               description:
                 'We use essential cookies plus optional analytics. Change anytime via "Cookie preferences" in the footer.',
               acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Reject optional',
+              acceptNecessaryBtn: 'Necessary only',
               showPreferencesBtn: 'Manage preferences',
             },
             preferencesModal: {
               title: 'Cookie preferences',
               acceptAllBtn: 'Accept all',
-              acceptNecessaryBtn: 'Reject optional',
+              acceptNecessaryBtn: 'Necessary only',
               savePreferencesBtn: 'Save preferences',
               closeIconLabel: 'Close',
               sections: [
