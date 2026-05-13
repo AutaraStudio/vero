@@ -43,15 +43,7 @@ export const homePage = defineType({
       type: 'string',
       group: 'hero',
       description:
-        'Small pill above the headline (e.g. "New for 2025"). Leave blank to hide the pill.',
-    }),
-    defineField({
-      name: 'heroBadgeHref',
-      title: 'Pill badge link',
-      type: 'string',
-      group: 'hero',
-      description: 'Where the pill links to. Use a path like "/pricing" or full URL.',
-      hidden: ({ parent }) => !parent?.heroBadgeLabel,
+        'Small non-clickable pill above the headline (e.g. "New for 2025"). Leave blank to hide the pill.',
     }),
     defineField({
       name: 'heroTitle',
