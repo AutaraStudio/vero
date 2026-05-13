@@ -120,8 +120,6 @@ export default async function CategoryPage({ params }: { params: Params }) {
         badges={dimensionBadges}
         primaryCTA={{ label: 'Get started', href: `/get-started?category=${slug}` }}
         media={heroMedia}
-        imageHeight="viewport"
-        textAlign="bottom"
       />
 
       {dimensionsSectionHeading && (
