@@ -66,7 +66,6 @@
 
 .get-started-main {
   flex: 1;
-  padding-bottom: 5rem; /* clearance for fixed plan bar */
 }
 
 /* ── Progress bar ── */
