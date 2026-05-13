@@ -27,7 +27,9 @@ export function initGSAPSlider(root: HTMLElement): () => void {
       slide.setAttribute('aria-roledescription', 'Slide');
       slide.setAttribute('aria-label', `Slide ${i + 1} of ${items.length}`);
       slide.setAttribute('aria-hidden', 'true');
-      slide.setAttribute('aria-selected', 'false');
+      /* aria-selected is invalid on role="group" per ARIA 1.2 — it's only
+         allowed on tab/option/row/gridcell/etc. Active-slide tracking is
+         handled via data-gsap-slider-item-status. */
       slide.setAttribute('tabindex', '-1');
     });
     controls.forEach((btn) => {
@@ -57,7 +59,6 @@ export function initGSAPSlider(root: HTMLElement): () => void {
       items.forEach((slide) => {
         slide.removeAttribute('data-gsap-slider-item-status');
         slide.removeAttribute('aria-hidden');
-        slide.removeAttribute('aria-selected');
         slide.removeAttribute('tabindex');
       });
       controls.forEach((btn) => {
@@ -110,7 +111,6 @@ export function initGSAPSlider(root: HTMLElement): () => void {
         const status = i === activeIndex ? 'active' : inView ? 'inview' : 'not-active';
 
         slide.setAttribute('data-gsap-slider-item-status', status);
-        slide.setAttribute('aria-selected', i === activeIndex ? 'true' : 'false');
         slide.setAttribute('aria-hidden', inView ? 'false' : 'true');
         slide.setAttribute('tabindex', i === activeIndex ? '0' : '-1');
       });

@@ -482,7 +482,9 @@
   --color--page-bg-subtle: var(--swatch--purple-600);
   --color--text-primary:   var(--swatch--neutral-0);
   --color--text-secondary: var(--swatch--neutral-0-o70);
-  --color--text-tertiary:  var(--swatch--neutral-0-o50);
+  /* a11y: bumped from o50 → o70. White @ 50% blends to ~#9196B4 over purple-500
+     which only reaches ~4:1 (fails AA). o70 lands at ~6.6:1 — clears 4.5:1. */
+  --color--text-tertiary:  var(--swatch--neutral-0-o70);
   --color--text-muted:     var(--swatch--neutral-0-o30);
   --color--text-brand:     var(--swatch--yellow-500);
   --color--border-default: var(--swatch--neutral-0-o15);
