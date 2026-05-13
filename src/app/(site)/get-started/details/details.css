@@ -13,7 +13,7 @@
   display: grid;
   /* 340px matches the role-picker sidebar width so the sidebar feels
      identical to step 1. */
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 340px 1fr;
   grid-template-areas: "sidebar form";
   align-items: start;
 }

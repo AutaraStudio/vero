@@ -192,7 +192,7 @@
 
 .role-picker {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 340px 1fr;
   min-height: calc(100vh - 8rem);
 }
 
