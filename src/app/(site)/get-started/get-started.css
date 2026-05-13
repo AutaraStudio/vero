@@ -5,6 +5,14 @@
 /* ── Shell ── */
 
 .get-started-shell {
+  /* Heights for the sticky checkout chrome. Header + progress are
+     pinned to the top of the viewport; the basket sidebar pins
+     directly below them and fills the remaining viewport height.
+     Update these together — basket__sticky uses their sum. */
+  --gs-header-h: 4.25rem;
+  --gs-progress-h: 3.75rem;
+  --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
+
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -45,6 +53,10 @@
 }
 
 .get-started-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
   padding: 1rem 0;
   flex-shrink: 0;
@@ -71,6 +83,10 @@
 /* ── Progress bar ── */
 
 .get-started-progress {
+  position: sticky;
+  top: var(--gs-header-h);
+  z-index: 19;
+  background: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
   padding: 0.875rem 0;
   flex-shrink: 0;
@@ -206,8 +222,10 @@
    └──────────────────┘ */
 .basket__sticky {
   position: sticky;
-  top: 0;
-  height: 100vh;
+  /* Pin directly below the sticky header + progress bar so the sidebar
+     fills exactly the height the user has available. */
+  top: var(--gs-top-offset);
+  height: calc(100vh - var(--gs-top-offset));
   min-height: 0;
   padding: 1.5rem 1.25rem 0;
   display: flex;
