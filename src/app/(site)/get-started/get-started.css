@@ -196,19 +196,15 @@
   min-height: calc(100vh - 8rem);
 }
 
-/* ── Inline submit fallback (mobile only) ──
-   On desktop the sidebar's footer CTA owns submission. On
-   tablet/mobile the sidebar stacks below the form, so we need an
-   inline Continue/Submit button near the form action area too.
-   Pages opt in by adding the class on the relevant Button. */
-.checkout-inline-submit {
-  display: none;
-}
-
-@media (max-width: 991px) {
-  .checkout-inline-submit {
-    display: inline-flex;
-  }
+/* ── Page action row (back + continue) ──
+   Side-by-side row used at the bottom of each form page (/details,
+   /contract, /payment). Wraps to stacked on narrow viewports. */
+.checkout-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  padding-top: 1rem;
 }
 
 /* ── Basket panel ── */

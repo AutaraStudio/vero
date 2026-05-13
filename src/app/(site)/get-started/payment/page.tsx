@@ -94,20 +94,21 @@ function StripePaymentForm({
           <span className="text-body--sm color--tertiary">Loading payment form...</span>
         </div>
       )}
-      {/* Mobile-only inline submit — desktop uses the sidebar CTA */}
+      {/* Card submit + prominent back button — always visible. */}
       <div className="payment-actions">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleSubmit}
-          disabled={!stripe || !elements || isProcessing || !ready}
-          className="checkout-inline-submit"
-        >
-          {isProcessing ? 'Processing payment...' : 'Complete order →'}
-        </Button>
-        <Link href="/get-started/contract" className="form-back-link">
-          ← Back
-        </Link>
+        <div className="checkout-actions-row">
+          <Button variant="secondary" size="md" href="/get-started/contract">
+            ← Back to terms
+          </Button>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={handleSubmit}
+            disabled={!stripe || !elements || isProcessing || !ready}
+          >
+            {isProcessing ? 'Processing payment...' : 'Complete order →'}
+          </Button>
+        </div>
       </div>
     </div>
   );
@@ -578,20 +579,21 @@ function PaymentContent() {
                   </p>
                 </div>
 
-                {/* Mobile-only inline submit — desktop uses the sidebar CTA */}
+                {/* Invoice submit + prominent back button — always visible. */}
                 <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleInvoiceCheckout}
-                    disabled={isLoading || !!invoiceEmailError}
-                    className="checkout-inline-submit"
-                  >
-                    {isLoading ? 'Submitting...' : 'Complete order →'}
-                  </Button>
-                  <Link href="/get-started/contract" className="form-back-link">
-                    ← Back
-                  </Link>
+                  <div className="checkout-actions-row">
+                    <Button variant="secondary" size="md" href="/get-started/contract">
+                      ← Back to terms
+                    </Button>
+                    <Button
+                      variant="primary"
+                      size="md"
+                      onClick={handleInvoiceCheckout}
+                      disabled={isLoading || !!invoiceEmailError}
+                    >
+                      {isLoading ? 'Submitting...' : 'Complete order →'}
+                    </Button>
+                  </div>
                 </div>
               </>
             )}
@@ -717,26 +719,11 @@ function PaymentContent() {
 
           </div>
 
-          {/* ── Sidebar — same component as the role picker, in review mode.
-              Sidebar CTA drives both card and invoice submission. ── */}
+          {/* ── Sidebar — read-only summary. Submit lives inline on
+              this page. ── */}
           <aside className="basket">
             <div className="basket__sticky">
-              <BasketContent
-                mode="review"
-                primaryAction={
-                  payMethod === 'card'
-                    ? {
-                        label: cardState.label,
-                        onClick: () => { void cardState.submit?.(); },
-                        disabled: cardState.disabled || !clientSecret,
-                      }
-                    : {
-                        label: isLoading ? 'Submitting...' : 'Complete order →',
-                        onClick: handleInvoiceCheckout,
-                        disabled: isLoading || !!invoiceEmailError,
-                      }
-                }
-              />
+              <BasketContent mode="review" />
             </div>
           </aside>
       </div>

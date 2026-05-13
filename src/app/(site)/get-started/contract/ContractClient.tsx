@@ -124,35 +124,23 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
           </p>
         </div>
 
-        {/* On desktop the sidebar CTA owns submission; on mobile the
-            inline Continue below is shown instead. */}
+        {/* Inline submit + prominent back button — always visible. */}
         <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="contract-actions">
-          <Button
-            variant="primary"
-            size="md"
-            disabled={!accepted}
-            onClick={handleAccept}
-            className="checkout-inline-submit"
-          >
-            Continue to payment →
-          </Button>
-          <Link href="/get-started/details" className="form-back-link">
-            ← Back
-          </Link>
+          <div className="checkout-actions-row">
+            <Button variant="secondary" size="md" href="/get-started/details">
+              ← Back to details
+            </Button>
+            <Button variant="primary" size="md" disabled={!accepted} onClick={handleAccept}>
+              Continue to payment →
+            </Button>
+          </div>
         </div>
 
         </div>
 
         <aside className="basket">
           <div className="basket__sticky">
-            <BasketContent
-              mode="review"
-              primaryAction={{
-                label: 'Continue to payment →',
-                onClick: handleAccept,
-                disabled: !accepted,
-              }}
-            />
+            <BasketContent mode="review" />
           </div>
         </aside>
       </div>

@@ -1348,43 +1348,33 @@ export default function DetailsPage() {
             </div>
             )}
 
-            {/* Inline error message + back link. On desktop the sidebar's
-                footer CTA owns submission; on mobile the inline submit
-                button below is shown instead (sidebar stacks below the
-                form so an always-visible Continue is needed up top). */}
+            {/* Primary submit + prominent back button — always visible
+                at the bottom of the form. The sidebar in review mode is
+                read-only on this page; submission lives inline. */}
             <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
               {submitAttempted && blockerMessage && (
                 <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
                   {blockerMessage}
                 </p>
               )}
-              <Button
-                variant="primary"
-                size="md"
-                type="submit"
-                disabled={!requiredFilled}
-                className="checkout-inline-submit"
-              >
-                Continue to contract →
-              </Button>
-              <Link href="/get-started" className="form-back-link">
-                ← Back to roles
-              </Link>
+              <div className="checkout-actions-row">
+                <Button variant="secondary" size="md" href="/get-started">
+                  ← Back to roles
+                </Button>
+                <Button variant="primary" size="md" type="submit" disabled={!requiredFilled}>
+                  Continue to contract →
+                </Button>
+              </div>
             </div>
 
           </form>
 
-          {/* ── Sidebar — same component as the role picker, in review mode ── */}
+          {/* ── Sidebar — same component as the role picker, read-only.
+              No CTA here on this page — the inline submit + back buttons
+              at the bottom of the form drive navigation. ── */}
           <aside className="basket">
             <div className="basket__sticky">
-              <BasketContent
-                mode="review"
-                primaryAction={{
-                  label: 'Continue to contract →',
-                  formId: 'details-form',
-                  disabled: !requiredFilled,
-                }}
-              />
+              <BasketContent mode="review" />
             </div>
           </aside>
       </div>
