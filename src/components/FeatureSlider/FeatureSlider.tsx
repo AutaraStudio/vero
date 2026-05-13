@@ -96,6 +96,33 @@ export default function FeatureSlider({
         className="gsap-slider"
       >
         <div data-gsap-slider-collection="" className="gsap-slider__collection">
+          {/* Edge chevrons — duplicate the bottom Prev/Next so visitors see
+              the carousel is navigable. Share `data-gsap-slider-control` so
+              the slider script wires click + disabled state for free.
+              aria-hidden + tabIndex={-1} → decorative-only; keyboard / AT
+              users still get the labelled Prev/Next at the bottom. */}
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            data-gsap-slider-control="prev"
+            className="gsap-slider__edge-control gsap-slider__edge-control--prev"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M15 6l-6 6 6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            aria-hidden="true"
+            tabIndex={-1}
+            data-gsap-slider-control="next"
+            className="gsap-slider__edge-control gsap-slider__edge-control--next"
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
           <div data-gsap-slider-list="" className="gsap-slider__list">
             {resolvedItems.map((item, i) => {
               const cardInner = (

@@ -218,9 +218,15 @@ function UserEmailInput({
         </span>
       )}
 
-      <span className="text-body--xs color--tertiary">
-        {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
-      </span>
+      {emails.length === 0 ? (
+        <span className="text-body--xs user-emails__prompt">
+          Add at least 1 email address to continue
+        </span>
+      ) : (
+        <span className="text-body--xs color--tertiary">
+          {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
+        </span>
+      )}
 
       {emails.length > 0 && (
         <>
@@ -863,6 +869,12 @@ export default function DetailsPage() {
             {/* Section 3 — Users to add */}
             <div ref={s3Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
               <p className="details-section__label">Users to add</p>
+              {!isStarter && (
+                <p className="text-body--sm color--secondary details-section__intro">
+                  Add team members who need to log in and view candidate results.
+                  At least one email address is required to continue.
+                </p>
+              )}
               {isStarter ? (
                 <div className="form-field">
                   <label
@@ -886,6 +898,7 @@ export default function DetailsPage() {
                 <div className="form-field">
                   <label className="form-field__label text-label--sm color--tertiary">
                     Email addresses of users who need system access (up to {userLimit})
+                    <span aria-hidden="true" className="form-field__required">{' *'}</span>
                   </label>
                   <UserEmailInput
                     emails={userEmails}

@@ -160,6 +160,30 @@
   margin-bottom: 0;
 }
 
+/* Sits between the eyebrow .details-section__label and the form fields —
+   used where a section needs a one-line explanation (e.g. Users to add). */
+.details-section__intro {
+  margin-top: -0.25rem;
+  margin-bottom: 0.25rem;
+  max-width: 56ch;
+}
+
+/* Asterisk that flags a required field. Brand-coloured so it reads as a
+   deliberate cue rather than punctuation. */
+.form-field__required {
+  color: var(--color--text-brand);
+  font-weight: 700;
+  margin-inline-start: 0.125rem;
+}
+
+/* Empty-state prompt under the user-emails input. Brand-coloured to draw
+   the eye without being alarming — flips to the neutral counter once at
+   least one email has been added. */
+.user-emails__prompt {
+  color: var(--color--text-brand);
+  font-weight: 600;
+}
+
 /* ── URL input row ── */
 
 .url-input-row {

@@ -63,6 +63,8 @@
   margin-right: auto;
   padding-left: var(--space--container-padding);
   padding-right: var(--space--container-padding);
+  /* anchor for the absolute-positioned edge chevrons below */
+  position: relative;
 }
 
 .gsap-slider__list {
@@ -218,6 +220,79 @@
 [data-gsap-slider-control-status="not-active"] {
   opacity: 0.2;
   pointer-events: none;
+}
+
+/* ── Edge chevron controls ───────────────────────────────────
+   Floating circular buttons on the left/right edges that mirror
+   the bottom Prev/Next. They share data-gsap-slider-control so
+   their click handlers and disabled state come from the same
+   slider script — no extra wiring required.
+
+   Vertically centred on the image area of the cards (top ~35%
+   of the card row, since cards are image + text and the eye
+   wants the arrow over the image). */
+.gsap-slider__edge-control {
+  position: absolute;
+  top: 35%;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--full);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default),
+    opacity var(--transition--default);
+}
+
+.gsap-slider__edge-control:hover {
+  background: var(--color--surface-sunken);
+  border-color: var(--color--border-strong);
+}
+
+.gsap-slider__edge-control--prev {
+  /* sit just inside the left container padding */
+  left: calc(var(--space--container-padding) - 1.375rem);
+}
+
+.gsap-slider__edge-control--next {
+  right: calc(var(--space--container-padding) - 1.375rem);
+}
+
+/* Hide entirely when the slider isn't active (content fits without
+   needing to scroll) — matches the existing bottom-controls rule. */
+[data-gsap-slider-status="not-active"] .gsap-slider__edge-control {
+  display: none;
+}
+
+/* When AT the start (prev disabled) or end (next disabled), hide the
+   relevant edge chevron completely rather than just fading it. The
+   bottom-bar Prev/Next keep the existing 0.2-opacity faded look — only
+   these floating edge duplicates disappear. */
+.gsap-slider__edge-control[data-gsap-slider-control-status="not-active"] {
+  display: none;
+}
+
+/* Mobile: drop arrow size + tuck closer to the edge. */
+@media screen and (max-width: 767px) {
+  .gsap-slider__edge-control {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+  .gsap-slider__edge-control--prev {
+    left: calc(var(--space--container-padding) - 1.125rem);
+  }
+  .gsap-slider__edge-control--next {
+    right: calc(var(--space--container-padding) - 1.125rem);
+  }
 }
 
 /* ── Responsive section spacing ── */
