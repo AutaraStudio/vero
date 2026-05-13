@@ -162,6 +162,26 @@ a.hero-split__pill:hover {
    VARIANTS
 ============================================================ */
 
+/* ── Layout — stacked (text above, media below, both centred) ──
+   Used on /assessments/[slug]. Drops the two-column grid for a single
+   centred column with media beneath the text + CTAs. */
+.hero-split--stacked .hero-split__grid {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 3rem;
+  justify-items: center;
+}
+
+.hero-split--stacked .hero-split__text {
+  align-items: center;
+  text-align: center;
+  max-width: 56rem;
+}
+
+.hero-split--stacked .hero-split__media {
+  width: 100%;
+  max-width: 64rem;
+}
+
 /* ── Image aspect — 4:3 opt-out ────────────────────────────
    Default is 16:9 across every viewport. Pages that still want a
    chunkier 4:3 frame can pass imageAspect="4/3". */

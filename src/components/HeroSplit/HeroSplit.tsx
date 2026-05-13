@@ -24,6 +24,13 @@ interface HeroSplitProps {
   image?: { src: string; alt: string };
   /** Reverse the columns so image sits left, text right. Default false. */
   reverse?: boolean;
+  /**
+   * Layout variant.
+   *  - 'split'   (default): text + media side-by-side
+   *  - 'stacked':            text on top, media centred below — text and CTAs
+   *                          centre-aligned. Overrides textAlign / textJustify.
+   */
+  layout?: 'split' | 'stacked';
 
   /* ── Layout variants ─────────────────────────────────── */
   /**
@@ -85,12 +92,20 @@ export default function HeroSplit({
   media,
   image,
   reverse = false,
+  layout = 'split',
   imageHeight = 'auto',
   imageAspect = '16/9',
   textAlign = 'center',
   textJustify = 'left',
   badges,
 }: HeroSplitProps) {
+  /* Stacked layout forces centred alignment regardless of caller-provided
+     textAlign / textJustify — the layout's whole purpose is centred text
+     over centred media. */
+  if (layout === 'stacked') {
+    textAlign = 'center';
+    textJustify = 'center';
+  }
   const labelRef   = useFadeUp({ scroll: false, delay: 0.1, duration: 0.5, y: 12 });
   const headingRef = useTextReveal({ scroll: false, delay: 0.25 });
   const introRef   = useFadeUp({ scroll: false, delay: 0.55, duration: 0.6, y: 16 });
@@ -100,6 +115,7 @@ export default function HeroSplit({
   const classes = [
     'hero-split',
     reverse                     && 'is-reverse',
+    layout === 'stacked'        && 'hero-split--stacked',
     imageHeight === 'viewport'  && 'hero-split--image-viewport',
     imageHeight === 'auto' && imageAspect === '4/3' && 'hero-split--image-4-3',
     `hero-split--text-v-${textAlign}`,
