@@ -63,7 +63,6 @@ export function mediaProjection(fieldName: string): string {
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
         heroBadgeLabel,
-    heroBadgeHref,
     heroTitle,
     heroIntro,
     heroCTALabel,

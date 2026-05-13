@@ -15,7 +15,9 @@ import MediaBlock, { type MediaBlockData } from '@/components/MediaBlock';
 
 interface HeroCentredProps {
   theme?: ThemeVariant;
-  badge?: { label: string; href: string };
+  /** Optional eyebrow pill above the headline. Provide `href` to make it an
+   *  in-page jump link; omit it for a non-clickable label. */
+  badge?: { label: string; href?: string };
   headline: string;
   intro?: string;
   primaryCTA?: { label: string; href: string };
@@ -164,7 +166,7 @@ export default function HeroCentred({
       <div className="hero-centred__inner">
         <div className="hero-centred__header">
 
-          {badge && (
+          {badge && (badge.href ? (
             <a
               ref={badgeRef as React.Ref<HTMLAnchorElement>}
               href={badge.href}
@@ -173,7 +175,15 @@ export default function HeroCentred({
             >
               {badge.label}
             </a>
-          )}
+          ) : (
+            <span
+              ref={badgeRef as React.Ref<HTMLSpanElement>}
+              data-animate=""
+              className="hero-centred__badge section-label"
+            >
+              {badge.label}
+            </span>
+          ))}
 
           <h1
             ref={headingRef as React.Ref<HTMLHeadingElement>}
