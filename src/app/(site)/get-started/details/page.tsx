@@ -8,7 +8,6 @@ import { TIER_USER_LIMITS, type TierKey } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { gsap } from '@/lib/gsap';
-import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import BasketContent from '../components/BasketContent';
 import './details.css';
@@ -1348,16 +1347,14 @@ export default function DetailsPage() {
             </div>
             )}
 
-            {/* Actions */}
+            {/* Inline error message + back link. Submit lives in the
+                sidebar's footer CTA — see <BasketContent primaryAction>. */}
             <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
               {submitAttempted && blockerMessage && (
                 <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
                   {blockerMessage}
                 </p>
               )}
-              <Button variant="primary" size="md" type="submit" disabled={!requiredFilled}>
-                Continue to contract →
-              </Button>
               <Link href="/get-started" className="form-back-link">
                 ← Back to roles
               </Link>
@@ -1368,7 +1365,14 @@ export default function DetailsPage() {
           {/* ── Sidebar — same component as the role picker, in review mode ── */}
           <aside className="basket">
             <div className="basket__sticky">
-              <BasketContent mode="review" />
+              <BasketContent
+                mode="review"
+                primaryAction={{
+                  label: 'Continue to contract →',
+                  formId: 'details-form',
+                  disabled: !requiredFilled,
+                }}
+              />
             </div>
           </aside>
       </div>

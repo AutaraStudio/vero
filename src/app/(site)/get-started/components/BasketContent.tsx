@@ -14,23 +14,37 @@ interface CategorySummary {
   slug: string;
 }
 
+/** Per-page primary action driven by the sidebar's footer CTA. Each
+ *  review-mode page (details, contract, payment) passes its own. */
+export interface BasketPrimaryAction {
+  label: string;
+  /** Set on form-driven pages — button uses `form` + `type="submit"` so
+   *  it triggers the form's onSubmit. */
+  formId?: string;
+  /** Imperative handler — used when there's no form to bind to. */
+  onClick?: () => void;
+  disabled?: boolean;
+}
+
 interface BasketContentProps {
   /** Sanity-fetched categories for ordering. In `review` mode the component
    *  derives this list from the basket itself if not supplied. */
   categories?: CategorySummary[];
   /**
-   * - `edit`    (role picker) — remove buttons, frequency toggle, Continue CTA
+   * - `edit`    (role picker) — remove buttons, frequency toggle, internal Continue CTA
    * - `review`  (checkout steps) — read-only chips, frequency shown as plain
-   *             label, no CTA. Use on /details, /payment, /contract so the
-   *             sidebar looks identical to step 1 but can't be edited mid-flow.
+   *             label. CTA driven by the `primaryAction` prop (each page
+   *             supplies its own).
    */
   mode?: 'edit' | 'review';
+  /** Review-mode only: configures the always-visible footer CTA. */
+  primaryAction?: BasketPrimaryAction;
 }
 
 const COLLAPSE_THRESHOLD = 3;
 const VISIBLE_COUNT = 2;
 
-export default function BasketContent({ categories, mode = 'edit' }: BasketContentProps) {
+export default function BasketContent({ categories, mode = 'edit', primaryAction }: BasketContentProps) {
   const router = useRouter();
   const { state, dispatch } = useBasket();
   const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
@@ -109,6 +123,9 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
     <>
       <h2 className="text-h5 color--primary basket__title">Your basket</h2>
 
+      {/* Scrollable middle region — only this part scrolls when there are
+          many roles. Title (above) + footer (below) stay pinned. */}
+      <div className="basket__scroll">
       {selectedRoles.length === 0 ? (
         <p className="text-body--sm basket__empty">No roles selected yet.</p>
       ) : (
@@ -191,7 +208,12 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
           })}
         </div>
       )}
+      </div>
 
+      {/* Footer — always visible at the bottom of the sidebar. Holds the
+          tier panel + the page's primary action (in review mode) or the
+          basket's own Continue CTA (in edit mode). */}
+      <div className="basket__footer">
       <div className="basket__tier">
         {tierInfo ? (
           <>
@@ -245,9 +267,10 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
         )}
       </div>
 
-      {/* Edit mode owns the Continue CTA. Review mode is read-only — the
-          page's own form / submit button drives navigation. */}
-      {!isReview && (
+      {/* Edit mode owns the Continue CTA (router-driven). Review mode
+          delegates to the per-page primaryAction (form-submit or
+          imperative handler). */}
+      {!isReview ? (
         <div className="basket__cta">
           <Button
             variant="primary"
@@ -262,7 +285,24 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
                 : 'Continue to checkout'}
           </Button>
         </div>
-      )}
+      ) : primaryAction ? (
+        /* Review mode: render the per-page primary action. Either a
+           form-submit button (form= triggers the named form's onSubmit)
+           or an imperative click handler. */
+        <div className="basket__cta">
+          <Button
+            variant="primary"
+            size="md"
+            type={primaryAction.formId ? 'submit' : 'button'}
+            form={primaryAction.formId}
+            onClick={primaryAction.onClick}
+            disabled={primaryAction.disabled}
+          >
+            {primaryAction.label}
+          </Button>
+        </div>
+      ) : null}
+      </div>
 
       {!isReview && nudgeVisible && recommendedTier && (() => {
         const content = getNudgeContent(recommendedTier, selectedRoles.length);

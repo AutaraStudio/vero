@@ -16,7 +16,7 @@
 
 .contract-layout > .contract-inner {
   grid-area: inner;
-  padding: 2rem;
+  padding: 2.5rem 2.5rem;
   max-width: 56rem;
 }
 .contract-layout > .basket { grid-area: sidebar; }
