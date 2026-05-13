@@ -9,18 +9,18 @@
 
 .details-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  /* 340px matches the role-picker sidebar width so the sidebar feels
+     identical to step 1. */
+  grid-template-columns: 340px 1fr;
   grid-template-areas: "sidebar form";
-  gap: 4rem;
   align-items: start;
 }
 
-/* JSX source order is form-first (so screen-reader / tab order lands on
-   the form). Grid template areas position the sidebar on the left
-   visually on desktop and below the form on mobile (see breakpoint
-   override). */
-.details-layout > .details-form { grid-area: form; }
-.details-layout > .order-summary { grid-area: sidebar; }
+/* JSX source order is form-first (tab order / screen-reader stays
+   natural). grid-template-areas positions the sidebar on the left
+   visually on desktop and below the form on mobile. */
+.details-layout > .details-form { grid-area: form; padding: 0 2rem; }
+.details-layout > .basket { grid-area: sidebar; }
 
 @media (max-width: 991px) {
   .details-layout {
@@ -29,6 +29,14 @@
       "form"
       "sidebar";
     gap: 2.5rem;
+  }
+  /* Reset the sidebar's full-height stickiness on mobile — it should
+     just be an inline section below the form, not a fixed panel. */
+  .details-layout > .basket {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
   }
 }
 

@@ -10,7 +10,7 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
-import OrderSummary from '../components/OrderSummary';
+import BasketContent from '../components/BasketContent';
 import './details.css';
 
 // ── Helper: normalise hex colour input ───────────────────────
@@ -723,8 +723,7 @@ export default function DetailsPage() {
 
   return (
     <section className="details-page">
-      <div className="container">
-        <div className="details-layout">
+      <div className="details-layout">
 
           {/* ── Form ── */}
           <form id="details-form" className="details-form" onSubmit={handleSubmit} noValidate>
@@ -1366,9 +1365,12 @@ export default function DetailsPage() {
 
           </form>
 
-          {/* ── Sidebar ── */}
-          <OrderSummary />
-        </div>
+          {/* ── Sidebar — same component as the role picker, in review mode ── */}
+          <aside className="basket">
+            <div className="basket__sticky">
+              <BasketContent mode="review" />
+            </div>
+          </aside>
       </div>
     </section>
   );

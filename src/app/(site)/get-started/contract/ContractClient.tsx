@@ -7,7 +7,7 @@ import { useBasket } from '@/store/basketStore';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
-import OrderSummary from '../components/OrderSummary';
+import BasketContent from '../components/BasketContent';
 import '../details/details.css';
 import './contract.css';
 
@@ -141,7 +141,11 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
 
         </div>
 
-        <OrderSummary showContact={true} />
+        <aside className="basket">
+          <div className="basket__sticky">
+            <BasketContent mode="review" />
+          </div>
+        </aside>
       </div>
     </section>
   );

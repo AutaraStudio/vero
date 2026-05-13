@@ -9,16 +9,13 @@
 
 .payment-layout {
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   grid-template-areas: "sidebar form";
-  gap: 4rem;
   align-items: start;
 }
 
-/* Source-order form first; visual order sidebar-left on desktop,
-   form-on-top on mobile. */
-.payment-layout > .payment-form { grid-area: form; }
-.payment-layout > .order-summary { grid-area: sidebar; }
+.payment-layout > .payment-form { grid-area: form; padding: 0 2rem; }
+.payment-layout > .basket { grid-area: sidebar; }
 
 @media (max-width: 991px) {
   .payment-layout {
@@ -27,6 +24,12 @@
       "form"
       "sidebar";
     gap: 2.5rem;
+  }
+  .payment-layout > .basket {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
   }
 }
 

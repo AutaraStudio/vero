@@ -11,7 +11,7 @@ import type { CheckoutPayload } from '@/lib/checkout-schema';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
-import OrderSummary from '../components/OrderSummary';
+import BasketContent from '../components/BasketContent';
 import '../details/details.css';
 import './payment.css';
 
@@ -289,8 +289,7 @@ function PaymentContent() {
 
   return (
     <section className="payment-page">
-      <div className="container">
-        <div className="payment-layout">
+      <div className="payment-layout">
 
           {/* ── Payment form ── */}
           <div className="payment-form">
@@ -689,9 +688,12 @@ function PaymentContent() {
 
           </div>
 
-          {/* ── Order summary sidebar ── */}
-          <OrderSummary showContact={true} />
-        </div>
+          {/* ── Order summary sidebar — same component as the role picker, in review mode ── */}
+          <aside className="basket">
+            <div className="basket__sticky">
+              <BasketContent mode="review" />
+            </div>
+          </aside>
       </div>
     </section>
   );

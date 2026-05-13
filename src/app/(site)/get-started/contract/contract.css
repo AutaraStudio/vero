@@ -8,19 +8,18 @@
 }
 
 .contract-layout {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 0 var(--space--container-padding);
   display: grid;
-  grid-template-columns: 320px 1fr;
+  grid-template-columns: 340px 1fr;
   grid-template-areas: "sidebar inner";
-  gap: 4rem;
   align-items: start;
 }
 
-/* Source-order inner first; visual order sidebar-left on desktop. */
-.contract-layout > .contract-inner { grid-area: inner; }
-.contract-layout > .order-summary { grid-area: sidebar; }
+.contract-layout > .contract-inner {
+  grid-area: inner;
+  padding: 2rem;
+  max-width: 56rem;
+}
+.contract-layout > .basket { grid-area: sidebar; }
 
 .contract-inner {
   display: flex;
@@ -35,6 +34,12 @@
       "inner"
       "sidebar";
     gap: 2rem;
+  }
+  .contract-layout > .basket {
+    position: static;
+    height: auto;
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
   }
 }
 
