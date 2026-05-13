@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react';
 import type { ThemeVariant } from '@/lib/theme';
-import PlanBar from './PlanBar';
 import CheckoutFan from './CheckoutFan';
 
 interface GetStartedShellProps {
@@ -12,7 +11,6 @@ export default function GetStartedShell({ theme, children }: GetStartedShellProp
   return (
     <div className="get-started-shell" data-theme={theme}>
       {children}
-      <PlanBar theme={theme} />
       <CheckoutFan />
     </div>
   );

@@ -7,7 +7,7 @@ import { useBasket } from '@/store/basketStore';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
-import OrderSummary from '../components/OrderSummary';
+import BasketContent from '../components/BasketContent';
 import '../details/details.css';
 import './contract.css';
 
@@ -124,24 +124,25 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
           </p>
         </div>
 
-        {/* Actions */}
-        <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="contract-actions">
-          <Button
-            variant="primary"
-            size="md"
-            disabled={!accepted}
-            onClick={handleAccept}
-          >
-            Continue to payment →
-          </Button>
-          <Link href="/get-started/details" className="form-back-link">
-            ← Back
-          </Link>
+        {/* Inline submit + prominent back button — always visible. */}
+        <div className="contract-actions">
+          <div className="checkout-actions-row">
+            <Button variant="secondary" size="md" href="/get-started/details">
+              ← Back to details
+            </Button>
+            <Button variant="primary" size="md" disabled={!accepted} onClick={handleAccept}>
+              Continue to payment →
+            </Button>
+          </div>
         </div>
 
         </div>
 
-        <OrderSummary showContact={true} />
+        <aside className="basket">
+          <div className="basket__sticky">
+            <BasketContent mode="review" />
+          </div>
+        </aside>
       </div>
     </section>
   );
