@@ -7,6 +7,8 @@ import './get-started.css';
 export default function GetStartedLayout({ children }: { children: React.ReactNode }) {
   return (
     <GetStartedShell theme="brand-purple">
+      {/* WCAG 2.4.1 — skip link for keyboard users. Hidden by CSS until focused. */}
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <header className="get-started-header">
         <div className="container">
           <div className="get-started-header__inner">
@@ -19,7 +21,7 @@ export default function GetStartedLayout({ children }: { children: React.ReactNo
 
       <ConditionalProgressBar />
 
-      <main className="get-started-main">
+      <main id="main-content" tabIndex={-1} className="get-started-main">
         {children}
       </main>
     </GetStartedShell>

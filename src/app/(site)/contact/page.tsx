@@ -42,7 +42,7 @@ export default async function ContactPage() {
   const data = await client.fetch<ContactPageData | null>(CONTACT_PAGE_QUERY);
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero — text only, sets up the page ──────────── */}
       <ContactHero
         headline={data?.heroHeadline ?? 'Get in touch'}

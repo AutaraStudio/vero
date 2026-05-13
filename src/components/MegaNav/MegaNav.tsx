@@ -119,7 +119,7 @@ export default function MegaNav({
     .filter((g) => g.title && g.categories.length > 0);
 
   return (
-    <nav ref={navRef} data-menu-open="false" data-menu-wrap="" className="mega-nav">
+    <nav ref={navRef} aria-label="Primary" data-menu-open="false" data-menu-wrap="" className="mega-nav">
       <div className="mega-nav__bar">
         <div className="mega-nav__container flex--between">
           <div className="mega-nav__bar-start flex">

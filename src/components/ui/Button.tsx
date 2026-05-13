@@ -1,6 +1,6 @@
 import './Button.css';
 import Link from 'next/link';
-import type { ReactNode, CSSProperties } from 'react';
+import type { ReactNode, CSSProperties, MouseEvent } from 'react';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'cta';
 export type ButtonSize = 'sm' | 'md' | 'lg';
@@ -12,7 +12,7 @@ export interface ButtonProps {
   children: ReactNode;
   disabled?: boolean;
   className?: string;
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   type?: 'button' | 'submit' | 'reset';
   form?: string;
   external?: boolean;

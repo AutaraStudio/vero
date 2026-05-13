@@ -71,6 +71,41 @@
   will-change: transform;
 }
 
+/* ── Pause / play control (WCAG 2.2.2) ──────────────────────
+   Sits in a container-aligned row below the track, bottom-right edge.
+   Small circular chip, low visual weight — present but unobtrusive. */
+.logo-marquee__controls {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.25rem;
+}
+
+.logo-marquee--inline .logo-marquee__controls {
+  margin-top: 1rem;
+}
+
+.logo-marquee__pause {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  background: var(--color--surface-raised);
+  color: var(--color--text-primary);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--full);
+  cursor: pointer;
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default);
+}
+
+.logo-marquee__pause:hover {
+  background: var(--color--surface-sunken);
+  border-color: var(--color--border-strong);
+}
+
 /* ── Item — white card-like wrapper around each logo ─────── */
 .logo-marquee__item {
   display: inline-flex;

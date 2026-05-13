@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import ActionButton from '@/components/ui/ActionButton';
@@ -100,6 +100,31 @@ export default function RolePicker({ categories }: RolePickerProps) {
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [nudgeVisible, setNudgeVisible] = useState(false);
+
+  /* Mobile basket drawer focus management (WCAG 2.1.2 / 2.4.3) — capture the
+     element that opens the drawer so focus can return to it, and forward
+     initial focus to the close button on open. ESC closes the drawer. */
+  const drawerTriggerRef = useRef<HTMLElement | null>(null);
+  const drawerCloseBtnRef = useRef<HTMLButtonElement | null>(null);
+
+  const closeDrawer = useCallback(() => {
+    setDrawerOpen(false);
+    drawerTriggerRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    /* Defer one frame so the close button is mounted before we focus it. */
+    const raf = requestAnimationFrame(() => drawerCloseBtnRef.current?.focus());
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeDrawer();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [drawerOpen, closeDrawer]);
 
   // Read ?tier= from URL (e.g. from pricing page) and set as override
   useEffect(() => {
@@ -403,7 +428,10 @@ export default function RolePicker({ categories }: RolePickerProps) {
               <div className="basket-mobile-bar__actions">
                 <button
                   className="basket-mobile-bar__view"
-                  onClick={() => setDrawerOpen(true)}
+                  onClick={(e) => {
+                    drawerTriggerRef.current = e.currentTarget;
+                    setDrawerOpen(true);
+                  }}
                 >
                   View basket
                 </button>
@@ -429,12 +457,13 @@ export default function RolePicker({ categories }: RolePickerProps) {
           >
             <div
               className="basket-drawer__backdrop"
-              onClick={() => setDrawerOpen(false)}
+              onClick={closeDrawer}
             />
             <div className="basket-drawer__panel">
               <button
+                ref={drawerCloseBtnRef}
                 className="basket-drawer__close"
-                onClick={() => setDrawerOpen(false)}
+                onClick={closeDrawer}
                 aria-label="Close basket"
               >
                 ×

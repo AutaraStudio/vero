@@ -23,6 +23,11 @@ function ConfirmationContent() {
   const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
 
+  /* WCAG 2.4.2 — descriptive page title for this terminal step. */
+  useEffect(() => {
+    document.title = 'Order confirmed — Vero Assess';
+  }, []);
+
   /* Snapshot the basket state on first render so the receipt below has
      stable data to render from, then clear the live basket. Without this
      snapshot, dispatching CLEAR_BASKET here would blank out the page

@@ -60,7 +60,7 @@ export default async function CompliancePage() {
   const data = await client.fetch<CompliancePageData | null>(COMPLIANCE_PAGE_QUERY);
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero — text-only (compact mode) ──────────────── */}
       <HeroCentred
         theme="brand-purple"

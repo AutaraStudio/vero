@@ -44,6 +44,7 @@ export default function ConditionalShell({
 
   return (
     <>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
       <MegaNav
         topItems={topItems}
         companyColumns={companyColumns}

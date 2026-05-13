@@ -121,7 +121,7 @@ export function StickySteps({
                         ) : step.imageSrc ? (
                           <Image
                             src={step.imageSrc}
-                            alt={step.imageAlt ?? ''}
+                            alt={step.imageAlt ?? step.headline}
                             fill
                             sizes="(max-width: 991px) 100vw, 50vw"
                             className="sticky-steps__image"

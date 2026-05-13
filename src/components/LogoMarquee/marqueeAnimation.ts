@@ -29,9 +29,21 @@ interface MarqueeOptions {
   speed?: number;
 }
 
+export interface MarqueeControls {
+  /** Pause the looping animation (does not destroy it). */
+  pause: () => void;
+  /** Resume a paused animation. */
+  play: () => void;
+  /** True when the animation is currently paused. */
+  isPaused: () => boolean;
+  /** Tear down: kills tweens + removes listeners. */
+  destroy: () => void;
+}
+
 /**
- * Initialise a marquee on the given root element. Returns a cleanup
- * function that kills all GSAP tweens + ScrollTriggers + listeners.
+ * Initialise a marquee on the given root element. Returns a controls
+ * object exposing pause/play + a destroy method that kills all GSAP
+ * tweens and removes listeners.
  *
  * Expected DOM:
  *   <root data-marquee>
@@ -40,7 +52,7 @@ interface MarqueeOptions {
  *     </div>
  *   </root>
  */
-export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
+export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}): MarqueeControls {
   const {
     direction = 'left',
     speed,
@@ -53,7 +65,8 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
 
   const scrollEl     = root.querySelector<HTMLElement>('[data-marquee-scroll]');
   const collectionEl = root.querySelector<HTMLElement>('[data-marquee-collection]');
-  if (!scrollEl || !collectionEl) return () => {};
+  const noop: MarqueeControls = { pause: () => {}, play: () => {}, isPaused: () => false, destroy: () => {} };
+  if (!scrollEl || !collectionEl) return noop;
 
   /* Cache the original collection HTML so we can fully reset on each
      re-build (resize) without compounding clones. */
@@ -61,6 +74,9 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
 
   let mainAnimation: gsap.core.Tween | null = null;
   let resizeRaf = 0;
+  /* Persist user-requested pause across rebuilds — if the user clicked the
+     pause button, a resize-triggered build() must not restart playback. */
+  let userPaused = false;
 
   const directionMul = direction === 'right' ? 1 : -1;
 
@@ -136,7 +152,9 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
        page scroll direction, which felt unsettled / made it hard to
        read logos as you scrolled past. */
     mainAnimation.timeScale(directionMul === -1 ? 1 : -1);
-    root.setAttribute('data-marquee-status', 'normal');
+    /* Honour an existing user-paused state across rebuilds */
+    if (userPaused) mainAnimation.pause();
+    root.setAttribute('data-marquee-status', userPaused ? 'paused' : 'normal');
 
     /* (Scroll-tied parallax intentionally omitted — combining it with the
        main x loop on the same element causes drift and breaks seamlessness.
@@ -173,9 +191,22 @@ export function initMarquee(root: HTMLElement, options: MarqueeOptions = {}) {
     });
   }
 
-  return () => {
-    teardown();
-    window.removeEventListener('resize', onResize);
-    if (resizeRaf) cancelAnimationFrame(resizeRaf);
+  return {
+    pause: () => {
+      userPaused = true;
+      mainAnimation?.pause();
+      root.setAttribute('data-marquee-status', 'paused');
+    },
+    play: () => {
+      userPaused = false;
+      mainAnimation?.play();
+      root.setAttribute('data-marquee-status', 'normal');
+    },
+    isPaused: () => userPaused || (mainAnimation?.paused() ?? false),
+    destroy: () => {
+      teardown();
+      window.removeEventListener('resize', onResize);
+      if (resizeRaf) cancelAnimationFrame(resizeRaf);
+    },
   };
 }

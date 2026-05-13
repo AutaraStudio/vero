@@ -64,12 +64,12 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
 
         {/* Header */}
         <div className="contract-header">
-          <h2
+          <h1
             ref={headingRef as React.RefObject<HTMLHeadingElement>}
             className="text-h3 color--primary"
           >
             Review and accept our Terms and Conditions
-          </h2>
+          </h1>
         </div>
 
         {/* Contract prompt */}

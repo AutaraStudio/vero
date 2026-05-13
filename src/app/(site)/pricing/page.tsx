@@ -90,7 +90,7 @@ export default async function PricingPage() {
   ]);
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <HeroCentred
         theme="brand-purple"
         badge={{ label: 'Pricing', href: '#pricing-tiers' }}
