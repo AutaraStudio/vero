@@ -53,7 +53,7 @@
 .usp-grid__card-visual {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--color--surface-sunken);
   overflow: hidden;
   display: flex;

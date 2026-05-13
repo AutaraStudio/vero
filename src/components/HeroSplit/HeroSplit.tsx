@@ -36,8 +36,8 @@ interface HeroSplitProps {
   imageHeight?: 'auto' | 'viewport';
   /**
    * Image aspect ratio when `imageHeight` is 'auto'.
-   *  - '4/3'  (default): classic landscape
    *  - '16/9' (default): wide landscape — matches 1920×1080 source assets
+   *  - '4/3':            classic landscape, used by older pages opting out
    *
    * Ignored when imageHeight is 'viewport'.
    */
@@ -86,7 +86,7 @@ export default function HeroSplit({
   image,
   reverse = false,
   imageHeight = 'auto',
-  imageAspect = '4/3',
+  imageAspect = '16/9',
   textAlign = 'center',
   textJustify = 'left',
   badges,
@@ -101,7 +101,7 @@ export default function HeroSplit({
     'hero-split',
     reverse                     && 'is-reverse',
     imageHeight === 'viewport'  && 'hero-split--image-viewport',
-    imageHeight === 'auto' && imageAspect === '16/9' && 'hero-split--image-wide',
+    imageHeight === 'auto' && imageAspect === '4/3' && 'hero-split--image-4-3',
     `hero-split--text-v-${textAlign}`,
     `hero-split--text-h-${textJustify}`,
   ].filter(Boolean).join(' ');

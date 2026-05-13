@@ -110,7 +110,7 @@
 .usp-card__image {
   position: relative;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--color--surface-sunken);
   border-bottom: 1px solid var(--color--border-subtle);
   transition: background 0.5s cubic-bezier(0.16, 1, 0.3, 1),

@@ -151,7 +151,7 @@ a.hero-split__pill:hover {
 .hero-split__media-block {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   object-fit: cover;
   border-radius: var(--radius--lg);
   background: var(--color--surface-sunken);
@@ -162,13 +162,13 @@ a.hero-split__pill:hover {
    VARIANTS
 ============================================================ */
 
-/* ── Image aspect — 16:9 widescreen ────────────────────────
-   Used on /assessments/[slug] where source assets are 1920×1080.
-   Held at 16:9 across every viewport. */
-.hero-split--image-wide .hero-split__image,
-.hero-split--image-wide .hero-split__image-placeholder,
-.hero-split--image-wide .hero-split__media-block {
-  aspect-ratio: 16 / 9;
+/* ── Image aspect — 4:3 opt-out ────────────────────────────
+   Default is 16:9 across every viewport. Pages that still want a
+   chunkier 4:3 frame can pass imageAspect="4/3". */
+.hero-split--image-4-3 .hero-split__image,
+.hero-split--image-4-3 .hero-split__image-placeholder,
+.hero-split--image-4-3 .hero-split__media-block {
+  aspect-ratio: 4 / 3;
 }
 
 /* ── Image height — viewport fill ─────────────────────────
@@ -214,7 +214,7 @@ a.hero-split__pill:hover {
   .hero-split--image-viewport .hero-split__image,
   .hero-split--image-viewport .hero-split__image-placeholder,
   .hero-split--image-viewport .hero-split__media-block {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 16 / 9;
     height: auto;
   }
 }
