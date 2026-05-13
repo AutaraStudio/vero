@@ -12,10 +12,15 @@
   margin: 0 auto;
   padding: 0 var(--space--container-padding);
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 320px 1fr;
+  grid-template-areas: "sidebar inner";
   gap: 4rem;
   align-items: start;
 }
+
+/* Source-order inner first; visual order sidebar-left on desktop. */
+.contract-layout > .contract-inner { grid-area: inner; }
+.contract-layout > .order-summary { grid-area: sidebar; }
 
 .contract-inner {
   display: flex;
@@ -23,16 +28,12 @@
   gap: 2rem;
 }
 
-@media (max-width: 1024px) {
-  .contract-layout {
-    grid-template-columns: 1fr 320px;
-    gap: 2.5rem;
-  }
-}
-
-@media (max-width: 768px) {
+@media (max-width: 991px) {
   .contract-layout {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "inner"
+      "sidebar";
     gap: 2rem;
   }
 }

@@ -11,7 +11,6 @@ import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import OrderSummary from '../components/OrderSummary';
-import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
 import './details.css';
 
 // ── Helper: normalise hex colour input ───────────────────────
@@ -626,11 +625,6 @@ export default function DetailsPage() {
       (logoFilled && form.bespokeUrl.trim() && form.brandColour1.trim() && form.brandColour2.trim())) &&
     allDatesFilled
   );
-
-  /* Mirror requiredFilled into the PlanBar bottom-bar CTA so its disabled
-     state stays in sync with the inline submit button. Without this the
-     bar's button stayed full-purple even when the form was incomplete. */
-  usePublishPlanBarSubmitDisabled(!requiredFilled);
 
   /* Page-level error shown above the submit button when blocked. */
   const blockerMessage = !requiredFilled

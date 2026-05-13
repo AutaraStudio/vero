@@ -9,9 +9,27 @@
 
 .details-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
+  grid-template-columns: 320px 1fr;
+  grid-template-areas: "sidebar form";
   gap: 4rem;
   align-items: start;
+}
+
+/* JSX source order is form-first (so screen-reader / tab order lands on
+   the form). Grid template areas position the sidebar on the left
+   visually on desktop and below the form on mobile (see breakpoint
+   override). */
+.details-layout > .details-form { grid-area: form; }
+.details-layout > .order-summary { grid-area: sidebar; }
+
+@media (max-width: 991px) {
+  .details-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "form"
+      "sidebar";
+    gap: 2.5rem;
+  }
 }
 
 /* ── Form ── */
