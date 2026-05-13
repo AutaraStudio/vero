@@ -167,29 +167,13 @@ export const jobCategory = defineType({
        Horizontal carousel sitting under the "In action" header.
     ════════════════════════════════════════════════════════ */
     defineField({
-      name: 'featureCardsHeading',
-      title: 'Lead card — heading',
-      type: 'string',
-      group: 'featureCards',
-      description:
-        'The FIRST card in the carousel (the wider hero card) gets this heading — ' +
-        'e.g. "Keeping your team on track". The remaining cards are added in the list below.',
-    }),
-    defineField({
-      name: 'featureCardsSubheading',
-      title: 'Lead card — body',
-      type: 'text',
-      rows: 2,
-      group: 'featureCards',
-      description: 'Body text for the first/lead card.',
-    }),
-    defineField({
       name: 'featureCards',
-      title: 'Additional carousel cards',
+      title: 'Carousel cards',
       type: 'array',
       group: 'featureCards',
       description:
-        'Cards shown after the lead card. 4–8 work best in the carousel. Each card has its own heading, body, and image.',
+        '5–8 cards work best in the carousel. Each card has its own heading, body, and image. ' +
+        'The first card shown to the visitor is the first entry here — reorder by dragging.',
       of: [
         {
           type: 'object',

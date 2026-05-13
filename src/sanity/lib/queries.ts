@@ -414,8 +414,6 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     inActionLabel,
     inActionHeading,
     inActionIntro,
-    featureCardsHeading,
-    featureCardsSubheading,
     featureCards[] {
       heading,
       body,
