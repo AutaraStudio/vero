@@ -3,19 +3,22 @@
 ============================================================ */
 
 .contract-page {
-  padding: var(--space--section) 0;
   border-bottom: 1px solid var(--color--border-default);
 }
 
 .contract-layout {
-  max-width: 72rem;
-  margin: 0 auto;
-  padding: 0 var(--space--container-padding);
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 4rem;
+  grid-template-columns: 340px 1fr;
+  grid-template-areas: "sidebar inner";
   align-items: start;
 }
+
+.contract-layout > .contract-inner {
+  grid-area: inner;
+  padding: 2.5rem 2.5rem;
+  max-width: 56rem;
+}
+.contract-layout > .basket { grid-area: sidebar; }
 
 .contract-inner {
   display: flex;
@@ -23,17 +26,21 @@
   gap: 2rem;
 }
 
-@media (max-width: 1024px) {
-  .contract-layout {
-    grid-template-columns: 1fr 320px;
-    gap: 2.5rem;
-  }
-}
-
-@media (max-width: 768px) {
+@media (max-width: 991px) {
   .contract-layout {
     grid-template-columns: 1fr;
+    grid-template-areas:
+      "inner"
+      "sidebar";
     gap: 2rem;
+  }
+  .contract-layout > .basket {
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
+  }
+  .contract-layout > .basket .basket__sticky {
+    position: static;
+    height: auto;
   }
 }
 
@@ -122,10 +129,8 @@
 }
 
 .contract-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  /* Layout (flex column, gap, sticky-on-mobile) is set globally in
+     get-started.css under .checkout-actions-row + .contract-actions. */
 }
 
 .form-back-link {

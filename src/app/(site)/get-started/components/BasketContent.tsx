@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
 import { gsap } from '@/lib/gsap';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA, getTierPrice, getNudgeContent } from '@/lib/tierRecommendation';
-import UpsellNudge from './UpsellNudge';
+import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 
 interface CategorySummary {
   _id: string;
@@ -15,25 +12,48 @@ interface CategorySummary {
 }
 
 interface BasketContentProps {
-  categories: CategorySummary[];
+  /** Sanity-fetched categories for ordering. In `review` mode the component
+   *  derives this list from the basket itself if not supplied. */
+  categories?: CategorySummary[];
+  /**
+   * - `edit`    (role picker) — remove buttons, frequency toggle visible
+   * - `review`  (checkout steps) — read-only chips, frequency shown as
+   *             plain label
+   *
+   * Both modes are now read-only at the bottom; the navigation CTA lives
+   * in the sticky PlanBar at the bottom of the viewport instead.
+   */
+  mode?: 'edit' | 'review';
 }
 
 const COLLAPSE_THRESHOLD = 3;
 const VISIBLE_COUNT = 2;
 
-export default function BasketContent({ categories }: BasketContentProps) {
-  const router = useRouter();
+export default function BasketContent({ categories, mode = 'edit' }: BasketContentProps) {
   const { state, dispatch } = useBasket();
-  const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
+  const { selectedRoles, recommendedTier, paymentFrequency } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [nudgeVisible, setNudgeVisible] = useState(false);
   const hasAnimatedRef = useRef<Set<string>>(new Set());
 
-  const groupedByCategory = categories.filter((cat) =>
-    selectedRoles.some((r) => r.categorySlug === cat.slug)
-  );
+  /* In edit mode, we use the Sanity-supplied category order. In review mode
+     no categories prop is given, so derive a unique list from the basket in
+     selection order. */
+  const groupedByCategory: CategorySummary[] = categories
+    ? categories.filter((cat) => selectedRoles.some((r) => r.categorySlug === cat.slug))
+    : (() => {
+        const seen = new Set<string>();
+        const out: CategorySummary[] = [];
+        for (const r of selectedRoles) {
+          if (seen.has(r.categorySlug)) continue;
+          seen.add(r.categorySlug);
+          out.push({ _id: r.categorySlug, name: r.categoryName, slug: r.categorySlug });
+        }
+        return out;
+      })();
+
+  const isReview = mode === 'review';
 
   const makeHiddenRolesRef = (slug: string) => (el: HTMLDivElement | null) => {
     if (!el || hasAnimatedRef.current.has(slug)) return;
@@ -63,21 +83,6 @@ export default function BasketContent({ categories }: BasketContentProps) {
     });
   };
 
-  const handleContinue = () => {
-    if (recommendedTier === 'bespoke') {
-      router.push('/get-started/bespoke');
-      return;
-    }
-    if (!nudgeShown && recommendedTier) {
-      const nudgeContent = getNudgeContent(recommendedTier, selectedRoles.length);
-      if (nudgeContent) {
-        setNudgeVisible(true);
-        return;
-      }
-    }
-    router.push('/get-started/details');
-  };
-
   const { price, priceNote } = tierInfo
     ? getTierPrice(tierInfo, paymentFrequency)
     : { price: '', priceNote: '' };
@@ -86,6 +91,9 @@ export default function BasketContent({ categories }: BasketContentProps) {
     <>
       <h2 className="text-h5 color--primary basket__title">Your basket</h2>
 
+      {/* Scrollable middle region — only this part scrolls when there are
+          many roles. Title (above) + footer (below) stay pinned. */}
+      <div className="basket__scroll">
       {selectedRoles.length === 0 ? (
         <p className="text-body--sm basket__empty">No roles selected yet.</p>
       ) : (
@@ -109,15 +117,17 @@ export default function BasketContent({ categories }: BasketContentProps) {
                     <span className="text-body--sm font--medium color--primary basket__role-chip__name">
                       {role.roleName}
                     </span>
-                    <button
-                      className="basket__remove"
-                      onClick={() =>
-                        dispatch({ type: 'REMOVE_ROLE', payload: { roleId: role.roleId } })
-                      }
-                      aria-label={`Remove ${role.roleName}`}
-                    >
-                      ×
-                    </button>
+                    {!isReview && (
+                      <button
+                        className="basket__remove"
+                        onClick={() =>
+                          dispatch({ type: 'REMOVE_ROLE', payload: { roleId: role.roleId } })
+                        }
+                        aria-label={`Remove ${role.roleName}`}
+                      >
+                        ×
+                      </button>
+                    )}
                   </div>
                 ))}
 
@@ -166,7 +176,12 @@ export default function BasketContent({ categories }: BasketContentProps) {
           })}
         </div>
       )}
+      </div>
 
+      {/* Footer — always visible at the bottom of the sidebar. Holds the
+          tier panel + the page's primary action (in review mode) or the
+          basket's own Continue CTA (in edit mode). */}
+      <div className="basket__footer">
       <div className="basket__tier">
         {tierInfo ? (
           <>
@@ -176,25 +191,31 @@ export default function BasketContent({ categories }: BasketContentProps) {
               <span className="basket__tier-name">{tierInfo.name}</span>
             </div>
 
-            {/* Frequency toggle — its own row, only for subscription tiers */}
+            {/* Frequency toggle — interactive in edit mode, plain label in review */}
             {tierInfo.hasFrequencyToggle && (
               <div className="basket__tier-freq-row">
-                <div className="basket__freq-toggle">
-                  <button
-                    className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
-                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
-                    type="button"
-                  >
-                    Annual
-                  </button>
-                  <button
-                    className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
-                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
-                    type="button"
-                  >
-                    Monthly
-                  </button>
-                </div>
+                {isReview ? (
+                  <span className="basket__freq-label section-label">
+                    {paymentFrequency === 'monthly' ? 'Monthly' : 'Annual'}
+                  </span>
+                ) : (
+                  <div className="basket__freq-toggle">
+                    <button
+                      className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
+                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
+                      type="button"
+                    >
+                      Annual
+                    </button>
+                    <button
+                      className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
+                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
+                      type="button"
+                    >
+                      Monthly
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -214,39 +235,10 @@ export default function BasketContent({ categories }: BasketContentProps) {
         )}
       </div>
 
-      <div className="basket__cta">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={selectedRoles.length > 0 ? handleContinue : undefined}
-          disabled={selectedRoles.length === 0}
-        >
-          {recommendedTier === 'bespoke'
-            ? 'Discuss your requirements →'
-            : selectedRoles.length > 0
-              ? `Continue to checkout (${selectedRoles.length})`
-              : 'Continue to checkout'}
-        </Button>
+      {/* The Continue CTA has moved out of the sidebar and into the
+          sticky PlanBar so the same controls drive the user from /get-started
+          through to /payment. Sidebar is now read-only summary. */}
       </div>
-
-      {nudgeVisible && recommendedTier && (() => {
-        const content = getNudgeContent(recommendedTier, selectedRoles.length);
-        if (!content) return null;
-        return (
-          <UpsellNudge
-            content={content}
-            onAddMore={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-            }}
-            onContinue={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-              router.push('/get-started/details');
-            }}
-          />
-        );
-      })()}
     </>
   );
 }

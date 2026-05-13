@@ -3,15 +3,39 @@
 ============================================================ */
 
 .payment-page {
-  padding: var(--space--section) 0;
   border-bottom: 1px solid var(--color--border-default);
 }
 
 .payment-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 4rem;
+  grid-template-columns: 340px 1fr;
+  grid-template-areas: "sidebar form";
   align-items: start;
+}
+
+.payment-layout > .payment-form {
+  grid-area: form;
+  padding: 2.5rem 2.5rem;
+  max-width: 56rem;
+}
+.payment-layout > .basket { grid-area: sidebar; }
+
+@media (max-width: 991px) {
+  .payment-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "form"
+      "sidebar";
+    gap: 2.5rem;
+  }
+  .payment-layout > .basket {
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
+  }
+  .payment-layout > .basket .basket__sticky {
+    position: static;
+    height: auto;
+  }
 }
 
 /* ── Form ── */
@@ -194,11 +218,7 @@
 /* ── Actions ── */
 
 .payment-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   padding-top: 0.5rem;
-  flex-wrap: wrap;
 }
 
 /* ── What happens next ── */

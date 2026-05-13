@@ -3,15 +3,52 @@
 ============================================================ */
 
 .details-page {
-  padding: var(--space--section) 0;
+  /* No vertical padding — the layout sits flush below the progress
+     bar and the sticky sidebar runs to the viewport edges. Inner
+     padding lives on the form column instead. */
   border-bottom: 1px solid var(--color--border-default);
 }
 
 .details-layout {
   display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 4rem;
+  /* 340px matches the role-picker sidebar width so the sidebar feels
+     identical to step 1. */
+  grid-template-columns: 340px 1fr;
+  grid-template-areas: "sidebar form";
   align-items: start;
+}
+
+/* JSX source order is form-first (tab order / screen-reader stays
+   natural). grid-template-areas positions the sidebar on the left
+   visually on desktop and below the form on mobile. */
+/* Right column matches the role-picker's `.role-picker__browser` exactly:
+   2.5rem padding all sides, max-width 56rem. Keeps the form width
+   consistent with step 1 so the layout feels seamless. */
+.details-layout > .details-form {
+  grid-area: form;
+  padding: 2.5rem 2.5rem;
+  max-width: 56rem;
+}
+.details-layout > .basket { grid-area: sidebar; }
+
+@media (max-width: 991px) {
+  .details-layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "form"
+      "sidebar";
+    gap: 2.5rem;
+  }
+  /* Reset the sidebar's full-height stickiness on mobile — it should
+     just be an inline section below the form, not a fixed panel. */
+  .details-layout > .basket {
+    border-right: none;
+    border-top: 1px solid var(--color--border-default);
+  }
+  .details-layout > .basket .basket__sticky {
+    position: static;
+    height: auto;
+  }
 }
 
 /* ── Form ── */
@@ -386,12 +423,8 @@
 }
 
 .details-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
   padding-top: 1.5rem;
   border-top: 1px solid var(--color--border-subtle);
-  flex-wrap: wrap;
 }
 
 /* ── Toggle switch ── */

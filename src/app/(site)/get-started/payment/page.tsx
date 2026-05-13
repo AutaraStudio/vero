@@ -11,7 +11,12 @@ import type { CheckoutPayload } from '@/lib/checkout-schema';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
-import OrderSummary from '../components/OrderSummary';
+import BasketContent from '../components/BasketContent';
+import {
+  usePublishPlanBarSubmitAction,
+  usePublishPlanBarSubmitDisabled,
+  usePublishPlanBarSubmitLabel,
+} from '../components/planBarSubmit';
 import '../details/details.css';
 import './payment.css';
 
@@ -25,12 +30,22 @@ export default function PaymentPage() {
 
 // ── Stripe Payment Form (inside Elements provider) ──────────
 
+interface CardSubmitState {
+  submit: (() => Promise<void>) | undefined;
+  disabled: boolean;
+  label: string;
+}
+
 function StripePaymentForm({
   onSuccess,
   onError,
+  onStateChange,
 }: {
   onSuccess: () => void;
   onError: (message: string) => void;
+  /** Bubble the form's submit fn + disabled state up so the sidebar
+   *  CTA can drive it. */
+  onStateChange: (s: CardSubmitState) => void;
 }) {
   const stripe = useStripe();
   const elements = useElements();
@@ -59,37 +74,34 @@ function StripePaymentForm({
     }
   };
 
+  /* Publish current state to the parent so the sidebar CTA stays in sync. */
+  useEffect(() => {
+    onStateChange({
+      submit: handleSubmit,
+      disabled: !stripe || !elements || isProcessing || !ready,
+      label: isProcessing ? 'Processing payment...' : 'Complete order →',
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stripe, elements, isProcessing, ready]);
+
   return (
-    <>
-      <div
-        className="stripe-element-wrapper"
-        role="group"
-        aria-label="Payment card details"
-      >
-        <PaymentElement
-          onReady={() => setReady(true)}
-          options={{ layout: 'tabs' }}
-        />
-        {!ready && (
-          <div className="stripe-element-loading">
-            <span className="text-body--sm color--tertiary">Loading payment form...</span>
-          </div>
-        )}
-      </div>
-      <div className="payment-actions">
-        <Button
-          variant="primary"
-          size="md"
-          onClick={handleSubmit}
-          disabled={!stripe || !elements || isProcessing || !ready}
-        >
-          {isProcessing ? 'Processing payment...' : 'Complete order →'}
-        </Button>
-        <Link href="/get-started/contract" className="form-back-link">
-          ← Back
-        </Link>
-      </div>
-    </>
+    <div
+      className="stripe-element-wrapper"
+      role="group"
+      aria-label="Payment card details"
+    >
+      <PaymentElement
+        onReady={() => setReady(true)}
+        options={{ layout: 'tabs' }}
+      />
+      {!ready && (
+        <div className="stripe-element-loading">
+          <span className="text-body--sm color--tertiary">Loading payment form...</span>
+        </div>
+      )}
+      {/* Card submit + back have moved to the sticky PlanBar; the parent
+          publishes our handleSubmit to it via onStateChange + planBarSubmit. */}
+    </div>
   );
 }
 
@@ -109,6 +121,13 @@ function PaymentContent() {
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  /* Lifted up from StripePaymentForm so the sidebar CTA can submit
+     the card payment without owning the Stripe state. */
+  const [cardState, setCardState] = useState<CardSubmitState>({
+    submit: undefined,
+    disabled: true,
+    label: 'Complete order →',
+  });
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentCreated, setIntentCreated] = useState(false);
   const [stripeIds, setStripeIds] = useState<{
@@ -143,6 +162,25 @@ function PaymentContent() {
       router.replace('/get-started/contract');
     }
   }, [selectedRoles.length, contractAccepted, router]);
+
+  /* Publish the active submit handler + label + disabled state to the
+     sticky PlanBar so its Continue button drives the form. The card path
+     gets its values from the lifted cardState (set by StripePaymentForm);
+     the invoice path uses local handleInvoiceCheckout + isLoading. */
+  const isCard = payMethod === 'card';
+  usePublishPlanBarSubmitAction(
+    isCard
+      ? (cardState.submit ?? null)
+      : handleInvoiceCheckout,
+  );
+  usePublishPlanBarSubmitDisabled(
+    isCard ? cardState.disabled : (isLoading || !!invoiceEmailError),
+  );
+  usePublishPlanBarSubmitLabel(
+    isCard
+      ? cardState.label
+      : (isLoading ? 'Submitting...' : 'Complete order →'),
+  );
 
   // ── Build checkout payload ──
 
@@ -289,8 +327,7 @@ function PaymentContent() {
 
   return (
     <section className="payment-page">
-      <div className="container">
-        <div className="payment-layout">
+      <div className="payment-layout">
 
           {/* ── Payment form ── */}
           <div className="payment-form">
@@ -494,6 +531,7 @@ function PaymentContent() {
                     <StripePaymentForm
                       onSuccess={handlePaymentSuccess}
                       onError={(msg) => setError(msg || null)}
+                      onStateChange={setCardState}
                     />
                   </Elements>
                 ) : (
@@ -551,20 +589,8 @@ function PaymentContent() {
                   </p>
                 </div>
 
-                {/* Invoice actions */}
-                <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
-                  <Button
-                    variant="primary"
-                    size="md"
-                    onClick={handleInvoiceCheckout}
-                    disabled={isLoading}
-                  >
-                    {isLoading ? 'Submitting...' : 'Complete order →'}
-                  </Button>
-                  <Link href="/get-started/contract" className="form-back-link">
-                    ← Back
-                  </Link>
-                </div>
+                {/* Invoice submit + back moved to the sticky PlanBar; the
+                    action is published via planBarSubmit below. */}
               </>
             )}
 
@@ -689,9 +715,13 @@ function PaymentContent() {
 
           </div>
 
-          {/* ── Order summary sidebar ── */}
-          <OrderSummary showContact={true} />
-        </div>
+          {/* ── Sidebar — read-only summary. Submit lives inline on
+              this page. ── */}
+          <aside className="basket">
+            <div className="basket__sticky">
+              <BasketContent mode="review" />
+            </div>
+          </aside>
       </div>
     </section>
   );
