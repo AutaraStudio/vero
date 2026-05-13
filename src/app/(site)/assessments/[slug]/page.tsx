@@ -114,7 +114,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     <main id="main-content" tabIndex={-1}>
       <HeroSplit
         theme="brand-purple"
-        eyebrow="Assessment"
+        eyebrow="Assessments"
         headline={heroHeadline}
         intro={heroIntroCopy}
         badges={dimensionBadges}
