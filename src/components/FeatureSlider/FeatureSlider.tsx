@@ -104,7 +104,7 @@ export default function FeatureSlider({
                     /* eslint-disable-next-line @next/next/no-img-element */
                     <img
                       src={item.imageUrl}
-                      alt={item.imageAlt ?? ''}
+                      alt={item.imageAlt ?? item.title}
                       className="slider-card__image slider-card__image--photo"
                       loading="lazy"
                     />
@@ -148,8 +148,8 @@ export default function FeatureSlider({
         </div>
 
         <div data-gsap-slider-controls="" className="gsap-slider__controls flex gap--sm">
-          <button data-gsap-slider-control="prev" className="gsap-slider__control text-body--sm font--medium">Prev</button>
-          <button data-gsap-slider-control="next" className="gsap-slider__control text-body--sm font--medium">Next</button>
+          <button type="button" data-gsap-slider-control="prev" aria-label="Previous slide" className="gsap-slider__control text-body--sm font--medium">Prev</button>
+          <button type="button" data-gsap-slider-control="next" aria-label="Next slide" className="gsap-slider__control text-body--sm font--medium">Next</button>
         </div>
       </div>
 

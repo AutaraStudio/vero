@@ -371,6 +371,24 @@
   display: grid;
   grid-template-columns: minmax(280px, 1.7fr) repeat(var(--tier-count, 4), minmax(180px, 1fr));
   position: relative;
+  /* Reset native <table> defaults so the CSS grid layout takes over cleanly */
+  border-collapse: separate;
+  border-spacing: 0;
+  width: 100%;
+}
+
+/* Visually hidden accessible name for the table — read by screen readers,
+   removed from layout so it doesn't interfere with the grid. */
+.pricing-compare-grid__caption {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 
 /* Vertical dividers between tier columns — applied to every tier cell's left edge.
@@ -425,6 +443,9 @@
 
 .pricing-compare-grid__body { display: contents; }
 .pricing-compare-grid__row  { display: contents; }
+/* Native <thead>/<tfoot> wrap their cells in an unclassed <tr>; collapse those
+   too so the cells become direct grid items via the parent table. */
+.pricing-compare-grid tr   { display: contents; }
 
 .pricing-compare-grid__feature-cell {
   display: flex;

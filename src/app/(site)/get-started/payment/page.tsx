@@ -61,7 +61,11 @@ function StripePaymentForm({
 
   return (
     <>
-      <div className="stripe-element-wrapper">
+      <div
+        className="stripe-element-wrapper"
+        role="group"
+        aria-label="Payment card details"
+      >
         <PaymentElement
           onReady={() => setReady(true)}
           options={{ layout: 'tabs' }}
@@ -95,6 +99,11 @@ function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { state, dispatch } = useBasket();
+
+  /* WCAG 2.4.2 — descriptive page title for this checkout step. */
+  useEffect(() => {
+    document.title = 'Payment — Vero Assess';
+  }, []);
   const { selectedRoles, contractAccepted, contactDetails, recommendedTier, paymentFrequency, autoRenewal } = state;
 
   const [payMethod, setPayMethod] = useState<'card' | 'invoice'>('card');
@@ -288,12 +297,12 @@ function PaymentContent() {
 
             {/* Heading */}
             <div className="payment-form__heading">
-              <h2
+              <h1
                 ref={headingRef as React.RefObject<HTMLHeadingElement>}
                 className="text-h3 color--primary"
               >
                 Payment details
-              </h2>
+              </h1>
               <p className="text-body--sm color--tertiary">
                 Your order is protected by 256-bit encryption
               </p>
@@ -515,6 +524,8 @@ function PaymentContent() {
                   <input
                     id="invoiceEmail"
                     type="email"
+                    autoComplete="email"
+                    inputMode="email"
                     className={`form-field__input${invoiceEmailError ? ' has-error' : ''}`}
                     placeholder={contactDetails.email}
                     value={invoiceEmail}

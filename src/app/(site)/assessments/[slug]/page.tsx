@@ -113,7 +113,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     : [];
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <HeroSplit
         theme="brand-purple"
         eyebrow="Assessment"

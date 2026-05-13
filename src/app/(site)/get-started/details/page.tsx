@@ -81,11 +81,35 @@ function UserEmailInput({
   const [searchQuery, setSearchQuery] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
+  /* WCAG 3.3.1 — previously, invalid emails were silently rejected by the
+     parent. We now surface validation in-place so the user knows why their
+     entry didn't land. */
+  const [addError, setAddError] = useState<string | null>(null);
+
+  const tryAdd = () => {
+    const trimmed = inputValue.trim().toLowerCase();
+    if (!trimmed) return;
+    if (!EMAIL_RE.test(trimmed)) {
+      setAddError('Enter a valid email address');
+      return;
+    }
+    if (emails.includes(trimmed)) {
+      setAddError('That email is already on the list');
+      return;
+    }
+    setAddError(null);
+    onAdd(inputValue);
+  };
+
+  const handleInputChange = (v: string) => {
+    if (addError) setAddError(null);
+    onInputChange(v);
+  };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       e.preventDefault();
-      onAdd(inputValue);
+      tryAdd();
     }
   };
 
@@ -162,23 +186,37 @@ function UserEmailInput({
       <div className="user-emails__add-row">
         <input
           type="email"
-          className="form-field__input"
+          autoComplete="email"
+          inputMode="email"
+          className={`form-field__input${addError ? ' has-error' : ''}`}
           value={inputValue}
-          onChange={(e) => onInputChange(e.target.value)}
+          onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder={atLimit ? 'User limit reached' : 'jane@company.com'}
           aria-label="Add email address"
+          aria-invalid={!!addError}
+          aria-describedby={addError ? 'user-email-add-error' : undefined}
           disabled={atLimit}
         />
         <button
           type="button"
           className="user-emails__add-btn"
-          onClick={() => onAdd(inputValue)}
+          onClick={tryAdd}
           disabled={!inputValue.trim() || atLimit}
         >
           Add
         </button>
       </div>
+
+      {addError && (
+        <span
+          id="user-email-add-error"
+          className="form-field__error"
+          role="alert"
+        >
+          {addError}
+        </span>
+      )}
 
       <span className="text-body--xs color--tertiary">
         {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
@@ -307,6 +345,8 @@ function FormField({
   onBlur,
   error,
   readOnly = false,
+  autoComplete,
+  inputMode,
 }: {
   id: string;
   label: string;
@@ -317,6 +357,9 @@ function FormField({
   onBlur?: () => void;
   error?: string;
   readOnly?: boolean;
+  /** WCAG 1.3.5 — supply the appropriate autofill token for personal-data fields */
+  autoComplete?: string;
+  inputMode?: 'text' | 'email' | 'tel' | 'numeric' | 'decimal' | 'search' | 'url' | 'none';
 }) {
   const errorId = `${id}-error`;
   return (
@@ -333,6 +376,8 @@ function FormField({
         onBlur={onBlur}
         placeholder={placeholder}
         readOnly={readOnly}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
         aria-invalid={!!error}
         aria-describedby={error ? errorId : undefined}
       />
@@ -349,6 +394,14 @@ export default function DetailsPage() {
   const { selectedRoles, contactDetails, recommendedTier } = state;
   const isStarter = recommendedTier === 'starter';
   const userLimit = recommendedTier ? TIER_USER_LIMITS[recommendedTier as TierKey] : 5;
+
+  /* WCAG 2.4.2 — set a unique, descriptive page title for this checkout step.
+     Client components can't export server-side metadata, so we set the title
+     imperatively. The browser tab + screen-reader page announcement both use
+     this value. */
+  useEffect(() => {
+    document.title = 'Your details — Vero Assess';
+  }, []);
 
   // Guard
   useEffect(() => {
@@ -684,12 +737,12 @@ export default function DetailsPage() {
 
             {/* Heading */}
             <div className="details-form__heading">
-              <h2
+              <h1
                 ref={headingRef as React.RefObject<HTMLHeadingElement>}
                 className="text-h3 color--primary"
               >
                 Your details
-              </h2>
+              </h1>
               <p className="text-body--sm color--tertiary">
                 Tell us about your organisation and the person responsible for this account.
               </p>
@@ -701,6 +754,7 @@ export default function DetailsPage() {
                 <FormField
                   id="firstName"
                   label="First name"
+                  autoComplete="given-name"
                   value={form.firstName}
                   onChange={(v) => setField('firstName', v)}
                   onBlur={() => handleBlur('firstName')}
@@ -710,6 +764,7 @@ export default function DetailsPage() {
                 <FormField
                   id="lastName"
                   label="Last name"
+                  autoComplete="family-name"
                   value={form.lastName}
                   onChange={(v) => setField('lastName', v)}
                   onBlur={() => handleBlur('lastName')}
@@ -722,6 +777,8 @@ export default function DetailsPage() {
                   id="email"
                   label="Email"
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   value={form.email}
                   onChange={(v) => setField('email', v)}
                   onBlur={() => handleBlur('email')}
@@ -731,6 +788,7 @@ export default function DetailsPage() {
                 <FormField
                   id="company"
                   label="Company name"
+                  autoComplete="organization"
                   value={form.company}
                   onChange={(v) => setField('company', v)}
                   onBlur={() => handleBlur('company')}
@@ -742,6 +800,7 @@ export default function DetailsPage() {
                 <FormField
                   id="jobTitle"
                   label="Job title"
+                  autoComplete="organization-title"
                   value={form.jobTitle}
                   onChange={(v) => setField('jobTitle', v)}
                   onBlur={() => handleBlur('jobTitle')}
@@ -752,6 +811,8 @@ export default function DetailsPage() {
                   id="phone"
                   label="Phone"
                   type="tel"
+                  autoComplete="tel"
+                  inputMode="tel"
                   value={form.phone}
                   onChange={(v) => setField('phone', v)}
                   onBlur={() => handleBlur('phone')}

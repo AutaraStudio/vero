@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import type { ThemeVariant } from '@/lib/theme';
-import { initMarquee } from './marqueeAnimation';
+import { initMarquee, type MarqueeControls } from './marqueeAnimation';
 import './LogoMarquee.css';
 
 export interface PartnerLogo {
@@ -54,19 +54,53 @@ export default function LogoMarquee({
 
   /* Marquee init runs on the same node as the trackRef. We compose by reading
      trackRef.current after mount instead of trying to merge two refs. */
-  const marqueeInitRef = useRef<(() => void) | null>(null);
+  const marqueeRef = useRef<MarqueeControls | null>(null);
+  /* WCAG 2.2.2 — auto-playing motion over 5s must be pauseable. The marquee
+     loops forever, so we expose a user-controlled pause/play button and
+     additionally pause on hover/focus-within for a smoother UX. */
+  const [paused, setPaused] = useState(false);
+  /* Tracks pauses caused by hover/focus so they don't override a user's
+     explicit click on the toggle. */
+  const autoPausedRef = useRef(false);
 
   useEffect(() => {
     const el = trackRef.current as HTMLElement | null;
     if (!el) return;
-    const cleanup = initMarquee(el, { speed, direction, scrollSpeed: 6 });
-    marqueeInitRef.current = cleanup;
+    const controls = initMarquee(el, { speed, direction, scrollSpeed: 6 });
+    marqueeRef.current = controls;
     return () => {
-      marqueeInitRef.current?.();
-      marqueeInitRef.current = null;
+      controls.destroy();
+      marqueeRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [speed, direction, logos.length]);
+
+  const togglePaused = useCallback(() => {
+    const controls = marqueeRef.current;
+    if (!controls) return;
+    /* User clicking the toggle is the source of truth — clear any auto-pause
+       state so a subsequent mouseleave / blur doesn't override the choice. */
+    autoPausedRef.current = false;
+    if (paused) {
+      controls.play();
+      setPaused(false);
+    } else {
+      controls.pause();
+      setPaused(true);
+    }
+  }, [paused]);
+
+  const handleAutoPause = useCallback(() => {
+    if (paused) return; // user already paused — leave it
+    marqueeRef.current?.pause();
+    autoPausedRef.current = true;
+  }, [paused]);
+
+  const handleAutoResume = useCallback(() => {
+    if (!autoPausedRef.current) return;
+    marqueeRef.current?.play();
+    autoPausedRef.current = false;
+  }, []);
 
   /* When showFallback is true, keep entries even if they don't have a logo file
      — we'll render the company name as text. Otherwise filter them out. */
@@ -98,6 +132,27 @@ export default function LogoMarquee({
 
   const isInline = variant === 'inline';
 
+  const pauseButton = (
+    <button
+      type="button"
+      onClick={togglePaused}
+      aria-pressed={paused}
+      aria-label={paused ? 'Play logo animation' : 'Pause logo animation'}
+      className="logo-marquee__pause"
+    >
+      {paused ? (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <path d="M3 1.5v11l9-5.5-9-5.5Z" fill="currentColor" />
+        </svg>
+      ) : (
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+          <rect x="3" y="2" width="3" height="10" fill="currentColor" />
+          <rect x="8" y="2" width="3" height="10" fill="currentColor" />
+        </svg>
+      )}
+    </button>
+  );
+
   /* Inline variant — no section wrapper, fits inside the parent's container.
      Used in places like the hero, where the marquee should respect the
      surrounding layout's max-width instead of going full-bleed. */
@@ -121,6 +176,10 @@ export default function LogoMarquee({
           data-marquee-status="normal"
           className="logo-marquee__track"
           aria-label="Trusted partners"
+          onMouseEnter={handleAutoPause}
+          onMouseLeave={handleAutoResume}
+          onFocus={handleAutoPause}
+          onBlur={handleAutoResume}
         >
           <div data-marquee-scroll="" className="logo-marquee__scroll">
             <div data-marquee-collection="" className="logo-marquee__collection">
@@ -128,6 +187,7 @@ export default function LogoMarquee({
             </div>
           </div>
         </div>
+        <div className="logo-marquee__controls">{pauseButton}</div>
       </div>
     );
   }
@@ -154,12 +214,19 @@ export default function LogoMarquee({
         data-marquee-status="normal"
         className="logo-marquee__track"
         aria-label="Trusted partners"
+        onMouseEnter={handleAutoPause}
+        onMouseLeave={handleAutoResume}
+        onFocus={handleAutoPause}
+        onBlur={handleAutoResume}
       >
         <div data-marquee-scroll="" className="logo-marquee__scroll">
           <div data-marquee-collection="" className="logo-marquee__collection">
             {renderable.map(renderItem)}
           </div>
         </div>
+      </div>
+      <div className="container">
+        <div className="logo-marquee__controls">{pauseButton}</div>
       </div>
     </section>
   );

@@ -75,7 +75,7 @@ export default function ComparisonTable({
   const rows = isCollapsed ? allRows.slice(0, collapsedRowCount) : allRows;
   const hiddenCount = allRows.length - rows.length;
 
-  const gridRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLTableElement>(null);
   const expandBtnRef = useRef<HTMLButtonElement>(null);
 
   /* ── Scroll-reveal: stagger feature rows in row-by-row ── */
@@ -165,44 +165,46 @@ export default function ComparisonTable({
         </div>
 
         <div ref={tableRef as React.RefObject<HTMLDivElement>} className="pricing-compare__grid-wrap">
-          <div
-            ref={gridRef}
+          <table
+            ref={gridRef as React.RefObject<HTMLTableElement>}
             className="pricing-compare-grid"
             style={{ ['--tier-count' as string]: tiers.length }}
-            role="table"
-            aria-label="Plan feature comparison"
           >
+            <caption className="pricing-compare-grid__caption">
+              Plan feature comparison
+            </caption>
 
             {/* ── Header (sticky) ───────────────────────────── */}
-            <div className="pricing-compare-grid__header" role="rowgroup">
-              {/* Spacer cell */}
-              <div
-                className="pricing-compare-grid__feature-head"
-                role="columnheader"
-                aria-hidden="true"
-                style={{ gridColumn: 1, gridRow: 1 }}
-              />
+            <thead className="pricing-compare-grid__header">
+              <tr>
+                {/* Spacer cell — top-left corner has no header semantic */}
+                <td
+                  className="pricing-compare-grid__feature-head"
+                  aria-hidden="true"
+                  style={{ gridColumn: 1, gridRow: 1 }}
+                />
 
-              {tiers.map((tier, ti) => (
-                <div
-                  key={`name-${tier._id}`}
-                  role="columnheader"
-                  data-theme="brand-purple-deep"
-                  className={`pricing-compare-grid__tier-head pricing-compare-grid__tier-head--name${tier.isFeatured ? ' is-featured' : ''}`}
-                  style={{ gridColumn: ti + 2, gridRow: 1 }}
-                >
-                  <span className="text-label--lg color--primary">{tier.name}</span>
-                </div>
-              ))}
-            </div>
+                {tiers.map((tier, ti) => (
+                  <th
+                    key={`name-${tier._id}`}
+                    scope="col"
+                    data-theme="brand-purple-deep"
+                    className={`pricing-compare-grid__tier-head pricing-compare-grid__tier-head--name${tier.isFeatured ? ' is-featured' : ''}`}
+                    style={{ gridColumn: ti + 2, gridRow: 1 }}
+                  >
+                    <span className="text-label--lg color--primary">{tier.name}</span>
+                  </th>
+                ))}
+              </tr>
+            </thead>
 
             {/* ── Feature rows ──────────────────────────────── */}
-            <div className="pricing-compare-grid__body" role="rowgroup">
+            <tbody className="pricing-compare-grid__body">
               {rows.map((row, ri) => (
-                <div key={row.label} className="pricing-compare-grid__row" role="row">
-                  <div
+                <tr key={row.label} className="pricing-compare-grid__row">
+                  <th
+                    scope="row"
                     className={`pricing-compare-grid__feature-cell${ri === 0 ? ' pricing-compare-grid__feature-cell--first' : ''}`}
-                    role="rowheader"
                     style={{ gridColumn: 1, gridRow: ri + 2 }}
                   >
                     <span className="text-body--md color--primary">{row.label}</span>
@@ -213,12 +215,11 @@ export default function ComparisonTable({
                         </Tooltip>
                       </span>
                     )}
-                  </div>
+                  </th>
 
                   {row.cells.map((cell, ci) => (
-                    <div
+                    <td
                       key={ci}
-                      role="cell"
                       className={`pricing-compare-grid__cell${tiers[ci].isFeatured ? ' is-featured' : ''}`}
                       data-tier-mobile-label={tiers[ci].name}
                       style={{ gridColumn: ci + 2, gridRow: ri + 2 }}
@@ -238,41 +239,41 @@ export default function ComparisonTable({
                           </svg>
                         </span>
                       )}
-                    </div>
+                    </td>
                   ))}
-                </div>
+                </tr>
               ))}
-            </div>
+            </tbody>
 
             {/* ── Footer (mirrors CTAs) — hidden when collapsed ──── */}
             {!isCollapsed && (
-              <div className="pricing-compare-grid__footer" role="rowgroup">
-                <div
-                  className="pricing-compare-grid__feature-cell"
-                  role="rowheader"
-                  aria-hidden="true"
-                  style={{ gridColumn: 1, gridRow: rows.length + 2 }}
-                />
-                {tiers.map((tier, ti) => (
-                  <div
-                    key={tier._id}
-                    role="cell"
-                    className={`pricing-compare-grid__footer-cell${tier.isFeatured ? ' is-featured' : ''}`}
-                    style={{ gridColumn: ti + 2, gridRow: rows.length + 2 }}
-                  >
-                    <Button
-                      variant={tier.isFeatured ? 'cta' : 'secondary'}
-                      size="sm"
-                      href={tierHref(tier)}
+              <tfoot className="pricing-compare-grid__footer">
+                <tr>
+                  <td
+                    className="pricing-compare-grid__feature-cell"
+                    aria-hidden="true"
+                    style={{ gridColumn: 1, gridRow: rows.length + 2 }}
+                  />
+                  {tiers.map((tier, ti) => (
+                    <td
+                      key={tier._id}
+                      className={`pricing-compare-grid__footer-cell${tier.isFeatured ? ' is-featured' : ''}`}
+                      style={{ gridColumn: ti + 2, gridRow: rows.length + 2 }}
                     >
-                      Get started
-                    </Button>
-                  </div>
-                ))}
-              </div>
+                      <Button
+                        variant={tier.isFeatured ? 'cta' : 'secondary'}
+                        size="sm"
+                        href={tierHref(tier)}
+                      >
+                        Get started
+                      </Button>
+                    </td>
+                  ))}
+                </tr>
+              </tfoot>
             )}
 
-          </div>
+          </table>
         </div>
 
         {/* ── Expand / collapse toggle (only when collapsible) ── */}

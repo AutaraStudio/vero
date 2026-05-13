@@ -1,6 +1,11 @@
+import type { Metadata } from 'next';
 import { client } from '@/sanity/lib/client';
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import ContractClient from './ContractClient';
+
+export const metadata: Metadata = {
+  title: 'Review terms — Get started',
+};
 
 /* Hardcoded fallbacks — used when siteSettings has no override. Lets the
    page keep working even if Sanity is mid-edit or the fields are blank. */

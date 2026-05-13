@@ -116,7 +116,7 @@ export default function DimensionsSection({
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={imageUrl}
-              alt={imageAlt ?? ''}
+              alt={imageAlt ?? heading}
               className="science-dimensions__visual-img"
               loading="lazy"
             />

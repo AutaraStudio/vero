@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { useBasket } from '@/store/basketStore';
@@ -49,6 +49,13 @@ export default function NavBasket({ categories = [] }: Props) {
   const [confirmClear, setConfirmClear] = useState(false);
   const [nudgeVisible, setNudgeVisible] = useState(false);
 
+  /* WCAG 2.4.3 / dialog best practice — capture the trigger so we can return
+     focus to it on close, and forward initial focus to the close button on
+     open so keyboard users land inside the drawer rather than back at the
+     top of the document. */
+  const triggerRef = useRef<HTMLElement | null>(null);
+  const closeBtnRef = useRef<HTMLButtonElement | null>(null);
+
   /* Reset the confirm-clear state whenever the drawer closes */
   useEffect(() => {
     if (!open) setConfirmClear(false);
@@ -73,12 +80,19 @@ export default function NavBasket({ categories = [] }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
-  /* Drop the .is-open class first → wait for the CSS slide-out → then unmount */
+  /* Move focus to the close button once the drawer is on screen */
+  useEffect(() => {
+    if (animateIn) closeBtnRef.current?.focus();
+  }, [animateIn]);
+
+  /* Drop the .is-open class first → wait for the CSS slide-out → then unmount,
+     then return focus to whatever triggered the drawer. */
   const close = useCallback(() => {
     setAnimateIn(false);
     setTimeout(() => {
       document.body.style.overflow = '';
       setOpen(false);
+      triggerRef.current?.focus();
     }, 320); // slightly longer than the 0.3s slide-out transition
   }, []);
 
@@ -154,7 +168,10 @@ export default function NavBasket({ categories = [] }: Props) {
       <Button
         variant="secondary"
         size="sm"
-        onClick={() => setOpen(true)}
+        onClick={(e: React.MouseEvent<HTMLButtonElement>) => {
+          triggerRef.current = e.currentTarget;
+          setOpen(true);
+        }}
         className="nav-basket-btn"
         aria-label={`Open basket — ${selectedRoles.length} ${selectedRoles.length === 1 ? 'role' : 'roles'} selected`}
       >
@@ -185,6 +202,7 @@ export default function NavBasket({ categories = [] }: Props) {
             <header className="nav-basket-drawer__header">
               <h2 className="text-h5 color--primary">Your basket</h2>
               <button
+                ref={closeBtnRef}
                 type="button"
                 className="nav-basket-drawer__close"
                 onClick={close}

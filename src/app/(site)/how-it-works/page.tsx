@@ -120,7 +120,7 @@ export default async function HowItWorksPage() {
   });
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       {/* ── 1. Hero (split — viewport-tall image, bottom-left text) ── */}
       <HeroSplit
         theme="brand-purple"

@@ -61,7 +61,7 @@ export default function LegalDocument({ title, intro, lastUpdated, body, legacyM
   const formattedDate = lastUpdated ? formatDate(lastUpdated) : null;
 
   return (
-    <main className="legal" data-theme="brand-purple">
+    <main id="main-content" tabIndex={-1} className="legal" data-theme="brand-purple">
       {/* Hero band */}
       <header className="legal__hero" data-theme="brand-purple-deep">
         <div className="legal__hero-inner">
