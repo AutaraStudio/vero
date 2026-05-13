@@ -179,7 +179,7 @@ a.hero-split__pill:hover {
 
 .hero-split--stacked .hero-split__media {
   width: 100%;
-  max-width: 64rem;
+  max-width: 48rem;
 }
 
 /* ── Image aspect — 4:3 opt-out ────────────────────────────
