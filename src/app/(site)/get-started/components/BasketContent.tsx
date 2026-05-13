@@ -1,12 +1,9 @@
 'use client';
 
 import { useState, useRef } from 'react';
-import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
 import { gsap } from '@/lib/gsap';
 import { useBasket } from '@/store/basketStore';
-import { TIER_DATA, getTierPrice, getNudgeContent } from '@/lib/tierRecommendation';
-import UpsellNudge from './UpsellNudge';
+import { TIER_DATA, getTierPrice } from '@/lib/tierRecommendation';
 
 interface CategorySummary {
   _id: string;
@@ -14,44 +11,30 @@ interface CategorySummary {
   slug: string;
 }
 
-/** Per-page primary action driven by the sidebar's footer CTA. Each
- *  review-mode page (details, contract, payment) passes its own. */
-export interface BasketPrimaryAction {
-  label: string;
-  /** Set on form-driven pages — button uses `form` + `type="submit"` so
-   *  it triggers the form's onSubmit. */
-  formId?: string;
-  /** Imperative handler — used when there's no form to bind to. */
-  onClick?: () => void;
-  disabled?: boolean;
-}
-
 interface BasketContentProps {
   /** Sanity-fetched categories for ordering. In `review` mode the component
    *  derives this list from the basket itself if not supplied. */
   categories?: CategorySummary[];
   /**
-   * - `edit`    (role picker) — remove buttons, frequency toggle, internal Continue CTA
-   * - `review`  (checkout steps) — read-only chips, frequency shown as plain
-   *             label. CTA driven by the `primaryAction` prop (each page
-   *             supplies its own).
+   * - `edit`    (role picker) — remove buttons, frequency toggle visible
+   * - `review`  (checkout steps) — read-only chips, frequency shown as
+   *             plain label
+   *
+   * Both modes are now read-only at the bottom; the navigation CTA lives
+   * in the sticky PlanBar at the bottom of the viewport instead.
    */
   mode?: 'edit' | 'review';
-  /** Review-mode only: configures the always-visible footer CTA. */
-  primaryAction?: BasketPrimaryAction;
 }
 
 const COLLAPSE_THRESHOLD = 3;
 const VISIBLE_COUNT = 2;
 
-export default function BasketContent({ categories, mode = 'edit', primaryAction }: BasketContentProps) {
-  const router = useRouter();
+export default function BasketContent({ categories, mode = 'edit' }: BasketContentProps) {
   const { state, dispatch } = useBasket();
-  const { selectedRoles, recommendedTier, paymentFrequency, nudgeShown } = state;
+  const { selectedRoles, recommendedTier, paymentFrequency } = state;
   const tierInfo = recommendedTier ? TIER_DATA[recommendedTier] : null;
 
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
-  const [nudgeVisible, setNudgeVisible] = useState(false);
   const hasAnimatedRef = useRef<Set<string>>(new Set());
 
   /* In edit mode, we use the Sanity-supplied category order. In review mode
@@ -98,21 +81,6 @@ export default function BasketContent({ categories, mode = 'edit', primaryAction
       next.delete(slug);
       return next;
     });
-  };
-
-  const handleContinue = () => {
-    if (recommendedTier === 'bespoke') {
-      router.push('/get-started/bespoke');
-      return;
-    }
-    if (!nudgeShown && recommendedTier) {
-      const nudgeContent = getNudgeContent(recommendedTier, selectedRoles.length);
-      if (nudgeContent) {
-        setNudgeVisible(true);
-        return;
-      }
-    }
-    router.push('/get-started/details');
   };
 
   const { price, priceNote } = tierInfo
@@ -267,61 +235,10 @@ export default function BasketContent({ categories, mode = 'edit', primaryAction
         )}
       </div>
 
-      {/* Edit mode owns the Continue CTA (router-driven). Review mode
-          delegates to the per-page primaryAction (form-submit or
-          imperative handler). */}
-      {!isReview ? (
-        <div className="basket__cta">
-          <Button
-            variant="primary"
-            size="md"
-            onClick={selectedRoles.length > 0 ? handleContinue : undefined}
-            disabled={selectedRoles.length === 0}
-          >
-            {recommendedTier === 'bespoke'
-              ? 'Discuss your requirements →'
-              : selectedRoles.length > 0
-                ? `Continue to checkout (${selectedRoles.length})`
-                : 'Continue to checkout'}
-          </Button>
-        </div>
-      ) : primaryAction ? (
-        /* Review mode: render the per-page primary action. Either a
-           form-submit button (form= triggers the named form's onSubmit)
-           or an imperative click handler. */
-        <div className="basket__cta">
-          <Button
-            variant="primary"
-            size="md"
-            type={primaryAction.formId ? 'submit' : 'button'}
-            form={primaryAction.formId}
-            onClick={primaryAction.onClick}
-            disabled={primaryAction.disabled}
-          >
-            {primaryAction.label}
-          </Button>
-        </div>
-      ) : null}
+      {/* The Continue CTA has moved out of the sidebar and into the
+          sticky PlanBar so the same controls drive the user from /get-started
+          through to /payment. Sidebar is now read-only summary. */}
       </div>
-
-      {!isReview && nudgeVisible && recommendedTier && (() => {
-        const content = getNudgeContent(recommendedTier, selectedRoles.length);
-        if (!content) return null;
-        return (
-          <UpsellNudge
-            content={content}
-            onAddMore={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-            }}
-            onContinue={() => {
-              dispatch({ type: 'SET_NUDGE_SHOWN' });
-              setNudgeVisible(false);
-              router.push('/get-started/details');
-            }}
-          />
-        );
-      })()}
     </>
   );
 }

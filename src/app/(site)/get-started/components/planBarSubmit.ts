@@ -15,6 +15,8 @@ import { useEffect, useSyncExternalStore } from 'react';
  */
 
 let disabled = false;
+let pendingLabel: string | null = null;
+let actionHandler: (() => void) | null = null;
 const listeners = new Set<() => void>();
 
 function emit() {
@@ -28,19 +30,44 @@ function subscribe(listener: () => void): () => void {
   };
 }
 
-function getSnapshot() {
+function getDisabledSnapshot() {
   return disabled;
 }
+function getActionSnapshot() {
+  return actionHandler;
+}
+function getLabelSnapshot() {
+  return pendingLabel;
+}
 
-/* SSR: render the bar as enabled. The page hasn't mounted yet so the
-   signal would otherwise resolve to whatever the previous client state
-   was, which on first paint is meaningless. */
-function getServerSnapshot() {
+/* SSR fallbacks — match initial-client state. */
+function getDisabledServerSnapshot() {
   return false;
+}
+function getActionServerSnapshot(): (() => void) | null {
+  return null;
+}
+function getLabelServerSnapshot(): string | null {
+  return null;
 }
 
 export function usePlanBarSubmitDisabled(): boolean {
-  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  return useSyncExternalStore(subscribe, getDisabledSnapshot, getDisabledServerSnapshot);
+}
+
+/**
+ * PlanBar reads this — when a page publishes an action, the bar's CTA
+ * runs it instead of doing its default navigation. Lets pages like
+ * /payment intercept the Continue click to submit a Stripe form or
+ * trigger an invoice handler.
+ */
+export function usePlanBarSubmitAction(): (() => void) | null {
+  return useSyncExternalStore(subscribe, getActionSnapshot, getActionServerSnapshot);
+}
+
+/** PlanBar reads this to override its CTA label when the page wants. */
+export function usePlanBarSubmitLabel(): string | null {
+  return useSyncExternalStore(subscribe, getLabelSnapshot, getLabelServerSnapshot);
 }
 
 /**
@@ -56,4 +83,32 @@ export function usePublishPlanBarSubmitDisabled(value: boolean): void {
       emit();
     };
   }, [value]);
+}
+
+/**
+ * Page hook — publish a click handler that PlanBar should run when its
+ * CTA is pressed. Pair with `usePublishPlanBarSubmitLabel` to set the
+ * CTA's label (e.g. "Processing…" while submitting).
+ */
+export function usePublishPlanBarSubmitAction(handler: (() => void) | null): void {
+  useEffect(() => {
+    actionHandler = handler;
+    emit();
+    return () => {
+      actionHandler = null;
+      emit();
+    };
+  }, [handler]);
+}
+
+/** Page hook — override PlanBar's CTA label for this page. */
+export function usePublishPlanBarSubmitLabel(label: string | null): void {
+  useEffect(() => {
+    pendingLabel = label;
+    emit();
+    return () => {
+      pendingLabel = null;
+      emit();
+    };
+  }, [label]);
 }

@@ -1361,24 +1361,14 @@ export default function DetailsPage() {
             </div>
             )}
 
-            {/* Primary submit + prominent back button — always visible
-                at the bottom of the form. The sidebar in review mode is
-                read-only on this page; submission lives inline. */}
-            <div className="details-actions">
-              {submitAttempted && blockerMessage && (
-                <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
-                  {blockerMessage}
-                </p>
-              )}
-              <div className="checkout-actions-row">
-                <Button variant="secondary" size="md" href="/get-started">
-                  ← Back to roles
-                </Button>
-                <Button variant="primary" size="md" type="submit" disabled={!requiredFilled}>
-                  Continue to contract →
-                </Button>
+            {/* Inline back + continue have moved to the sticky PlanBar.
+                We still surface the validation blocker inline so the user
+                knows why the sticky submit is disabled. */}
+            {submitAttempted && blockerMessage && (
+              <div className="details-actions">
+                <p className="form-field__error" role="alert">{blockerMessage}</p>
               </div>
-            </div>
+            )}
 
           </form>
 

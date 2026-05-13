@@ -12,6 +12,11 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import BasketContent from '../components/BasketContent';
+import {
+  usePublishPlanBarSubmitAction,
+  usePublishPlanBarSubmitDisabled,
+  usePublishPlanBarSubmitLabel,
+} from '../components/planBarSubmit';
 import '../details/details.css';
 import './payment.css';
 
@@ -94,22 +99,8 @@ function StripePaymentForm({
           <span className="text-body--sm color--tertiary">Loading payment form...</span>
         </div>
       )}
-      {/* Card submit + prominent back button — always visible. */}
-      <div className="payment-actions">
-        <div className="checkout-actions-row">
-          <Button variant="secondary" size="md" href="/get-started/contract">
-            ← Back to terms
-          </Button>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={handleSubmit}
-            disabled={!stripe || !elements || isProcessing || !ready}
-          >
-            {isProcessing ? 'Processing payment...' : 'Complete order →'}
-          </Button>
-        </div>
-      </div>
+      {/* Card submit + back have moved to the sticky PlanBar; the parent
+          publishes our handleSubmit to it via onStateChange + planBarSubmit. */}
     </div>
   );
 }
@@ -171,6 +162,25 @@ function PaymentContent() {
       router.replace('/get-started/contract');
     }
   }, [selectedRoles.length, contractAccepted, router]);
+
+  /* Publish the active submit handler + label + disabled state to the
+     sticky PlanBar so its Continue button drives the form. The card path
+     gets its values from the lifted cardState (set by StripePaymentForm);
+     the invoice path uses local handleInvoiceCheckout + isLoading. */
+  const isCard = payMethod === 'card';
+  usePublishPlanBarSubmitAction(
+    isCard
+      ? (cardState.submit ?? null)
+      : handleInvoiceCheckout,
+  );
+  usePublishPlanBarSubmitDisabled(
+    isCard ? cardState.disabled : (isLoading || !!invoiceEmailError),
+  );
+  usePublishPlanBarSubmitLabel(
+    isCard
+      ? cardState.label
+      : (isLoading ? 'Submitting...' : 'Complete order →'),
+  );
 
   // ── Build checkout payload ──
 
@@ -579,22 +589,8 @@ function PaymentContent() {
                   </p>
                 </div>
 
-                {/* Invoice submit + prominent back button — always visible. */}
-                <div className="payment-actions">
-                  <div className="checkout-actions-row">
-                    <Button variant="secondary" size="md" href="/get-started/contract">
-                      ← Back to terms
-                    </Button>
-                    <Button
-                      variant="primary"
-                      size="md"
-                      onClick={handleInvoiceCheckout}
-                      disabled={isLoading || !!invoiceEmailError}
-                    >
-                      {isLoading ? 'Submitting...' : 'Complete order →'}
-                    </Button>
-                  </div>
-                </div>
+                {/* Invoice submit + back moved to the sticky PlanBar; the
+                    action is published via planBarSubmit below. */}
               </>
             )}
 

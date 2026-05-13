@@ -8,6 +8,7 @@ import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import Button from '@/components/ui/Button';
 import BasketContent from '../components/BasketContent';
+import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
 import '../details/details.css';
 import './contract.css';
 
@@ -38,6 +39,10 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
 
   const [hasOpenedContract, setHasOpenedContract] = useState(false);
   const [accepted, setAccepted] = useState(false);
+
+  /* Publish disabled-state to PlanBar — its "Continue to payment →"
+     button stays disabled until the user has opened + accepted the T&Cs. */
+  usePublishPlanBarSubmitDisabled(!accepted);
 
   const handleOpenContract = () => {
     window.open(contractPdfUrl, '_blank', 'noopener,noreferrer');
@@ -124,17 +129,10 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
           </p>
         </div>
 
-        {/* Inline submit + prominent back button — always visible. */}
-        <div className="contract-actions">
-          <div className="checkout-actions-row">
-            <Button variant="secondary" size="md" href="/get-started/details">
-              ← Back to details
-            </Button>
-            <Button variant="primary" size="md" disabled={!accepted} onClick={handleAccept}>
-              Continue to payment →
-            </Button>
-          </div>
-        </div>
+        {/* Back + Continue moved to the sticky PlanBar. The PlanBar
+            advances the user when they click Continue; we still own the
+            ACCEPT_CONTRACT dispatch via a hidden listener so the bar's
+            generic navigation kicks off the same accept flow. */}
 
         </div>
 

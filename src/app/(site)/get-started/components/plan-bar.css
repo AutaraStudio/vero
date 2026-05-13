@@ -63,6 +63,13 @@
   flex-shrink: 0;
 }
 
+.plan-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
 /* ── Responsive ── */
 
 /* Hidden on mobile via the parent class — used on /get-started where the
