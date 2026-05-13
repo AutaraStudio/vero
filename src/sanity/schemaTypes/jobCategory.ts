@@ -184,6 +184,15 @@ export const jobCategory = defineType({
       description: 'Body text for the first/lead card.',
     }),
     defineField({
+      name: 'featureCardsLeadImage',
+      title: 'Lead card — image',
+      type: 'image',
+      options: { hotspot: true },
+      group: 'featureCards',
+      description: 'Image shown at the top of the first/lead card. Same 16:10 ratio as the other cards.',
+      fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
+    }),
+    defineField({
       name: 'featureCards',
       title: 'Additional carousel cards',
       type: 'array',

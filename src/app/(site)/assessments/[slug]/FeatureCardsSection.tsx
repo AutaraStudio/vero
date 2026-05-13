@@ -19,6 +19,8 @@ interface FeatureCardsSectionProps {
   /** First slider card — the "lead" card with the category-level promise */
   leadHeading?: string;
   leadBody?: string;
+  leadImageUrl?: string;
+  leadImageAlt?: string;
 
   /** Remaining slider cards — the specific value points */
   cards: FeatureCard[];
@@ -39,13 +41,15 @@ export default function FeatureCardsSection({
   sectionIntro,
   leadHeading,
   leadBody,
+  leadImageUrl,
+  leadImageAlt,
   cards,
   theme = 'brand-purple',
 }: FeatureCardsSectionProps) {
   /* Compose the slider items: optional lead card first, then the value cards */
   const items: FeatureSliderItem[] = [
     ...(leadHeading
-      ? [{ title: leadHeading, body: leadBody ?? '' }]
+      ? [{ title: leadHeading, body: leadBody ?? '', imageUrl: leadImageUrl, imageAlt: leadImageAlt }]
       : []),
     ...cards.map((c) => ({
       title: c.heading,

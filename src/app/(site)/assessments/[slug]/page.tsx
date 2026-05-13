@@ -69,6 +69,8 @@ export default async function CategoryPage({ params }: { params: Params }) {
     inActionIntro,
     featureCardsHeading,
     featureCardsSubheading,
+    featureCardsLeadImageUrl,
+    featureCardsLeadImageAlt,
     featureCards,
     stat1Heading,
     stat1Body,
@@ -145,6 +147,8 @@ export default async function CategoryPage({ params }: { params: Params }) {
           sectionIntro={inActionIntro}
           leadHeading={featureCardsHeading}
           leadBody={featureCardsSubheading}
+          leadImageUrl={featureCardsLeadImageUrl}
+          leadImageAlt={featureCardsLeadImageAlt}
           cards={featureCards ?? []}
         />
       )}
