@@ -10,8 +10,7 @@ import { useFadeUp } from '@/hooks/useFadeUp';
 import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
-import OrderSummary from '../components/OrderSummary';
-import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
+import BasketContent from '../components/BasketContent';
 import './details.css';
 
 // ── Helper: normalise hex colour input ───────────────────────
@@ -633,11 +632,6 @@ export default function DetailsPage() {
     allDatesFilled
   );
 
-  /* Mirror requiredFilled into the PlanBar bottom-bar CTA so its disabled
-     state stays in sync with the inline submit button. Without this the
-     bar's button stayed full-purple even when the form was incomplete. */
-  usePublishPlanBarSubmitDisabled(!requiredFilled);
-
   /* Page-level error shown above the submit button when blocked. */
   const blockerMessage = !requiredFilled
     ? !usersFilled
@@ -735,8 +729,7 @@ export default function DetailsPage() {
 
   return (
     <section className="details-page">
-      <div className="container">
-        <div className="details-layout">
+      <div className="details-layout">
 
           {/* ── Form ── */}
           <form id="details-form" className="details-form" onSubmit={handleSubmit} noValidate>
@@ -1368,26 +1361,25 @@ export default function DetailsPage() {
             </div>
             )}
 
-            {/* Actions */}
-            <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
-              {submitAttempted && blockerMessage && (
-                <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
-                  {blockerMessage}
-                </p>
-              )}
-              <Button variant="primary" size="md" type="submit" disabled={!requiredFilled}>
-                Continue to contract →
-              </Button>
-              <Link href="/get-started" className="form-back-link">
-                ← Back to roles
-              </Link>
-            </div>
+            {/* Inline back + continue have moved to the sticky PlanBar.
+                We still surface the validation blocker inline so the user
+                knows why the sticky submit is disabled. */}
+            {submitAttempted && blockerMessage && (
+              <div className="details-actions">
+                <p className="form-field__error" role="alert">{blockerMessage}</p>
+              </div>
+            )}
 
           </form>
 
-          {/* ── Sidebar ── */}
-          <OrderSummary />
-        </div>
+          {/* ── Sidebar — same component as the role picker, read-only.
+              No CTA here on this page — the inline submit + back buttons
+              at the bottom of the form drive navigation. ── */}
+          <aside className="basket">
+            <div className="basket__sticky">
+              <BasketContent mode="review" />
+            </div>
+          </aside>
       </div>
     </section>
   );

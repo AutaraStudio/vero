@@ -36,7 +36,6 @@ export async function generateMetadata(): Promise<Metadata> {
 interface HomePageData {
   // Hero
   heroBadgeLabel?: string;
-  heroBadgeHref?: string;
   heroTitle?: string;
   heroIntro?: string;
   heroCTALabel?: string;
@@ -87,7 +86,7 @@ export default async function Home() {
 
   /* ── Hero media (image vs video) ──────────────────────── */
   const badge = data?.heroBadgeLabel
-    ? { label: data.heroBadgeLabel, href: data.heroBadgeHref ?? '#' }
+    ? { label: data.heroBadgeLabel }
     : undefined;
 
   return (
