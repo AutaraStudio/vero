@@ -129,10 +129,8 @@
 }
 
 .contract-actions {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  flex-wrap: wrap;
+  /* Layout (flex column, gap, sticky-on-mobile) is set globally in
+     get-started.css under .checkout-actions-row + .contract-actions. */
 }
 
 .form-back-link {
