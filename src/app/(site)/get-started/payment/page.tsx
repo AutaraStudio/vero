@@ -580,7 +580,7 @@ function PaymentContent() {
                 </div>
 
                 {/* Invoice submit + prominent back button — always visible. */}
-                <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="payment-actions">
+                <div className="payment-actions">
                   <div className="checkout-actions-row">
                     <Button variant="secondary" size="md" href="/get-started/contract">
                       ← Back to terms

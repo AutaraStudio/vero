@@ -1351,7 +1351,7 @@ export default function DetailsPage() {
             {/* Primary submit + prominent back button — always visible
                 at the bottom of the form. The sidebar in review mode is
                 read-only on this page; submission lives inline. */}
-            <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="details-actions">
+            <div className="details-actions">
               {submitAttempted && blockerMessage && (
                 <p className="form-field__error" role="alert" style={{ marginBottom: '0.5rem' }}>
                   {blockerMessage}

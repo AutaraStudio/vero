@@ -125,7 +125,7 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
         </div>
 
         {/* Inline submit + prominent back button — always visible. */}
-        <div ref={actionsRef as React.RefObject<HTMLDivElement>} className="contract-actions">
+        <div className="contract-actions">
           <div className="checkout-actions-row">
             <Button variant="secondary" size="md" href="/get-started/details">
               ← Back to details
