@@ -264,7 +264,7 @@ export default function RolePicker({ categories }: RolePickerProps) {
         <div className="role-picker__browser">
           <div className="role-picker__header">
             <h1 className="text-h3 color--primary">Select your roles</h1>
-            <p className="text-body--lg color--secondary leading--snug">
+            <p className="text-body--sm color--tertiary">
               Choose the roles you&apos;re hiring for. You can select as many as you need.
             </p>
 
