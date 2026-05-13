@@ -162,6 +162,24 @@ a.hero-split__pill:hover {
    VARIANTS
 ============================================================ */
 
+/* ── Image aspect — 16:9 widescreen ────────────────────────
+   Used on /assessments/[slug] where source assets are 1920×1080.
+   Falls back to 4:3 on stacked mobile layouts so the image doesn't
+   become a thin sliver. */
+.hero-split--image-wide .hero-split__image,
+.hero-split--image-wide .hero-split__image-placeholder,
+.hero-split--image-wide .hero-split__media-block {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 900px) {
+  .hero-split--image-wide .hero-split__image,
+  .hero-split--image-wide .hero-split__image-placeholder,
+  .hero-split--image-wide .hero-split__media-block {
+    aspect-ratio: 4 / 3;
+  }
+}
+
 /* ── Image height — viewport fill ─────────────────────────
    Image stretches from just below the nav to just above the
    bottom of the viewport, with breathing room top + bottom. */

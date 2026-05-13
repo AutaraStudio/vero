@@ -28,12 +28,20 @@ interface HeroSplitProps {
   /* ── Layout variants ─────────────────────────────────── */
   /**
    * Image height variant.
-   *  - 'auto' (default): image renders at a 4:3 aspect ratio
+   *  - 'auto' (default): image renders at the `imageAspect` ratio (default 4:3)
    *  - 'viewport':       image fills the viewport height (minus nav + spacing
    *                      top and bottom), so it stretches from just below the
    *                      nav to just above the bottom of the viewport.
    */
   imageHeight?: 'auto' | 'viewport';
+  /**
+   * Image aspect ratio when `imageHeight` is 'auto'.
+   *  - '4/3'  (default): classic landscape
+   *  - '16/9' (default): wide landscape — matches 1920×1080 source assets
+   *
+   * Ignored when imageHeight is 'viewport'.
+   */
+  imageAspect?: '4/3' | '16/9';
   /**
    * Vertical alignment of the text column. Default: 'center'.
    * Mostly noticeable when imageHeight: 'viewport' makes the column tall.
@@ -78,6 +86,7 @@ export default function HeroSplit({
   image,
   reverse = false,
   imageHeight = 'auto',
+  imageAspect = '4/3',
   textAlign = 'center',
   textJustify = 'left',
   badges,
@@ -92,6 +101,7 @@ export default function HeroSplit({
     'hero-split',
     reverse                     && 'is-reverse',
     imageHeight === 'viewport'  && 'hero-split--image-viewport',
+    imageHeight === 'auto' && imageAspect === '16/9' && 'hero-split--image-wide',
     `hero-split--text-v-${textAlign}`,
     `hero-split--text-h-${textJustify}`,
   ].filter(Boolean).join(' ');
