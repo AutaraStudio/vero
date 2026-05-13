@@ -233,7 +233,7 @@ export default function ComparisonTable({
                           <CheckMark featured={tiers[ci].isFeatured} />
                         )
                       ) : (
-                        <span className="pricing-compare-grid__absent" aria-label="Not included">
+                        <span role="img" className="pricing-compare-grid__absent" aria-label="Not included">
                           <svg width="14" height="2" viewBox="0 0 14 2" fill="none" aria-hidden="true">
                             <path d="M1 1H13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
                           </svg>
@@ -306,6 +306,7 @@ export default function ComparisonTable({
 function CheckMark({ featured = false }: { featured?: boolean }) {
   return (
     <span
+      role="img"
       className={`pricing-compare-grid__check${featured ? ' is-featured' : ''}`}
       aria-label="Included"
     >
