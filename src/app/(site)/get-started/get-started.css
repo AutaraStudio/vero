@@ -184,19 +184,20 @@
 /* ── Basket panel ── */
 
 .basket {
-  position: sticky;
-  top: 0;
-  /* Sidebar spans the full viewport. PlanBar is gone so no clearance. */
-  height: 100vh;
-  align-self: start;           /* required for sticky inside a grid */
+  /* Stretch to fill the grid row so the surface-sunken background runs
+     full-height even when the form column is much taller than the
+     sticky sidebar inside. */
+  align-self: stretch;
   border-right: 1px solid var(--color--border-default);
   background: var(--color--surface-sunken);
   display: flex;
   flex-direction: column;
-  overflow: hidden;            /* clip, don't scroll the whole panel */
 }
 
-/* Inner three-region layout:
+/* The actual viewport-locked sidebar lives inside .basket. It sticks to
+   the top of the viewport and fills the available height (viewport
+   minus the header + progress bar, which are non-sticky and scroll
+   away). Three-region layout:
    ┌──────────────────┐
    │ basket__title    │  fixed top
    ├──────────────────┤
@@ -205,8 +206,10 @@
    │ basket__footer   │  fixed bottom (tier + CTA)
    └──────────────────┘ */
 .basket__sticky {
-  flex: 1;
-  min-height: 0;               /* required so the middle region can shrink */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 0;
   padding: 1.5rem 1.25rem 0;
   display: flex;
   flex-direction: column;

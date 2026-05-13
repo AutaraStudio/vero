@@ -36,10 +36,12 @@
     gap: 2rem;
   }
   .contract-layout > .basket {
-    position: static;
-    height: auto;
     border-right: none;
     border-top: 1px solid var(--color--border-default);
+  }
+  .contract-layout > .basket .basket__sticky {
+    position: static;
+    height: auto;
   }
 }
 
