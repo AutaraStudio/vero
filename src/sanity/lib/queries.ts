@@ -173,14 +173,6 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     gettingStartedLinkLabel,
     gettingStartedLinkHref,
 
-    stepsHeading,
-    stepsIntro,
-    steps[] {
-      body,
-      "imageUrl": image.asset->url,
-      "imageAlt": image.alt
-    },
-
     candidateExpHeading,
     candidateExpBody,
     ${mediaProjection('candidateExpMedia')},
