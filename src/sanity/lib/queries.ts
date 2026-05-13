@@ -416,6 +416,8 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     inActionIntro,
     featureCardsHeading,
     featureCardsSubheading,
+    "featureCardsLeadImageUrl": featureCardsLeadImage.asset->url,
+    "featureCardsLeadImageAlt": featureCardsLeadImage.alt,
     featureCards[] {
       heading,
       body,
