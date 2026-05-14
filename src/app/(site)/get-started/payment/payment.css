@@ -31,6 +31,7 @@
   .payment-layout > .basket {
     border-right: none;
     border-top: 1px solid var(--color--border-default);
+    min-height: 0;
   }
   .payment-layout > .basket .basket__sticky {
     position: static;

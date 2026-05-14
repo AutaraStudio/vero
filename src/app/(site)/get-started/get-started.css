@@ -17,8 +17,8 @@
   --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
   /* Height of the bottom sticky PlanBar (FixedBar). Used to add bottom
      clearance to each page so form content can't slide under the bar.
-     PlanBar's intrinsic height is ~55px; we add a small buffer. */
-  --gs-planbar-h: 5rem;
+     PlanBar's intrinsic height is ~3.5rem; 4rem keeps a small buffer. */
+  --gs-planbar-h: 4rem;
   /* Width of the fixed left sidebar — must match the 340px grid column
      used by the role-picker and checkout layouts (a fixed px value, not
      rem). The sidebar sits *in front of* the bottom PlanBar, and the bar
@@ -67,7 +67,9 @@
 .get-started-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  /* Above the basket sidebar (z-index 101) so the logo bar always
+     covers the top of the sidebar as it scrolls past. */
+  z-index: 130;
   background: var(--color--page-bg);
   /* No border-bottom — the header and progress bar read as one
      continuous chrome block; the progress bar's own border-bottom
@@ -103,7 +105,7 @@
   flex: 1;
   /* Reserve clearance below page content for the sticky PlanBar so it
      can't ride over the last form fields / actions / pricing card. */
-  padding-bottom: calc(var(--gs-planbar-h) + 1rem);
+  padding-bottom: var(--gs-planbar-h);
 }
 
 /* ── Progress bar ── */
@@ -111,7 +113,8 @@
 .get-started-progress {
   position: sticky;
   top: var(--gs-header-h);
-  z-index: 19;
+  /* Above the basket sidebar (z-index 101), just below the header. */
+  z-index: 129;
   background: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
   padding: 0.875rem 0;
@@ -273,6 +276,11 @@
      full-height even when the form column is much taller than the
      sticky sidebar inside. */
   align-self: stretch;
+  /* On short pages the form column doesn't reach the viewport bottom,
+     which would leave the sidebar background floating with empty space
+     beneath it. Force the panel to at least fill the viewport below the
+     sticky chrome so its surface always runs down to the PlanBar. */
+  min-height: calc(100vh - var(--gs-top-offset));
   border-right: 1px solid var(--color--border-default);
   background: var(--color--surface-sunken);
   display: flex;
