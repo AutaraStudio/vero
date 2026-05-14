@@ -237,7 +237,6 @@ export default function IntroBlock({
                 /* New path — full mediaBlock object handles image / video / placeholder. */
                 <MediaBlock
                   media={media}
-                  aspectRatio="16 / 10"
                   placeholderAccent="var(--swatch--purple-500)"
                 />
               ) : videoUrl ? (

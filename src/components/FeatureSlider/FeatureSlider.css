@@ -113,7 +113,7 @@
 
 .slider-card__image {
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--color--accent-purple-bg);
   border-bottom: 1px solid var(--color--border-subtle);
 }

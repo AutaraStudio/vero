@@ -48,7 +48,7 @@ export default function DimensionsSection({
             <p
               ref={bodyRef as React.RefObject<HTMLParagraphElement>}
               data-animate=""
-              className="text-body--lg leading--snug max-ch-40 color--secondary"
+              className="text-body--lg leading--snug max-ch-60 color--secondary"
             >
               {body}
             </p>
