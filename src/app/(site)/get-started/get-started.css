@@ -379,17 +379,17 @@
   background: var(--color--surface-raised);
   border: 1px solid var(--color--border-subtle);
   border-radius: var(--radius--sm);
-  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
-  min-height: 1.75rem;
-}
-
-.basket__role-chip__name {
-  font-size: var(--font--body-xs);
+  padding: 0.1875rem 0.25rem 0.1875rem 0.5rem;
+  min-height: 1.5rem;
 }
 
 .basket__role-chip__name {
   flex: 1;
   min-width: 0;
+  /* Compact label-sized text so long role names take up less room in
+     the summary list. */
+  font-size: var(--font--label-sm);
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

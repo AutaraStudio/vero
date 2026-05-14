@@ -114,7 +114,7 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
 
                 {visibleRoles.map((role) => (
                   <div key={role.roleId} className="basket__role-chip">
-                    <span className="text-body--sm font--medium color--primary basket__role-chip__name">
+                    <span className="font--medium color--primary basket__role-chip__name">
                       {role.roleName}
                     </span>
                     {!isReview && (
