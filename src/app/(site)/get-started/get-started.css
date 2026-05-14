@@ -9,7 +9,10 @@
      pinned to the top of the viewport; the basket sidebar pins
      directly below them and fills the remaining viewport height.
      Update these together — basket__sticky uses their sum. */
-  --gs-header-h: 4.25rem;
+  /* Header is fully rem-based now (padding 2rem + logo locked to 2rem
+     via .get-started-logo img + no border) so this value stays accurate
+     across root font sizes — the progress bar pins flush beneath it. */
+  --gs-header-h: 4rem;
   --gs-progress-h: 3.75rem;
   --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
   /* Height of the bottom sticky PlanBar (FixedBar). Used to add bottom
@@ -66,7 +69,9 @@
   top: 0;
   z-index: 20;
   background: var(--color--page-bg);
-  border-bottom: 1px solid var(--color--border-default);
+  /* No border-bottom — the header and progress bar read as one
+     continuous chrome block; the progress bar's own border-bottom
+     closes the block off. */
   padding: 1rem 0;
   flex-shrink: 0;
 }
@@ -83,6 +88,15 @@
   font-size: var(--font--body);
   font-weight: 700;
   letter-spacing: -0.02em;
+}
+
+/* Lock the logo to a rem-based height so the header's total height is
+   fully predictable (padding 2rem + logo 2rem = --gs-header-h: 4rem)
+   regardless of the source image's intrinsic pixel size. */
+.get-started-logo img {
+  display: block;
+  height: 2rem;
+  width: auto;
 }
 
 .get-started-main {
