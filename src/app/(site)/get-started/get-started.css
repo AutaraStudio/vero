@@ -9,16 +9,21 @@
      pinned to the top of the viewport; the basket sidebar pins
      directly below them and fills the remaining viewport height.
      Update these together — basket__sticky uses their sum. */
-  --gs-header-h: 4.25rem;
+  /* Header is fully rem-based now (padding 2rem + logo locked to 2rem
+     via .get-started-logo img + no border) so this value stays accurate
+     across root font sizes — the progress bar pins flush beneath it. */
+  --gs-header-h: 4rem;
   --gs-progress-h: 3.75rem;
   --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
-  /* Height of the bottom sticky PlanBar (FixedBar). Used to (a) shrink
-     the sidebar's available height so it doesn't overlap the bar and
-     (b) add bottom clearance to each page so form content can't slide
-     under the bar. PlanBar's intrinsic height is ~55px; we add a small
-     buffer on top so the sidebar leaves a visible gap above the bar
-     rather than touching it. */
-  --gs-planbar-h: 5rem;
+  /* Height of the bottom sticky PlanBar (FixedBar). Used to add bottom
+     clearance to each page so form content can't slide under the bar.
+     PlanBar's intrinsic height is ~3.5rem; 4rem keeps a small buffer. */
+  --gs-planbar-h: 4rem;
+  /* Width of the fixed left sidebar — must match the 340px grid column
+     used by the role-picker and checkout layouts (a fixed px value, not
+     rem). The sidebar sits *in front of* the bottom PlanBar, and the bar
+     offsets its content by this width so nothing hides behind it. */
+  --gs-sidebar-w: 340px;
 
   min-height: 100vh;
   display: flex;
@@ -62,9 +67,13 @@
 .get-started-header {
   position: sticky;
   top: 0;
-  z-index: 20;
+  /* Above the basket sidebar (z-index 101) so the logo bar always
+     covers the top of the sidebar as it scrolls past. */
+  z-index: 130;
   background: var(--color--page-bg);
-  border-bottom: 1px solid var(--color--border-default);
+  /* No border-bottom — the header and progress bar read as one
+     continuous chrome block; the progress bar's own border-bottom
+     closes the block off. */
   padding: 1rem 0;
   flex-shrink: 0;
 }
@@ -83,11 +92,28 @@
   letter-spacing: -0.02em;
 }
 
+/* Lock the logo to a rem-based height so the header's total height is
+   fully predictable (padding 2rem + logo 2rem = --gs-header-h: 4rem)
+   regardless of the source image's intrinsic pixel size. */
+.get-started-logo img {
+  display: block;
+  height: 2rem;
+  width: auto;
+}
+
 .get-started-main {
   flex: 1;
   /* Reserve clearance below page content for the sticky PlanBar so it
      can't ride over the last form fields / actions / pricing card. */
-  padding-bottom: calc(var(--gs-planbar-h) + 1rem);
+  padding-bottom: var(--gs-planbar-h);
+}
+
+/* ≤991px the PlanBar stacks into two rows (summary strip + button row),
+   so it's taller — reserve more bottom clearance to match. */
+@media (max-width: 991px) {
+  .get-started-shell {
+    --gs-planbar-h: 7.5rem;
+  }
 }
 
 /* ── Progress bar ── */
@@ -95,7 +121,8 @@
 .get-started-progress {
   position: sticky;
   top: var(--gs-header-h);
-  z-index: 19;
+  /* Above the basket sidebar (z-index 101), just below the header. */
+  z-index: 129;
   background: var(--color--page-bg);
   border-bottom: 1px solid var(--color--border-default);
   padding: 0.875rem 0;
@@ -114,6 +141,28 @@
   align-items: center;
   gap: 0.5rem;
   flex-shrink: 0;
+}
+
+/* Completed steps are wrapped in a link so they double as a back
+   button — the circle + label are clickable and route to that step. */
+.progress-bar__step-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius--full);
+  transition: opacity var(--transition--default);
+}
+
+.progress-bar__step-link:hover {
+  opacity: 0.7;
+}
+
+.progress-bar__step-link:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 3px;
 }
 
 .progress-bar__circle {
@@ -257,10 +306,20 @@
      full-height even when the form column is much taller than the
      sticky sidebar inside. */
   align-self: stretch;
+  /* On short pages the form column doesn't reach the viewport bottom,
+     which would leave the sidebar background floating with empty space
+     beneath it. Force the panel to at least fill the viewport below the
+     sticky chrome so its surface always runs down to the PlanBar. */
+  min-height: calc(100vh - var(--gs-top-offset));
   border-right: 1px solid var(--color--border-default);
   background: var(--color--surface-sunken);
   display: flex;
   flex-direction: column;
+  /* Sit in front of the bottom PlanBar (z-index 100) so the sidebar
+     reads as a continuous full-height panel and the bar tucks behind
+     its lower edge. */
+  position: relative;
+  z-index: 101;
 }
 
 /* The actual viewport-locked sidebar lives inside .basket. It sticks to
@@ -276,11 +335,12 @@
    └──────────────────┘ */
 .basket__sticky {
   position: sticky;
-  /* Pin directly below the sticky header + progress bar so the sidebar
-     fills exactly the height the user has available — minus the bottom
-     PlanBar so the two never overlap. */
+  /* Pin directly below the sticky header + progress bar and fill the
+     rest of the viewport. The sidebar runs full-height and sits in
+     front of the bottom PlanBar (see .basket z-index) — the bar offsets
+     its own content so nothing hides behind the sidebar. */
   top: var(--gs-top-offset);
-  height: calc(100vh - var(--gs-top-offset) - var(--gs-planbar-h));
+  height: calc(100vh - var(--gs-top-offset));
   min-height: 0;
   padding: 1.5rem 1.25rem 0;
   display: flex;
@@ -349,17 +409,17 @@
   background: var(--color--surface-raised);
   border: 1px solid var(--color--border-subtle);
   border-radius: var(--radius--sm);
-  padding: 0.25rem 0.25rem 0.25rem 0.5rem;
-  min-height: 1.75rem;
-}
-
-.basket__role-chip__name {
-  font-size: var(--font--body-xs);
+  padding: 0.1875rem 0.25rem 0.1875rem 0.5rem;
+  min-height: 1.5rem;
 }
 
 .basket__role-chip__name {
   flex: 1;
   min-width: 0;
+  /* Compact label-sized text so long role names take up less room in
+     the summary list. */
+  font-size: var(--font--label-sm);
+  line-height: 1.3;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

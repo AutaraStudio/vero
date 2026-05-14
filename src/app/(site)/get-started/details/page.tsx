@@ -1,409 +1,28 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { useBasket, type ContactDetails } from '@/store/basketStore';
-import { TIER_USER_LIMITS, type TierKey } from '@/lib/tierRecommendation';
 import { useTextReveal } from '@/hooks/useTextReveal';
 import { useFadeUp } from '@/hooks/useFadeUp';
-import { gsap } from '@/lib/gsap';
-import Button from '@/components/ui/Button';
-import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import BasketContent from '../components/BasketContent';
+import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
+import { FormField } from '../components/checkoutFormHelpers';
+import { isValidEmail } from '@/lib/emailValidation';
 import './details.css';
 
-// ── Helper: normalise hex colour input ───────────────────────
-
-function normaliseHex(raw: string): string {
-  const stripped = raw.replace(/^#+/, '');
-  if (/^[0-9A-Fa-f]{1,6}$/.test(stripped)) return '#' + stripped;
-  return raw;
-}
-
-// ── Helper: working-day date constraints ─────────────────────
-
-function addWorkingDays(from: Date, days: number): Date {
-  const result = new Date(from);
-  let added = 0;
-  while (added < days) {
-    result.setDate(result.getDate() + 1);
-    if (result.getDay() !== 0 && result.getDay() !== 6) added++;
-  }
-  return result;
-}
-
-function toDateString(d: Date): string {
-  return d.toISOString().split('T')[0];
-}
-
-const MIN_OPEN_DATE = toDateString(addWorkingDays(new Date(), 2));
-
-function getMaxCloseDate(openDate: string): string {
-  if (!openDate) return '';
-  const d = new Date(openDate);
-  d.setFullYear(d.getFullYear() + 1);
-  return toDateString(d);
-}
-
-// ── Helper: user email input ──────────────────────────────────
-
-const EMAIL_INITIAL_VISIBLE = 5;
-const EMAIL_LOAD_MORE_COUNT = 10;
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function UserEmailInput({
-  emails,
-  inputValue,
-  onInputChange,
-  onAdd,
-  onRemove,
-  onUpdate,
-  onCsvImport,
-  maxEmails,
-  showCsvImport = true,
-}: {
-  emails: string[];
-  inputValue: string;
-  onInputChange: (v: string) => void;
-  onAdd: (email: string) => void;
-  onRemove: (index: number) => void;
-  onUpdate: (index: number, newEmail: string) => void;
-  onCsvImport: (file: File) => void;
-  maxEmails: number;
-  showCsvImport?: boolean;
-}) {
-  const csvRef = useRef<HTMLInputElement>(null);
-  const atLimit = emails.length >= maxEmails;
-
-  const [visibleCount, setVisibleCount] = useState(EMAIL_INITIAL_VISIBLE);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState('');
-  /* WCAG 3.3.1 — previously, invalid emails were silently rejected by the
-     parent. We now surface validation in-place so the user knows why their
-     entry didn't land. */
-  const [addError, setAddError] = useState<string | null>(null);
-
-  const tryAdd = () => {
-    const trimmed = inputValue.trim().toLowerCase();
-    if (!trimmed) return;
-    if (!EMAIL_RE.test(trimmed)) {
-      setAddError('Enter a valid email address');
-      return;
-    }
-    if (emails.includes(trimmed)) {
-      setAddError('That email is already on the list');
-      return;
-    }
-    setAddError(null);
-    onAdd(inputValue);
-  };
-
-  const handleInputChange = (v: string) => {
-    if (addError) setAddError(null);
-    onInputChange(v);
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      e.preventDefault();
-      tryAdd();
-    }
-  };
-
-  // Filter emails by search query
-  const filteredEmails = searchQuery
-    ? emails
-        .map((email, i) => ({ email, originalIndex: i }))
-        .filter(({ email }) => email.toLowerCase().includes(searchQuery.toLowerCase()))
-    : emails.map((email, i) => ({ email, originalIndex: i }));
-
-  // Progressive loading: show visibleCount items, load 10 more at a time
-  const isSearching = searchQuery.length > 0;
-  const visibleEmails = isSearching
-    ? filteredEmails
-    : filteredEmails.slice(0, visibleCount);
-  const remainingCount = isSearching ? 0 : filteredEmails.length - visibleCount;
-  const hasMore = remainingCount > 0;
-  const showLessVisible = !isSearching && visibleCount > EMAIL_INITIAL_VISIBLE;
-
-  const handleShowMore = () => {
-    setVisibleCount((prev) => prev + EMAIL_LOAD_MORE_COUNT);
-  };
-
-  const handleShowLess = () => {
-    setVisibleCount(EMAIL_INITIAL_VISIBLE);
-  };
-
-  // Inline editing
-  const startEdit = (index: number, email: string) => {
-    setEditingIndex(index);
-    setEditValue(email);
-  };
-
-  const saveEdit = (originalIndex: number) => {
-    const trimmed = editValue.trim().toLowerCase();
-    if (trimmed && EMAIL_RE.test(trimmed) && trimmed !== emails[originalIndex]) {
-      onUpdate(originalIndex, trimmed);
-    }
-    setEditingIndex(null);
-    setEditValue('');
-  };
-
-  const cancelEdit = () => {
-    setEditingIndex(null);
-    setEditValue('');
-  };
-
-  return (
-    <div className="user-emails">
-      {showCsvImport && (
-        <div className="user-emails__actions-row">
-          <button
-            type="button"
-            className="user-emails__import-btn"
-            onClick={() => csvRef.current?.click()}
-            disabled={atLimit}
-          >
-            Import from CSV
-          </button>
-          <input
-            ref={csvRef}
-            type="file"
-            accept=".csv,text/csv"
-            className="user-emails__csv-input"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onCsvImport(file);
-              e.target.value = '';
-            }}
-          />
-        </div>
-      )}
-
-      <div className="user-emails__add-row">
-        <input
-          type="email"
-          autoComplete="email"
-          inputMode="email"
-          className={`form-field__input${addError ? ' has-error' : ''}`}
-          value={inputValue}
-          onChange={(e) => handleInputChange(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder={atLimit ? 'User limit reached' : 'jane@company.com'}
-          aria-label="Add email address"
-          aria-invalid={!!addError}
-          aria-describedby={addError ? 'user-email-add-error' : undefined}
-          disabled={atLimit}
-        />
-        <button
-          type="button"
-          className="user-emails__add-btn"
-          onClick={tryAdd}
-          disabled={!inputValue.trim() || atLimit}
-        >
-          Add
-        </button>
-      </div>
-
-      {addError && (
-        <span
-          id="user-email-add-error"
-          className="form-field__error"
-          role="alert"
-        >
-          {addError}
-        </span>
-      )}
-
-      {emails.length === 0 ? (
-        <span className="text-body--xs user-emails__prompt">
-          Add at least 1 email address to continue
-        </span>
-      ) : (
-        <span className="text-body--xs color--tertiary">
-          {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
-        </span>
-      )}
-
-      {emails.length > 0 && (
-        <>
-          {/* Search bar — shown when emails exceed initial threshold */}
-          {emails.length > EMAIL_INITIAL_VISIBLE && (
-            <div className="user-emails__search">
-              <input
-                type="text"
-                className="form-field__input user-emails__search-input"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search email addresses..."
-                aria-label="Search email addresses"
-              />
-              {searchQuery && (
-                <button
-                  type="button"
-                  className="user-emails__search-clear"
-                  onClick={() => setSearchQuery('')}
-                  aria-label="Clear search"
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          )}
-
-          <div className="user-emails__chips">
-            {visibleEmails.map(({ email, originalIndex }) => (
-              <div key={`${originalIndex}-${email}`} className="user-email-chip">
-                {editingIndex === originalIndex ? (
-                  <input
-                    type="email"
-                    className="user-email-chip__edit-input text-body--sm"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') { e.preventDefault(); saveEdit(originalIndex); }
-                      if (e.key === 'Escape') cancelEdit();
-                    }}
-                    onBlur={() => saveEdit(originalIndex)}
-                    autoFocus
-                  />
-                ) : (
-                  <span className="text-body--sm color--primary user-email-chip__address">
-                    {email}
-                  </span>
-                )}
-                <div className="user-email-chip__actions">
-                  {editingIndex !== originalIndex && (
-                    <button
-                      type="button"
-                      className="user-email-chip__edit"
-                      onClick={() => startEdit(originalIndex, email)}
-                      aria-label={`Edit ${email}`}
-                    >
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </button>
-                  )}
-                  <button
-                    type="button"
-                    className="user-email-chip__remove"
-                    onClick={() => onRemove(originalIndex)}
-                    aria-label={`Remove ${email}`}
-                  >
-                    ×
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* Show more / Show less */}
-          {(hasMore || showLessVisible) && (
-            <div className="user-emails__toggle-row">
-              {hasMore && (
-                <button
-                  type="button"
-                  className="user-emails__toggle text-body--xs"
-                  onClick={handleShowMore}
-                >
-                  Show {Math.min(remainingCount, EMAIL_LOAD_MORE_COUNT)} more
-                  <span className="color--tertiary"> ({remainingCount} remaining)</span>
-                </button>
-              )}
-              {showLessVisible && (
-                <button
-                  type="button"
-                  className="user-emails__toggle text-body--xs"
-                  onClick={handleShowLess}
-                >
-                  Collapse
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* Search results count */}
-          {searchQuery && (
-            <span className="text-body--xs color--tertiary">
-              {filteredEmails.length} result{filteredEmails.length !== 1 ? 's' : ''} found
-            </span>
-          )}
-        </>
-      )}
-    </div>
-  );
-}
-
-// ── Helper: single form field ─────────────────────────────────
-
-function FormField({
-  id,
-  label,
-  type = 'text',
-  placeholder = '',
-  value,
-  onChange,
-  onBlur,
-  error,
-  readOnly = false,
-  autoComplete,
-  inputMode,
-}: {
-  id: string;
-  label: string;
-  type?: string;
-  placeholder?: string;
-  value: string;
-  onChange: (v: string) => void;
-  onBlur?: () => void;
-  error?: string;
-  readOnly?: boolean;
-  /** WCAG 1.3.5 — supply the appropriate autofill token for personal-data fields */
-  autoComplete?: string;
-  inputMode?: 'text' | 'email' | 'tel' | 'numeric' | 'decimal' | 'search' | 'url' | 'none';
-}) {
-  const errorId = `${id}-error`;
-  return (
-    <div className="form-field">
-      <label className="form-field__label text-label--sm color--tertiary" htmlFor={id}>
-        {label}
-      </label>
-      <input
-        id={id}
-        type={type}
-        className={`form-field__input${error ? ' has-error' : ''}`}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        onBlur={onBlur}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        autoComplete={autoComplete}
-        inputMode={inputMode}
-        aria-invalid={!!error}
-        aria-describedby={error ? errorId : undefined}
-      />
-      {error && <span id={errorId} className="form-field__error" role="alert">{error}</span>}
-    </div>
-  );
-}
-
-// ── Page ──────────────────────────────────────────────────────
+// ── Page — Step 2: Your details ───────────────────────────────
+// Contact info + key project contact only. Users / portal URL /
+// feedback / branding / campaign dates live on the Portal Setup step.
 
 export default function DetailsPage() {
   const router = useRouter();
   const { state, dispatch } = useBasket();
-  const { selectedRoles, contactDetails, recommendedTier } = state;
-  const isStarter = recommendedTier === 'starter';
-  const userLimit = recommendedTier ? TIER_USER_LIMITS[recommendedTier as TierKey] : 5;
+  const { selectedRoles, contactDetails } = state;
 
   /* WCAG 2.4.2 — set a unique, descriptive page title for this checkout step.
      Client components can't export server-side metadata, so we set the title
-     imperatively. The browser tab + screen-reader page announcement both use
-     this value. */
+     imperatively. */
   useEffect(() => {
     document.title = 'Your details — Vero Assess';
   }, []);
@@ -415,98 +34,14 @@ export default function DetailsPage() {
     }
   }, [selectedRoles.length, router]);
 
-  // Form state — pre-populated from store
-  const [form, setForm] = useState<ContactDetails>(() => ({
-    ...contactDetails,
-    usersToAdd: isStarter
-      ? contactDetails.email || contactDetails.usersToAdd
-      : contactDetails.usersToAdd,
-    roleDates:
-      Object.keys(contactDetails.roleDates).length > 0
-        ? contactDetails.roleDates
-        : Object.fromEntries(
-            selectedRoles.map((r) => [r.roleId, { openDate: '', closeDate: '' }])
-          ),
-  }));
-
+  /* Form state holds the full ContactDetails object — even though this
+     step only edits contact + key-contact fields — so navigating back
+     here from Portal Setup and forward again preserves the later
+     sections' data. */
+  const [form, setForm] = useState<ContactDetails>(() => ({ ...contactDetails }));
   const [errors, setErrors] = useState<Partial<Record<keyof ContactDetails, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof ContactDetails, boolean>>>({});
   const [submitAttempted, setSubmitAttempted] = useState(false);
-
-  // Logo upload state
-  const [logoFileName, setLogoFileName] = useState<string>(() => form.logoFileName || '');
-
-  const handleLogoFile = (file: File) => {
-    setLogoFileName(file.name);
-    const reader = new FileReader();
-    reader.onload = () => {
-      const base64 = reader.result as string;
-      setForm((p) => ({ ...p, logoFile: base64, logoFileName: file.name }));
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // User emails state
-  const [userEmails, setUserEmails] = useState<string[]>(() =>
-    form.usersToAdd ? form.usersToAdd.split('\n').filter(Boolean) : []
-  );
-  const [emailInput, setEmailInput] = useState('');
-
-  const addUserEmail = (raw: string) => {
-    const email = raw.trim().toLowerCase();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return;
-    if (userEmails.includes(email)) { setEmailInput(''); return; }
-    if (userEmails.length >= userLimit) return;
-    const next = [...userEmails, email];
-    setUserEmails(next);
-    setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
-    setEmailInput('');
-  };
-
-  const removeUserEmail = (index: number) => {
-    const next = userEmails.filter((_, i) => i !== index);
-    setUserEmails(next);
-    setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
-  };
-
-  const updateUserEmail = (index: number, newEmail: string) => {
-    const next = [...userEmails];
-    next[index] = newEmail;
-    setUserEmails(next);
-    setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
-  };
-
-  const handleCsvImport = (file: File) => {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const text = e.target?.result as string;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      const found = text
-        .split(/[\n,;\r]+/)
-        .map((s) => s.trim().toLowerCase().replace(/^["']|["']$/g, ''))
-        .filter((s) => emailRegex.test(s));
-      const merged = [...new Set([...userEmails, ...found])];
-      const next = merged.slice(0, userLimit);
-      setUserEmails(next);
-      setForm((p) => ({ ...p, usersToAdd: next.join('\n') }));
-    };
-    reader.readAsText(file);
-  };
-
-  // Campaign dates state
-  const [applyAllDates, setApplyAllDates] = useState(false);
-  const [globalOpenDate, setGlobalOpenDate] = useState('');
-  const [globalCloseDate, setGlobalCloseDate] = useState('');
-  const [openDateCategories, setOpenDateCategories] = useState<Set<string>>(new Set());
-  const datesCategoryAnimatedRef = useRef<Set<string>>(new Set());
-  const [overriddenRoleDates, setOverriddenRoleDates] = useState<Set<string>>(new Set());
-
-  // Sync usersToAdd for starter when email changes
-  useEffect(() => {
-    if (isStarter) {
-      setForm((prev) => ({ ...prev, usersToAdd: prev.email }));
-    }
-  }, [form.email, isStarter]);
 
   // Sync key contact when "same as me" is checked
   useEffect(() => {
@@ -521,8 +56,6 @@ export default function DetailsPage() {
 
   // ── Validation ─────────────────────────────────────────────
 
-  const HEX_RE = /^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/;
-  const SLUG_RE = /^[a-z0-9-]+$/;
   const PHONE_RE = /^[+()\d\s-]{7,}$/;
 
   const validateField = (
@@ -535,7 +68,7 @@ export default function DetailsPage() {
       case 'lastName':        return value.trim() ? undefined : 'Last name is required';
       case 'email':
         if (!value.trim()) return 'Email is required';
-        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        if (!isValidEmail(value)) return 'Enter a valid email address';
         return undefined;
       case 'company':         return value.trim() ? undefined : 'Company is required';
       case 'jobTitle':        return value.trim() ? undefined : 'Job title is required';
@@ -549,32 +82,20 @@ export default function DetailsPage() {
       case 'keyContactEmail':
         if (full.keyContactSameAsMe) return undefined;
         if (!value.trim()) return 'Key contact email is required';
-        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        if (!isValidEmail(value)) return 'Enter a valid email address';
         return undefined;
-      case 'bespokeUrl':
-        if (isStarter) return undefined;
-        if (!value.trim()) return 'Portal URL is required';
-        return SLUG_RE.test(value) ? undefined : 'Only lowercase letters, numbers, and hyphens';
-      case 'brandColour1':
-        if (isStarter) return undefined;
-        if (!value.trim()) return 'Brand colour 1 is required';
-        return HEX_RE.test(value) ? undefined : 'Enter a valid hex colour (e.g. #ff6600)';
-      case 'brandColour2':
-        if (isStarter) return undefined;
-        if (!value.trim()) return 'Brand colour 2 is required';
-        return HEX_RE.test(value) ? undefined : 'Enter a valid hex colour (e.g. #ff6600)';
       default:                return undefined;
     }
   };
 
+  const FIELDS: (keyof ContactDetails)[] = [
+    'firstName', 'lastName', 'email', 'company', 'jobTitle', 'phone',
+    'keyContactName', 'keyContactEmail',
+  ];
+
   const validate = () => {
-    const fields: (keyof ContactDetails)[] = [
-      'firstName', 'lastName', 'email', 'company', 'jobTitle', 'phone',
-      'keyContactName', 'keyContactEmail',
-      'bespokeUrl', 'brandColour1', 'brandColour2',
-    ];
     const errs: Partial<Record<keyof ContactDetails, string>> = {};
-    fields.forEach((f) => {
+    FIELDS.forEach((f) => {
       const msg = validateField(f, String(form[f] ?? ''), form);
       if (msg) errs[f] = msg;
     });
@@ -598,50 +119,17 @@ export default function DetailsPage() {
     setErrors((e) => ({ ...e, [field]: msg }));
   };
 
-  /* Cross-field requirements that don't fit the per-field validator —
-     used both to gate the submit button and surface a single page-level
-     error on submit. Per client direction, every question is compulsory. */
-  const needsBranding = !isStarter;
-  const needsDates = recommendedTier === 'starter' || recommendedTier === 'essential';
+  /* Every field must pass its per-field validator — presence AND format.
+     Gates the sticky PlanBar's "Continue" button so it only enables when
+     the step is genuinely complete and valid. */
+  const fieldErrors = validate();
+  const requiredFilled = Object.keys(fieldErrors).length === 0;
 
-  const allDatesFilled = !needsDates
-    ? true
-    : selectedRoles.every((r) => {
-        const d = form.roleDates[r.roleId];
-        return !!(d?.openDate && d?.closeDate);
-      });
-
-  const usersFilled = isStarter
-    ? form.usersToAdd.trim().length > 0
-    : userEmails.length > 0;
-
-  const logoFilled = !needsBranding ? true : !!form.logoFile;
-
-  const requiredFilled = !!(
-    form.firstName.trim() &&
-    form.lastName.trim() &&
-    form.email.trim() &&
-    form.company.trim() &&
-    form.jobTitle.trim() &&
-    form.phone.trim() &&
-    (form.keyContactSameAsMe ||
-      (form.keyContactName.trim() && form.keyContactEmail.trim())) &&
-    usersFilled &&
-    (!needsBranding ||
-      (logoFilled && form.bespokeUrl.trim() && form.brandColour1.trim() && form.brandColour2.trim())) &&
-    allDatesFilled
-  );
-
-  /* Page-level error shown above the submit button when blocked. */
   const blockerMessage = !requiredFilled
-    ? !usersFilled
-      ? 'Please add at least one user email address.'
-      : !logoFilled
-      ? 'Please upload your portal logo.'
-      : !allDatesFilled
-      ? 'Please set open and close dates for every role.'
-      : 'Please complete all required fields above.'
+    ? 'Please complete all required fields above.'
     : '';
+
+  usePublishPlanBarSubmitDisabled(!requiredFilled);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -652,63 +140,7 @@ export default function DetailsPage() {
       return;
     }
     dispatch({ type: 'SET_CONTACT_DETAILS', payload: form });
-    router.push('/get-started/contract');
-  };
-
-  // ── Campaign dates helpers ──────────────────────────────────
-
-  const dateRolesByCategory = selectedRoles.reduce(
-    (
-      acc: Array<{ slug: string; name: string; roles: typeof selectedRoles }>,
-      role
-    ) => {
-      const existing = acc.find((c) => c.slug === role.categorySlug);
-      if (existing) {
-        existing.roles.push(role);
-      } else {
-        acc.push({ slug: role.categorySlug, name: role.categoryName, roles: [role] });
-      }
-      return acc;
-    },
-    []
-  );
-
-  const handleGlobalDateChange = (field: 'openDate' | 'closeDate', value: string) => {
-    if (field === 'openDate') setGlobalOpenDate(value);
-    else setGlobalCloseDate(value);
-    setForm((p) => ({
-      ...p,
-      roleDates: Object.fromEntries(
-        Object.entries(p.roleDates).map(([id, dates]) => [
-          id,
-          overriddenRoleDates.has(id) ? dates : { ...dates, [field]: value },
-        ])
-      ),
-    }));
-  };
-
-  const toggleDateCategory = (slug: string) => {
-    if (openDateCategories.has(slug)) {
-      datesCategoryAnimatedRef.current.delete(slug);
-    }
-    setOpenDateCategories((prev) => {
-      const next = new Set(prev);
-      next.has(slug) ? next.delete(slug) : next.add(slug);
-      return next;
-    });
-  };
-
-  const makeDatesCategoryBodyRef = (slug: string) => (el: HTMLDivElement | null) => {
-    if (!el || datesCategoryAnimatedRef.current.has(slug)) return;
-    datesCategoryAnimatedRef.current.add(slug);
-    gsap.from(el, {
-      height: 0,
-      opacity: 0,
-      duration: 0.28,
-      ease: 'power2.out',
-      overflow: 'hidden',
-      clearProps: 'height,opacity,overflow',
-    });
+    router.push('/get-started/portal-setup');
   };
 
   // ── Animations ─────────────────────────────────────────────
@@ -716,12 +148,6 @@ export default function DetailsPage() {
   const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
   const s1Ref = useFadeUp({ delay: 0.15, y: 16 });
   const s2Ref = useFadeUp({ delay: 0.2, y: 16 });
-  const s3Ref = useFadeUp({ delay: 0.25, y: 16 });
-  const s4Ref = useFadeUp({ delay: 0.3, y: 16 });
-  const s5Ref = useFadeUp({ delay: 0.35, y: 16 });
-  const s6Ref = useFadeUp({ delay: 0.4, y: 16 });
-  const s7Ref = useFadeUp({ delay: 0.45, y: 16 });
-  const actionsRef = useFadeUp({ delay: 0.5, y: 16 });
 
   if (selectedRoles.length === 0) return null;
 
@@ -824,6 +250,10 @@ export default function DetailsPage() {
             {/* Section 2 — Key project contact */}
             <div ref={s2Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
               <p className="details-section__label">Key project contact</p>
+              <p className="text-body--sm color--secondary details-section__intro">
+                The day-to-day contact our team will work with to get your
+                assessment portal set up.
+              </p>
               <div className="form-field">
                 <label className="checkbox-label-row text-body--sm color--secondary">
                   <input
@@ -859,511 +289,9 @@ export default function DetailsPage() {
               </div>
             </div>
 
-            {/* Section 3 — Users to add */}
-            <div ref={s3Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
-              <p className="details-section__label">Users to add</p>
-              {!isStarter && (
-                <p className="text-body--sm color--secondary details-section__intro">
-                  Add team members who need to log in and view candidate results.
-                  At least one email address is required to continue.
-                </p>
-              )}
-              {isStarter ? (
-                <div className="form-field">
-                  <label
-                    className="form-field__label text-label--sm color--tertiary"
-                    htmlFor="usersToAdd"
-                  >
-                    Email addresses of users who need system access
-                  </label>
-                  <input
-                    id="usersToAdd"
-                    type="email"
-                    className="form-field__input"
-                    value={form.usersToAdd}
-                    readOnly
-                  />
-                  <span className="text-body--xs color--tertiary">
-                    Starter accounts include 1 user.
-                  </span>
-                </div>
-              ) : (
-                <div className="form-field">
-                  <label className="form-field__label text-label--sm color--tertiary">
-                    Email addresses of users who need system access (up to {userLimit})
-                    <span aria-hidden="true" className="form-field__required">{' *'}</span>
-                  </label>
-                  <UserEmailInput
-                    emails={userEmails}
-                    inputValue={emailInput}
-                    onInputChange={setEmailInput}
-                    onAdd={addUserEmail}
-                    onRemove={removeUserEmail}
-                    onUpdate={updateUserEmail}
-                    onCsvImport={handleCsvImport}
-                    maxEmails={userLimit}
-                    showCsvImport={userLimit >= 5}
-                  />
-                </div>
-              )}
-            </div>
-
-            {/* Section 4 — Bespoke URL (hidden for starter) */}
-            {!isStarter && (
-              <div ref={s4Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
-                <p className="details-section__label">Assessment portal URL</p>
-                <div className="form-field">
-                  <label
-                    className="form-field__label text-label--sm color--tertiary form-field__label--flex"
-                    htmlFor="bespokeUrl"
-                  >
-                    Choose a URL for your assessment portal
-                    <Tooltip
-                      content={
-                        <TooltipContent body="This will be the web address candidates use to access their assessments." />
-                      }
-                    >
-                      {''}
-                    </Tooltip>
-                  </label>
-                  <div className="url-input-row">
-                    <input
-                      id="bespokeUrl"
-                      type="text"
-                      className={`form-field__input${err.bespokeUrl ? ' has-error' : ''}`}
-                      value={form.bespokeUrl}
-                      onChange={(e) => setField('bespokeUrl', e.target.value)}
-                      onBlur={() => handleBlur('bespokeUrl')}
-                      placeholder="your-company"
-                      aria-invalid={!!err.bespokeUrl}
-                      aria-describedby={err.bespokeUrl ? 'bespokeUrl-error' : undefined}
-                    />
-                    <span className="url-input-suffix text-body--sm color--tertiary">
-                      .veroassess.com
-                    </span>
-                  </div>
-                  {err.bespokeUrl && (
-                    <span id="bespokeUrl-error" className="form-field__error" role="alert">{err.bespokeUrl}</span>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Section 5 — Candidate feedback reports */}
-            <div ref={s5Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
-              <p className="details-section__label">Candidate feedback reports</p>
-
-              <div className="feedback-card">
-                <div className="feedback-card__info">
-                  <span className="feedback-card__icon" aria-hidden="true">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round"/>
-                      <path d="M14 2v6h6M8 13h8M8 17h5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-                    </svg>
-                  </span>
-                  <div className="feedback-card__info-text">
-                    <p className="text-body--sm color--secondary">
-                      When a candidate completes all 4 sections of Vero Assess, a combined feedback
-                      report is automatically generated and sent to the candidate.
-                    </p>
-                    {/* TODO: re-enable once an example report PDF is available.
-                       <a href="/path/to/example-report.pdf" target="_blank" rel="noopener noreferrer" className="feedback-card__example">
-                         <span>View an example report</span>
-                         <svg width="12" height="12" viewBox="0 0 12 12" fill="none" aria-hidden="true">
-                           <path d="M3 9L9 3M9 3H4M9 3V8" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round"/>
-                         </svg>
-                       </a>
-                    */}
-                  </div>
-                </div>
-
-                <div className="feedback-card__action">
-                  <div className="feedback-card__action-text">
-                    <p className="text-body--sm font--medium color--primary">
-                      Send feedback reports to candidates
-                    </p>
-                    <p className="text-body--xs color--tertiary">
-                      {form.sendFeedbackReports === 'yes'
-                        ? 'Reports will be sent automatically on completion.'
-                        : 'Reports will not be shared with candidates.'}
-                    </p>
-                  </div>
-                  <label className="toggle-switch" htmlFor="sendFeedbackReports">
-                    <input
-                      type="checkbox"
-                      id="sendFeedbackReports"
-                      className="toggle-switch__input"
-                      checked={form.sendFeedbackReports === 'yes'}
-                      onChange={(e) =>
-                        setForm((p) => ({ ...p, sendFeedbackReports: e.target.checked ? 'yes' : 'no' }))
-                      }
-                    />
-                    <span className="toggle-switch__track" aria-hidden="true">
-                      <span className="toggle-switch__thumb" />
-                    </span>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Section 6 — Portal branding (hidden for starter) */}
-            {!isStarter && (
-              <div ref={s6Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
-                <p className="details-section__label">Portal branding</p>
-                <div className="form-field">
-                  <label
-                    className="form-field__label text-label--sm color--tertiary"
-                    htmlFor="brandLogo"
-                  >
-                    Logo
-                  </label>
-                  <div
-                    className={`logo-upload${logoFileName ? ' has-file' : ''}`}
-                    onClick={() => document.getElementById('brandLogo')?.click()}
-                    onDragOver={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.classList.add('is-dragging');
-                    }}
-                    onDragLeave={(e) => e.currentTarget.classList.remove('is-dragging')}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      e.currentTarget.classList.remove('is-dragging');
-                      const file = e.dataTransfer.files[0];
-                      if (file) handleLogoFile(file);
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        document.getElementById('brandLogo')?.click();
-                      }
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    aria-label="Upload logo"
-                  >
-                    <input
-                      id="brandLogo"
-                      type="file"
-                      accept="image/*"
-                      className="logo-upload__input"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleLogoFile(file);
-                      }}
-                    />
-                    {logoFileName ? (
-                      <>
-                        <span className="logo-upload__icon" aria-hidden="true">✓</span>
-                        <span className="logo-upload__filename text-body--sm color--primary">
-                          {logoFileName}
-                        </span>
-                        <span className="text-body--xs color--tertiary">Click to replace</span>
-                      </>
-                    ) : (
-                      <>
-                        <span className="logo-upload__icon" aria-hidden="true">↑</span>
-                        <span className="text-body--sm color--secondary">
-                          Click to upload your logo
-                        </span>
-                        <span className="text-body--xs color--tertiary">
-                          PNG, JPG or SVG — max 2MB
-                        </span>
-                      </>
-                    )}
-                  </div>
-                </div>
-                <p className="text-body--xs color--tertiary">
-                  Please use hex codes for the colours you want used.
-                </p>
-                <div className="form-row">
-                  {/* Brand colour 1 */}
-                  <div className="form-field">
-                    <label
-                      className="form-field__label text-label--sm color--tertiary"
-                      htmlFor="brandColour1"
-                    >
-                      Brand colour 1
-                    </label>
-                    <div className="colour-input-row">
-                      <input
-                        id="brandColour1"
-                        type="text"
-                        className={`form-field__input${err.brandColour1 ? ' has-error' : ''}`}
-                        value={form.brandColour1}
-                        onChange={(e) => setField('brandColour1', normaliseHex(e.target.value))}
-                        onBlur={() => handleBlur('brandColour1')}
-                        placeholder="#472d6a"
-                        maxLength={7}
-                        aria-invalid={!!err.brandColour1}
-                        aria-describedby={err.brandColour1 ? 'brandColour1-error' : undefined}
-                      />
-                      {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour1) && (
-                        <span
-                          className="colour-swatch"
-                          style={{ background: form.brandColour1 }}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-                    {err.brandColour1 && (
-                      <span id="brandColour1-error" className="form-field__error" role="alert">{err.brandColour1}</span>
-                    )}
-                  </div>
-                  {/* Brand colour 2 */}
-                  <div className="form-field">
-                    <label
-                      className="form-field__label text-label--sm color--tertiary"
-                      htmlFor="brandColour2"
-                    >
-                      Brand colour 2
-                    </label>
-                    <div className="colour-input-row">
-                      <input
-                        id="brandColour2"
-                        type="text"
-                        className={`form-field__input${err.brandColour2 ? ' has-error' : ''}`}
-                        value={form.brandColour2}
-                        onChange={(e) => setField('brandColour2', normaliseHex(e.target.value))}
-                        onBlur={() => handleBlur('brandColour2')}
-                        placeholder="#fec601"
-                        maxLength={7}
-                        aria-invalid={!!err.brandColour2}
-                        aria-describedby={err.brandColour2 ? 'brandColour2-error' : undefined}
-                      />
-                      {/^#([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/.test(form.brandColour2) && (
-                        <span
-                          className="colour-swatch"
-                          style={{ background: form.brandColour2 }}
-                          aria-hidden="true"
-                        />
-                      )}
-                    </div>
-                    {err.brandColour2 && (
-                      <span id="brandColour2-error" className="form-field__error" role="alert">{err.brandColour2}</span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Section 7 — Campaign dates (Starter / Essential only; CS handles Growth & Scale) */}
-            {(recommendedTier === 'starter' || recommendedTier === 'essential') && (
-            <div ref={s7Ref as React.RefObject<HTMLDivElement>} className="stack--md details-section">
-              <p className="details-section__label">Campaign dates</p>
-
-              <p className="text-body--sm color--secondary">
-                If you aren&apos;t sure of when you want your start and end dates to be, just leave them blank. You will be able to start inviting candidates once your link is live and can let us know an end date at a later stage. If you wish to amend these dates later, simply email <a href="mailto:support@veroassess.com" className="color--brand">support@veroassess.com</a>.
-              </p>
-
-              {/* Apply to all toggle */}
-              <div className="dates-apply-all">
-                <div className="toggle-row">
-                  <label className="toggle-switch" htmlFor="applyAllDates">
-                    <input
-                      type="checkbox"
-                      id="applyAllDates"
-                      className="toggle-switch__input"
-                      checked={applyAllDates}
-                      onChange={(e) => {
-                        setApplyAllDates(e.target.checked);
-                        if (e.target.checked) setOverriddenRoleDates(new Set());
-                      }}
-                    />
-                    <span className="toggle-switch__track" aria-hidden="true">
-                      <span className="toggle-switch__thumb" />
-                    </span>
-                  </label>
-                  <span className="text-body--sm color--secondary">
-                    Apply the same dates to all roles
-                  </span>
-                </div>
-
-                {applyAllDates && (
-                  <div className="dates-apply-all__inputs">
-                    <div className="form-field">
-                      <label
-                        className="form-field__label text-label--sm color--tertiary"
-                        htmlFor="globalOpenDate"
-                      >
-                        Open date
-                      </label>
-                      <input
-                        id="globalOpenDate"
-                        type="date"
-                        className="form-field__input"
-                        value={globalOpenDate}
-                        min={MIN_OPEN_DATE}
-                        onChange={(e) => handleGlobalDateChange('openDate', e.target.value)}
-                      />
-                    </div>
-                    <div className="form-field">
-                      <label
-                        className="form-field__label text-label--sm color--tertiary"
-                        htmlFor="globalCloseDate"
-                      >
-                        Close date
-                      </label>
-                      <input
-                        id="globalCloseDate"
-                        type="date"
-                        className="form-field__input"
-                        value={globalCloseDate}
-                        min={globalOpenDate || MIN_OPEN_DATE}
-                        max={getMaxCloseDate(globalOpenDate)}
-                        onChange={(e) => handleGlobalDateChange('closeDate', e.target.value)}
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Per-category accordion — always visible; override individual roles when apply-all is on */}
-              {applyAllDates && (
-                <p className="text-body--xs color--tertiary dates-override-hint">
-                  Need different dates for some roles? Override them below.
-                </p>
-              )}
-                <div className="dates-categories">
-                  {dateRolesByCategory.map((cat) => {
-                    const isOpen = openDateCategories.has(cat.slug);
-                    const datesSetCount = cat.roles.filter((r) => {
-                      const d = form.roleDates[r.roleId];
-                      return d?.openDate && d?.closeDate;
-                    }).length;
-                    const overrideCount = applyAllDates
-                      ? cat.roles.filter((r) => overriddenRoleDates.has(r.roleId)).length
-                      : 0;
-
-                    return (
-                      <div
-                        key={cat.slug}
-                        className={`dates-category${isOpen ? ' is-open' : ''}`}
-                      >
-                        <button
-                          type="button"
-                          className="dates-category__header"
-                          onClick={() => toggleDateCategory(cat.slug)}
-                          aria-expanded={isOpen}
-                        >
-                          <div className="dates-category__info">
-                            <span className="text-body--sm font--medium color--primary">
-                              {cat.name}
-                            </span>
-                            <span className="text-label--sm color--tertiary">
-                              {cat.roles.length} role{cat.roles.length !== 1 ? 's' : ''}
-                            </span>
-                          </div>
-                          <div className="dates-category__badges">
-                            {datesSetCount > 0 && (
-                              <span className="section-label">
-                                {datesSetCount} date{datesSetCount !== 1 ? 's' : ''} set
-                              </span>
-                            )}
-                            {overrideCount > 0 && (
-                              <span className="section-label dates-override-badge">
-                                {overrideCount} override{overrideCount !== 1 ? 's' : ''}
-                              </span>
-                            )}
-                            <span className="role-category__chevron" aria-hidden="true" />
-                          </div>
-                        </button>
-
-                        {isOpen && (
-                          <div
-                            ref={makeDatesCategoryBodyRef(cat.slug)}
-                            className="dates-category__body"
-                          >
-                            {cat.roles.map((role, idx) => {
-                              const dates = form.roleDates[role.roleId] ?? {
-                                openDate: '',
-                                closeDate: '',
-                              };
-                              return (
-                                <div
-                                  key={role.roleId}
-                                  className={`dates-role-row${
-                                    idx === cat.roles.length - 1 ? ' dates-role-row--last' : ''
-                                  }`}
-                                >
-                                  <span className="text-body--sm color--secondary dates-role-row__name">
-                                    {role.roleName}
-                                  </span>
-                                  <div className="form-field">
-                                    <label
-                                      className="form-field__label text-label--sm color--tertiary"
-                                      htmlFor={`open-${role.roleId}`}
-                                    >
-                                      Open date
-                                    </label>
-                                    <input
-                                      id={`open-${role.roleId}`}
-                                      type="date"
-                                      className="form-field__input"
-                                      value={dates.openDate}
-                                      min={MIN_OPEN_DATE}
-                                      onChange={(e) => {
-                                        if (applyAllDates) {
-                                          setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));
-                                        }
-                                        setForm((p) => ({
-                                          ...p,
-                                          roleDates: {
-                                            ...p.roleDates,
-                                            [role.roleId]: {
-                                              ...dates,
-                                              openDate: e.target.value,
-                                            },
-                                          },
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                  <div className="form-field">
-                                    <label
-                                      className="form-field__label text-label--sm color--tertiary"
-                                      htmlFor={`close-${role.roleId}`}
-                                    >
-                                      Close date
-                                    </label>
-                                    <input
-                                      id={`close-${role.roleId}`}
-                                      type="date"
-                                      className="form-field__input"
-                                      value={dates.closeDate}
-                                      min={dates.openDate || MIN_OPEN_DATE}
-                                      max={getMaxCloseDate(dates.openDate)}
-                                      onChange={(e) => {
-                                        if (applyAllDates) {
-                                          setOverriddenRoleDates((prev) => new Set(prev).add(role.roleId));
-                                        }
-                                        setForm((p) => ({
-                                          ...p,
-                                          roleDates: {
-                                            ...p.roleDates,
-                                            [role.roleId]: {
-                                              ...dates,
-                                              closeDate: e.target.value,
-                                            },
-                                          },
-                                        }));
-                                      }}
-                                    />
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        )}
-                      </div>
-                    );
-                  })}
-                </div>
-            </div>
-            )}
-
-            {/* Inline back + continue have moved to the sticky PlanBar.
-                We still surface the validation blocker inline so the user
-                knows why the sticky submit is disabled. */}
+            {/* Back + Continue live in the sticky PlanBar. We still surface
+                the validation blocker inline so the user knows why the
+                sticky submit is disabled. */}
             {submitAttempted && blockerMessage && (
               <div className="details-actions">
                 <p className="form-field__error" role="alert">{blockerMessage}</p>
@@ -1372,9 +300,7 @@ export default function DetailsPage() {
 
           </form>
 
-          {/* ── Sidebar — same component as the role picker, read-only.
-              No CTA here on this page — the inline submit + back buttons
-              at the bottom of the form drive navigation. ── */}
+          {/* ── Sidebar — same component as the role picker, read-only. ── */}
           <aside className="basket">
             <div className="basket__sticky">
               <BasketContent mode="review" />

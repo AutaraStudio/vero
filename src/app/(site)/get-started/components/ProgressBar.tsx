@@ -1,14 +1,16 @@
 'use client';
 
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Fragment, useEffect, useRef } from 'react';
 import { gsap } from '@/lib/gsap';
 
 const STEPS = [
   { label: 'Select roles',  path: '/get-started' },
-  { label: 'Your details', path: '/get-started/details' },
-  { label: 'Contract',     path: '/get-started/contract' },
-  { label: 'Payment',      path: '/get-started/payment' },
+  { label: 'Your details',  path: '/get-started/details' },
+  { label: 'Portal setup',  path: '/get-started/portal-setup' },
+  { label: 'Contract',      path: '/get-started/contract' },
+  { label: 'Payment',       path: '/get-started/payment' },
 ];
 
 export default function ProgressBar() {
@@ -92,6 +94,44 @@ export default function ProgressBar() {
               isCurrent ? 'is-current' : '',
             ].filter(Boolean).join(' ');
 
+            /* Completed steps are clickable — they act as a back button
+               to any earlier step. The current + future steps render as
+               plain (non-interactive) markup. */
+            const stepInner = (
+              <>
+                <span
+                  className="progress-bar__circle"
+                  aria-hidden="true"
+                  ref={(el) => { circleRefs.current[i] = el; }}
+                >
+                  {isCompleted ? (
+                    <svg
+                      className="progress-bar__checkmark"
+                      viewBox="0 0 16 16"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path className="progress-bar__check-path" d="M3 8.5L6.5 12L13 5" />
+                    </svg>
+                  ) : (
+                    <>
+                      {isCurrent && (
+                        <span className="progress-bar__pulse" aria-hidden="true" />
+                      )}
+                      <span className="progress-bar__step-number">{i + 1}</span>
+                    </>
+                  )}
+                </span>
+                <span className="progress-bar__label text-label--sm">
+                  {step.label}
+                </span>
+              </>
+            );
+
             return (
               <Fragment key={step.path}>
                 <li
@@ -99,36 +139,17 @@ export default function ProgressBar() {
                   role="listitem"
                   aria-current={isCurrent ? 'step' : undefined}
                 >
-                  <span
-                    className="progress-bar__circle"
-                    aria-hidden="true"
-                    ref={(el) => { circleRefs.current[i] = el; }}
-                  >
-                    {isCompleted ? (
-                      <svg
-                        className="progress-bar__checkmark"
-                        viewBox="0 0 16 16"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        aria-hidden="true"
-                      >
-                        <path className="progress-bar__check-path" d="M3 8.5L6.5 12L13 5" />
-                      </svg>
-                    ) : (
-                      <>
-                        {isCurrent && (
-                          <span className="progress-bar__pulse" aria-hidden="true" />
-                        )}
-                        <span className="progress-bar__step-number">{i + 1}</span>
-                      </>
-                    )}
-                  </span>
-                  <span className="progress-bar__label text-label--sm">
-                    {step.label}
-                  </span>
+                  {isCompleted ? (
+                    <Link
+                      href={step.path}
+                      className="progress-bar__step-link"
+                      aria-label={`Back to ${step.label}`}
+                    >
+                      {stepInner}
+                    </Link>
+                  ) : (
+                    stepInner
+                  )}
                 </li>
                 {i < STEPS.length - 1 && (
                   <li

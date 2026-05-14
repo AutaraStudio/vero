@@ -29,18 +29,12 @@
 @media (max-width: 991px) {
   .contract-layout {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "inner"
-      "sidebar";
-    gap: 2rem;
+    grid-template-areas: "inner";
   }
+  /* The sidebar is hidden on mobile — its content is reachable via the
+     slide-over drawer opened from the PlanBar's summary strip. */
   .contract-layout > .basket {
-    border-right: none;
-    border-top: 1px solid var(--color--border-default);
-  }
-  .contract-layout > .basket .basket__sticky {
-    position: static;
-    height: auto;
+    display: none;
   }
 }
 

@@ -114,7 +114,7 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
 
                 {visibleRoles.map((role) => (
                   <div key={role.roleId} className="basket__role-chip">
-                    <span className="text-body--sm font--medium color--primary basket__role-chip__name">
+                    <span className="font--medium color--primary basket__role-chip__name">
                       {role.roleName}
                     </span>
                     {!isReview && (
@@ -191,31 +191,26 @@ export default function BasketContent({ categories, mode = 'edit' }: BasketConte
               <span className="basket__tier-name">{tierInfo.name}</span>
             </div>
 
-            {/* Frequency toggle — interactive in edit mode, plain label in review */}
+            {/* Frequency toggle — interactive on every checkout step so
+                buyers can switch annual / monthly right up to payment. */}
             {tierInfo.hasFrequencyToggle && (
               <div className="basket__tier-freq-row">
-                {isReview ? (
-                  <span className="basket__freq-label section-label">
-                    {paymentFrequency === 'monthly' ? 'Monthly' : 'Annual'}
-                  </span>
-                ) : (
-                  <div className="basket__freq-toggle">
-                    <button
-                      className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
-                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
-                      type="button"
-                    >
-                      Annual
-                    </button>
-                    <button
-                      className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
-                      onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
-                      type="button"
-                    >
-                      Monthly
-                    </button>
-                  </div>
-                )}
+                <div className="basket__freq-toggle">
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'annual' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'annual' })}
+                    type="button"
+                  >
+                    Annual
+                  </button>
+                  <button
+                    className={`basket__freq-btn${paymentFrequency === 'monthly' ? ' is-active' : ''}`}
+                    onClick={() => dispatch({ type: 'SET_PAYMENT_FREQUENCY', payload: 'monthly' })}
+                    type="button"
+                  >
+                    Monthly
+                  </button>
+                </div>
               </div>
             )}
 

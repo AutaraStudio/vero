@@ -23,18 +23,12 @@
 @media (max-width: 991px) {
   .payment-layout {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "form"
-      "sidebar";
-    gap: 2.5rem;
+    grid-template-areas: "form";
   }
+  /* The sidebar is hidden on mobile — its content is reachable via the
+     slide-over drawer opened from the PlanBar's summary strip. */
   .payment-layout > .basket {
-    border-right: none;
-    border-top: 1px solid var(--color--border-default);
-  }
-  .payment-layout > .basket .basket__sticky {
-    position: static;
-    height: auto;
+    display: none;
   }
 }
 
