@@ -3,11 +3,10 @@
    Shell positioning handled by FixedBar component
 ============================================================ */
 
-/* The fixed left sidebar sits in front of this bar. Offset the bar's
-   content so it begins just past the sidebar's right edge rather than
-   running behind it. Desktop only — below 992px the sidebar is stacked
-   inline (checkout pages) or the bar is hidden (/get-started), so the
-   bar reverts to its normal centred container. */
+/* Desktop (≥992px): the fixed left sidebar sits in front of this bar.
+   Offset the bar's content so it begins just past the sidebar's right
+   edge. Below 992px the sidebar is hidden + replaced by the slide-over
+   drawer, so the bar reverts to a normal centred container. */
 @media (min-width: 992px) {
   .plan-bar-fixed .container {
     max-width: none;
@@ -17,7 +16,15 @@
   }
 }
 
-/* Left — tier name + billing label */
+/* ── Desktop inline tier + price block ── */
+
+.plan-bar__desktop {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
+  flex: 1;
+  min-width: 0;
+}
 
 .plan-bar__left {
   display: flex;
@@ -37,8 +44,6 @@
 .plan-bar__freq-label {
   line-height: 1;
 }
-
-/* Centre — price + limits */
 
 .plan-bar__centre {
   display: flex;
@@ -84,6 +89,12 @@
   flex-shrink: 0;
 }
 
+/* ── Mobile summary strip — hidden on desktop ── */
+
+.plan-bar__summary {
+  display: none;
+}
+
 /* ── Responsive ── */
 
 /* Hidden on mobile via the parent class — used on /get-started where the
@@ -95,33 +106,83 @@
 }
 
 @media (max-width: 900px) {
-  .plan-bar__hide-tablet,
-  .plan-bar__limits-row {
+  .plan-bar__hide-tablet {
     display: none;
   }
 }
 
-@media (max-width: 600px) {
-  /* Mobile: just the price + the CTA button. Hide tier name, billing
-     label, and any extra meta — the bar's job on small screens is to
-     get the user to the next step quickly. */
-  .plan-bar__left,
-  .plan-bar__freq-label,
-  .plan-bar__limits-row {
+/* Mobile / tablet (≤991px): the desktop sidebar is hidden, so the bar
+   stacks — a tappable summary strip on top (opens the drawer with the
+   full basket + billing toggle), and the Back + Continue buttons spaced
+   apart below. */
+@media (max-width: 991px) {
+  .plan-bar-fixed .fixed-bar__inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+
+  .plan-bar__desktop {
     display: none;
   }
 
-  .plan-bar__centre {
-    flex: 0 0 auto;
+  .plan-bar__summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    background: var(--color--surface-sunken);
+    border: 1px solid var(--color--border-default);
+    border-radius: var(--radius--md);
+    cursor: pointer;
+    font-family: inherit;
+    text-align: left;
+    transition: border-color var(--transition--default);
   }
 
-  .plan-bar__price-row {
-    align-items: baseline;
-    gap: 0.5rem;
+  .plan-bar__summary:hover {
+    border-color: var(--color--border-strong);
   }
 
-  /* Bigger, more confident price */
-  .plan-bar__price {
-    font-size: var(--font--h3);
+  .plan-bar__summary-text {
+    display: flex;
+    flex-direction: column;
+    gap: 0.05rem;
+    min-width: 0;
+  }
+
+  .plan-bar__summary-price {
+    font-size: var(--font--body);
+    font-weight: 700;
+    color: var(--color--text-primary);
+    letter-spacing: -0.01em;
+  }
+
+  .plan-bar__summary-cue {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    flex-shrink: 0;
+    color: var(--color--text-brand);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: var(--font--label-ls);
+  }
+
+  .plan-bar__actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+}
+
+/* The order-summary drawer is a mobile affordance only — if the viewport
+   grows past the sidebar breakpoint while it's open, hide it (the
+   desktop sidebar carries the same content). */
+@media (min-width: 992px) {
+  .plan-bar__drawer {
+    display: none;
   }
 }

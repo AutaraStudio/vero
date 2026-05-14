@@ -108,6 +108,14 @@
   padding-bottom: var(--gs-planbar-h);
 }
 
+/* ≤991px the PlanBar stacks into two rows (summary strip + button row),
+   so it's taller — reserve more bottom clearance to match. */
+@media (max-width: 991px) {
+  .get-started-shell {
+    --gs-planbar-h: 7.5rem;
+  }
+}
+
 /* ── Progress bar ── */
 
 .get-started-progress {

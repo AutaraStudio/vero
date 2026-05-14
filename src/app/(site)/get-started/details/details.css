@@ -34,21 +34,12 @@
 @media (max-width: 991px) {
   .details-layout {
     grid-template-columns: 1fr;
-    grid-template-areas:
-      "form"
-      "sidebar";
-    gap: 2.5rem;
+    grid-template-areas: "form";
   }
-  /* Reset the sidebar's full-height stickiness on mobile — it should
-     just be an inline section below the form, not a fixed panel. */
+  /* The sidebar is hidden on mobile — its content is reachable via the
+     slide-over drawer opened from the PlanBar's summary strip. */
   .details-layout > .basket {
-    border-right: none;
-    border-top: 1px solid var(--color--border-default);
-    min-height: 0;
-  }
-  .details-layout > .basket .basket__sticky {
-    position: static;
-    height: auto;
+    display: none;
   }
 }
 
