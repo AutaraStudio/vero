@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Button from '@/components/ui/Button';
+import { isValidEmail } from '@/lib/emailValidation';
 import './ContactForm.css';
 
 type Status = 'idle' | 'submitting' | 'success' | 'error';
@@ -22,14 +23,12 @@ interface Errors {
   form?: string;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 function validate(values: FormState): Errors {
   const e: Errors = {};
   if (!values.firstName.trim()) e.firstName = 'Please enter your first name';
   if (!values.lastName.trim())  e.lastName  = 'Please enter your surname';
   if (!values.email.trim())     e.email     = 'Please enter your email';
-  else if (!EMAIL_RE.test(values.email.trim())) e.email = 'Please enter a valid email';
+  else if (!isValidEmail(values.email)) e.email = 'Please enter a valid email';
   if (!values.message.trim())   e.message   = 'Please enter a message';
   else if (values.message.trim().length < 10) e.message = 'A bit more detail would help (at least 10 characters)';
   return e;
