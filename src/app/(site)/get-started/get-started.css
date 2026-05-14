@@ -135,6 +135,28 @@
   flex-shrink: 0;
 }
 
+/* Completed steps are wrapped in a link so they double as a back
+   button — the circle + label are clickable and route to that step. */
+.progress-bar__step-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--radius--full);
+  transition: opacity var(--transition--default);
+}
+
+.progress-bar__step-link:hover {
+  opacity: 0.7;
+}
+
+.progress-bar__step-link:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 3px;
+}
+
 .progress-bar__circle {
   width: 1.75rem;
   height: 1.75rem;
