@@ -161,7 +161,7 @@
   position: relative;
   display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   background: var(--color--surface-raised);
   border: 1px solid var(--color--border-default);
   border-radius: var(--radius--lg);
@@ -183,7 +183,7 @@
 .intro-block__thumb-img--static {
   border-radius: var(--radius--lg);
   border: 1px solid var(--color--border-default);
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
 }
 
 /* Placeholder card shown when no image is uploaded yet but the slot is

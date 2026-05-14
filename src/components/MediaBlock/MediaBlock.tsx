@@ -89,7 +89,7 @@ interface MediaBlockProps {
   /** The projected mediaBlock data from Sanity */
   media?: MediaBlockData | null;
 
-  /** Aspect ratio for both the image and the placeholder. Default '16 / 10'. */
+  /** Aspect ratio for both the image and the placeholder. Default '16 / 9'. */
   aspectRatio?: string;
 
   /** Optional accent CSS variable used to tint the placeholder card. */
@@ -117,7 +117,7 @@ interface MediaBlockProps {
  */
 export default function MediaBlock({
   media,
-  aspectRatio = '16 / 10',
+  aspectRatio = '16 / 9',
   placeholderAccent,
   borderRadius = 'var(--radius--lg)',
   objectFit = 'cover',

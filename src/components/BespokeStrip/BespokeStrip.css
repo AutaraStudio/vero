@@ -50,7 +50,7 @@
 .pricing-bespoke__visual {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 9;
   border-radius: var(--radius--lg);
   overflow: hidden;
   background: color-mix(in srgb, var(--swatch--neutral-0) 8%, transparent);
