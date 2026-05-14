@@ -40,7 +40,7 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
   const [hasOpenedContract, setHasOpenedContract] = useState(false);
   const [accepted, setAccepted] = useState(false);
 
-  /* Publish disabled-state to PlanBar — its "Continue to payment →"
+  /* Publish disabled-state to PlanBar — its "Continue to payment"
      button stays disabled until the user has opened + accepted the T&Cs. */
   usePublishPlanBarSubmitDisabled(!accepted);
 

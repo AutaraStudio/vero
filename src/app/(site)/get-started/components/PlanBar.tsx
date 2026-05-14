@@ -67,7 +67,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
   };
 
   const step1Cta = recommendedTier === 'bespoke'
-    ? { label: 'Discuss your requirements →', onClick: () => router.push('/get-started/bespoke') }
+    ? { label: 'Discuss your requirements', onClick: () => router.push('/get-started/bespoke') }
     : { label: 'Continue to checkout', onClick: handleStep1Continue };
 
   const handleContractContinue = () => {
@@ -77,20 +77,20 @@ export default function PlanBar({ theme }: PlanBarProps) {
 
   const ctaMap: Record<string, { label: string; href?: string; formId?: string; onClick?: () => void }> = {
     '/get-started':          step1Cta,
-    '/get-started/details':  { label: 'Continue to contract →', formId: 'details-form' },
-    '/get-started/contract': { label: 'Continue to payment →',  onClick: handleContractContinue },
-    '/get-started/payment':  { label: 'Complete order →',       href: '/get-started/confirmation' },
+    '/get-started/details':  { label: 'Continue to contract', formId: 'details-form' },
+    '/get-started/contract': { label: 'Continue to payment',  onClick: handleContractContinue },
+    '/get-started/payment':  { label: 'Complete order',       href: '/get-started/confirmation' },
   };
 
-  const cta = ctaMap[pathname] ?? { label: 'Continue →', href: '/get-started/details' };
+  const cta = ctaMap[pathname] ?? { label: 'Continue', href: '/get-started/details' };
 
   /* Back button — moved out of each page into the sticky bar. /get-started
      is the first step so no back button there; the rest point to the
      previous step's URL. */
   const backMap: Record<string, { label: string; href: string }> = {
-    '/get-started/details':  { label: '← Back to roles',    href: '/get-started' },
-    '/get-started/contract': { label: '← Back to details',  href: '/get-started/details' },
-    '/get-started/payment':  { label: '← Back to terms',    href: '/get-started/contract' },
+    '/get-started/details':  { label: 'Back to roles',    href: '/get-started' },
+    '/get-started/contract': { label: 'Back to details',  href: '/get-started/details' },
+    '/get-started/payment':  { label: 'Back to terms',    href: '/get-started/contract' },
   };
   const back = backMap[pathname];
 

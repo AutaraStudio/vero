@@ -440,7 +440,7 @@ export default function RolePicker({ categories }: RolePickerProps) {
                   size="sm"
                   onClick={handleContinue}
                 >
-                  {recommendedTier === 'bespoke' ? 'Discuss requirements →' : 'Continue →'}
+                  {recommendedTier === 'bespoke' ? 'Discuss requirements' : 'Continue'}
                 </Button>
               </div>
             </div>

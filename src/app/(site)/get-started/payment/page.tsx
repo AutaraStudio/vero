@@ -79,7 +79,7 @@ function StripePaymentForm({
     onStateChange({
       submit: handleSubmit,
       disabled: !stripe || !elements || isProcessing || !ready,
-      label: isProcessing ? 'Processing payment...' : 'Complete order →',
+      label: isProcessing ? 'Processing payment...' : 'Complete order',
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stripe, elements, isProcessing, ready]);
@@ -126,7 +126,7 @@ function PaymentContent() {
   const [cardState, setCardState] = useState<CardSubmitState>({
     submit: undefined,
     disabled: true,
-    label: 'Complete order →',
+    label: 'Complete order',
   });
   const [clientSecret, setClientSecret] = useState<string | null>(null);
   const [intentCreated, setIntentCreated] = useState(false);
@@ -179,7 +179,7 @@ function PaymentContent() {
   usePublishPlanBarSubmitLabel(
     isCard
       ? cardState.label
-      : (isLoading ? 'Submitting...' : 'Complete order →'),
+      : (isLoading ? 'Submitting...' : 'Complete order'),
   );
 
   // ── Build checkout payload ──
