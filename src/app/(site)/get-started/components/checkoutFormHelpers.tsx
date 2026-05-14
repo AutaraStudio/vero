@@ -162,6 +162,25 @@ export function UserEmailInput({
     }
   };
 
+  /* Auto-add on blur — the most common mistake is typing an email and
+     moving on (or clicking Continue) without pressing Add, which
+     silently discards it. Adding on blur means a valid pending email is
+     never lost. Clicking the Add button itself doesn't blur the input
+     (see onMouseDown preventDefault below), so this can't double-fire. */
+  const handleBlur = () => {
+    if (inputValue.trim()) tryAdd();
+  };
+
+  /* The Add button reads as "ready to use" when the input holds a valid,
+     not-yet-added email — a clearer affordance than the plain enabled
+     state. */
+  const inputTrimmed = inputValue.trim().toLowerCase();
+  const isReadyToAdd =
+    !!inputTrimmed &&
+    !atLimit &&
+    isValidEmail(inputTrimmed) &&
+    !emails.includes(inputTrimmed);
+
   // Filter emails by search query
   const filteredEmails = searchQuery
     ? emails
@@ -241,6 +260,7 @@ export function UserEmailInput({
           value={inputValue}
           onChange={(e) => handleInputChange(e.target.value)}
           onKeyDown={handleKeyDown}
+          onBlur={handleBlur}
           placeholder={atLimit ? 'User limit reached' : 'jane@company.com'}
           aria-label="Add email address"
           aria-invalid={!!addError}
@@ -249,7 +269,10 @@ export function UserEmailInput({
         />
         <button
           type="button"
-          className="user-emails__add-btn"
+          className={`user-emails__add-btn${isReadyToAdd ? ' is-ready' : ''}`}
+          /* Keep focus on the input when Add is clicked so the input's
+             onBlur auto-add can't fire a duplicate alongside this click. */
+          onMouseDown={(e) => e.preventDefault()}
           onClick={tryAdd}
           disabled={!inputValue.trim() || atLimit}
         >
@@ -268,9 +291,20 @@ export function UserEmailInput({
       )}
 
       {emails.length === 0 ? (
-        <span className="text-body--xs user-emails__prompt">
-          Add at least 1 email address to continue
-        </span>
+        <div className="user-emails__empty" role="status">
+          <span className="user-emails__empty-icon" aria-hidden="true">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="9" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M12 8v5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+              <circle cx="12" cy="16.25" r="1" fill="currentColor" />
+            </svg>
+          </span>
+          <p className="user-emails__empty-text">
+            <strong>No users added yet.</strong> Enter the email address of
+            everyone who needs to log in and view candidate results, then press
+            Add or hit Enter. At least one is required to continue.
+          </p>
+        </div>
       ) : (
         <span className="text-body--xs color--tertiary">
           {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added

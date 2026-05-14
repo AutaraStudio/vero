@@ -214,11 +214,37 @@
   margin-inline-start: 0.125rem;
 }
 
-/* Empty-state prompt under the user-emails input. Brand-coloured to draw
-   the eye without being alarming — flips to the neutral counter once at
-   least one email has been added. */
-.user-emails__prompt {
-  color: var(--color--text-brand);
+/* Empty-state callout under the user-emails input. A distinct bordered
+   panel — not just a line of text — so the "you must add at least one
+   email" requirement is impossible to miss. Disappears once the first
+   email is added, replaced by the neutral "N of M added" counter. */
+.user-emails__empty {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  padding: 0.75rem 0.875rem;
+  background: var(--color--surface-sunken);
+  border: 1px solid var(--color--border-default);
+  border-left: 3px solid var(--swatch--purple-500);
+  border-radius: var(--radius--md);
+}
+
+.user-emails__empty-icon {
+  display: flex;
+  flex-shrink: 0;
+  margin-top: 0.0625rem;
+  color: var(--swatch--purple-500);
+}
+
+.user-emails__empty-text {
+  margin: 0;
+  font-size: var(--font--body-sm);
+  line-height: 1.5;
+  color: var(--color--text-secondary);
+}
+
+.user-emails__empty-text strong {
+  color: var(--color--text-primary);
   font-weight: 600;
 }
 
@@ -555,6 +581,12 @@
 .user-emails__add-btn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* "Ready" state — the input holds a valid, not-yet-added email. A soft
+   focus-style ring makes Add read as the obvious next action. */
+.user-emails__add-btn.is-ready {
+  box-shadow: 0 0 0 3px var(--color--interactive-secondary-hover-bg);
 }
 
 .user-emails__chips {

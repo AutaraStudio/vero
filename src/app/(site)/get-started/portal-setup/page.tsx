@@ -209,9 +209,20 @@ export default function PortalSetupPage() {
         return !!(d?.openDate && d?.closeDate);
       });
 
+  /* A valid email typed into the add-field but not yet committed with
+     "Add" still counts as filled — the user clearly intends to add it,
+     and handleSubmit flushes it on Continue. Without this the Continue
+     button would stay disabled even though the user has done the work. */
+  const pendingEmail = emailInput.trim().toLowerCase();
+  const hasPendingValidEmail =
+    !!pendingEmail &&
+    isValidEmail(pendingEmail) &&
+    !userEmails.includes(pendingEmail) &&
+    userEmails.length < userLimit;
+
   const usersFilled = isStarter
     ? form.usersToAdd.trim().length > 0
-    : userEmails.length > 0;
+    : userEmails.length > 0 || hasPendingValidEmail;
 
   const logoFilled = !needsBranding ? true : !!form.logoFile;
 
@@ -240,12 +251,32 @@ export default function PortalSetupPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitAttempted(true);
+
+    /* Flush a valid pending email the user typed but didn't commit with
+       "Add" — clicking Continue straight after typing would otherwise
+       silently drop it. */
+    let effectiveEmails = userEmails;
+    if (hasPendingValidEmail) {
+      effectiveEmails = [...userEmails, pendingEmail];
+      setUserEmails(effectiveEmails);
+      setEmailInput('');
+    }
+
     const errs = validate();
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    dispatch({ type: 'SET_CONTACT_DETAILS', payload: form });
+
+    // Defensive — the PlanBar gates Continue on requiredFilled, but never
+    // proceed without at least one user on a non-Starter plan.
+    if (!isStarter && effectiveEmails.length === 0) return;
+
+    const effectiveForm: ContactDetails = isStarter
+      ? form
+      : { ...form, usersToAdd: effectiveEmails.join('\n') };
+
+    dispatch({ type: 'SET_CONTACT_DETAILS', payload: effectiveForm });
     router.push('/get-started/contract');
   };
 
