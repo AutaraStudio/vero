@@ -11,6 +11,7 @@ import { gsap } from '@/lib/gsap';
 import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import BasketContent from '../components/BasketContent';
+import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
 import './details.css';
 
 // ── Helper: normalise hex colour input ───────────────────────
@@ -642,6 +643,11 @@ export default function DetailsPage() {
       ? 'Please set open and close dates for every role.'
       : 'Please complete all required fields above.'
     : '';
+
+  /* Gate the sticky PlanBar's "Continue to contract" button — it stays
+     disabled (greyed out) until every required field on this step has
+     been completed. */
+  usePublishPlanBarSubmitDisabled(!requiredFilled);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
