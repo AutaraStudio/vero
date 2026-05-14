@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useCallback, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
@@ -130,7 +130,12 @@ function PaymentContent() {
     label: 'Complete order',
   });
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [intentCreated, setIntentCreated] = useState(false);
+  /* Records the payment frequency the current Stripe intent was built
+     for. The buyer can switch annual / monthly from the sidebar on any
+     step including this one, so when it changes here we drop the stale
+     intent and rebuild for the new amount. Also doubles as the
+     in-flight guard so the create effect can't double-fire. */
+  const intentBuiltForRef = useRef<string | null>(null);
   const [stripeIds, setStripeIds] = useState<{
     customerId?: string;
     subscriptionId?: string;
@@ -219,13 +224,20 @@ function PaymentContent() {
     };
   }, [selectedRoles, recommendedTier, paymentFrequency, autoRenewal, contactDetails]);
 
-  // ── Create Payment Intent when card tab is active ──
+  // ── Create / rebuild the Payment Intent for the card tab ──
+  // Rebuilds whenever the payment frequency changes so the Stripe
+  // amount always matches the price shown in the sidebar + PlanBar.
 
   useEffect(() => {
-    if (payMethod !== 'card' || intentCreated || clientSecret) return;
+    if (payMethod !== 'card') return;
     if (!recommendedTier || selectedRoles.length === 0) return;
+    // An intent for this exact frequency is already built or in flight.
+    if (intentBuiltForRef.current === paymentFrequency) return;
 
-    setIntentCreated(true);
+    intentBuiltForRef.current = paymentFrequency;
+    // Drop any stale intent for the previous frequency — the card form
+    // falls back to the loading state until the new secret arrives.
+    setClientSecret(null);
 
     fetch('/api/checkout', {
       method: 'POST',
@@ -243,12 +255,14 @@ function PaymentContent() {
           });
         } else {
           setError(data.error || 'Failed to initialize payment');
+          intentBuiltForRef.current = null; // allow a retry
         }
       })
       .catch(() => {
         setError('Failed to connect to payment service');
+        intentBuiltForRef.current = null; // allow a retry
       });
-  }, [payMethod, intentCreated, clientSecret, recommendedTier, selectedRoles.length, buildPayload]);
+  }, [payMethod, recommendedTier, selectedRoles.length, paymentFrequency, buildPayload]);
 
   // ── Handle successful payment ──
 
