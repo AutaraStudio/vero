@@ -76,10 +76,11 @@ export default function PlanBar({ theme }: PlanBarProps) {
   };
 
   const ctaMap: Record<string, { label: string; href?: string; formId?: string; onClick?: () => void }> = {
-    '/get-started':          step1Cta,
-    '/get-started/details':  { label: 'Continue to contract', formId: 'details-form' },
-    '/get-started/contract': { label: 'Continue to payment',  onClick: handleContractContinue },
-    '/get-started/payment':  { label: 'Complete order',       href: '/get-started/confirmation' },
+    '/get-started':              step1Cta,
+    '/get-started/details':      { label: 'Continue to portal setup', formId: 'details-form' },
+    '/get-started/portal-setup': { label: 'Continue to contract',     formId: 'portal-setup-form' },
+    '/get-started/contract':     { label: 'Continue to payment',      onClick: handleContractContinue },
+    '/get-started/payment':      { label: 'Complete order',           href: '/get-started/confirmation' },
   };
 
   const cta = ctaMap[pathname] ?? { label: 'Continue', href: '/get-started/details' };
@@ -88,9 +89,10 @@ export default function PlanBar({ theme }: PlanBarProps) {
      is the first step so no back button there; the rest point to the
      previous step's URL. */
   const backMap: Record<string, { label: string; href: string }> = {
-    '/get-started/details':  { label: 'Back to roles',    href: '/get-started' },
-    '/get-started/contract': { label: 'Back to details',  href: '/get-started/details' },
-    '/get-started/payment':  { label: 'Back to terms',    href: '/get-started/contract' },
+    '/get-started/details':      { label: 'Back to roles',        href: '/get-started' },
+    '/get-started/portal-setup': { label: 'Back to details',      href: '/get-started/details' },
+    '/get-started/contract':     { label: 'Back to portal setup', href: '/get-started/portal-setup' },
+    '/get-started/payment':      { label: 'Back to terms',        href: '/get-started/contract' },
   };
   const back = backMap[pathname];
 

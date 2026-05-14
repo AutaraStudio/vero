@@ -21,7 +21,7 @@ interface Props {
 
 export default function ContractClient({ starterContractUrl, multiRoleContractUrl }: Props) {
   const router = useRouter();
-  const { state, dispatch } = useBasket();
+  const { state } = useBasket();
   const { selectedRoles, contactDetails, recommendedTier } = state;
 
   /* Switch on the buyer's tier. Default to the multi-role doc if the tier
@@ -49,16 +49,15 @@ export default function ContractClient({ starterContractUrl, multiRoleContractUr
     setHasOpenedContract(true);
   };
 
-  const handleAccept = () => {
-    dispatch({ type: 'ACCEPT_CONTRACT' });
-    router.push('/get-started/payment');
-  };
+  /* Acceptance + navigation are driven by the sticky PlanBar — it
+     dispatches ACCEPT_CONTRACT and routes to /payment once the
+     `accepted` checkbox is ticked (published via the disabled signal
+     above). */
 
   // Animations
   const headingRef = useTextReveal({ scroll: false, delay: 0.05 });
   const bodyRef = useFadeUp({ delay: 0.15, y: 12 });
   const acceptRef = useFadeUp({ delay: 0.25, y: 16 });
-  const actionsRef = useFadeUp({ delay: 0.35, y: 16 });
 
   if (selectedRoles.length === 0) return null;
 

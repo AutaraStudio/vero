@@ -6,9 +6,10 @@ import { gsap } from '@/lib/gsap';
 
 const STEPS = [
   { label: 'Select roles',  path: '/get-started' },
-  { label: 'Your details', path: '/get-started/details' },
-  { label: 'Contract',     path: '/get-started/contract' },
-  { label: 'Payment',      path: '/get-started/payment' },
+  { label: 'Your details',  path: '/get-started/details' },
+  { label: 'Portal setup',  path: '/get-started/portal-setup' },
+  { label: 'Contract',      path: '/get-started/contract' },
+  { label: 'Payment',       path: '/get-started/payment' },
 ];
 
 export default function ProgressBar() {
