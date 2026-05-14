@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
 import { sendContactAcknowledgement } from '@/lib/email';
+import { isValidEmail } from '@/lib/emailValidation';
 
 /* HubSpot Forms v3 submission — public endpoint, region-agnostic.
    Every contact-form submission is mirrored to HubSpot so the sales
@@ -69,8 +70,6 @@ interface ContactPayload {
   message: string;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
 /* Server-side validation mirrors the client. Always re-validate server-side. */
 function validate(payload: unknown): { ok: true; data: ContactPayload } | { ok: false; error: string } {
   if (!payload || typeof payload !== 'object') return { ok: false, error: 'Invalid payload' };
@@ -85,7 +84,7 @@ function validate(payload: unknown): { ok: true; data: ContactPayload } | { ok: 
   if (!firstName)            return { ok: false, error: 'First name is required' };
   if (!lastName)             return { ok: false, error: 'Surname is required' };
   if (!email)                return { ok: false, error: 'Email is required' };
-  if (!EMAIL_RE.test(email)) return { ok: false, error: 'Invalid email' };
+  if (!isValidEmail(email))  return { ok: false, error: 'Invalid email' };
   if (!message)              return { ok: false, error: 'Message is required' };
   if (message.length < 10)   return { ok: false, error: 'Message is too short' };
 

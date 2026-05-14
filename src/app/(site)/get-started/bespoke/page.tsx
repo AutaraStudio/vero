@@ -6,6 +6,7 @@ import Link from 'next/link';
 import Button from '@/components/ui/Button';
 import { useBasket } from '@/store/basketStore';
 import type { BespokeDetails } from '@/store/basketStore';
+import { isValidEmail } from '@/lib/emailValidation';
 import '../details/details.css';
 import './bespoke.css';
 
@@ -37,7 +38,6 @@ export default function BespokePage() {
   const [isLoading, setIsLoading] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const PHONE_RE = /^[+()\d\s-]{7,}$/;
 
   const validateField = (
@@ -49,7 +49,7 @@ export default function BespokePage() {
       case 'lastName':  return value.trim() ? undefined : 'Last name is required';
       case 'email':
         if (!value.trim()) return 'Email is required';
-        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email';
+        if (!isValidEmail(value)) return 'Enter a valid email';
         return undefined;
       case 'company':   return value.trim() ? undefined : 'Company is required';
       case 'jobTitle':  return value.trim() ? undefined : 'Job title is required';

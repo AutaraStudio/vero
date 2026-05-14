@@ -17,6 +17,7 @@ import {
   usePublishPlanBarSubmitDisabled,
   usePublishPlanBarSubmitLabel,
 } from '../components/planBarSubmit';
+import { isValidEmail } from '@/lib/emailValidation';
 import '../details/details.css';
 import './payment.css';
 
@@ -142,9 +143,7 @@ function PaymentContent() {
   const validateInvoiceEmail = (value: string): string | null => {
     const trimmed = value.trim();
     if (!trimmed) return null; // optional field
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)
-      ? null
-      : 'Please enter a valid email address';
+    return isValidEmail(trimmed) ? null : 'Please enter a valid email address';
   };
 
   // Starter is a one-off payment — no renewal concept

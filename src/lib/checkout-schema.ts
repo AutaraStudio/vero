@@ -1,4 +1,5 @@
 import type { TierKey, PaymentFrequency } from './tierRecommendation';
+import { isValidEmail } from './emailValidation';
 
 // ── Payload sent from client to /api/checkout and /api/checkout/invoice ──
 
@@ -72,7 +73,6 @@ export interface BespokePayload {
 
 // ── Validation ──
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const VALID_TIERS: TierKey[] = ['starter', 'essential', 'growth', 'scale'];
 
 export function validateCheckoutPayload(
@@ -109,7 +109,7 @@ export function validateCheckoutPayload(
     return { valid: false, error: 'Name, email, and company are required' };
   }
 
-  if (!EMAIL_RE.test(c.email as string)) {
+  if (typeof c.email !== 'string' || !isValidEmail(c.email)) {
     return { valid: false, error: 'Invalid email address' };
   }
 
@@ -134,7 +134,7 @@ export function validateBespokePayload(
     return { valid: false, error: 'Name, email, and company are required' };
   }
 
-  if (!EMAIL_RE.test(b.email as string)) {
+  if (typeof b.email !== 'string' || !isValidEmail(b.email)) {
     return { valid: false, error: 'Invalid email address' };
   }
 

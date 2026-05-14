@@ -12,6 +12,7 @@ import Button from '@/components/ui/Button';
 import { Tooltip, TooltipContent } from '@/components/Tooltip/Tooltip';
 import BasketContent from '../components/BasketContent';
 import { usePublishPlanBarSubmitDisabled } from '../components/planBarSubmit';
+import { isValidEmail } from '@/lib/emailValidation';
 import './details.css';
 
 // ── Helper: normalise hex colour input ───────────────────────
@@ -51,7 +52,6 @@ function getMaxCloseDate(openDate: string): string {
 
 const EMAIL_INITIAL_VISIBLE = 5;
 const EMAIL_LOAD_MORE_COUNT = 10;
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 function UserEmailInput({
   emails,
@@ -89,7 +89,7 @@ function UserEmailInput({
   const tryAdd = () => {
     const trimmed = inputValue.trim().toLowerCase();
     if (!trimmed) return;
-    if (!EMAIL_RE.test(trimmed)) {
+    if (!isValidEmail(trimmed)) {
       setAddError('Enter a valid email address');
       return;
     }
@@ -145,7 +145,7 @@ function UserEmailInput({
 
   const saveEdit = (originalIndex: number) => {
     const trimmed = editValue.trim().toLowerCase();
-    if (trimmed && EMAIL_RE.test(trimmed) && trimmed !== emails[originalIndex]) {
+    if (trimmed && isValidEmail(trimmed) && trimmed !== emails[originalIndex]) {
       onUpdate(originalIndex, trimmed);
     }
     setEditingIndex(null);
@@ -481,11 +481,10 @@ export default function DetailsPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       const found = text
         .split(/[\n,;\r]+/)
         .map((s) => s.trim().toLowerCase().replace(/^["']|["']$/g, ''))
-        .filter((s) => emailRegex.test(s));
+        .filter((s) => isValidEmail(s));
       const merged = [...new Set([...userEmails, ...found])];
       const next = merged.slice(0, userLimit);
       setUserEmails(next);
@@ -536,7 +535,7 @@ export default function DetailsPage() {
       case 'lastName':        return value.trim() ? undefined : 'Last name is required';
       case 'email':
         if (!value.trim()) return 'Email is required';
-        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        if (!isValidEmail(value)) return 'Enter a valid email address';
         return undefined;
       case 'company':         return value.trim() ? undefined : 'Company is required';
       case 'jobTitle':        return value.trim() ? undefined : 'Job title is required';
@@ -550,7 +549,7 @@ export default function DetailsPage() {
       case 'keyContactEmail':
         if (full.keyContactSameAsMe) return undefined;
         if (!value.trim()) return 'Key contact email is required';
-        if (!EMAIL_RE.test(value.trim())) return 'Enter a valid email address';
+        if (!isValidEmail(value)) return 'Enter a valid email address';
         return undefined;
       case 'bespokeUrl':
         if (isStarter) return undefined;
