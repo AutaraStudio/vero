@@ -12,13 +12,15 @@
   --gs-header-h: 4.25rem;
   --gs-progress-h: 3.75rem;
   --gs-top-offset: calc(var(--gs-header-h) + var(--gs-progress-h));
-  /* Height of the bottom sticky PlanBar (FixedBar). Used to (a) shrink
-     the sidebar's available height so it doesn't overlap the bar and
-     (b) add bottom clearance to each page so form content can't slide
-     under the bar. PlanBar's intrinsic height is ~55px; we add a small
-     buffer on top so the sidebar leaves a visible gap above the bar
-     rather than touching it. */
+  /* Height of the bottom sticky PlanBar (FixedBar). Used to add bottom
+     clearance to each page so form content can't slide under the bar.
+     PlanBar's intrinsic height is ~55px; we add a small buffer. */
   --gs-planbar-h: 5rem;
+  /* Width of the fixed left sidebar — must match the 340px grid column
+     used by the role-picker and checkout layouts (a fixed px value, not
+     rem). The sidebar sits *in front of* the bottom PlanBar, and the bar
+     offsets its content by this width so nothing hides behind it. */
+  --gs-sidebar-w: 340px;
 
   min-height: 100vh;
   display: flex;
@@ -261,6 +263,11 @@
   background: var(--color--surface-sunken);
   display: flex;
   flex-direction: column;
+  /* Sit in front of the bottom PlanBar (z-index 100) so the sidebar
+     reads as a continuous full-height panel and the bar tucks behind
+     its lower edge. */
+  position: relative;
+  z-index: 101;
 }
 
 /* The actual viewport-locked sidebar lives inside .basket. It sticks to
@@ -276,11 +283,12 @@
    └──────────────────┘ */
 .basket__sticky {
   position: sticky;
-  /* Pin directly below the sticky header + progress bar so the sidebar
-     fills exactly the height the user has available — minus the bottom
-     PlanBar so the two never overlap. */
+  /* Pin directly below the sticky header + progress bar and fill the
+     rest of the viewport. The sidebar runs full-height and sits in
+     front of the bottom PlanBar (see .basket z-index) — the bar offsets
+     its own content so nothing hides behind the sidebar. */
   top: var(--gs-top-offset);
-  height: calc(100vh - var(--gs-top-offset) - var(--gs-planbar-h));
+  height: calc(100vh - var(--gs-top-offset));
   min-height: 0;
   padding: 1.5rem 1.25rem 0;
   display: flex;

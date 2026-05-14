@@ -100,7 +100,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
           the bottom of the viewport on ≤768px. Hide PlanBar on that path
           at the same breakpoint so the two don't stack. */}
       <div ref={barRef} className={isStep1 ? 'plan-bar--hide-mobile' : undefined}>
-        <FixedBar theme={theme}>
+        <FixedBar theme={theme} className="plan-bar-fixed">
 
           {/* Left — tier name + billing frequency label */}
           <div className="plan-bar__left">

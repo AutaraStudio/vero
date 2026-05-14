@@ -3,6 +3,20 @@
    Shell positioning handled by FixedBar component
 ============================================================ */
 
+/* The fixed left sidebar sits in front of this bar. Offset the bar's
+   content so it begins just past the sidebar's right edge rather than
+   running behind it. Desktop only — below 992px the sidebar is stacked
+   inline (checkout pages) or the bar is hidden (/get-started), so the
+   bar reverts to its normal centred container. */
+@media (min-width: 992px) {
+  .plan-bar-fixed .container {
+    max-width: none;
+    margin: 0;
+    padding-left: calc(var(--gs-sidebar-w) + 1.5rem);
+    padding-right: var(--space--container-padding);
+  }
+}
+
 /* Left — tier name + billing label */
 
 .plan-bar__left {
