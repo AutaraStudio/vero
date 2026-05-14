@@ -120,12 +120,20 @@ export default function PortalSetupPage() {
     reader.readAsText(file);
   };
 
-  // Campaign dates state
+  // Campaign dates state — the first category's accordion opens by
+  // default so the date inputs are visible without a click. Its slug is
+  // also pre-seeded into the animated ref so it doesn't slide-in on
+  // mount (only later manual toggles animate).
+  const firstCategorySlug = selectedRoles[0]?.categorySlug;
   const [applyAllDates, setApplyAllDates] = useState(false);
   const [globalOpenDate, setGlobalOpenDate] = useState('');
   const [globalCloseDate, setGlobalCloseDate] = useState('');
-  const [openDateCategories, setOpenDateCategories] = useState<Set<string>>(new Set());
-  const datesCategoryAnimatedRef = useRef<Set<string>>(new Set());
+  const [openDateCategories, setOpenDateCategories] = useState<Set<string>>(
+    () => new Set(firstCategorySlug ? [firstCategorySlug] : [])
+  );
+  const datesCategoryAnimatedRef = useRef<Set<string>>(
+    new Set(firstCategorySlug ? [firstCategorySlug] : [])
+  );
   const [overriddenRoleDates, setOverriddenRoleDates] = useState<Set<string>>(new Set());
 
   // Starter accounts include exactly one user — their buyer email.
