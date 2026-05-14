@@ -618,20 +618,17 @@ export default function DetailsPage() {
 
   const logoFilled = !needsBranding ? true : !!form.logoFile;
 
-  const requiredFilled = !!(
-    form.firstName.trim() &&
-    form.lastName.trim() &&
-    form.email.trim() &&
-    form.company.trim() &&
-    form.jobTitle.trim() &&
-    form.phone.trim() &&
-    (form.keyContactSameAsMe ||
-      (form.keyContactName.trim() && form.keyContactEmail.trim())) &&
+  /* Every ContactDetails field must pass its per-field validator — this
+     covers presence AND format (e.g. a real email address, a valid phone
+     number, hex colours). Combined with the non-field requirements
+     below, this gates the sticky Continue button so it only enables
+     when the step is genuinely complete and valid. */
+  const fieldErrors = validate();
+  const requiredFilled =
+    Object.keys(fieldErrors).length === 0 &&
     usersFilled &&
-    (!needsBranding ||
-      (logoFilled && form.bespokeUrl.trim() && form.brandColour1.trim() && form.brandColour2.trim())) &&
-    allDatesFilled
-  );
+    logoFilled &&
+    allDatesFilled;
 
   /* Page-level error shown above the submit button when blocked. */
   const blockerMessage = !requiredFilled
