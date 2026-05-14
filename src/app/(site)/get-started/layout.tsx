@@ -2,11 +2,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import ConditionalProgressBar from './components/ConditionalProgressBar';
 import GetStartedShell from './components/GetStartedShell';
+import ScrollToTopOnNavigate from './components/ScrollToTopOnNavigate';
 import './get-started.css';
 
 export default function GetStartedLayout({ children }: { children: React.ReactNode }) {
   return (
     <GetStartedShell theme="brand-purple">
+      <ScrollToTopOnNavigate />
       {/* WCAG 2.4.1 — skip link for keyboard users. Hidden by CSS until focused. */}
       <a href="#main-content" className="skip-link">Skip to main content</a>
       <header className="get-started-header">
