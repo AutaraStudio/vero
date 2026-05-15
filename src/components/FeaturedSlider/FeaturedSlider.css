@@ -121,25 +121,19 @@
   padding: 1.5rem;
 }
 
-/* ── Active / inactive states ── */
+/* ── Active / inactive states ──
+   Active card uses the subtle brand surface (≈10% purple) so it reads as
+   gently highlighted rather than a hard solid block. Text stays on its
+   default tokens — the light background keeps regular text readable. */
 
 [data-gsap-slider-item-status="active"] .usp-card {
-  background-color: var(--color--interactive-primary);
-  border-color: var(--color--interactive-primary-hover);
-  color: var(--color--interactive-primary-text);
-}
-
-[data-gsap-slider-item-status="active"] .usp-card .color--primary {
-  color: var(--color--interactive-primary-text);
-}
-
-[data-gsap-slider-item-status="active"] .usp-card .color--secondary {
-  color: color-mix(in srgb, var(--color--interactive-primary-text) 70%, transparent);
+  background-color: var(--color--surface-brand-subtle);
+  border-color: var(--color--border-brand-subtle);
 }
 
 [data-gsap-slider-item-status="active"] .usp-card__image {
-  background: var(--color--interactive-primary-hover);
-  border-bottom-color: var(--color--interactive-primary-hover);
+  background: var(--color--surface-brand-subtle);
+  border-bottom-color: var(--color--border-brand-subtle);
 }
 
 /* ── Controls ── */
