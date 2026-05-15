@@ -73,11 +73,10 @@ export default async function SciencePage() {
       {/* ── 1. Hero ───────────────────────────────────────── */}
       <HeroSplit
         theme="brand-purple"
+        layout="stacked"
         eyebrow="The science"
         headline={data?.heroHeadline ?? 'Assessments you can trust'}
         intro={data?.heroBody}
-        imageHeight="viewport"
-        textAlign="bottom"
       />
 
       {/* ── 2. Finding authentic potential (text-only intro) ── */}
