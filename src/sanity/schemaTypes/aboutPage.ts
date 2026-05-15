@@ -7,7 +7,6 @@ import {
   RocketIcon,
   HeartFilledIcon,
   CaseIcon,
-  UsersIcon,
 } from '@sanity/icons'
 
 export const aboutPage = defineType({
@@ -20,7 +19,6 @@ export const aboutPage = defineType({
     { name: 'tazioEvolution',       title: 'Section 2 — Tazio platform story', icon: RocketIcon },
     { name: 'candidateExperiences', title: 'Section 3 — Candidate experience', icon: HeartFilledIcon },
     { name: 'clients',              title: 'Section 4 — Clients & partners',   icon: CaseIcon },
-    { name: 'team',                 title: 'Section 5 — Team grid',            icon: UsersIcon },
   ],
   fields: [
     /* ════════════════════════════════════════════════════════
@@ -94,6 +92,14 @@ export const aboutPage = defineType({
       description: 'External link, e.g. https://www.tazio.io. Used by the button above.',
       hidden: ({ parent }) => !parent?.tazioEvolutionCTALabel,
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'tazioEvolutionSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'tazioEvolution',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
+    }),
 
     /* ════════════════════════════════════════════════════════
        SECTION 3 — CANDIDATE EXPERIENCE (split layout)
@@ -119,6 +125,14 @@ export const aboutPage = defineType({
       type: 'mediaBlock',
       group: 'candidateExperiences',
       description: 'Image or clickable video on the right side of the section. Recommended 4:3 ratio (e.g. 1200×900).',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'candidateExperiencesSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'candidateExperiences',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
     }),
 
     /* ════════════════════════════════════════════════════════
@@ -210,85 +224,6 @@ export const aboutPage = defineType({
       ],
     }),
 
-    /* ════════════════════════════════════════════════════════
-       SECTION 5 — TEAM GRID
-    ════════════════════════════════════════════════════════ */
-    defineField({
-      name: 'teamHeading',
-      title: 'Heading',
-      type: 'string',
-      group: 'team',
-      description: 'Heading above the team grid (e.g. "Meet the team").',
-    }),
-    defineField({
-      name: 'teamIntro',
-      title: 'Intro paragraph',
-      type: 'text',
-      rows: 3,
-      group: 'team',
-      description: 'Sticky intro paragraph shown to the left of the team list as you scroll.',
-    }),
-    defineField({
-      name: 'teamMembers',
-      title: 'Team members',
-      type: 'array',
-      group: 'team',
-      description:
-        'Add a card for each team member. They\'re grouped automatically on the page by the Category field below. ' +
-        'Aim for 2 or 4 members per category for the cleanest grid.',
-      of: [
-        {
-          type: 'object',
-          preview: {
-            select: { title: 'name', subtitle: 'role', media: 'headshot' },
-            prepare: ({ title, subtitle, media }) => ({
-              title: title || 'Untitled member',
-              subtitle: subtitle || 'No role set',
-              media,
-            }),
-          },
-          fields: [
-            defineField({
-              name: 'name',
-              title: 'Name',
-              type: 'string',
-              validation: (Rule) => Rule.required(),
-            }),
-            defineField({
-              name: 'role',
-              title: 'Role / job title',
-              type: 'string',
-              description: 'e.g. "Head of Customer Success" or "Senior Engineer".',
-            }),
-            defineField({
-              name: 'category',
-              title: 'Team / department',
-              type: 'string',
-              options: {
-                list: [
-                  { title: 'Leadership',          value: 'leadership' },
-                  { title: 'Sales & Commercial',  value: 'sales' },
-                  { title: 'Marketing',           value: 'marketing' },
-                  { title: 'Customer Success',    value: 'customerSuccess' },
-                  { title: 'People & Operations', value: 'peopleOps' },
-                  { title: 'Science & Research',  value: 'science' },
-                ],
-                layout: 'dropdown',
-              },
-              description: 'Members are grouped under their team heading on the page.',
-            }),
-            defineField({
-              name: 'headshot',
-              title: 'Headshot',
-              type: 'image',
-              options: { hotspot: true },
-              description: 'Square image works best (e.g. 800×800). Hotspot lets you set the focal point.',
-              fields: [defineField({ name: 'alt', title: 'Alt text', type: 'string', validation: altRequiredWhenImagePresent })],
-            }),
-          ],
-        },
-      ],
-    }),
   ],
   preview: {
     prepare() {

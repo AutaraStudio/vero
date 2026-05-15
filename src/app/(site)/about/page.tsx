@@ -5,7 +5,6 @@ import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/
 import HeroSplit     from '@/components/HeroSplit';
 import IntroBlock    from '@/components/IntroBlock';
 import ClientsBlock  from '@/components/ClientsBlock';
-import TeamGrid      from '@/components/TeamGrid';
 import type { MediaBlockData } from '@/components/MediaBlock';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -58,16 +57,6 @@ interface AboutPageData {
   clientLogos?: { name?: string; url?: string }[];
   rpoIntro?: string;
   rpoLogos?: { name?: string; url?: string }[];
-
-  teamHeading?: string;
-  teamIntro?: string;
-  teamMembers?: {
-    name: string;
-    role?: string;
-    category?: string;
-    headshotUrl?: string;
-    headshotAlt?: string;
-  }[];
 }
 
 export default async function AboutPage() {
@@ -122,17 +111,6 @@ export default async function AboutPage() {
           clientLogos={data.clientLogos}
           secondaryIntro={data.rpoIntro}
           secondaryLogos={data.rpoLogos}
-        />
-      )}
-
-      {/* ── 5. Team grid ─────────────────────────────────── */}
-      {data?.teamHeading && (
-        <TeamGrid
-          theme="brand-purple"
-          eyebrow="The team"
-          heading={data.teamHeading}
-          intro={data.teamIntro}
-          members={data.teamMembers ?? []}
         />
       )}
 

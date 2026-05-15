@@ -152,8 +152,6 @@
   font-size: 0.875rem;
   font-weight: 600;
   letter-spacing: -0.01em;
-  /* Inherit from the card's text colour so the CTA automatically follows
-     the active-state inversion (regular: text-primary; active: text-inverse). */
   color: inherit;
   transition: color 0.5s ease;
 }
@@ -165,27 +163,19 @@
 }
 
 /* ── Active / inactive states ──
-   Active card uses surface-brand (the parent theme's brand surface) so it
-   adapts when this component is dropped in a non-purple section. The text
-   colour overrides target inverse since the brand surface is dark.        */
+   Active card uses the subtle brand surface (≈10% purple) so it reads as
+   gently highlighted rather than a hard solid block. Text colours stay on
+   their default tokens — the background is light enough that the regular
+   primary / secondary text remains readable, no inversion needed. */
 
 [data-gsap-slider-item-status="active"] .slider-card {
-  background-color: var(--color--surface-brand);
-  border-color: var(--color--surface-brand);
-  color: var(--color--text-inverse);
-}
-
-[data-gsap-slider-item-status="active"] .slider-card .color--primary {
-  color: var(--color--text-inverse);
-}
-
-[data-gsap-slider-item-status="active"] .slider-card .color--secondary {
-  color: var(--color--text-inverse-secondary);
+  background-color: var(--color--surface-brand-subtle);
+  border-color: var(--color--border-brand-subtle);
 }
 
 [data-gsap-slider-item-status="active"] .slider-card__image {
-  background: var(--color--surface-brand);
-  border-bottom-color: var(--color--border-brand);
+  background: var(--color--surface-brand-subtle);
+  border-bottom-color: var(--color--border-brand-subtle);
 }
 
 /* ── Controls ── */

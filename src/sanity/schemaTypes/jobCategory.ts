@@ -134,6 +134,14 @@ export const jobCategory = defineType({
       group: 'dimensions',
       description: 'Optional right-side image or clickable video. Leave blank to show only text.',
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'dimensionsSectionContent',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'dimensions',
+      description: 'Migrated equivalent of the heading / body / media fields above — edit here once Phase 2 ships.',
+    }),
 
     /* ════════════════════════════════════════════════════════
        SECTION 3 — "IN ACTION" SECTION HEADER
@@ -328,6 +336,14 @@ export const jobCategory = defineType({
       type: 'mediaBlock',
       group: 'bespoke',
       description: 'Optional image or clickable video on the right side of the bespoke band.',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'bespokeSectionContent',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'bespoke',
+      description: 'Migrated equivalent of the heading / body / media / CTA fields above — edit here once Phase 2 ships.',
     }),
   ],
   preview: {
