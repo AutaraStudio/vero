@@ -78,12 +78,11 @@ export default async function AboutPage() {
       {/* ── 1. Hero ───────────────────────────────────────── */}
       <HeroSplit
         theme="brand-purple"
+        layout="stacked"
         eyebrow="About us"
         headline={data?.heroHeadline ?? 'Powered by trusted technology'}
         intro={data?.heroIntro}
         media={data?.heroMedia}
-        imageHeight="viewport"
-        textAlign="bottom"
       />
 
       {/* ── 2. Tazio's tech evolution (centred — image / video as featured visual) ── */}
