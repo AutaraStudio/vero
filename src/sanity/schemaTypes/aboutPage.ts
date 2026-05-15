@@ -94,6 +94,14 @@ export const aboutPage = defineType({
       description: 'External link, e.g. https://www.tazio.io. Used by the button above.',
       hidden: ({ parent }) => !parent?.tazioEvolutionCTALabel,
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'tazioEvolutionSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'tazioEvolution',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
+    }),
 
     /* ════════════════════════════════════════════════════════
        SECTION 3 — CANDIDATE EXPERIENCE (split layout)
@@ -119,6 +127,14 @@ export const aboutPage = defineType({
       type: 'mediaBlock',
       group: 'candidateExperiences',
       description: 'Image or clickable video on the right side of the section. Recommended 4:3 ratio (e.g. 1200×900).',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'candidateExperiencesSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'candidateExperiences',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
     }),
 
     /* ════════════════════════════════════════════════════════
