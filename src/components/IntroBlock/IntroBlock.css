@@ -51,7 +51,7 @@
   align-items: center;
   text-align: center;
   /* Wider so multi-paragraph bodies don't stack into a narrow strip */
-  max-width: 72ch;
+  max-width: 80ch;
 }
 
 .intro-block__grid.is-centered .intro-block__heading {
@@ -64,7 +64,7 @@
   margin-inline: auto;
   /* Override the default 32rem body cap — the centred layout has
      room for a wider reading measure than the side-by-side variant. */
-  max-width: 65ch;
+  max-width: 80ch;
 }
 
 .intro-block__grid.is-centered .intro-block__cta {
