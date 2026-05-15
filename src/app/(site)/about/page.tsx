@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { ABOUT_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit     from '@/components/HeroSplit';
-import IntroBlock    from '@/components/IntroBlock';
+import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
 import ClientsBlock  from '@/components/ClientsBlock';
 import type { MediaBlockData } from '@/components/MediaBlock';
 
@@ -34,23 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /* ── Types matching the GROQ projection ──────────────────────── */
 
-interface PortableTextSpan { _type: 'span'; text: string; marks?: string[] }
-interface PortableTextBlock { _type: 'block'; children: PortableTextSpan[]; style?: string }
-
 interface AboutPageData {
   heroHeadline?: string;
   heroIntro?: string;
   heroMedia?: MediaBlockData;
 
-  tazioEvolutionHeading?: string;
-  tazioEvolutionBody?: PortableTextBlock[];
-  tazioEvolutionMedia?: MediaBlockData;
-  tazioEvolutionCTALabel?: string;
-  tazioEvolutionCTAHref?: string;
-
-  candidateExperiencesHeading?: string;
-  candidateExperiencesBody?: PortableTextBlock[];
-  candidateExperiencesMedia?: MediaBlockData;
+  tazioEvolutionSection?: ContentSectionData;
+  candidateExperiencesSection?: ContentSectionData;
 
   clientsHeading?: string;
   clientsIntro?: string;
@@ -74,32 +64,11 @@ export default async function AboutPage() {
         media={data?.heroMedia}
       />
 
-      {/* ── 2. Tazio's tech evolution (centred — image / video as featured visual) ── */}
-      {data?.tazioEvolutionHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="Tazio"
-          heading={data.tazioEvolutionHeading}
-          body={data.tazioEvolutionBody as never}
-          ctaLabel={data.tazioEvolutionCTALabel}
-          ctaHref={data.tazioEvolutionCTAHref}
-          media={data.tazioEvolutionMedia}
-          alwaysShowMedia
-          layout="centered"
-        />
-      )}
+      {/* ── 2. Tazio's tech evolution ── */}
+      <ContentSection theme="brand-purple" section={data?.tazioEvolutionSection} />
 
-      {/* ── 3. Enhancing candidate experiences (text + image / video) ── */}
-      {data?.candidateExperiencesHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="Candidate experience"
-          heading={data.candidateExperiencesHeading}
-          body={data.candidateExperiencesBody as never}
-          media={data.candidateExperiencesMedia}
-          alwaysShowMedia
-        />
-      )}
+      {/* ── 3. Enhancing candidate experiences ── */}
+      <ContentSection theme="brand-purple" section={data?.candidateExperiencesSection} />
 
       {/* ── 4. Clients (logos + RPO partners) ────────────── */}
       {data?.clientsHeading && (

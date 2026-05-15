@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { COMPLIANCE_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
-import IntroBlock        from '@/components/IntroBlock';
+import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
 import SecuritySection   from './SecuritySection';
 import type { MediaBlockData } from '@/components/MediaBlock';
@@ -47,9 +47,8 @@ interface CompliancePageData {
   qualityBody?: string;
   qualityItems?: AccessibilityItem[];   /* same shape (label + description + image) */
 
-  aiHeading?: string;
-  aiBody?: PortableTextBlock[];
-  aiMedia?: MediaBlockData;
+  /* AI section — unified contentSection (Phase 2). */
+  aiSection?: ContentSectionData;
 
   accessibilityHeading?: string;
   accessibilityBody?: string;
@@ -130,18 +129,8 @@ export default async function CompliancePage() {
         />
       )}
 
-      {/* ── 4. Our approach to AI (centred — conceptual statement moment) ── */}
-      {data?.aiHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="AI"
-          heading={data.aiHeading}
-          body={data.aiBody as never}
-          media={data.aiMedia}
-          alwaysShowMedia
-          layout="centered"
-        />
-      )}
+      {/* ── 4. Our approach to AI ── */}
+      <ContentSection theme="brand-purple" section={data?.aiSection} />
 
       {/* ── 5. Accessibility — section header + sticky-scroll element ── */}
       {data?.accessibilityHeading && (

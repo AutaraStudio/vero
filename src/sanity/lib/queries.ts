@@ -60,6 +60,25 @@ export function mediaProjection(fieldName: string): string {
   `;
 }
 
+/**
+ * Project a `contentSection` field. Pulls eyebrow / heading / body /
+ * media / cta / layout — the unified shape rendered by the
+ * <ContentSection> adapter on the frontend.
+ */
+export function contentSectionProjection(fieldName: string): string {
+  return `
+    "${fieldName}": ${fieldName} {
+      eyebrow,
+      heading,
+      body,
+      ${mediaProjection('media')},
+      ctaLabel,
+      ctaHref,
+      layout
+    }
+  `;
+}
+
 export const HOME_PAGE_QUERY = `
   *[_type == "homePage"][0] {
         heroBadgeLabel,
@@ -76,12 +95,7 @@ export const HOME_PAGE_QUERY = `
       "logoUrl":      logo.asset->url,
       "logoMimeType": logo.asset->mimeType
     },
-    introBlockEyebrow,
-    introBlockHeading,
-    introBlockBody,
-    introBlockCtaLabel,
-    introBlockCtaHref,
-    ${mediaProjection('introBlockMedia')},
+    ${contentSectionProjection('introSection')},
     uspsSectionLabel,
     uspsSectionHeading,
     uspsSectionSubheading,
@@ -166,15 +180,8 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     heroSecondaryCTAHref,
     ${mediaProjection('heroMedia')},
 
-    gettingStartedHeading,
-    gettingStartedBody,
-    ${mediaProjection('gettingStartedMedia')},
-    gettingStartedLinkLabel,
-    gettingStartedLinkHref,
-
-    candidateExpHeading,
-    candidateExpBody,
-    ${mediaProjection('candidateExpMedia')},
+    ${contentSectionProjection('gettingStartedSection')},
+    ${contentSectionProjection('candidateExperienceSection')},
 
     benefitsHeading,
     benefits[] {
@@ -194,15 +201,8 @@ export const ABOUT_PAGE_QUERY = `
     heroIntro,
     ${mediaProjection('heroMedia')},
 
-    tazioEvolutionHeading,
-    tazioEvolutionBody,
-    ${mediaProjection('tazioEvolutionMedia')},
-    tazioEvolutionCTALabel,
-    tazioEvolutionCTAHref,
-
-    candidateExperiencesHeading,
-    candidateExperiencesBody,
-    ${mediaProjection('candidateExperiencesMedia')},
+    ${contentSectionProjection('tazioEvolutionSection')},
+    ${contentSectionProjection('candidateExperiencesSection')},
 
     clientsHeading,
     clientsIntro,
@@ -223,8 +223,7 @@ export const SCIENCE_PAGE_QUERY = `
         heroHeadline,
     heroBody,
 
-    authenticHeading,
-    authenticBody,
+    ${contentSectionProjection('authenticSection')},
 
     theoryHeading,
     theoryIntro,
@@ -246,9 +245,7 @@ export const SCIENCE_PAGE_QUERY = `
       dimensions
     },
 
-    insightsHeading,
-    insightsBody,
-    ${mediaProjection('insightsMedia')},
+    ${contentSectionProjection('insightsSection')},
 
     dataBackedHeading,
     dataBackedIntro,
@@ -285,9 +282,7 @@ export const COMPLIANCE_PAGE_QUERY = `
       "imageAlt": image.alt
     },
 
-    aiHeading,
-    aiBody,
-    ${mediaProjection('aiMedia')},
+    ${contentSectionProjection('aiSection')},
 
     accessibilityHeading,
     accessibilityBody,
@@ -389,9 +384,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     heroHeadline,
     heroIntroCopy,
     ${mediaProjection('heroMedia')},
-    dimensionsSectionHeading,
-    dimensionsSectionBody,
-    ${mediaProjection('dimensionsSectionMedia')},
+    ${contentSectionProjection('dimensionsSectionContent')},
     inActionLabel,
     inActionHeading,
     inActionIntro,
@@ -411,11 +404,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     stat4Body,
     roleRosterHeading,
     roleRosterSubheading,
-    bespokeSectionHeading,
-    bespokeSectionBody,
-    bespokeCTALabel,
-    bespokeCTAHref,
-    ${mediaProjection('bespokeSectionMedia')},
+    ${contentSectionProjection('bespokeSectionContent')},
     "roles": *[_type == "role" && parentCategory._ref == ^._id && archived != true] | order(name asc) {
       _id,
       name,
