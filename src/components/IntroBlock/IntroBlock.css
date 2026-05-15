@@ -11,9 +11,18 @@
 /* ── Grid ─────────────────────────────────────────────────── */
 .intro-block__grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  /* Give the image column ~40% more horizontal space than the text
+     column so the split-view image sits at roughly the same visual
+     weight as the centred hero's 48rem media cap. */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
   gap: clamp(2rem, 5vw, 4rem);
   align-items: center;
+}
+
+/* Cap the split image so it never grows past the centred-hero width
+   on extra-wide viewports. */
+.intro-block__media {
+  max-width: 48rem;
 }
 
 /* Editorial split — no media. Heading column + body column.
@@ -53,6 +62,9 @@
   grid-column: 1 / -1;
   margin-top: 2rem;
   width: 100%;
+  /* Two-column image fills the full container width — override the
+     base 48rem cap used by the split layout. */
+  max-width: none;
 }
 
 /* Snug the button up to the heading — the heading-col's 1rem gap +

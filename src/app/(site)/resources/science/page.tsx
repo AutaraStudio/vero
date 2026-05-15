@@ -36,6 +36,7 @@ interface PortableTextBlock { _type: 'block'; children: PortableTextSpan[]; styl
 interface SciencePageData {
   heroHeadline?: string;
   heroBody?: string;
+  heroMedia?: MediaBlockData;
 
   /* Unified content sections (Phase 2). */
   authenticSection?: ContentSectionData;
@@ -76,6 +77,7 @@ export default async function SciencePage() {
         eyebrow="The science"
         headline={data?.heroHeadline ?? 'Assessments you can trust'}
         intro={data?.heroBody}
+        media={data?.heroMedia}
       />
 
       {/* ── 2. Finding authentic potential ── */}

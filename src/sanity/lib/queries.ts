@@ -222,6 +222,7 @@ export const SCIENCE_PAGE_QUERY = `
   *[_type == "sciencePage"][0] {
         heroHeadline,
     heroBody,
+    ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('authenticSection')},
 
