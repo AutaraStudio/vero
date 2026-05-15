@@ -4,7 +4,7 @@ import { HOME_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroCentred       from '@/components/HeroCentred/HeroCentred';
 import LogoMarquee       from '@/components/LogoMarquee';
-import IntroBlock        from '@/components/IntroBlock';
+import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
 import FeatureSlider     from '@/components/FeatureSlider/FeatureSlider';
 import PricingShowcase   from '@/components/PricingShowcase/PricingShowcase';
 import type { MediaBlockData } from '@/components/MediaBlock';
@@ -44,13 +44,8 @@ interface HomePageData {
   heroSecondaryCTAHref?: string;
   heroMedia?: MediaBlockData;
 
-  // Intro block
-  introBlockEyebrow?: string;
-  introBlockHeading?: string;
-  introBlockBody?: unknown[];
-  introBlockCtaLabel?: string;
-  introBlockCtaHref?: string;
-  introBlockMedia?: MediaBlockData;
+  // Intro block (new unified shape)
+  introSection?: ContentSectionData;
 
   // USPs
   uspsSectionLabel?: string;
@@ -122,18 +117,8 @@ export default async function Home() {
         />
       )}
 
-      {/* ── 3. Intro block (text + demo video) ────────────── */}
-      {data?.introBlockHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow={data.introBlockEyebrow}
-          heading={data.introBlockHeading}
-          body={data.introBlockBody as never}
-          ctaLabel={data.introBlockCtaLabel}
-          ctaHref={data.introBlockCtaHref}
-          media={data.introBlockMedia}
-        />
-      )}
+      {/* ── 3. Intro block (text + demo video) — unified contentSection ── */}
+      <ContentSection theme="brand-purple" section={data?.introSection} />
 
       {/* ── 4. USPs (slider) ──────────────────────────────── */}
       {data?.uspsSectionHeading && data?.usps && data.usps.length > 0 && (
