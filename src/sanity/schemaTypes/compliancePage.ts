@@ -61,8 +61,9 @@ export const compliancePage = defineType({
     }),
     /* Unified content-section migration target. */
     defineField({
+      hidden: true,
       name: 'securitySection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'security',
       description: 'Migrated equivalent of the heading / body / badges fields above — edit here once Phase 2 ships.',
@@ -125,12 +126,14 @@ export const compliancePage = defineType({
 
     /* ── Our Approach to AI ── */
     defineField({
+      hidden: true,
       name: 'aiHeading',
       title: 'Heading',
       type: 'string',
       group: 'ai',
     }),
     defineField({
+      hidden: true,
       name: 'aiBody',
       title: 'Body',
       type: 'array',
@@ -138,6 +141,7 @@ export const compliancePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'aiMedia',
       title: 'Section media (image or video)',
       type: 'mediaBlock',
@@ -147,7 +151,7 @@ export const compliancePage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'aiSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'ai',
       description: 'Migrated equivalent of the heading / body / media fields above — edit here once Phase 2 ships.',

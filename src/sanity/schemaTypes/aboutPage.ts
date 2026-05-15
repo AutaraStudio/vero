@@ -56,6 +56,7 @@ export const aboutPage = defineType({
        SECTION 2 — TAZIO PLATFORM STORY (centred IntroBlock)
     ════════════════════════════════════════════════════════ */
     defineField({
+      hidden: true,
       name: 'tazioEvolutionHeading',
       title: 'Heading',
       type: 'string',
@@ -63,6 +64,7 @@ export const aboutPage = defineType({
       description: 'Heading for the centred section about Tazio (e.g. "Tazio\'s tech evolution").',
     }),
     defineField({
+      hidden: true,
       name: 'tazioEvolutionBody',
       title: 'Body paragraphs',
       type: 'array',
@@ -71,6 +73,7 @@ export const aboutPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'tazioEvolutionMedia',
       title: 'Section media',
       type: 'mediaBlock',
@@ -78,6 +81,7 @@ export const aboutPage = defineType({
       description: 'Image or clickable video shown beneath the body. Leave blank to skip the media slot.',
     }),
     defineField({
+      hidden: true,
       name: 'tazioEvolutionCTALabel',
       title: 'Button — text',
       type: 'string',
@@ -85,17 +89,17 @@ export const aboutPage = defineType({
       description: 'Optional button label (e.g. "Visit Tazio"). Leave blank to hide the button.',
     }),
     defineField({
+      hidden: true,
       name: 'tazioEvolutionCTAHref',
       title: 'Button — link (full URL)',
       type: 'url',
       group: 'tazioEvolution',
       description: 'External link, e.g. https://www.tazio.io. Used by the button above.',
-      hidden: ({ parent }) => !parent?.tazioEvolutionCTALabel,
     }),
     /* Unified content-section migration target. */
     defineField({
       name: 'tazioEvolutionSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'tazioEvolution',
       description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
@@ -105,6 +109,7 @@ export const aboutPage = defineType({
        SECTION 3 — CANDIDATE EXPERIENCE (split layout)
     ════════════════════════════════════════════════════════ */
     defineField({
+      hidden: true,
       name: 'candidateExperiencesHeading',
       title: 'Heading',
       type: 'string',
@@ -112,6 +117,7 @@ export const aboutPage = defineType({
       description: 'Heading for the split section about candidate experience.',
     }),
     defineField({
+      hidden: true,
       name: 'candidateExperiencesBody',
       title: 'Body paragraphs',
       type: 'array',
@@ -120,6 +126,7 @@ export const aboutPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'candidateExperiencesMedia',
       title: 'Section media',
       type: 'mediaBlock',
@@ -129,7 +136,7 @@ export const aboutPage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'candidateExperiencesSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'candidateExperiences',
       description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
