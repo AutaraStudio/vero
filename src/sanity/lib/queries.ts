@@ -404,9 +404,6 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     stat4Body,
     roleRosterHeading,
     roleRosterSubheading,
-    /* Bespoke "Looking for something more bespoke?" closing band keeps
-       its custom BespokeStrip rendering (brand-shapes background) — so
-       we fetch the legacy fields, not the migrated contentSection. */
     bespokeSectionHeading,
     bespokeSectionBody,
     bespokeCTALabel,
