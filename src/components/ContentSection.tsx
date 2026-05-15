@@ -13,7 +13,7 @@ export interface ContentSectionData {
   media?: MediaBlockData | null;
   ctaLabel?: string;
   ctaHref?: string;
-  layout?: 'split' | 'centered';
+  layout?: 'split' | 'centered' | 'two-column';
 }
 
 interface Props {

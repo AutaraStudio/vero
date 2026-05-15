@@ -40,12 +40,16 @@ interface Props {
   alwaysShowMedia?: boolean;
   /**
    * Layout variant.
-   *  - 'split'    (default): text-left, image-right (2-col).
-   *  - 'centered': text centred above, image stacked below at container width.
-   *                Best for dashboard / screenshot moments where the image
-   *                deserves to be the visual focus.
+   *  - 'split'      (default): text-left, image-right (2-col).
+   *  - 'centered':  text centred above, image stacked below at container width.
+   *                 Best for dashboard / screenshot moments where the image
+   *                 deserves to be the visual focus.
+   *  - 'two-column': editorial — left column has the eyebrow + heading + CTA,
+   *                 right column has the body paragraphs, image sits beneath
+   *                 both columns at container width. Use for long copy that
+   *                 would look silly in a single narrow column.
    */
-  layout?: 'split' | 'centered';
+  layout?: 'split' | 'centered' | 'two-column';
 }
 
 function renderBody(blocks?: PortableTextBlock[]) {
@@ -132,18 +136,24 @@ export default function IntroBlock({
 
   const hasMedia = useMediaBlock || Boolean(videoThumbnailUrl || videoUrl) || alwaysShowMedia;
 
-  const isCentered = layout === 'centered';
+  const isCentered  = layout === 'centered';
+  const isTwoColumn = layout === 'two-column';
+  /* "Editorial" rendering = the two-column heading-col + body-col split.
+     It kicks in when there's no media (existing behaviour) or when the
+     caller has opted in to layout="two-column" (image stacks beneath). */
+  const useEditorial = isTwoColumn || !hasMedia;
   const gridClass =
     'intro-block__grid' +
-    (hasMedia ? '' : ' is-editorial') +
-    (isCentered && hasMedia ? ' is-centered' : '');
+    (useEditorial ? ' is-editorial' : '') +
+    (isCentered && hasMedia ? ' is-centered' : '') +
+    (isTwoColumn && hasMedia ? ' is-two-column' : '');
 
   return (
     <section data-theme={theme} className="intro-block section">
       <div className="container">
         <div className={gridClass}>
 
-          {hasMedia ? (
+          {hasMedia && !isTwoColumn ? (
             /* ── With-media layout: text + thumbnail ──────── */
             <div className="intro-block__text">
               {eyebrow && (
@@ -182,7 +192,12 @@ export default function IntroBlock({
               )}
             </div>
           ) : (
-            /* ── Editorial split: heading column + body column ── */
+            /* ── Editorial split: heading column + body column ──
+               When the caller has opted in to layout="two-column"
+               (isTwoColumn === true) the CTA sits with the eyebrow +
+               heading in the LEFT column; otherwise (legacy no-media
+               editorial rendering) it sits in the right column under
+               the body. */
             <>
               <div className="intro-block__heading-col">
                 {eyebrow && (
@@ -201,6 +216,17 @@ export default function IntroBlock({
                 >
                   {heading}
                 </h2>
+                {isTwoColumn && ctaLabel && ctaHref && (
+                  <div
+                    ref={ctaRef as React.RefObject<HTMLDivElement>}
+                    data-animate=""
+                    className="intro-block__cta"
+                  >
+                    <Button variant="primary" href={ctaHref}>
+                      {ctaLabel}
+                    </Button>
+                  </div>
+                )}
               </div>
 
               <div className="intro-block__body-col">
@@ -211,7 +237,7 @@ export default function IntroBlock({
                 >
                   {renderBody(body)}
                 </div>
-                {ctaLabel && ctaHref && (
+                {!isTwoColumn && ctaLabel && ctaHref && (
                   <div
                     ref={ctaRef as React.RefObject<HTMLDivElement>}
                     data-animate=""
