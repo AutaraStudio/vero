@@ -13,6 +13,7 @@ import { jobCategory } from './jobCategory'
 import { role } from './role'
 import { seoFields } from './seoFields'
 import { mediaBlock } from './mediaBlock'
+import { contentSection } from './contentSection'
 import { pageSeo } from './pageSeo'
 import { legalPage } from './legalPage'
 import { siteBackup } from './siteBackup'
@@ -26,6 +27,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     /* Reusable object types — must be registered before documents that use them */
     seoFields,
     mediaBlock,
+    contentSection,
 
     /* Per-page SEO — separate documents so Studio sidebar can show a focused SEO view */
     pageSeo,

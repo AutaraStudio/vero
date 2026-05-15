@@ -59,6 +59,14 @@ export const compliancePage = defineType({
       group: 'security',
       description: 'Image or video shown alongside the data security checklist.',
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'securitySection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'security',
+      description: 'Migrated equivalent of the heading / body / badges fields above — edit here once Phase 2 ships.',
+    }),
     defineField({
       name: 'securityCredentials',
       title: 'Credentials',
@@ -135,6 +143,14 @@ export const compliancePage = defineType({
       type: 'mediaBlock',
       group: 'ai',
       description: 'Image or clickable video shown alongside the AI section body.',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'aiSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'ai',
+      description: 'Migrated equivalent of the heading / body / media fields above — edit here once Phase 2 ships.',
     }),
 
     /* ── Accessibility ── */

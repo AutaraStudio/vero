@@ -191,6 +191,18 @@ export const homePage = defineType({
       description: 'Image or clickable video shown beside the intro body. 16:9 cover recommended.',
     }),
 
+    /* New unified content-section field — migrated from the per-field
+       group above. Once Phase 2 ships and the frontend reads from this,
+       Phase 3 will remove the legacy introBlock* fields. */
+    defineField({
+      name: 'introSection',
+      title: 'Intro section (new shape)',
+      type: 'contentSection',
+      group: 'introBlock',
+      description:
+        'Reusable content block — eyebrow / heading / body / image / button with a layout choice. Replaces the individual fields above.',
+    }),
+
     /* ════════════════════════════════════════════════════════
        SECTION 4 — FEATURE HIGHLIGHTS (cards grid)
     ════════════════════════════════════════════════════════ */

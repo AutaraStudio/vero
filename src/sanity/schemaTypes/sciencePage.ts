@@ -52,6 +52,14 @@ export const sciencePage = defineType({
       group: 'authentic',
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'authenticSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'authentic',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
+    }),
 
     /* ── Theory Scroll Section ── */
     defineField({
@@ -128,6 +136,14 @@ export const sciencePage = defineType({
       group: 'theory',
       description: 'Optional supporting media alongside the 16-dimensions section.',
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'dimensionsSectionContent',
+      title: 'Dimensions section — content (new shape)',
+      type: 'contentSection',
+      group: 'theory',
+      description: 'Migrated equivalent of the Dimensions heading/body/media fields above — edit here once Phase 2 ships.',
+    }),
     defineField({
       name: 'dimensionCategories',
       title: 'Dimension Categories',
@@ -179,6 +195,14 @@ export const sciencePage = defineType({
       type: 'mediaBlock',
       group: 'theory',
       description: 'Image or clickable video shown alongside the candidate insights section.',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'insightsSection',
+      title: 'Insights section — content (new shape)',
+      type: 'contentSection',
+      group: 'theory',
+      description: 'Migrated equivalent of the Insights heading/body/media fields above — edit here once Phase 2 ships.',
     }),
 
     /* ── Data-Backed Recruitment ── */

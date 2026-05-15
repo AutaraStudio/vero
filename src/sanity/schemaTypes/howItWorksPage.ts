@@ -101,6 +101,14 @@ export const howItWorksPage = defineType({
       type: 'string',
       group: 'gettingStarted',
     }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'gettingStartedSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'gettingStarted',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
+    }),
 
     /* ── Candidate Experience ── */
     defineField({
@@ -122,6 +130,14 @@ export const howItWorksPage = defineType({
       type: 'mediaBlock',
       group: 'candidateExperience',
       description: 'Image or clickable video shown beside the body.',
+    }),
+    /* Unified content-section migration target. */
+    defineField({
+      name: 'candidateExperienceSection',
+      title: 'Section content (new shape)',
+      type: 'contentSection',
+      group: 'candidateExperience',
+      description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
     }),
 
     /* ── Benefits ── */
