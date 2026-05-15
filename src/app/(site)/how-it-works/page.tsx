@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { HOW_IT_WORKS_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit      from '@/components/HeroSplit';
-import IntroBlock     from '@/components/IntroBlock';
+import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
 import FeatureSlider  from '@/components/FeatureSlider/FeatureSlider';
 import type { MediaBlockData } from '@/components/MediaBlock';
 
@@ -32,9 +32,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 /* ── Types matching the GROQ projection ──────────────────────────── */
 
-interface PortableTextSpan { _type: 'span'; text: string; marks?: string[] }
-interface PortableTextBlock { _type: 'block'; children: PortableTextSpan[]; style?: string }
-
 interface HowItWorksData {
   // Hero
   heroHeadline?: string;
@@ -45,17 +42,9 @@ interface HowItWorksData {
   heroSecondaryCTAHref?: string;
   heroMedia?: MediaBlockData;
 
-  // Getting started
-  gettingStartedHeading?: string;
-  gettingStartedBody?: PortableTextBlock[];
-  gettingStartedMedia?: MediaBlockData;
-  gettingStartedLinkLabel?: string;
-  gettingStartedLinkHref?: string;
-
-  // Candidate experience
-  candidateExpHeading?: string;
-  candidateExpBody?: PortableTextBlock[];
-  candidateExpMedia?: MediaBlockData;
+  // Unified content sections
+  gettingStartedSection?: ContentSectionData;
+  candidateExperienceSection?: ContentSectionData;
 
   // Benefits
   benefitsHeading?: string;
@@ -90,28 +79,10 @@ export default async function HowItWorksPage() {
       />
 
       {/* ── 2. Getting started ────────────────────────────── */}
-      {data?.gettingStartedHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="Getting started"
-          heading={data.gettingStartedHeading}
-          body={data.gettingStartedBody as never}
-          ctaLabel={data.gettingStartedLinkLabel}
-          ctaHref={data.gettingStartedLinkHref}
-          media={data.gettingStartedMedia}
-        />
-      )}
+      <ContentSection theme="brand-purple" section={data?.gettingStartedSection} />
 
       {/* ── 3. Candidate experience ───────────────────────── */}
-      {data?.candidateExpHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="Candidate experience"
-          heading={data.candidateExpHeading}
-          body={data.candidateExpBody as never}
-          media={data.candidateExpMedia}
-        />
-      )}
+      <ContentSection theme="brand-purple" section={data?.candidateExperienceSection} />
 
       {/* ── 4. Benefits (slider) ──────────────────────────── */}
       {data?.benefitsHeading && data?.benefits && data.benefits.length > 0 && (

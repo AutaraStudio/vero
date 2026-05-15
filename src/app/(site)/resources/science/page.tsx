@@ -3,7 +3,7 @@ import { client } from '@/sanity/lib/client';
 import { SCIENCE_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit         from '@/components/HeroSplit';
-import IntroBlock        from '@/components/IntroBlock';
+import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
 import ChecklistSection  from '@/components/ChecklistSection';
 import BespokeStrip      from '@/components/BespokeStrip';
 import { StickySteps }   from '@/components/StickySteps/StickySteps';
@@ -37,8 +37,9 @@ interface SciencePageData {
   heroHeadline?: string;
   heroBody?: string;
 
-  authenticHeading?: string;
-  authenticBody?: PortableTextBlock[];
+  /* Unified content sections (Phase 2). */
+  authenticSection?: ContentSectionData;
+  insightsSection?: ContentSectionData;
 
   theoryHeading?: string;
   theoryIntro?: string;
@@ -47,14 +48,12 @@ interface SciencePageData {
   perspectivesIntro?: string;
   perspectives?: { name: string; description: string; imageUrl?: string; imageAlt?: string }[];
 
+  /* Dimensions section keeps its custom rendering because it has a
+     subordinate categories list that doesn't fit the contentSection shape. */
   dimensionsHeading?: string;
   dimensionsBody?: PortableTextBlock[];
   dimensionsMedia?: MediaBlockData;
   dimensionCategories?: { name: string; dimensions: string[] }[];
-
-  insightsHeading?: string;
-  insightsBody?: PortableTextBlock[];
-  insightsMedia?: MediaBlockData;
 
   dataBackedHeading?: string;
   dataBackedIntro?: string;
@@ -79,15 +78,8 @@ export default async function SciencePage() {
         intro={data?.heroBody}
       />
 
-      {/* ── 2. Finding authentic potential (text-only intro) ── */}
-      {data?.authenticHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="Vero"
-          heading={data.authenticHeading}
-          body={data.authenticBody as never}
-        />
-      )}
+      {/* ── 2. Finding authentic potential ── */}
+      <ContentSection theme="brand-purple" section={data?.authenticSection} />
 
       {/* ── 3. Four core perspectives — sticky-scroll element ── */}
       {data?.perspectivesHeading && (
@@ -150,18 +142,8 @@ export default async function SciencePage() {
         />
       )}
 
-      {/* ── 5. Detailed candidate insights (centred — text above, dashboard media below) ── */}
-      {data?.insightsHeading && (
-        <IntroBlock
-          theme="brand-purple"
-          eyebrow="The dashboard"
-          heading={data.insightsHeading}
-          body={data.insightsBody as never}
-          media={data.insightsMedia}
-          alwaysShowMedia
-          layout="centered"
-        />
-      )}
+      {/* ── 5. Detailed candidate insights ── */}
+      <ContentSection theme="brand-purple" section={data?.insightsSection} />
 
       {/* ── 6. Data-backed recruitment ────────────────────── */}
       {data?.dataBackedHeading && data?.dataBackedPoints && data.dataBackedPoints.length > 0 && (

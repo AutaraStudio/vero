@@ -10,11 +10,10 @@ import {
 import { generateSiteMetadata, type PageSeo, type SiteSeoSettings } from '@/lib/seo';
 import type { MediaBlockData } from '@/components/MediaBlock';
 import HeroSplit from '@/components/HeroSplit';
-import DimensionsSection from './DimensionsSection';
+import ContentSection from '@/components/ContentSection';
 import FeatureCardsSection from './FeatureCardsSection';
 import StatsSection from './StatsSection';
 import RoleGrid from './RoleGrid';
-import BespokeStrip from '@/components/BespokeStrip';
 import PricingShowcase from '@/components/PricingShowcase/PricingShowcase';
 
 type Params = Promise<{ slug: string }>;
@@ -61,9 +60,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     heroIntroCopy,
     keyDimensionsAssessed,
     heroMedia,
-    dimensionsSectionHeading,
-    dimensionsSectionBody,
-    dimensionsSectionMedia,
+    dimensionsSectionContent,
     inActionLabel,
     inActionHeading,
     inActionIntro,
@@ -80,11 +77,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
     name,
     roleRosterHeading,
     roleRosterSubheading,
-    bespokeSectionHeading,
-    bespokeSectionBody,
-    bespokeCTALabel,
-    bespokeCTAHref,
-    bespokeSectionMedia,
+    bespokeSectionContent,
   } = data;
 
   // Pre-fetch Lottie JSON data server-side so the client doesn't need to
@@ -123,17 +116,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
         media={heroMedia}
       />
 
-      {dimensionsSectionHeading && (
-        <DimensionsSection
-          heading={dimensionsSectionHeading}
-          body={dimensionsSectionBody}
-          imageUrl={
-            dimensionsSectionMedia?.type === 'video'
-              ? dimensionsSectionMedia.videoThumbnailUrl
-              : dimensionsSectionMedia?.imageUrl
-          }
-        />
-      )}
+      <ContentSection theme="brand-purple" section={dimensionsSectionContent} />
 
       {featureCards && featureCards.length > 0 && (
         <FeatureCardsSection
@@ -170,28 +153,7 @@ export default async function CategoryPage({ params }: { params: Params }) {
       {/* Pricing tiers + collapsible comparison table — same on every assessment page */}
       <PricingShowcase collapsible />
 
-      {bespokeSectionHeading && (() => {
-        /* Convert mediaBlock to BespokeStrip's image-only prop. The strip
-           component itself doesn't yet support video; the image fallback
-           uses whichever still image is set (image, or video poster). */
-        const bespokeImageUrl =
-          bespokeSectionMedia?.type === 'video'
-            ? bespokeSectionMedia.videoThumbnailUrl
-            : bespokeSectionMedia?.imageUrl;
-        return (
-          <BespokeStrip
-            heading={bespokeSectionHeading}
-            body={bespokeSectionBody}
-            ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
-            ctaHref={bespokeCTAHref || '/contact'}
-            image={
-              bespokeImageUrl
-                ? { src: bespokeImageUrl, alt: 'Vero Assess platform preview' }
-                : undefined
-            }
-          />
-        );
-      })()}
+      <ContentSection theme="brand-purple" section={bespokeSectionContent} />
     </main>
   );
 }
