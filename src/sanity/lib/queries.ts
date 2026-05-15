@@ -214,16 +214,6 @@ export const ABOUT_PAGE_QUERY = `
     "rpoLogos": rpoLogos[] {
       name,
       "url": logo.asset->url
-    },
-
-    teamHeading,
-    teamIntro,
-    teamMembers[] {
-      name,
-      role,
-      category,
-      "headshotUrl": headshot.asset->url,
-      "headshotAlt": headshot.alt
     }
   }
 `
