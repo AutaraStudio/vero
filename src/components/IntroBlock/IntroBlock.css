@@ -34,12 +34,36 @@
   text-align: center;
 }
 
+/* Two-column-with-media variant — editorial heading-col + body-col on
+   top row, media spans both columns beneath. Used for sections where
+   a single body paragraph would wrap into a tall narrow strip in the
+   default split layout. */
+.intro-block__grid.is-two-column {
+  /* Re-use the editorial two-column grid for the text row. */
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: clamp(2rem, 6vw, 5rem) clamp(2rem, 5vw, 4rem);
+  align-items: start;
+}
+
+.intro-block__grid.is-two-column .intro-block__media {
+  /* Span both columns of the upper text row. */
+  grid-column: 1 / -1;
+  margin-top: clamp(1.5rem, 3vw, 2.5rem);
+  width: 100%;
+}
+
 @media (max-width: 900px) {
   .intro-block__grid {
     grid-template-columns: 1fr;
     gap: 2.5rem;
   }
   .intro-block__grid.is-editorial {
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+  }
+  /* Stack the two text columns vertically on narrow screens, image
+     still sits beneath. */
+  .intro-block__grid.is-two-column {
     grid-template-columns: 1fr;
     gap: 1.75rem;
   }

@@ -66,8 +66,9 @@ export const contentSection = defineType({
       initialValue: 'split',
       options: {
         list: [
-          { title: 'Split — text on the left, image on the right', value: 'split' },
-          { title: 'Centred — text and image stacked, centred',     value: 'centered' },
+          { title: 'Split — text on the left, image on the right',          value: 'split' },
+          { title: 'Centred — text and image stacked, centred',             value: 'centered' },
+          { title: 'Two columns — heading/button left, body right, image below', value: 'two-column' },
         ],
         layout: 'radio',
       },
