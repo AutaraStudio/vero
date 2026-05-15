@@ -69,9 +69,10 @@ export default async function HowItWorksPage() {
 
   return (
     <main id="main-content" tabIndex={-1}>
-      {/* ── 1. Hero (split — viewport-tall image, bottom-left text) ── */}
+      {/* ── 1. Hero (stacked — centred text, 16:9 image below) ── */}
       <HeroSplit
         theme="brand-purple"
+        layout="stacked"
         eyebrow="How it works"
         headline={data?.heroHeadline ?? 'How Vero Assess works'}
         intro={data?.heroIntro}
@@ -86,8 +87,6 @@ export default async function HowItWorksPage() {
             : { label: 'View pricing', href: '/pricing' }
         }
         media={data?.heroMedia}
-        imageHeight="viewport"
-        textAlign="bottom"
       />
 
       {/* ── 2. Getting started ────────────────────────────── */}
