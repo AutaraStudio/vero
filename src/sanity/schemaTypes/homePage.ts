@@ -149,7 +149,11 @@ export const homePage = defineType({
     /* ════════════════════════════════════════════════════════
        SECTION 3 — INTRO BLOCK (text + video)
     ════════════════════════════════════════════════════════ */
+    /* ── Legacy introBlock* fields — hidden in Studio (Phase 2.5).
+       Editors now edit via `introSection` below. Phase 3 will drop
+       these from the schema entirely once the live result is verified. */
     defineField({
+      hidden: true,
       name: 'introBlockEyebrow',
       title: 'Small label above heading',
       type: 'string',
@@ -157,12 +161,14 @@ export const homePage = defineType({
       description: 'A small uppercase label (e.g. "How it works"). Leave blank to hide.',
     }),
     defineField({
+      hidden: true,
       name: 'introBlockHeading',
       title: 'Heading',
       type: 'string',
       group: 'introBlock',
     }),
     defineField({
+      hidden: true,
       name: 'introBlockBody',
       title: 'Body paragraphs',
       type: 'array',
@@ -171,19 +177,21 @@ export const homePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [{ title: 'Bold', value: 'strong' }] } }],
     }),
     defineField({
+      hidden: true,
       name: 'introBlockCtaLabel',
       title: 'Button text',
       type: 'string',
       group: 'introBlock',
     }),
     defineField({
+      hidden: true,
       name: 'introBlockCtaHref',
       title: 'Button link',
       type: 'string',
       group: 'introBlock',
-      hidden: ({ parent }) => !parent?.introBlockCtaLabel,
     }),
     defineField({
+      hidden: true,
       name: 'introBlockMedia',
       title: 'Section media (image or video)',
       type: 'mediaBlock',
@@ -196,7 +204,7 @@ export const homePage = defineType({
        Phase 3 will remove the legacy introBlock* fields. */
     defineField({
       name: 'introSection',
-      title: 'Intro section (new shape)',
+      title: 'Intro section',
       type: 'contentSection',
       group: 'introBlock',
       description:

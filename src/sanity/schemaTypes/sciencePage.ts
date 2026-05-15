@@ -40,12 +40,14 @@ export const sciencePage = defineType({
 
     /* ── Finding Authentic Potential ── */
     defineField({
+      hidden: true,
       name: 'authenticHeading',
       title: 'Heading',
       type: 'string',
       group: 'authentic',
     }),
     defineField({
+      hidden: true,
       name: 'authenticBody',
       title: 'Body',
       type: 'array',
@@ -55,7 +57,7 @@ export const sciencePage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'authenticSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'authentic',
       description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
@@ -138,8 +140,9 @@ export const sciencePage = defineType({
     }),
     /* Unified content-section migration target. */
     defineField({
+      hidden: true,
       name: 'dimensionsSectionContent',
-      title: 'Dimensions section — content (new shape)',
+      title: 'Dimensions section — content',
       type: 'contentSection',
       group: 'theory',
       description: 'Migrated equivalent of the Dimensions heading/body/media fields above — edit here once Phase 2 ships.',
@@ -177,12 +180,14 @@ export const sciencePage = defineType({
 
     /* Step 3 — Detailed candidate insights */
     defineField({
+      hidden: true,
       name: 'insightsHeading',
       title: 'Insights — Heading',
       type: 'string',
       group: 'theory',
     }),
     defineField({
+      hidden: true,
       name: 'insightsBody',
       title: 'Insights — Body',
       type: 'array',
@@ -190,6 +195,7 @@ export const sciencePage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'insightsMedia',
       title: 'Insights — Dashboard image or video',
       type: 'mediaBlock',
@@ -199,7 +205,7 @@ export const sciencePage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'insightsSection',
-      title: 'Insights section — content (new shape)',
+      title: 'Insights section — content',
       type: 'contentSection',
       group: 'theory',
       description: 'Migrated equivalent of the Insights heading/body/media fields above — edit here once Phase 2 ships.',

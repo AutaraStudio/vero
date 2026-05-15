@@ -113,6 +113,7 @@ export const jobCategory = defineType({
         'preview line on the assessments listing page.',
     }),
     defineField({
+      hidden: true,
       name: 'dimensionsSectionHeading',
       title: 'Heading',
       type: 'string',
@@ -120,6 +121,7 @@ export const jobCategory = defineType({
       description: 'e.g. "What we measure".',
     }),
     defineField({
+      hidden: true,
       name: 'dimensionsSectionBody',
       title: 'Body paragraph',
       type: 'text',
@@ -128,6 +130,7 @@ export const jobCategory = defineType({
       description: 'Plain paragraph explaining which dimensions matter for this category.',
     }),
     defineField({
+      hidden: true,
       name: 'dimensionsSectionMedia',
       title: 'Supporting media (image or video)',
       type: 'mediaBlock',
@@ -137,7 +140,7 @@ export const jobCategory = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'dimensionsSectionContent',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'dimensions',
       description: 'Migrated equivalent of the heading / body / media fields above — edit here once Phase 2 ships.',
@@ -339,8 +342,9 @@ export const jobCategory = defineType({
     }),
     /* Unified content-section migration target. */
     defineField({
+      hidden: true,
       name: 'bespokeSectionContent',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'bespoke',
       description: 'Migrated equivalent of the heading / body / media / CTA fields above — edit here once Phase 2 ships.',

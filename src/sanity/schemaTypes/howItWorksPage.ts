@@ -69,12 +69,14 @@ export const howItWorksPage = defineType({
 
     /* ── Getting Started ── */
     defineField({
+      hidden: true,
       name: 'gettingStartedHeading',
       title: 'Heading',
       type: 'string',
       group: 'gettingStarted',
     }),
     defineField({
+      hidden: true,
       name: 'gettingStartedBody',
       title: 'Body',
       type: 'array',
@@ -82,6 +84,7 @@ export const howItWorksPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'gettingStartedMedia',
       title: 'Section media (image or video)',
       type: 'mediaBlock',
@@ -89,6 +92,7 @@ export const howItWorksPage = defineType({
       description: 'Image or clickable video shown beside the body.',
     }),
     defineField({
+      hidden: true,
       name: 'gettingStartedLinkLabel',
       title: 'Pricing Link Label',
       type: 'string',
@@ -96,6 +100,7 @@ export const howItWorksPage = defineType({
       description: 'Inline call-out, e.g. "Read more about your options on our pricing page".',
     }),
     defineField({
+      hidden: true,
       name: 'gettingStartedLinkHref',
       title: 'Pricing Link Href',
       type: 'string',
@@ -104,7 +109,7 @@ export const howItWorksPage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'gettingStartedSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'gettingStarted',
       description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
@@ -112,12 +117,14 @@ export const howItWorksPage = defineType({
 
     /* ── Candidate Experience ── */
     defineField({
+      hidden: true,
       name: 'candidateExpHeading',
       title: 'Heading',
       type: 'string',
       group: 'candidateExperience',
     }),
     defineField({
+      hidden: true,
       name: 'candidateExpBody',
       title: 'Body',
       type: 'array',
@@ -125,6 +132,7 @@ export const howItWorksPage = defineType({
       of: [{ type: 'block', styles: [{ title: 'Normal', value: 'normal' }], marks: { decorators: [] } }],
     }),
     defineField({
+      hidden: true,
       name: 'candidateExpMedia',
       title: 'Section media (image or video)',
       type: 'mediaBlock',
@@ -134,7 +142,7 @@ export const howItWorksPage = defineType({
     /* Unified content-section migration target. */
     defineField({
       name: 'candidateExperienceSection',
-      title: 'Section content (new shape)',
+      title: 'Section content',
       type: 'contentSection',
       group: 'candidateExperience',
       description: 'Migrated equivalent of the fields above — edit here once Phase 2 ships.',
