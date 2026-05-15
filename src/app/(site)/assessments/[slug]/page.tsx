@@ -14,7 +14,12 @@ import ContentSection from '@/components/ContentSection';
 import FeatureCardsSection from './FeatureCardsSection';
 import StatsSection from './StatsSection';
 import RoleGrid from './RoleGrid';
+import BespokeStrip from '@/components/BespokeStrip';
 import PricingShowcase from '@/components/PricingShowcase/PricingShowcase';
+/* category.css holds the StatsSection card styles. It used to be loaded
+   transitively via the old DimensionsSection import — now imported
+   directly so retiring that component doesn't strip the stats grid. */
+import './category.css';
 
 type Params = Promise<{ slug: string }>;
 
@@ -77,7 +82,11 @@ export default async function CategoryPage({ params }: { params: Params }) {
     name,
     roleRosterHeading,
     roleRosterSubheading,
-    bespokeSectionContent,
+    bespokeSectionHeading,
+    bespokeSectionBody,
+    bespokeCTALabel,
+    bespokeCTAHref,
+    bespokeSectionMedia,
   } = data;
 
   // Pre-fetch Lottie JSON data server-side so the client doesn't need to
@@ -153,7 +162,30 @@ export default async function CategoryPage({ params }: { params: Params }) {
       {/* Pricing tiers + collapsible comparison table — same on every assessment page */}
       <PricingShowcase collapsible />
 
-      <ContentSection theme="brand-purple" section={bespokeSectionContent} />
+      {bespokeSectionHeading && (() => {
+        /* BespokeStrip is a dedicated visual treatment — brand-shapes
+           background + tight layout — that the generic contentSection /
+           IntroBlock doesn't replicate. Kept on its custom component so
+           the closing CTA on every category page reads as the deliberate
+           "speak to us" moment it was designed to be. */
+        const bespokeImageUrl =
+          bespokeSectionMedia?.type === 'video'
+            ? bespokeSectionMedia.videoThumbnailUrl
+            : bespokeSectionMedia?.imageUrl;
+        return (
+          <BespokeStrip
+            heading={bespokeSectionHeading}
+            body={bespokeSectionBody}
+            ctaLabel={bespokeCTALabel || "Interested? Let's talk"}
+            ctaHref={bespokeCTAHref || '/contact'}
+            image={
+              bespokeImageUrl
+                ? { src: bespokeImageUrl, alt: 'Vero Assess platform preview' }
+                : undefined
+            }
+          />
+        );
+      })()}
     </main>
   );
 }
