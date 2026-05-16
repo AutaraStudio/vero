@@ -139,8 +139,18 @@ export const howItWorksPage = defineType({
       of: [
         {
           type: 'object',
-          preview: { select: { title: 'body' }, prepare({ title }) { return { title: title ? `${title.slice(0, 60)}…` : 'Step' } } },
+          preview: {
+            select: { title: 'headline', subtitle: 'body' },
+            prepare({ title, subtitle }) {
+              return {
+                title: title || 'Step',
+                subtitle: subtitle ? `${subtitle.slice(0, 80)}…` : undefined,
+              }
+            },
+          },
           fields: [
+            defineField({ name: 'headline', title: 'Headline', type: 'string', description: 'Short heading shown above the body (e.g. "Add your team").' }),
+            defineField({ name: 'label', title: 'Tab label', type: 'string', description: 'Label shown in the sticky tab strip. Defaults to "Step N: Headline" if blank.' }),
             defineField({ name: 'body', title: 'Body', type: 'text', rows: 4 }),
             defineField({
               name: 'image',

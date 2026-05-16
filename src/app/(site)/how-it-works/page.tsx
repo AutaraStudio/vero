@@ -50,7 +50,7 @@ interface HowItWorksData {
   // Steps (7-step sticky-tabs process)
   stepsHeading?: string;
   stepsIntro?: string;
-  steps?: { body: string; imageUrl?: string; imageAlt?: string }[];
+  steps?: { headline?: string; label?: string; body: string; imageUrl?: string; imageAlt?: string }[];
 
   // Benefits
   benefitsHeading?: string;
@@ -59,11 +59,10 @@ interface HowItWorksData {
   benefitsLinkHref?: string;
 }
 
-/* ── Synthesised step headlines ──────────────────────────────────── */
-/* The Sanity schema only stores body per step. We pair each step's body
-   with a short, human-readable headline so the StickyTabs section has
-   the structure it needs. Indexed by Sanity step order. */
-const STEP_HEADLINES: string[] = [
+/* ── Fallback step headlines ─────────────────────────────────────── */
+/* Used only when a step's `headline` field is blank in Sanity. Editors
+   can fully override per step via the Headline + Tab label fields. */
+const STEP_HEADLINE_FALLBACKS: string[] = [
   'Add your team',
   'Configure your campaign',
   'Brand your candidate portal',
@@ -76,12 +75,15 @@ const STEP_HEADLINES: string[] = [
 export default async function HowItWorksPage() {
   const data = await client.fetch<HowItWorksData | null>(HOW_IT_WORKS_PAGE_QUERY);
 
-  /* Compose the StickyTabs array from the Sanity steps + synthesised headlines */
+  /* Compose the StickyTabs array from the Sanity steps. Each step's
+     headline and tab label are fully editable; we only fall back to the
+     hardcoded headline if Sanity has nothing for that slot. */
   const stepTabs: StickyTabItem[] = (data?.steps ?? []).map((step, i) => {
-    const headline = STEP_HEADLINES[i] ?? `Step ${i + 1}`;
+    const headline = step.headline?.trim() || STEP_HEADLINE_FALLBACKS[i] || `Step ${i + 1}`;
+    const label    = step.label?.trim() || `Step ${i + 1}: ${headline}`;
     return {
       theme: 'brand-purple',
-      label: `Step ${i + 1}: ${headline}`,
+      label,
       children: (
         <>
           <div className="sticky-tab__text stack--lg">
