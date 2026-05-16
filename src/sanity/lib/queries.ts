@@ -181,6 +181,15 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('gettingStartedSection')},
+
+    stepsHeading,
+    stepsIntro,
+    steps[] {
+      body,
+      "imageUrl": image.asset->url,
+      "imageAlt": image.alt
+    },
+
     ${contentSectionProjection('candidateExperienceSection')},
 
     benefitsHeading,
