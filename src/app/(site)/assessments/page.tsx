@@ -29,6 +29,8 @@ interface AssessmentsPageData {
   heroIntro?: string;
   heroCTALabel?: string;
   heroCTAHref?: string;
+  heroSecondaryCTALabel?: string;
+  heroSecondaryCTAHref?: string;
 }
 
 interface JobCategory {
@@ -72,8 +74,13 @@ export default async function AssessmentsPage() {
         }
         primaryCTA={
           page?.heroCTALabel
-            ? { label: page.heroCTALabel, href: page.heroCTAHref ?? '/get-started' }
-            : { label: 'Get started', href: '/get-started' }
+            ? { label: page.heroCTALabel, href: page.heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          page?.heroSecondaryCTALabel
+            ? { label: page.heroSecondaryCTALabel, href: page.heroSecondaryCTAHref ?? '#' }
+            : undefined
         }
       />
 

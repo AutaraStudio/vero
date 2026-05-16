@@ -121,13 +121,13 @@ export default async function HowItWorksPage() {
         intro={data?.heroIntro}
         primaryCTA={
           data?.heroCTALabel
-            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '/get-started' }
-            : { label: 'Get started', href: '/get-started' }
+            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '#' }
+            : undefined
         }
         secondaryCTA={
           data?.heroSecondaryCTALabel
-            ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '/pricing' }
-            : { label: 'View pricing', href: '/pricing' }
+            ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
+            : undefined
         }
         media={data?.heroMedia}
       />
