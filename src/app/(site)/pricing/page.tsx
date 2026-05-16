@@ -73,6 +73,10 @@ export interface FAQItem {
 export interface PricingPageContent {
   heroHeadline?: string;
   heroIntro?: string;
+  heroCTALabel?: string;
+  heroCTAHref?: string;
+  heroSecondaryCTALabel?: string;
+  heroSecondaryCTAHref?: string;
   starterCallout?: string;
   bespokeHeading?: string;
   bespokeBody?: string;
@@ -96,6 +100,16 @@ export default async function PricingPage() {
         badge={{ label: 'Pricing', href: '#pricing-tiers' }}
         headline={page?.heroHeadline ?? 'Flexible pricing'}
         intro={page?.heroIntro}
+        primaryCTA={
+          page?.heroCTALabel
+            ? { label: page.heroCTALabel, href: page.heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          page?.heroSecondaryCTALabel
+            ? { label: page.heroSecondaryCTALabel, href: page.heroSecondaryCTAHref ?? '#' }
+            : undefined
+        }
       />
 
       <TierCardsSection

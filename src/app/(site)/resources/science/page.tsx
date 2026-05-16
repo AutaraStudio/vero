@@ -36,6 +36,10 @@ interface PortableTextBlock { _type: 'block'; children: PortableTextSpan[]; styl
 interface SciencePageData {
   heroHeadline?: string;
   heroBody?: string;
+  heroCTALabel?: string;
+  heroCTAHref?: string;
+  heroSecondaryCTALabel?: string;
+  heroSecondaryCTAHref?: string;
   heroMedia?: MediaBlockData;
 
   /* Unified content sections (Phase 2). */
@@ -77,6 +81,16 @@ export default async function SciencePage() {
         eyebrow="The science"
         headline={data?.heroHeadline ?? 'Assessments you can trust'}
         intro={data?.heroBody}
+        primaryCTA={
+          data?.heroCTALabel
+            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          data?.heroSecondaryCTALabel
+            ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
+            : undefined
+        }
         media={data?.heroMedia}
       />
 

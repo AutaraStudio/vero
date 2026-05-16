@@ -147,6 +147,10 @@ export const PRICING_PAGE_QUERY = `
   *[_type == "pricingPage"][0] {
         heroHeadline,
     heroIntro,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     starterCallout,
     bespokeHeading,
     bespokeBody,
@@ -166,7 +170,9 @@ export const ASSESSMENTS_PAGE_QUERY = `
         heroHeadline,
     heroIntro,
     heroCTALabel,
-    heroCTAHref
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref
   }
 `
 
@@ -210,6 +216,10 @@ export const ABOUT_PAGE_QUERY = `
   *[_type == "aboutPage"][0] {
         heroHeadline,
     heroIntro,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('tazioEvolutionSection')},
@@ -233,6 +243,10 @@ export const SCIENCE_PAGE_QUERY = `
   *[_type == "sciencePage"][0] {
         heroHeadline,
     heroBody,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('authenticSection')},
@@ -276,6 +290,10 @@ export const COMPLIANCE_PAGE_QUERY = `
   *[_type == "compliancePage"][0] {
         heroHeadline,
     heroBody,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
 
     securityHeading,
     securityBody,
@@ -395,6 +413,10 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     keyDimensionsAssessed,
     heroHeadline,
     heroIntroCopy,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     ${mediaProjection('heroMedia')},
     ${contentSectionProjection('dimensionsSectionContent')},
     inActionLabel,

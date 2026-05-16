@@ -95,14 +95,15 @@ export default async function Home() {
           data?.heroIntro ??
           'Science-backed skills assessments built for modern hiring teams. Objective, fast, and fair.'
         }
-        primaryCTA={{
-          label: data?.heroCTALabel ?? 'Get started',
-          href:  data?.heroCTAHref  ?? '/get-started',
-        }}
+        primaryCTA={
+          data?.heroCTALabel
+            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '#' }
+            : undefined
+        }
         secondaryCTA={
           data?.heroSecondaryCTALabel
             ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
-            : { label: 'See how it works', href: '/how-it-works' }
+            : undefined
         }
         mediaBlock={data?.heroMedia}
         alwaysShowMedia

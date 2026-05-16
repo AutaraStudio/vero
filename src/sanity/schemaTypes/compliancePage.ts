@@ -37,6 +37,34 @@ export const compliancePage = defineType({
       rows: 3,
       group: 'hero',
     }),
+    defineField({
+      name: 'heroCTALabel',
+      title: 'Primary button — text',
+      type: 'string',
+      group: 'hero',
+      description: 'Optional. Leave blank to hide the primary button.',
+    }),
+    defineField({
+      name: 'heroCTAHref',
+      title: 'Primary button — link',
+      type: 'string',
+      group: 'hero',
+      hidden: ({ parent }) => !parent?.heroCTALabel,
+    }),
+    defineField({
+      name: 'heroSecondaryCTALabel',
+      title: 'Secondary button — text',
+      type: 'string',
+      group: 'hero',
+      description: 'Optional second button — usually quieter.',
+    }),
+    defineField({
+      name: 'heroSecondaryCTAHref',
+      title: 'Secondary button — link',
+      type: 'string',
+      group: 'hero',
+      hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
+    }),
 
     /* ── Data Security ── */
     defineField({
