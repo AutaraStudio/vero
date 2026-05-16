@@ -185,6 +185,8 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
     stepsHeading,
     stepsIntro,
     steps[] {
+      headline,
+      label,
       body,
       "imageUrl": image.asset->url,
       "imageAlt": image.alt
