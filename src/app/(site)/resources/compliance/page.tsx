@@ -37,6 +37,10 @@ interface AccessibilityItem extends ChecklistItem { imageUrl?: string; imageAlt?
 interface CompliancePageData {
   heroHeadline?: string;
   heroBody?: string;
+  heroCTALabel?: string;
+  heroCTAHref?: string;
+  heroSecondaryCTALabel?: string;
+  heroSecondaryCTAHref?: string;
 
   securityHeading?: string;
   securityBody?: string;
@@ -66,6 +70,16 @@ export default async function CompliancePage() {
         badge={{ label: 'Compliance', href: '#data-security' }}
         headline={data?.heroHeadline ?? 'Safe, secure, compliant'}
         intro={data?.heroBody}
+        primaryCTA={
+          data?.heroCTALabel
+            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          data?.heroSecondaryCTALabel
+            ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
+            : undefined
+        }
       />
 
       {/* ── 2. Data security credentials — split with badges graphic ── */}

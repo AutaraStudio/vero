@@ -37,6 +37,10 @@ export async function generateMetadata(): Promise<Metadata> {
 interface AboutPageData {
   heroHeadline?: string;
   heroIntro?: string;
+  heroCTALabel?: string;
+  heroCTAHref?: string;
+  heroSecondaryCTALabel?: string;
+  heroSecondaryCTAHref?: string;
   heroMedia?: MediaBlockData;
 
   tazioEvolutionSection?: ContentSectionData;
@@ -61,6 +65,16 @@ export default async function AboutPage() {
         eyebrow="About us"
         headline={data?.heroHeadline ?? 'Powered by trusted technology'}
         intro={data?.heroIntro}
+        primaryCTA={
+          data?.heroCTALabel
+            ? { label: data.heroCTALabel, href: data.heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          data?.heroSecondaryCTALabel
+            ? { label: data.heroSecondaryCTALabel, href: data.heroSecondaryCTAHref ?? '#' }
+            : undefined
+        }
         media={data?.heroMedia}
       />
 

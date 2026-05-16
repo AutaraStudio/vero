@@ -63,6 +63,10 @@ export default async function CategoryPage({ params }: { params: Params }) {
   const {
     heroHeadline,
     heroIntroCopy,
+    heroCTALabel,
+    heroCTAHref,
+    heroSecondaryCTALabel,
+    heroSecondaryCTAHref,
     keyDimensionsAssessed,
     heroMedia,
     dimensionsSectionContent,
@@ -121,7 +125,16 @@ export default async function CategoryPage({ params }: { params: Params }) {
         headline={heroHeadline}
         intro={heroIntroCopy}
         badges={dimensionBadges}
-        primaryCTA={{ label: 'Get started', href: `/get-started?category=${slug}` }}
+        primaryCTA={
+          heroCTALabel
+            ? { label: heroCTALabel, href: heroCTAHref ?? '#' }
+            : undefined
+        }
+        secondaryCTA={
+          heroSecondaryCTALabel
+            ? { label: heroSecondaryCTALabel, href: heroSecondaryCTAHref ?? '#' }
+            : undefined
+        }
         media={heroMedia}
       />
 
