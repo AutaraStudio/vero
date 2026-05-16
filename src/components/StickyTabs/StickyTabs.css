@@ -97,7 +97,7 @@
   aspect-ratio: 16 / 9;
   object-fit: cover;
   display: block;
-  border-radius: var(--radius--md);
+  border-radius: var(--radius--media);
   border: 1px solid var(--color--border-default);
 }
 
@@ -108,7 +108,7 @@
   min-height: 20rem;
   background: var(--color--surface-sunken);
   border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--md);
+  border-radius: var(--radius--media);
 }
 
 /* ── Responsive ── */

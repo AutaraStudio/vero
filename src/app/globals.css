@@ -345,6 +345,12 @@
   --radius--xl:   0.5rem;   /* hard max for any surface */
   --radius--full: 9999px;   /* pills only — badges, labels, tags */
 
+  /* Single source of truth for ALL media surfaces — hero images,
+     hero video covers, IntroBlock thumbnails, sticky-tab step images,
+     slider card images, bespoke cover image, video modals. Change this
+     once to retune every media element on the site. */
+  --radius--media: var(--radius--lg);
+
   /* Transitions
      Only use for simple hover state changes on interactive elements.
      Never use for section animations — use GSAP with named Vero eases instead.
