@@ -46,7 +46,7 @@
   width: 100%;
   max-width: 28rem;
   aspect-ratio: 1 / 1;
-  border-radius: var(--radius--xl);
+  border-radius: var(--radius--media);
   background: var(--color--accent-purple-bg);
   border: 1px solid var(--color--accent-purple-border);
 }
