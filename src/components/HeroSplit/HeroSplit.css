@@ -153,7 +153,7 @@ a.hero-split__pill:hover {
   width: 100%;
   aspect-ratio: 16 / 9;
   object-fit: cover;
-  border-radius: var(--radius--lg);
+  border-radius: var(--radius--media);
   background: var(--color--surface-sunken);
   border: 1px solid var(--color--border-default);
 }

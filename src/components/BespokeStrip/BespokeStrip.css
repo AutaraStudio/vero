@@ -51,7 +51,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  border-radius: var(--radius--lg);
+  border-radius: var(--radius--media);
   overflow: hidden;
   background: color-mix(in srgb, var(--swatch--neutral-0) 8%, transparent);
 }
