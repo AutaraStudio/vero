@@ -20,8 +20,10 @@ interface Props {
 
 /**
  * Compliance — Data security section.
- * Split layout: heading + body + credentials list on the left,
- * security badges graphic on the right (sticky on desktop).
+ *
+ * Layout: pill + heading + paragraph stacked at the top (left-aligned),
+ * then a two-column row beneath — credential blocks on the left, single
+ * security graphic on the right (sticky on desktop).
  */
 export default function SecuritySection({
   heading,
@@ -44,42 +46,42 @@ export default function SecuritySection({
   return (
     <section id="data-security" data-theme="brand-purple" className="security-section section">
       <div className="container">
+        {/* ── Header — label + heading + paragraph, full width ───── */}
+        <div className="security-section__header stack--md">
+          <span ref={labelRef as React.RefObject<HTMLSpanElement>} data-animate="" className="section-label">
+            Data security
+          </span>
+          <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="section-heading max-ch-20">
+            {heading}
+          </h2>
+          {body && (
+            <p ref={bodyRef as React.RefObject<HTMLParagraphElement>} data-animate="" className="section-intro text-body--lg leading--snug">
+              {body}
+            </p>
+          )}
+        </div>
+
+        {/* ── Body — credential blocks left, single graphic right ─── */}
         <div className="security-section__grid">
 
-          {/* ── Left — heading + body + checklist ─────────── */}
-          <div className="security-section__text">
-            <span ref={labelRef as React.RefObject<HTMLSpanElement>} data-animate="" className="section-label">
-              Data security
-            </span>
-            <h2 ref={headingRef as React.RefObject<HTMLHeadingElement>} data-animate="" className="section-heading max-ch-20">
-              {heading}
-            </h2>
-            {body && (
-              <p ref={bodyRef as React.RefObject<HTMLParagraphElement>} data-animate="" className="section-intro text-body--lg leading--snug">
-                {body}
-              </p>
-            )}
+          <ul ref={listRef as React.RefObject<HTMLUListElement>} className="security-section__list">
+            {credentials.map((c, i) => (
+              <li key={`${c.label}-${i}`} className="security-section__item">
+                <span className="security-section__item-icon" aria-hidden="true">
+                  <CheckIcon size={14} />
+                </span>
+                <div className="security-section__item-text">
+                  <h3 className="security-section__item-label text-h5 color--primary">
+                    {c.label}
+                  </h3>
+                  <p className="security-section__item-description text-body--sm leading--snug color--secondary">
+                    {c.description}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
 
-            <ul ref={listRef as React.RefObject<HTMLUListElement>} className="security-section__list">
-              {credentials.map((c, i) => (
-                <li key={`${c.label}-${i}`} className="security-section__item">
-                  <span className="security-section__item-icon" aria-hidden="true">
-                    <CheckIcon size={14} />
-                  </span>
-                  <div className="security-section__item-text">
-                    <h3 className="security-section__item-label text-h5 color--primary">
-                      {c.label}
-                    </h3>
-                    <p className="security-section__item-description text-body--sm leading--snug color--secondary">
-                      {c.description}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ── Right — sticky badges visual ──────────────── */}
           <aside
             ref={visualRef as React.Ref<HTMLElement>}
             data-animate=""
@@ -90,13 +92,13 @@ export default function SecuritySection({
                 /* eslint-disable-next-line @next/next/no-img-element */
                 <img
                   src={badgesImageUrl}
-                  alt={badgesImageAlt ?? 'Security accreditation badges'}
+                  alt={badgesImageAlt ?? 'Security accreditation graphic'}
                   className="security-section__badges-img"
                   loading="lazy"
                 />
               ) : (
                 <div className="security-section__badges-placeholder" aria-hidden="true">
-                  <BadgePlaceholders />
+                  <BadgePlaceholder />
                 </div>
               )}
             </div>
@@ -108,28 +110,17 @@ export default function SecuritySection({
   );
 }
 
-/* Placeholder visual — a tasteful 2×2 grid of "ISO / Cyber Essentials Plus /
-   WCAG 2.2 / ISO 27001" badge mock-ups so the section reads correctly until
-   the real graphic is uploaded. */
-function BadgePlaceholders() {
-  const badges = [
-    'ISO 27001',
-    'ISO 9001',
-    'Cyber Essentials Plus',
-    'WCAG 2.2',
-  ];
+/* Single tile placeholder shown until the editor uploads the real graphic.
+   Subtle brand-purple tint matches the placeholder style used elsewhere. */
+function BadgePlaceholder() {
   return (
-    <div className="security-section__placeholder-grid">
-      {badges.map((label) => (
-        <div key={label} className="security-section__placeholder-badge">
-          <div className="security-section__placeholder-icon" aria-hidden="true">
-            <CheckIcon size={28} />
-          </div>
-          <span className="security-section__placeholder-label text-label--sm color--secondary">
-            {label}
-          </span>
-        </div>
-      ))}
+    <div className="security-section__placeholder-single">
+      <div className="security-section__placeholder-icon" aria-hidden="true">
+        <CheckIcon size={32} />
+      </div>
+      <span className="security-section__placeholder-label text-label--sm color--secondary">
+        Upload your security graphic
+      </span>
     </div>
   );
 }
