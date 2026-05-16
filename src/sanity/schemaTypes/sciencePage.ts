@@ -37,6 +37,16 @@ export const sciencePage = defineType({
       rows: 3,
       group: 'hero',
     }),
+    defineField({
+      name: 'heroMedia',
+      title: 'Hero media (image or video)',
+      type: 'mediaBlock',
+      group: 'hero',
+      description:
+        'Image or clickable video shown beneath the headline. ' +
+        '1600×900px recommended for images / 16:9 cover for videos. ' +
+        'Leave blank to render a text-only hero.',
+    }),
 
     /* ── Finding Authentic Potential ── */
     defineField({
