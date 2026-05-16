@@ -103,6 +103,9 @@
   transition: transform 0.4s var(--smooth-ease);
   color: var(--btn-text-color);
   white-space: nowrap;
+  /* Title-case all button labels so editors don't need to worry about
+     capitalisation — "get started" renders as "Get Started" automatically. */
+  text-transform: capitalize;
 }
 
 /* ── Background ────────────────────────────────────────── */
