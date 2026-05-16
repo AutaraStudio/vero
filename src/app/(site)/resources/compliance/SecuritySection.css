@@ -1,11 +1,27 @@
 /* ============================================================
    Compliance — SecuritySection
-   Split layout: text + checklist on the left, badges on the right.
+   Header stack on top (label + heading + paragraph), two-column
+   body below with credential blocks left + single graphic right.
 ============================================================ */
 
 .security-section {
   background: var(--color--page-bg);
 }
+
+/* ── Header — full-width stack above the two-column body ────────── */
+
+.security-section__header {
+  align-items: flex-start;
+  text-align: left;
+  max-width: 60ch;
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+}
+
+.security-section__header .section-intro {
+  margin: 0;
+}
+
+/* ── Body — two-column grid: blocks left, image right ───────────── */
 
 .security-section__grid {
   display: grid;
@@ -21,22 +37,11 @@
   }
 }
 
-/* ── Left — text + checklist ──────────────────────────────── */
-
-.security-section__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1.25rem;
-}
-
-.security-section__text .section-intro {
-  margin-bottom: 0.5rem;
-}
+/* ── Left — credential blocks list ──────────────────────────────── */
 
 .security-section__list {
   list-style: none;
-  margin: 0.5rem 0 0;
+  margin: 0;
   padding: 0;
   display: flex;
   flex-direction: column;
@@ -82,24 +87,14 @@
   min-width: 0;
 }
 
-.security-section__item-label {
-  margin: 0;
-}
+.security-section__item-label   { margin: 0; }
+.security-section__item-description { margin: 0; }
 
-.security-section__item-description {
-  margin: 0;
-}
-
-/* ── Right — sticky badges visual ─────────────────────────── */
+/* ── Right — sticky single graphic ──────────────────────────────── */
 
 .security-section__visual {
   position: relative;
   width: 100%;
-  /* Push the initial position down so the badges grid starts vertically
-     aligned with the first checklist card on the left (after the
-     eyebrow / heading / body block). Once the user scrolls past, the
-     inner sticky child detaches and pins to top of viewport. */
-  padding-top: clamp(11rem, 14vw, 14rem);
 }
 
 .security-section__visual-sticky {
@@ -108,9 +103,6 @@
 }
 
 @media (max-width: 900px) {
-  .security-section__visual {
-    padding-top: 0;
-  }
   .security-section__visual-sticky {
     position: static;
     top: auto;
@@ -126,32 +118,26 @@
   border: 1px solid var(--color--border-default);
 }
 
-/* ── Placeholder badges grid (used until the graphic is uploaded) ── */
+/* ── Placeholder shown until the editor uploads the real graphic ── */
 
 .security-section__badges-placeholder {
   width: 100%;
-  padding: 1.5rem;
   background: var(--color--surface-raised);
   border: 1px solid var(--color--border-default);
-  border-radius: var(--radius--lg);
+  border-radius: var(--radius--media);
 }
 
-.security-section__placeholder-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.security-section__placeholder-badge {
+.security-section__placeholder-single {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.625rem;
-  padding: 1.25rem 0.75rem;
-  background: var(--color--surface-sunken);
-  border: 1px solid var(--color--border-subtle);
-  border-radius: var(--radius--md);
+  gap: 0.875rem;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  padding: 2rem;
+  background: color-mix(in srgb, var(--swatch--purple-500) 8%, var(--color--surface-raised));
+  border-radius: var(--radius--media);
   text-align: center;
 }
 
@@ -159,8 +145,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.75rem;
-  height: 2.75rem;
+  width: 3rem;
+  height: 3rem;
   border-radius: var(--radius--full);
   background: color-mix(in srgb, var(--swatch--purple-500) 18%, transparent);
   color: var(--swatch--purple-500);
