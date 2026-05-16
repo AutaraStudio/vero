@@ -4,6 +4,7 @@ import { HOW_IT_WORKS_PAGE_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queri
 import { generateSiteMetadata, fetchPageSeo, type SiteSeoSettings } from '@/lib/seo';
 import HeroSplit      from '@/components/HeroSplit';
 import ContentSection, { type ContentSectionData } from '@/components/ContentSection';
+import StickyTabs, { type StickyTabItem } from '@/components/StickyTabs';
 import FeatureSlider  from '@/components/FeatureSlider/FeatureSlider';
 import type { MediaBlockData } from '@/components/MediaBlock';
 
@@ -46,6 +47,11 @@ interface HowItWorksData {
   gettingStartedSection?: ContentSectionData;
   candidateExperienceSection?: ContentSectionData;
 
+  // Steps (7-step sticky-tabs process)
+  stepsHeading?: string;
+  stepsIntro?: string;
+  steps?: { body: string; imageUrl?: string; imageAlt?: string }[];
+
   // Benefits
   benefitsHeading?: string;
   benefits?: { label: string; body?: string; imageUrl?: string; imageAlt?: string }[];
@@ -53,8 +59,54 @@ interface HowItWorksData {
   benefitsLinkHref?: string;
 }
 
+/* ── Synthesised step headlines ──────────────────────────────────── */
+/* The Sanity schema only stores body per step. We pair each step's body
+   with a short, human-readable headline so the StickyTabs section has
+   the structure it needs. Indexed by Sanity step order. */
+const STEP_HEADLINES: string[] = [
+  'Add your team',
+  'Configure your campaign',
+  'Brand your candidate portal',
+  'Sign and pay',
+  'Get your portal access',
+  'Meet your CSM',
+  'Go live',
+];
+
 export default async function HowItWorksPage() {
   const data = await client.fetch<HowItWorksData | null>(HOW_IT_WORKS_PAGE_QUERY);
+
+  /* Compose the StickyTabs array from the Sanity steps + synthesised headlines */
+  const stepTabs: StickyTabItem[] = (data?.steps ?? []).map((step, i) => {
+    const headline = STEP_HEADLINES[i] ?? `Step ${i + 1}`;
+    return {
+      theme: 'brand-purple',
+      label: `Step ${i + 1}: ${headline}`,
+      children: (
+        <>
+          <div className="sticky-tab__text stack--lg">
+            <div className="stack--md">
+              <h4 className="text-h4 color--primary">{headline}</h4>
+              <p className="text-body--md leading--relaxed color--secondary">{step.body}</p>
+            </div>
+          </div>
+
+          <div className="sticky-tab__image">
+            {step.imageUrl ? (
+              /* eslint-disable-next-line @next/next/no-img-element */
+              <img
+                src={step.imageUrl}
+                alt={step.imageAlt ?? ''}
+                loading="lazy"
+              />
+            ) : (
+              <div className="sticky-tab__image-placeholder" />
+            )}
+          </div>
+        </>
+      ),
+    };
+  });
 
   return (
     <main id="main-content" tabIndex={-1}>
@@ -81,10 +133,33 @@ export default async function HowItWorksPage() {
       {/* ── 2. Getting started ────────────────────────────── */}
       <ContentSection theme="brand-purple" section={data?.gettingStartedSection} />
 
-      {/* ── 3. Candidate experience ───────────────────────── */}
+      {/* ── 3. The 7-step process (sticky tabs) ───────────── */}
+      {stepTabs.length > 0 && (
+        <section className="how-it-works__steps section" data-theme="brand-purple">
+          {(data?.stepsHeading || data?.stepsIntro) && (
+            <div className="container">
+              <div className="how-it-works__steps-header stack--md max-ch-60">
+                <span className="section-label">The process</span>
+                {data?.stepsHeading && (
+                  <h2 className="section-heading">{data.stepsHeading}</h2>
+                )}
+                {data?.stepsIntro && (
+                  <p className="section-intro text-body--lg leading--snug">
+                    {data.stepsIntro}
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          <StickyTabs tabs={stepTabs} />
+        </section>
+      )}
+
+      {/* ── 4. Candidate experience ───────────────────────── */}
       <ContentSection theme="brand-purple" section={data?.candidateExperienceSection} />
 
-      {/* ── 4. Benefits (slider) ──────────────────────────── */}
+      {/* ── 5. Benefits (slider) ──────────────────────────── */}
       {data?.benefitsHeading && data?.benefits && data.benefits.length > 0 && (
         <FeatureSlider
           theme="brand-purple"
