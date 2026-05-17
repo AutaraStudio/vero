@@ -394,10 +394,6 @@ export default function PortalSetupPage() {
                 </div>
               ) : (
                 <div className="form-field">
-                  <label className="form-field__label text-label--sm color--tertiary">
-                    Email addresses of users who need system access (up to {userLimit})
-                    <span aria-hidden="true" className="form-field__required">{' *'}</span>
-                  </label>
                   <UserEmailInput
                     emails={userEmails}
                     inputValue={emailInput}

@@ -58,6 +58,19 @@ export default function LegalDocument({ title, intro, lastUpdated, body, legacyM
     return () => obs.disconnect();
   }, [headings]);
 
+  /* Keep the active TOC item scrolled into view inside the TOC's own
+     scroll container. On long docs the TOC has its own scrollbar (it's
+     constrained to viewport height) — without this the active item drops
+     out of sight as the user scrolls down the page. `block: 'nearest'`
+     only scrolls when needed and doesn't disturb the rest of the page. */
+  useEffect(() => {
+    if (!activeId) return;
+    const item = document.querySelector(
+      `.legal__toc-item[data-toc-id="${CSS.escape(activeId)}"]`,
+    );
+    item?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [activeId]);
+
   const formattedDate = lastUpdated ? formatDate(lastUpdated) : null;
 
   return (
@@ -92,6 +105,7 @@ export default function LegalDocument({ title, intro, lastUpdated, body, legacyM
             {headings.map((h) => (
               <li
                 key={h.id}
+                data-toc-id={h.id}
                 className={`legal__toc-item${activeId === h.id ? ' is-active' : ''}`}
               >
                 <a href={`#${h.id}`} className="legal__toc-link">{h.text}</a>

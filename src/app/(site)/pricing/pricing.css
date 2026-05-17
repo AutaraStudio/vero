@@ -642,7 +642,7 @@
     content: attr(data-tier-mobile-label);
     font-size: 0.75rem;
     font-weight: 600;
-    letter-spacing: var(--font--label-ls, 0.05em);
+    letter-spacing: var(--font--label-ls);
     color: var(--color--text-tertiary);
     text-transform: uppercase;
   }

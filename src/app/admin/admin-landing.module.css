@@ -38,7 +38,7 @@
   color: var(--swatch--neutral-0);
   display: grid;
   place-items: center;
-  font-weight: 800;
+  font-weight: 600;
   font-size: 0.875rem;
   letter-spacing: -0.02em;
 }
@@ -65,7 +65,7 @@
   border: 1px solid var(--color--border-default);
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--font--label-ls);
   color: var(--color--text-secondary);
   text-transform: uppercase;
 }
@@ -93,7 +93,7 @@
 .eyebrow {
   font-size: 0.75rem;
   font-weight: 600;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--font--label-ls);
   text-transform: uppercase;
   color: var(--swatch--purple-400);
   margin: 0 0 0.75rem;
@@ -101,7 +101,7 @@
 
 .title {
   font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 800;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1.05;
   color: var(--color--text-primary);
@@ -176,7 +176,7 @@
 
 .tileHeading {
   font-size: 1.25rem;
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.01em;
   margin: 0;
   color: var(--color--text-primary);

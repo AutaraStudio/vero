@@ -46,6 +46,8 @@
 
 .coming-soon__eyebrow {
   margin: 0;
+  font-size: var(--font--label);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
   color: var(--swatch--purple-500);
