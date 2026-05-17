@@ -657,7 +657,7 @@ function PaymentContent() {
             {/* What happens next */}
             <div ref={nextStepsRef as React.RefObject<HTMLDivElement>} className="payment-next-steps">
               <div className="payment-next-steps__header">
-                <p className="text-h5 color--primary">What happens next</p>
+                <h3 className="text-h5 color--primary">What happens next</h3>
                 <p className="text-body--sm color--secondary">
                   Here&apos;s what to expect after you complete your order.
                 </p>
@@ -694,7 +694,7 @@ function PaymentContent() {
             {/* Support CTA */}
             <div className="payment-contact">
               <div className="payment-contact__header">
-                <p className="text-h5 color--primary">Questions?</p>
+                <h3 className="text-h5 color--primary">Questions?</h3>
                 <p className="text-body--sm color--secondary">
                   Our team is here to help you complete your order.
                 </p>

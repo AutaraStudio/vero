@@ -517,15 +517,23 @@ export function initMegaNav(root: HTMLElement): () => void {
     }, 150);
   }
 
-  /* ── Hero theme inheritance + scroll/menu state ── */
-  const heroSection = document.querySelector<HTMLElement>('main > *:first-child');
-  const heroTheme = heroSection?.getAttribute('data-theme') ?? null;
+  /* ── Hero theme inheritance + scroll/menu state ──
+     The nav inherits the hero section's `data-theme` while at the top of
+     the page (so its text colour matches the hero behind it), then drops
+     the theme once the user scrolls past or opens a menu (so it goes
+     light over arbitrary section backgrounds).
 
-  if (heroTheme) {
-    root.setAttribute('data-theme', heroTheme);
+     We re-read the hero theme from the DOM on every appearance update
+     instead of caching it at mount, because Next.js App Router navigation
+     swaps `main` contents without remounting the nav — a cached value
+     would freeze on whichever page the nav first mounted on. */
+  function getHeroTheme(): string | null {
+    const heroSection = document.querySelector<HTMLElement>('main > *:first-child');
+    return heroSection?.getAttribute('data-theme') ?? null;
   }
 
   function updateNavAppearance() {
+    const heroTheme = getHeroTheme();
     const isScrolled = window.scrollY > 10;
     const isMenuOpen = root.getAttribute('data-menu-open') === 'true';
     const showLight = isScrolled || isMenuOpen;
@@ -546,6 +554,14 @@ export function initMegaNav(root: HTMLElement): () => void {
 
   const menuObserver = new MutationObserver(updateNavAppearance);
   menuObserver.observe(root, { attributes: true, attributeFilter: ['data-menu-open'] });
+
+  /* Route-change refresh — App Router navigation swaps the entire
+     `<main>` element (each page renders its own), so a MutationObserver
+     bound to `main` would go stale after the first navigation. The React
+     component listens to `usePathname()` and dispatches this event on
+     the nav element after every route change, giving us a single
+     refresh hook the script can listen to reliably. */
+  root.addEventListener('mega-nav-refresh', updateNavAppearance);
 
   window.addEventListener('scroll', handleNavScroll, { passive: true });
   updateNavAppearance();
@@ -617,6 +633,7 @@ export function initMegaNav(root: HTMLElement): () => void {
     root.removeEventListener('click', handleLinkClick);
     window.removeEventListener('resize', handleResize);
     window.removeEventListener('scroll', handleNavScroll);
+    root.removeEventListener('mega-nav-refresh', updateNavAppearance);
     menuObserver.disconnect();
     clearTimers();
     killDropdown();

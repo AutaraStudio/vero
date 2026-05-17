@@ -116,7 +116,7 @@ const PromoteAction: DocumentActionComponent = (
       tone: 'caution',
       message: (
         <div style={{ lineHeight: 1.55, color: 'inherit' }}>
-          <p style={{ margin: 0, fontWeight: 600, fontSize: '1rem' }}>
+          <p style={{ margin: 0, fontWeight: 600 }}>
             Push this page to veroassess.com?
           </p>
           <p style={{ margin: '0.5rem 0 0' }}>

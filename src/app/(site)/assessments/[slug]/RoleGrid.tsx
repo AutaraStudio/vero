@@ -4,7 +4,6 @@ import { useRef } from 'react';
 import Lottie, { type LottieRefCurrentProps } from 'lottie-react';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
-import ActionButton from '@/components/ui/ActionButton';
 import type { ThemeVariant } from '@/lib/theme';
 import RoleRosterSummaryBar from './RoleRosterSummaryBar';
 import './role-grid.css';
@@ -51,13 +50,26 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
     .filter(Boolean)
     .join(' · ');
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onToggle();
+    }
+  };
+
   return (
     <article
       className={`role-grid__card${selected ? ' is-selected' : ''}`}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={onToggle}
+      onKeyDown={handleKeyDown}
+      role="button"
+      tabIndex={0}
+      aria-pressed={selected}
+      aria-label={selected ? `Remove ${role.name} from basket` : `Add ${role.name} to basket`}
     >
-      {/* Top — branded icon panel with corner select action */}
+      {/* Top — branded icon panel with corner state indicator */}
       <div className="role-grid__card-visual">
         <div className="role-grid__card-icon">
           {role.lottieData ? (
@@ -72,13 +84,13 @@ function RoleCard({ role, selected, onToggle }: RoleCardProps) {
           )}
         </div>
 
-        <div className="role-grid__card-action">
-          <ActionButton
-            selected={selected}
-            onClick={(e) => { e.stopPropagation(); onToggle(); }}
-            label={selected ? `Remove ${role.name} from basket` : `Add ${role.name} to basket`}
-          />
-        </div>
+        <span
+          className={`role-grid__card-chip${selected ? ' is-selected' : ''}`}
+          aria-hidden="true"
+        >
+          <span className="role-grid__card-chip-icon">{selected ? '✓' : '+'}</span>
+          <span className="role-grid__card-chip-label">{selected ? 'Added' : 'Add'}</span>
+        </span>
       </div>
 
       {/* Body — name + tasks + strengths */}

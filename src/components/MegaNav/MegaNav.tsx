@@ -3,6 +3,7 @@
 import { useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { usePathname } from 'next/navigation';
 import Button from '@/components/ui/Button';
 import { initMegaNav } from './megaNavAnimations';
 import NavBasket from './NavBasket';
@@ -95,12 +96,26 @@ export default function MegaNav({
   categoryGroups = [],
 }: MegaNavProps) {
   const navRef = useRef<HTMLElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     const el = navRef.current;
     if (!el) return;
     return initMegaNav(el);
   }, []);
+
+  /* Tell the nav script to re-read the new hero's `data-theme` after
+     every client-side route change. The script doesn't remount across
+     navigations, and each page renders its own `<main>`, so without
+     this the nav would keep using the previous page's hero theme. */
+  useEffect(() => {
+    /* Wait one frame so React has committed the new `<main>` to the DOM
+       before the script re-queries `main > *:first-child`. */
+    const id = requestAnimationFrame(() => {
+      navRef.current?.dispatchEvent(new CustomEvent('mega-nav-refresh'));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [pathname]);
 
   /* Has the editor placed each dropdown trigger? Used to gate panel
      rendering so we don't show empty dropdowns on a misconfigured nav. */
@@ -124,9 +139,27 @@ export default function MegaNav({
         <div className="mega-nav__container flex--between">
           <div className="mega-nav__bar-start flex">
 
-            {/* Logo */}
+            {/* Logo — renders both the standard and light-wordmark variant.
+                CSS swaps which one is visible based on whether the nav is
+                inheriting a dark/deep hero theme (where the purple wordmark
+                in the default logo would vanish into the background). */}
             <Link href="/" data-menu-logo="" className="mega-nav__bar-logo">
-              <Image src="/logo.svg" alt="Vero Assess" width={120} height={34} priority />
+              <Image
+                src="/logo.svg"
+                alt="Vero Assess"
+                width={120}
+                height={34}
+                priority
+                className="mega-nav__bar-logo-img mega-nav__bar-logo-img--dark-text"
+              />
+              <Image
+                src="/logo-on-dark.svg"
+                alt=""
+                width={120}
+                height={34}
+                aria-hidden="true"
+                className="mega-nav__bar-logo-img mega-nav__bar-logo-img--light-text"
+              />
             </Link>
 
             {/* Nav inner */}

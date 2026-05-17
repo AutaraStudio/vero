@@ -88,7 +88,7 @@
   text-decoration: none;
   color: var(--color--text-brand);
   font-size: var(--font--body);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
 }
 
@@ -320,6 +320,15 @@
      its lower edge. */
   position: relative;
   z-index: 101;
+  /* `.get-started-main` reserves `--gs-planbar-h` of bottom padding so
+     form content can't ride under the PlanBar. The basket sits *in
+     front* of the bar (z-index 101 > 100) so it shouldn't honour that
+     reservation — extend its bottom edge down into the bar's zone so
+     the sticky sidebar can reach the viewport bottom when the form
+     column has been fully scrolled. Without this the basket ends 4rem
+     above the viewport bottom, leaving a visible gap between the
+     sticky sidebar and the PlanBar. */
+  margin-bottom: calc(var(--gs-planbar-h) * -1);
 }
 
 /* The actual viewport-locked sidebar lives inside .basket. It sticks to
@@ -481,7 +490,7 @@
 
 .basket__tier-name {
   font-size: var(--font--body);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.2;
@@ -506,7 +515,7 @@
 
 .basket__tier-price {
   font-size: var(--font--h4);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--text-primary);
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -919,7 +928,7 @@
 /* Bump the price line to a more confident size so it reads at a glance. */
 .basket-mobile-bar__info > span:not(.basket-mobile-bar__info-row) {
   font-size: var(--font--h4);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--text-primary);
   line-height: 1.1;
   letter-spacing: -0.01em;

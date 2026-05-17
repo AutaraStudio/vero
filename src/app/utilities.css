@@ -707,7 +707,6 @@
 .btn--cta {
   background: var(--color--interactive-cta);
   color: var(--color--interactive-cta-text);
-  font-weight: 700;
 }
 
 .btn--cta:hover {

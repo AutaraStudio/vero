@@ -53,6 +53,50 @@
   width: 7rem;
   margin-right: 3em;
   display: flex;
+  position: relative;
+}
+
+/* Both logo variants render in the same slot; only one is visible. The
+   light-wordmark variant takes over on themes where the default purple
+   wordmark would vanish into the background (any `dark*` or `*-deep`
+   themed hero, plus the menu-open state). The scrolled state always
+   uses the light page-bg, so the default logo is correct there. */
+.mega-nav__bar-logo-img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.mega-nav__bar-logo-img--light-text {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+.mega-nav[data-theme="dark"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="dark-purple"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="dark-blue"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="dark-green"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="dark-orange"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="dark-yellow"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="brand-purple-deep"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="brand-blue-deep"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="brand-green-deep"] .mega-nav__bar-logo-img--dark-text,
+.mega-nav[data-theme="brand-orange-deep"] .mega-nav__bar-logo-img--dark-text {
+  opacity: 0;
+}
+
+.mega-nav[data-theme="dark"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="dark-purple"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="dark-blue"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="dark-green"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="dark-orange"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="dark-yellow"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="brand-purple-deep"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="brand-blue-deep"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="brand-green-deep"] .mega-nav__bar-logo-img--light-text,
+.mega-nav[data-theme="brand-orange-deep"] .mega-nav__bar-logo-img--light-text {
+  opacity: 1;
 }
 
 /* ── Bar links ── */

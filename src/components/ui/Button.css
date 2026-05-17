@@ -187,10 +187,6 @@
   --btn-dot-3: var(--color--interactive-cta-text);
 }
 
-.btn-blob--cta .btn-blob__text {
-  font-weight: 700;
-}
-
 .btn-blob--cta:is(:hover, :focus-visible) .btn-blob__bg {
   background-color: var(--color--interactive-cta-hover);
 }

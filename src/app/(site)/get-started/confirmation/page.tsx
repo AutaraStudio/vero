@@ -283,7 +283,7 @@ function ConfirmationContent() {
         ) : (
           <div className="confirmation-next-steps">
             <div className="confirmation-next-steps__header">
-              <p className="text-h5 color--primary">What happens next</p>
+              <h3 className="text-h5 color--primary">What happens next</h3>
               <p className="text-body--sm color--secondary">
                 Here&apos;s what to expect after your order is confirmed.
               </p>
@@ -541,7 +541,7 @@ function ConfirmationContent() {
         {/* ── Support ── */}
         <div className="confirmation-contact">
           <div className="confirmation-contact__header">
-            <p className="text-h5 color--primary">Questions?</p>
+            <h3 className="text-h5 color--primary">Questions?</h3>
             <p className="text-body--sm color--secondary">
               Our team is here to help.
             </p>

@@ -114,7 +114,7 @@
 .science-dimensions__col-name {
   margin: 0;
   font-size: clamp(1rem, 1.2vw, 1.125rem);
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1.25;
   letter-spacing: -0.01em;
   color: var(--color--text-primary);

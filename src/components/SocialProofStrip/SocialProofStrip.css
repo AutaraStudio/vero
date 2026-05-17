@@ -17,6 +17,8 @@
 }
 
 .social-proof__label {
+  font-size: var(--font--label-sm);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
   text-align: center;
