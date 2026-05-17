@@ -54,9 +54,8 @@ export const contentSection = defineType({
     defineField({
       name: 'ctaHref',
       title: 'Button link',
-      type: 'string',
-      description:
-        'Where the button links to. Internal paths start with "/" (e.g. "/pricing"); external links start with "https://".',
+      type: 'link',
+      description: 'Pick a page or paste an external URL.',
       hidden: ({ parent }) => !parent?.ctaLabel,
     }),
     defineField({
