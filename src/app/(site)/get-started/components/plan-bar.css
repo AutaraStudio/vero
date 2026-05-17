@@ -175,10 +175,17 @@
     letter-spacing: var(--font--label-ls);
   }
 
+  /* Back + Continue sit side-by-side. The Back button hides its
+     contextual suffix ("to roles" / "to details" / …) so both pills fit
+     comfortably in a single row at narrow widths. */
   .plan-bar__actions {
     width: 100%;
     justify-content: space-between;
-    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .plan-bar__back-suffix {
+    display: none;
   }
 }
 

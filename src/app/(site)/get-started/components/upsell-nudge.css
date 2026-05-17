@@ -159,8 +159,4 @@
   .nudge-actions {
     width: 100%;
   }
-
-  .nudge-actions > button:first-child {
-    width: 100%;
-  }
 }

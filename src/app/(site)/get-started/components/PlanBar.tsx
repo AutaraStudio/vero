@@ -111,12 +111,14 @@ export default function PlanBar({ theme }: PlanBarProps) {
 
   /* Back button — moved out of each page into the sticky bar. /get-started
      is the first step so no back button there; the rest point to the
-     previous step's URL. */
-  const backMap: Record<string, { label: string; href: string }> = {
-    '/get-started/details':      { label: 'Back to roles',        href: '/get-started' },
-    '/get-started/portal-setup': { label: 'Back to details',      href: '/get-started/details' },
-    '/get-started/contract':     { label: 'Back to portal setup', href: '/get-started/portal-setup' },
-    '/get-started/payment':      { label: 'Back to terms',        href: '/get-started/contract' },
+     previous step's URL. Label is split: the "Back" word always shows,
+     the contextual suffix ("to roles", "to details", …) hides on mobile
+     via CSS so the two buttons fit side-by-side at narrow widths. */
+  const backMap: Record<string, { suffix: string; href: string }> = {
+    '/get-started/details':      { suffix: 'to roles',        href: '/get-started' },
+    '/get-started/portal-setup': { suffix: 'to details',      href: '/get-started/details' },
+    '/get-started/contract':     { suffix: 'to portal setup', href: '/get-started/portal-setup' },
+    '/get-started/payment':      { suffix: 'to terms',        href: '/get-started/contract' },
   };
   const back = backMap[pathname];
 
@@ -187,7 +189,7 @@ export default function PlanBar({ theme }: PlanBarProps) {
           <div className="plan-bar__actions">
             {back && (
               <Button variant="secondary" size="md" href={back.href}>
-                {back.label}
+                Back<span className="plan-bar__back-suffix">{' '}{back.suffix}</span>
               </Button>
             )}
             <Button
