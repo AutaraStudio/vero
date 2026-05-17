@@ -41,6 +41,11 @@
   .details-layout > .basket {
     display: none;
   }
+  /* Match the standard `.container` side padding (1.5rem) so the form
+     edge aligns with everything else on the page on mobile. */
+  .details-layout > .details-form {
+    padding: 2rem var(--space--container-padding);
+  }
 }
 
 /* ── Form ── */

@@ -38,3 +38,42 @@
     gap: 1rem;
   }
 }
+
+/* Mobile — mirror the `.basket-mobile-bar` pattern used on /get-started:
+   strip the bar down to just the bold price and the Continue button.
+   Tier name, "Billed annually", divider, limits row, and the "per year"
+   suffix all hide. Single clean row, no overlap, lots of tap area. */
+@media (max-width: 768px) {
+  .role-roster-summary-bar__inner {
+    gap: 0.75rem;
+    padding: 0.625rem 0;
+  }
+
+  .role-roster-summary-bar .plan-bar__left,
+  .role-roster-summary-bar .plan-bar__limits-row,
+  .role-roster-summary-bar .divider--vertical {
+    display: none;
+  }
+
+  /* Hide the "per year" / "per month" suffix inside the price row so
+     only the price headline shows. */
+  .role-roster-summary-bar .plan-bar__price-row > span:not(.plan-bar__price) {
+    display: none;
+  }
+
+  .role-roster-summary-bar .plan-bar__centre {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .role-roster-summary-bar .plan-bar__price {
+    font-size: var(--font--h4);
+    line-height: 1.1;
+  }
+
+  /* Pin the CTA to the right edge */
+  .role-roster-summary-bar .btn-blob {
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+}

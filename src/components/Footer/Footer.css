@@ -347,6 +347,9 @@
 
 @media (max-width: 600px) {
   .footer__inner {
+    /* Match `.container` side padding so the footer's left/right edges
+       line up with every other section on mobile. */
+    max-width: calc(100vw - (var(--space--container-padding) * 2));
     padding-block: 3rem 2rem;
     gap: 3rem;
   }

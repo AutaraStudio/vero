@@ -36,6 +36,11 @@
   .contract-layout > .basket {
     display: none;
   }
+  /* Align the inner padding with the global container so the form's
+     edges line up with the rest of the site on mobile. */
+  .contract-layout > .contract-inner {
+    padding: 2rem var(--space--container-padding);
+  }
 }
 
 .contract-header {
