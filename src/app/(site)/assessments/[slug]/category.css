@@ -95,6 +95,8 @@
 }
 
 .stats-section__index {
+  font-size: var(--font--label-sm);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
   font-variant-numeric: tabular-nums;

@@ -214,7 +214,7 @@
   justify-content: center;
   flex-shrink: 0;
   font-size: var(--font--label-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--interactive-primary-text);
   position: relative;
   z-index: 1;

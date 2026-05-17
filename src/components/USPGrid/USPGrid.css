@@ -74,7 +74,7 @@
 
 .usp-grid__card-index {
   font-size: clamp(2.5rem, 6vw, 3.75rem);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.04em;
   color: var(--color--text-tertiary);
   font-variant-numeric: tabular-nums;

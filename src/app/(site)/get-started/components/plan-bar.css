@@ -3,16 +3,20 @@
    Shell positioning handled by FixedBar component
 ============================================================ */
 
-/* Desktop (≥992px): the fixed left sidebar sits in front of this bar.
-   Offset the bar's content so it begins just past the sidebar's right
-   edge. Below 992px the sidebar is hidden + replaced by the slide-over
-   drawer, so the bar reverts to a normal centred container. */
+/* Desktop (≥992px): align the bar content to the page form column above.
+   The checkout pages are NOT centred in .container — they're a full-width
+   grid of `var(--gs-sidebar-w) | 1fr` with the form column capped at 56rem
+   and padded 2.5rem. The bar mirrors that exactly: left-aligned (margin 0),
+   max-width = sidebar + form column, with padding that clears the sidebar
+   on the left and matches the form's 2.5rem padding on the right. Below
+   992px the sidebar is hidden + replaced by the slide-over drawer, so the
+   bar reverts to a normal centred container. */
 @media (min-width: 992px) {
   .plan-bar-fixed .container {
-    max-width: none;
+    max-width: calc(var(--gs-sidebar-w) + 56rem);
     margin: 0;
-    padding-left: calc(var(--gs-sidebar-w) + 1.5rem);
-    padding-right: var(--space--container-padding);
+    padding-left: calc(var(--gs-sidebar-w) + 2.5rem);
+    padding-right: 2.5rem;
   }
 }
 
@@ -35,7 +39,7 @@
 
 .plan-bar__tier-name {
   font-size: var(--font--body-sm);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--text-primary);
   letter-spacing: -0.01em;
   line-height: 1.2;
@@ -61,7 +65,7 @@
 
 .plan-bar__price {
   font-size: var(--font--h4);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color--text-primary);
   letter-spacing: -0.02em;
   line-height: 1;
@@ -155,7 +159,7 @@
 
   .plan-bar__summary-price {
     font-size: var(--font--body);
-    font-weight: 700;
+    font-weight: 600;
     color: var(--color--text-primary);
     letter-spacing: -0.01em;
   }

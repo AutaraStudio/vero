@@ -54,7 +54,7 @@
   border: 1.5px solid var(--swatch--neutral-0); /* halo separates badge from icon */
   border-radius: var(--radius--full);
   font-size: 9px;
-  font-weight: 700;
+  font-weight: 600;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   pointer-events: none;
@@ -147,10 +147,11 @@
 }
 
 .nav-basket-drawer__tier-eyebrow {
+  font-size: var(--font--label-sm);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
   color: var(--color--text-brand);
-  font-weight: 600;
 }
 
 .nav-basket-drawer__price-row {
@@ -163,7 +164,7 @@
 
 .nav-basket-drawer__price {
   font-size: clamp(2rem, 5vw, 2.5rem);
-  font-weight: 700;
+  font-weight: 600;
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--color--text-primary);
@@ -251,6 +252,8 @@
 }
 
 .nav-basket-drawer__body-head > span:first-child {
+  font-size: var(--font--label-sm);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
 }
@@ -275,9 +278,10 @@
 }
 
 .nav-basket-drawer__group-label {
+  font-size: var(--font--label-sm);
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: var(--font--label-ls);
-  font-weight: 600;
 }
 
 .nav-basket-drawer__roles {

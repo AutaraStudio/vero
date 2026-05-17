@@ -227,29 +227,47 @@ export function UserEmailInput({
 
   return (
     <div className="user-emails">
-      {showCsvImport && (
-        <div className="user-emails__actions-row">
-          <button
-            type="button"
-            className="user-emails__import-btn"
-            onClick={() => csvRef.current?.click()}
-            disabled={atLimit}
-          >
-            Import from CSV
-          </button>
-          <input
-            ref={csvRef}
-            type="file"
-            accept=".csv,text/csv"
-            className="user-emails__csv-input"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) onCsvImport(file);
-              e.target.value = '';
-            }}
-          />
+      {/* Header row — counter pill on the left, CSV import on the right.
+          Reads as a single bar above the input so the section doesn't
+          stack into multiple offset rows. */}
+      <div className="user-emails__header-row">
+        <div
+          className={`user-emails__counter${atLimit ? ' is-full' : ''}`}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="user-emails__counter-count text-body--xs color--primary">
+            {String(emails.length).padStart(2, '0')} / {String(maxEmails).padStart(2, '0')}
+          </span>
+          <span className="user-emails__counter-label text-body--xs color--secondary">
+            {atLimit ? 'user limit reached' : `user${maxEmails === 1 ? '' : 's'} added`}
+          </span>
         </div>
-      )}
+
+        {showCsvImport && (
+          <>
+            <button
+              type="button"
+              className="user-emails__import-btn"
+              onClick={() => csvRef.current?.click()}
+              disabled={atLimit}
+            >
+              Import from CSV
+            </button>
+            <input
+              ref={csvRef}
+              type="file"
+              accept=".csv,text/csv"
+              className="user-emails__csv-input"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) onCsvImport(file);
+                e.target.value = '';
+              }}
+            />
+          </>
+        )}
+      </div>
 
       <div className="user-emails__add-row">
         <input
@@ -280,6 +298,34 @@ export function UserEmailInput({
         </button>
       </div>
 
+      {/* Ghost rows — decorative duplicates that hint "you can add many".
+          Only shown until the user adds their first email; the chip list
+          below takes over after that. aria-hidden + tabIndex/-1 keeps them
+          out of the AT and keyboard tree. */}
+      {emails.length === 0 && !atLimit && (
+        <div className="user-emails__ghost-rows" aria-hidden="true">
+          {[0, 1].map((i) => (
+            <div key={i} className="user-emails__add-row is-ghost">
+              <input
+                type="email"
+                className="form-field__input"
+                placeholder="jane@company.com"
+                tabIndex={-1}
+                disabled
+              />
+              <button
+                type="button"
+                className="user-emails__add-btn"
+                tabIndex={-1}
+                disabled
+              >
+                Add
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
       {addError && (
         <span
           id="user-email-add-error"
@@ -290,7 +336,7 @@ export function UserEmailInput({
         </span>
       )}
 
-      {emails.length === 0 ? (
+      {emails.length === 0 && (
         <div className="user-emails__empty" role="status">
           <span className="user-emails__empty-icon" aria-hidden="true">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -305,10 +351,6 @@ export function UserEmailInput({
             Add or hit Enter. At least one is required to continue.
           </p>
         </div>
-      ) : (
-        <span className="text-body--xs color--tertiary">
-          {emails.length} of {maxEmails} user{maxEmails !== 1 ? 's' : ''} added
-        </span>
       )}
 
       {emails.length > 0 && (
