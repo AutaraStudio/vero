@@ -61,6 +61,40 @@ export function mediaProjection(fieldName: string): string {
 }
 
 /**
+ * Project a `link` object field down to a plain string href so consuming
+ * components don't need to know the link is structured under the hood.
+ *
+ *  - new shape (object with `.type`):
+ *      "external"   → returns the external URL
+ *      "internal"   → returns the picked static-route path
+ *      "reference"  → builds the URL from the referenced doc's slug
+ *                     (supports jobCategory, role, legalPage)
+ *  - legacy shape (raw string href from before the link migration):
+ *      returns the string as-is so unmigrated docs keep rendering
+ *
+ * Pair with `linkOpenInNewTab(fieldName)` when the consuming component
+ * needs the boolean.
+ */
+export function linkProjection(fieldName: string): string {
+  return `
+    "${fieldName}": select(
+      defined(${fieldName}.type) && ${fieldName}.type == "external" => ${fieldName}.external,
+      defined(${fieldName}.type) && ${fieldName}.type == "internal" => ${fieldName}.internal,
+      defined(${fieldName}.type) && ${fieldName}.type == "reference" && ${fieldName}.reference->_type == "jobCategory" => "/assessments/" + ${fieldName}.reference->slug.current,
+      defined(${fieldName}.type) && ${fieldName}.type == "reference" && ${fieldName}.reference->_type == "legalPage" => "/legal/" + ${fieldName}.reference->slug.current,
+      defined(${fieldName}.type) && ${fieldName}.type == "reference" && ${fieldName}.reference->_type == "role" => "/assessments/" + ${fieldName}.reference->parentCategory->slug.current + "/" + ${fieldName}.reference->slug.current,
+      ${fieldName}
+    )
+  `;
+}
+
+/** Companion projection for the `openInNewTab` boolean on a link object.
+ *  Falls back to false for legacy string hrefs. */
+export function linkOpenInNewTab(fieldName: string, alias?: string): string {
+  return `"${alias ?? fieldName + 'OpenInNewTab'}": coalesce(${fieldName}.openInNewTab, false)`;
+}
+
+/**
  * Project a `contentSection` field. Pulls eyebrow / heading / body /
  * media / cta / layout — the unified shape rendered by the
  * <ContentSection> adapter on the frontend.
@@ -73,7 +107,7 @@ export function contentSectionProjection(fieldName: string): string {
       body,
       ${mediaProjection('media')},
       ctaLabel,
-      ctaHref,
+      ${linkProjection('ctaHref')},
       layout
     }
   `;
@@ -85,9 +119,9 @@ export const HOME_PAGE_QUERY = `
     heroTitle,
     heroIntro,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     ${mediaProjection('heroMedia')},
     partnerLogosLabel,
     partnerLogos[] {
@@ -106,7 +140,7 @@ export const HOME_PAGE_QUERY = `
       "imageAlt": image.alt
     },
     uspsCtaLabel,
-    uspsCtaHref,
+    ${linkProjection('uspsCtaHref')},
     stepsSectionLabel,
     stepsSectionHeading,
     stepsSectionIntro,
@@ -114,14 +148,14 @@ export const HOME_PAGE_QUERY = `
       title,
       body,
       ctaLabel,
-      ctaHref
+      ${linkProjection('ctaHref')}
     },
     pricingSectionLabel,
     pricingSectionHeading,
     pricingSectionSubheading,
     pricingHighlights,
     pricingCtaLabel,
-    pricingCtaHref
+    ${linkProjection('pricingCtaHref')}
   }
 `
 
@@ -148,14 +182,14 @@ export const PRICING_PAGE_QUERY = `
         heroHeadline,
     heroIntro,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     starterCallout,
     bespokeHeading,
     bespokeBody,
     bespokeCtaLabel,
-    bespokeCtaHref,
+    ${linkProjection('bespokeCtaHref')},
     faqHeading,
     faqs[] {
       question,
@@ -170,9 +204,9 @@ export const ASSESSMENTS_PAGE_QUERY = `
         heroHeadline,
     heroIntro,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref
+    ${linkProjection('heroSecondaryCTAHref')}
   }
 `
 
@@ -181,9 +215,9 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
         heroHeadline,
     heroIntro,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('gettingStartedSection')},
@@ -208,7 +242,7 @@ export const HOW_IT_WORKS_PAGE_QUERY = `
       "imageAlt": image.alt
     },
     benefitsLinkLabel,
-    benefitsLinkHref
+    ${linkProjection('benefitsLinkHref')}
   }
 `
 
@@ -217,9 +251,9 @@ export const ABOUT_PAGE_QUERY = `
         heroHeadline,
     heroIntro,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('tazioEvolutionSection')},
@@ -244,9 +278,9 @@ export const SCIENCE_PAGE_QUERY = `
         heroHeadline,
     heroBody,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     ${mediaProjection('heroMedia')},
 
     ${contentSectionProjection('authenticSection')},
@@ -282,7 +316,7 @@ export const SCIENCE_PAGE_QUERY = `
 
     ctaBody,
     ctaLabel,
-    ctaHref
+    ${linkProjection('ctaHref')}
   }
 `
 
@@ -291,9 +325,9 @@ export const COMPLIANCE_PAGE_QUERY = `
         heroHeadline,
     heroBody,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
 
     securityHeading,
     securityBody,
@@ -414,9 +448,9 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     heroHeadline,
     heroIntroCopy,
     heroCTALabel,
-    heroCTAHref,
+    ${linkProjection('heroCTAHref')},
     heroSecondaryCTALabel,
-    heroSecondaryCTAHref,
+    ${linkProjection('heroSecondaryCTAHref')},
     ${mediaProjection('heroMedia')},
     ${contentSectionProjection('dimensionsSectionContent')},
     inActionLabel,
@@ -441,7 +475,7 @@ export const JOB_CATEGORY_BY_SLUG_QUERY = `
     bespokeSectionHeading,
     bespokeSectionBody,
     bespokeCTALabel,
-    bespokeCTAHref,
+    ${linkProjection('bespokeCTAHref')},
     ${mediaProjection('bespokeSectionMedia')},
     "roles": *[_type == "role" && parentCategory._ref == ^._id && archived != true] | order(name asc) {
       _id,
@@ -478,8 +512,8 @@ export const GLOBAL_NAV_QUERY = `
       _key,
       _type,
       label,
-      href,
-      external
+      ${linkProjection('href')},
+      "external": coalesce(href.openInNewTab, external, false)
     },
     companyColumns[] {
       _key,
@@ -488,22 +522,22 @@ export const GLOBAL_NAV_QUERY = `
         _key,
         label,
         description,
-        href,
-        external
+        ${linkProjection('href')},
+        "external": coalesce(href.openInNewTab, external, false)
       }
     },
     companyCard {
       eyebrow,
       body,
       ctaLabel,
-      ctaHref,
+      ${linkProjection('ctaHref')},
       "imageUrl": image.asset->url,
       "imageAlt": image.alt
     },
     ctaLabel,
-    ctaHref,
+    ${linkProjection('ctaHref')},
     secondaryCtaLabel,
-    secondaryCtaHref
+    ${linkProjection('secondaryCtaHref')}
   }
 `
 
@@ -513,17 +547,17 @@ export const GLOBAL_FOOTER_QUERY = `
     ctaEyebrow,
     ctaBenefits,
     ctaPrimaryLabel,
-    ctaPrimaryHref,
+    ${linkProjection('ctaPrimaryHref')},
     ctaSecondaryLabel,
-    ctaSecondaryHref,
+    ${linkProjection('ctaSecondaryHref')},
     linkColumns[] {
       _key,
       title,
       links[] {
         _key,
         label,
-        href,
-        external
+        ${linkProjection('href')},
+        "external": coalesce(href.openInNewTab, external, false)
       }
     },
     contactPhone,
@@ -537,8 +571,8 @@ export const GLOBAL_FOOTER_QUERY = `
     legalLinks[] {
       _key,
       label,
-      href,
-      external
+      ${linkProjection('href')},
+      "external": coalesce(href.openInNewTab, external, false)
     },
     businessText,
     copyrightText,

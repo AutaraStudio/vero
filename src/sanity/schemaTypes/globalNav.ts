@@ -40,14 +40,12 @@ export const globalNav = defineType({
             defineField({ name: 'label', title: 'Label', type: 'string', validation: (Rule) => Rule.required() }),
             defineField({
               name: 'href',
-              title: 'URL',
-              type: 'string',
-              description: 'Internal path like "/pricing" or full https:// URL for external.',
+              title: 'Link',
+              type: 'link',
               validation: (Rule) => Rule.required(),
             }),
-            defineField({ name: 'external', title: 'Open in new tab', type: 'boolean', initialValue: false }),
           ],
-          preview: { select: { title: 'label', subtitle: 'href' }, prepare: ({ title, subtitle }) => ({ title: title ?? '—', subtitle: `Link · ${subtitle ?? ''}` }) },
+          preview: { select: { title: 'label' }, prepare: ({ title }) => ({ title: title ?? '—', subtitle: 'Link' }) },
         }),
         defineArrayMember({
           type: 'object',
@@ -123,13 +121,12 @@ export const globalNav = defineType({
                     }),
                     defineField({
                       name: 'href',
-                      title: 'URL',
-                      type: 'string',
+                      title: 'Link',
+                      type: 'link',
                       validation: (Rule) => Rule.required(),
                     }),
-                    defineField({ name: 'external', title: 'Open in new tab', type: 'boolean', initialValue: false }),
                   ],
-                  preview: { select: { title: 'label', subtitle: 'href' } },
+                  preview: { select: { title: 'label' } },
                 }),
               ],
             }),
@@ -167,8 +164,7 @@ export const globalNav = defineType({
         defineField({
           name: 'ctaHref',
           title: 'CTA link',
-          type: 'string',
-          initialValue: '/get-started',
+          type: 'link',
         }),
         defineField({
           name: 'image',
@@ -200,10 +196,8 @@ export const globalNav = defineType({
     defineField({
       name: 'secondaryCtaHref',
       title: 'Secondary CTA link',
-      type: 'string',
+      type: 'link',
       group: 'cta',
-      description: 'Internal path like "/contact" or full https:// URL for external.',
-      initialValue: '/contact',
     }),
     defineField({
       name: 'ctaLabel',
@@ -216,9 +210,8 @@ export const globalNav = defineType({
     defineField({
       name: 'ctaHref',
       title: 'Primary CTA link',
-      type: 'string',
+      type: 'link',
       group: 'cta',
-      initialValue: '/get-started',
       validation: (Rule) => Rule.required(),
     }),
   ],

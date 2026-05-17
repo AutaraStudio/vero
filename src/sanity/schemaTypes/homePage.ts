@@ -72,9 +72,9 @@ export const homePage = defineType({
     defineField({
       name: 'heroCTAHref',
       title: 'Primary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
-      description: 'e.g. "/get-started" or "/contact".',
+      description: 'Pick a page or paste an external URL.',
       hidden: ({ parent }) => !parent?.heroCTALabel,
     }),
     defineField({
@@ -87,7 +87,7 @@ export const homePage = defineType({
     defineField({
       name: 'heroSecondaryCTAHref',
       title: 'Secondary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
     }),
@@ -286,7 +286,7 @@ export const homePage = defineType({
     defineField({
       name: 'uspsCtaHref',
       title: 'Section button — link',
-      type: 'string',
+      type: 'link',
       group: 'usps',
       hidden: ({ parent }) => !parent?.uspsCtaLabel,
     }),
@@ -350,7 +350,7 @@ export const homePage = defineType({
             defineField({
               name: 'ctaHref',
               title: 'Step button — link',
-              type: 'string',
+              type: 'link',
               hidden: ({ parent }) => !parent?.ctaLabel,
             }),
           ],
@@ -398,7 +398,7 @@ export const homePage = defineType({
     defineField({
       name: 'pricingCtaHref',
       title: 'Button — link',
-      type: 'string',
+      type: 'link',
       group: 'pricing',
       hidden: ({ parent }) => !parent?.pricingCtaLabel,
     }),
