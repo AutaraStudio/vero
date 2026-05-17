@@ -47,7 +47,7 @@ export const compliancePage = defineType({
     defineField({
       name: 'heroCTAHref',
       title: 'Primary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroCTALabel,
     }),
@@ -61,7 +61,7 @@ export const compliancePage = defineType({
     defineField({
       name: 'heroSecondaryCTAHref',
       title: 'Secondary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
     }),

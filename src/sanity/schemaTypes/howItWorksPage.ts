@@ -46,7 +46,7 @@ export const howItWorksPage = defineType({
     defineField({
       name: 'heroCTAHref',
       title: 'Primary CTA Href',
-      type: 'string',
+      type: 'link',
       group: 'hero',
     }),
     defineField({
@@ -58,7 +58,7 @@ export const howItWorksPage = defineType({
     defineField({
       name: 'heroSecondaryCTAHref',
       title: 'Secondary CTA Href',
-      type: 'string',
+      type: 'link',
       group: 'hero',
     }),
     defineField({
@@ -237,7 +237,7 @@ export const howItWorksPage = defineType({
     defineField({
       name: 'benefitsLinkHref',
       title: 'Read More Link Href',
-      type: 'string',
+      type: 'link',
       group: 'benefits',
     }),
   ],

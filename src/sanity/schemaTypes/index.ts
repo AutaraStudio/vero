@@ -14,6 +14,7 @@ import { role } from './role'
 import { seoFields } from './seoFields'
 import { mediaBlock } from './mediaBlock'
 import { contentSection } from './contentSection'
+import { link } from './objects/link'
 import { pageSeo } from './pageSeo'
 import { legalPage } from './legalPage'
 import { siteBackup } from './siteBackup'
@@ -28,6 +29,7 @@ export const schema: { types: SchemaTypeDefinition[] } = {
     seoFields,
     mediaBlock,
     contentSection,
+    link,
 
     /* Per-page SEO — separate documents so Studio sidebar can show a focused SEO view */
     pageSeo,

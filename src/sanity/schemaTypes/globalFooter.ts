@@ -81,9 +81,8 @@ export const globalFooter = defineType({
     defineField({
       name: 'ctaPrimaryHref',
       title: 'Primary CTA link',
-      type: 'string',
+      type: 'link',
       group: 'cta',
-      initialValue: '/get-started',
       validation: (Rule) => Rule.required(),
     }),
     defineField({
@@ -97,9 +96,8 @@ export const globalFooter = defineType({
     defineField({
       name: 'ctaSecondaryHref',
       title: 'Secondary CTA link',
-      type: 'string',
+      type: 'link',
       group: 'cta',
-      initialValue: '/contact',
     }),
 
     /* ────────────────────────────────────────────────────────────
@@ -131,7 +129,9 @@ export const globalFooter = defineType({
               of: [
                 defineArrayMember({
                   type: 'object',
-                  name: 'link',
+                  /* Renamed from 'link' to 'columnLink' so it doesn't shadow
+                     the global `link` object type now used for the href. */
+                  name: 'columnLink',
                   fields: [
                     defineField({
                       name: 'label',
@@ -141,20 +141,13 @@ export const globalFooter = defineType({
                     }),
                     defineField({
                       name: 'href',
-                      title: 'URL',
-                      type: 'string',
-                      description: 'Internal path like "/pricing" or full https:// URL for external links.',
+                      title: 'Link',
+                      type: 'link',
                       validation: (Rule) => Rule.required(),
-                    }),
-                    defineField({
-                      name: 'external',
-                      title: 'Open in new tab',
-                      type: 'boolean',
-                      initialValue: false,
                     }),
                   ],
                   preview: {
-                    select: { title: 'label', subtitle: 'href' },
+                    select: { title: 'label' },
                   },
                 }),
               ],
@@ -257,19 +250,12 @@ export const globalFooter = defineType({
             }),
             defineField({
               name: 'href',
-              title: 'URL',
-              type: 'string',
+              title: 'Link',
+              type: 'link',
               validation: (Rule) => Rule.required(),
             }),
-            defineField({
-              name: 'external',
-              title: 'Open in new tab',
-              type: 'boolean',
-              description: 'Tick for full https:// URLs that point off-site.',
-              initialValue: false,
-            }),
           ],
-          preview: { select: { title: 'label', subtitle: 'href' } },
+          preview: { select: { title: 'label' } },
         }),
       ],
     }),

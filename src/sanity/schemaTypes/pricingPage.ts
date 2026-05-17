@@ -51,7 +51,7 @@ export const pricingPage = defineType({
     defineField({
       name: 'heroCTAHref',
       title: 'Primary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroCTALabel,
     }),
@@ -65,7 +65,7 @@ export const pricingPage = defineType({
     defineField({
       name: 'heroSecondaryCTAHref',
       title: 'Secondary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
     }),
@@ -114,7 +114,7 @@ export const pricingPage = defineType({
     defineField({
       name: 'bespokeCtaHref',
       title: 'Button — link',
-      type: 'string',
+      type: 'link',
       group: 'bespoke',
       description: 'Where the button links to. Usually "/contact".',
       hidden: ({ parent }) => !parent?.bespokeCtaLabel,

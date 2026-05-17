@@ -47,7 +47,7 @@ export const sciencePage = defineType({
     defineField({
       name: 'heroCTAHref',
       title: 'Primary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroCTALabel,
     }),
@@ -61,7 +61,7 @@ export const sciencePage = defineType({
     defineField({
       name: 'heroSecondaryCTAHref',
       title: 'Secondary button — link',
-      type: 'string',
+      type: 'link',
       group: 'hero',
       hidden: ({ parent }) => !parent?.heroSecondaryCTALabel,
     }),
@@ -297,7 +297,7 @@ export const sciencePage = defineType({
     defineField({
       name: 'ctaHref',
       title: 'CTA Href',
-      type: 'string',
+      type: 'link',
       group: 'cta',
     }),
   ],
