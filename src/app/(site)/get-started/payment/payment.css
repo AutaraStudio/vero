@@ -30,6 +30,11 @@
   .payment-layout > .basket {
     display: none;
   }
+  /* Match the standard container padding so the form aligns with the
+     rest of the site on mobile. */
+  .payment-layout > .payment-form {
+    padding: 2rem var(--space--container-padding);
+  }
 }
 
 /* ── Form ── */
