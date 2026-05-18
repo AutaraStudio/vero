@@ -347,9 +347,11 @@
 
 @media (max-width: 600px) {
   .footer__inner {
-    /* Match `.container` side padding so the footer's left/right edges
-       line up with every other section on mobile. */
-    max-width: calc(100vw - (var(--space--container-padding) * 2));
+    /* Drop the desktop `max-width` cap entirely on mobile. The wrapper
+       already carries `.container--wide` (padding: 0 1.5rem), and that
+       single layer is all we want — the previous extra max-width was
+       stacking on top of the padding and squeezing the content. */
+    max-width: none;
     padding-block: 3rem 2rem;
     gap: 3rem;
   }
