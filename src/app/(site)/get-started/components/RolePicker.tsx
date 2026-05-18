@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Button from '@/components/ui/Button';
-import ActionButton from '@/components/ui/ActionButton';
 import { useFadeUp } from '@/hooks/useFadeUp';
 import { useBasket } from '@/store/basketStore';
 import {
@@ -56,11 +55,24 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
         {roles.map((role) => {
           const selected = isSelected(role._id);
 
+          const handleKeyDown = (e: React.KeyboardEvent) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onToggle(role);
+            }
+          };
+
           return (
             <div
               key={role._id}
               className={`role-card${selected ? ' is-selected' : ''}`}
               data-animate=""
+              onClick={() => onToggle(role)}
+              onKeyDown={handleKeyDown}
+              role="button"
+              tabIndex={0}
+              aria-pressed={selected}
+              aria-label={selected ? `Remove ${role.name} from basket` : `Add ${role.name} to basket`}
             >
               <div className="role-card__info">
                 <span className="text-body--sm font--medium color--primary">{role.name}</span>
@@ -78,11 +90,16 @@ function CategoryBody({ roles, onToggle, isSelected }: CategoryBodyProps) {
                   </div>
                 )}
               </div>
-              <ActionButton
-                selected={selected}
-                onClick={() => onToggle(role)}
-                label={selected ? `Remove ${role.name}` : `Add ${role.name}`}
-              />
+              {/* Visual-only chip — card handles the click, so this is
+                  aria-hidden and not focusable. Matches the assessment
+                  page's role grid pattern exactly. */}
+              <span
+                className={`role-card__chip${selected ? ' is-selected' : ''}`}
+                aria-hidden="true"
+              >
+                <span className="role-card__chip-icon">{selected ? '✓' : '+'}</span>
+                <span className="role-card__chip-label">{selected ? 'Added' : 'Add'}</span>
+              </span>
             </div>
           );
         })}
