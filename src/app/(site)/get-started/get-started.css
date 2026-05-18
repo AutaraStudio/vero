@@ -819,6 +819,8 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
+  cursor: pointer;
+  text-align: left;
   transition: background-color var(--transition--default),
               border-color var(--transition--default);
 }
@@ -828,10 +830,54 @@
   border-color: var(--color--border-default);
 }
 
+.role-card:focus-visible {
+  outline: 2px solid var(--color--interactive-primary);
+  outline-offset: 2px;
+}
+
 .role-card.is-selected {
   background: var(--color--accent-purple-bg);
   border-color: var(--color--interactive-primary);
   border-width: 1.5px;
+}
+
+/* Visual-only Add / Added chip — mirrors `.role-grid__card-chip` on
+   the assessment category pages so the two surfaces feel identical. */
+.role-card__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2rem;
+  padding: 0 0.75rem;
+  background: var(--color--surface-raised);
+  border: 1px solid var(--color--border-default);
+  border-radius: var(--radius--full);
+  color: var(--color--text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1;
+  flex-shrink: 0;
+  transition:
+    background-color var(--transition--default),
+    border-color var(--transition--default),
+    color var(--transition--default);
+}
+
+.role-card:hover .role-card__chip {
+  border-color: var(--color--interactive-primary);
+  color: var(--color--interactive-primary);
+}
+
+.role-card__chip.is-selected,
+.role-card:hover .role-card__chip.is-selected {
+  background: var(--color--interactive-primary);
+  border-color: var(--color--interactive-primary);
+  color: var(--color--interactive-primary-text);
+}
+
+.role-card__chip-icon {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .role-card__info {
